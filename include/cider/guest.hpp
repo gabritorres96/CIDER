@@ -56,6 +56,7 @@ struct Outcome {
     std::vector<LoadedImageInfo> images;   // main executable first, then libraries in load order
     std::string missing_library;           // LoadFailed / MissingDependency: the install name that was not found
     uint64_t initializers_run = 0;
+    uint64_t objc_live_objects = 0;        // Objective-C objects still alive when the guest ended (leak check; in-process only)
 };
 
 // Loads and runs `file` in THIS process, then releases everything (image, stack, thunks).

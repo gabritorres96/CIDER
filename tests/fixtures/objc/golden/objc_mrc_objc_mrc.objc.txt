@@ -1,0 +1,138 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_mrc\objc_mrc:
+Contents of (__DATA_CONST,__objc_classlist) section
+0000000100002020 0x100003068 _OBJC_CLASS_$_Obj
+           isa 0x100003090 _OBJC_METACLASS_$_Obj
+    superclass 0x0
+         cache 0x0
+        vtable 0x0
+          data 0x1000032a0 (struct class_ro_t *)
+                    flags 0x2 RO_ROOT
+            instanceStart 0
+             instanceSize 20
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000ebc Obj
+              baseMethods 0x100003188 (struct method_list_t *)
+		   entsize 24
+		     count 7
+		      name 0x100000e5c initWithTag:
+		     types 0x100000ed0 @20@0:8i16
+		       imp -[Obj initWithTag:]
+		      name 0x100000e7b retain
+		     types 0x100000ec8 @16@0:8
+		       imp -[Obj retain]
+		      name 0x100000e82 release
+		     types 0x100000edb Vv16@0:8
+		       imp -[Obj release]
+		      name 0x100000e8a autorelease
+		     types 0x100000ec8 @16@0:8
+		       imp -[Obj autorelease]
+		      name 0x100000e96 setChild:
+		     types 0x100000ee4 v24@0:8@16
+		       imp -[Obj setChild:]
+		      name 0x100000ea0 tag
+		     types 0x100000eef i16@0:8
+		       imp -[Obj tag]
+		      name 0x100000ea4 dealloc
+		     types 0x100000ef7 v16@0:8
+		       imp -[Obj dealloc]
+            baseProtocols 0x0
+                    ivars 0x100003238
+                    entsize 32
+                      count 3
+			   offset 0x1000033c0 0
+			     name 0x100000eac isa
+			     type 0x100000eff #
+			alignment 3
+			     size 8
+			   offset 0x1000033c8 8
+			     name 0x100000eb0 child
+			     type 0x100000f01 @"Obj"
+			alignment 3
+			     size 8
+			   offset 0x1000033d0 16
+			     name 0x100000ea0 tag
+			     type 0x100000f08 i
+			alignment 2
+			     size 4
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x100003090 _OBJC_METACLASS_$_Obj
+    superclass 0x100003068 _OBJC_CLASS_$_Obj
+         cache 0x0
+        vtable 0x0
+          data 0x100003140 (struct class_ro_t *)
+                    flags 0x3 RO_META RO_ROOT
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000ebc Obj
+              baseMethods 0x100003108 (struct method_list_t *)
+		   entsize 24
+		     count 2
+		      name 0x100000e69 alloc
+		     types 0x100000ec8 @16@0:8
+		       imp +[Obj alloc]
+		      name 0x100000e6f objWithTag:
+		     types 0x100000ed0 @20@0:8i16
+		       imp +[Obj objWithTag:]
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+0000000100002028 0x1000030b8 _OBJC_CLASS_$_Special
+           isa 0x1000030e0 _OBJC_METACLASS_$_Special
+    superclass 0x100003068 _OBJC_CLASS_$_Obj
+         cache 0x0
+        vtable 0x0
+          data 0x100003378 (struct class_ro_t *)
+                    flags 0x0
+            instanceStart 20
+             instanceSize 24
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000ec0 Special
+              baseMethods 0x100003330 (struct method_list_t *)
+		   entsize 24
+		     count 1
+		      name 0x100000ea4 dealloc
+		     types 0x100000ef7 v16@0:8
+		       imp -[Special dealloc]
+            baseProtocols 0x0
+                    ivars 0x100003350
+                    entsize 32
+                      count 1
+			   offset 0x1000033d8 20
+			     name 0x100000eb6 extra
+			     type 0x100000f08 i
+			alignment 2
+			     size 4
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x100003090 _OBJC_METACLASS_$_Obj
+    superclass 0x100003090 _OBJC_METACLASS_$_Obj
+         cache 0x0
+        vtable 0x0
+          data 0x1000032e8 (struct class_ro_t *)
+                    flags 0x1 RO_META
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000ec0 Special
+              baseMethods 0x0 (struct method_list_t *)
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Contents of (__DATA,__objc_classrefs) section
+00000001000033e8 0x100003068 _OBJC_CLASS_$_Obj
+00000001000033f0 0x1000030b8 _OBJC_CLASS_$_Special
+Contents of (__DATA,__objc_superrefs) section
+00000001000033e0 0x1000030b8 _OBJC_CLASS_$_Special
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

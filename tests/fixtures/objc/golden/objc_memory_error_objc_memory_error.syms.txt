@@ -1,0 +1,39 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_memory_error\objc_memory_error:
+
+SYMBOL TABLE:
+0000000100000890 l     F __TEXT,__text +[Obj alloc]
+00000001000008a0 l     F __TEXT,__text -[Obj retain]
+00000001000008b0 l     F __TEXT,__text -[Obj release]
+00000001000008c0 l     F __TEXT,__text -[Obj autorelease]
+00000001000008d0 l     F __TEXT,__text -[Obj dealloc]
+00000001000032e8 l     O __DATA,__bss _freed
+00000001000008e0 l     F __TEXT,__text -[Forgetful dealloc]
+00000001000032d0 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_
+00000001000032d8 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.11
+00000001000031d0 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Obj
+00000001000030f8 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Obj
+00000001000030d8 l     O __DATA,__objc_const __OBJC_$_CLASS_METHODS_Obj
+0000000100003140 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Obj
+00000001000031a8 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_Obj
+0000000100003218 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Forgetful
+0000000100003260 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Forgetful
+0000000100003280 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Forgetful
+00000001000032e0 l     O __DATA,__data __dyld_private
+00000001000008f0 g     F __TEXT,__text _main
+0000000100003038 g     O __DATA,__objc_data _OBJC_CLASS_$_Obj
+0000000100003060 g     O __DATA,__objc_data _OBJC_METACLASS_$_Obj
+0000000100003088 g     O __DATA,__objc_data _OBJC_METACLASS_$_Forgetful
+00000001000030b0 g     O __DATA,__objc_data _OBJC_CLASS_$_Forgetful
+00000001000032c8 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Obj.isa
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _printf
+0000000000000000         *UND* _puts
+0000000000000000         *UND* dyld_stub_binder
+0000000000000000         *UND* __objc_empty_cache
+0000000000000000         *UND* _class_createInstance
+0000000000000000         *UND* _objc_alloc
+0000000000000000         *UND* _objc_autorelease
+0000000000000000         *UND* _objc_autoreleasePoolPop
+0000000000000000         *UND* _objc_release
+0000000000000000         *UND* _objc_retain
+0000000000000000         *UND* _object_dispose

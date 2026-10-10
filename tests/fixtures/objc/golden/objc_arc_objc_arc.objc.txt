@@ -1,0 +1,102 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_arc\objc_arc:
+Contents of (__DATA_CONST,__objc_classlist) section
+0000000100001018 0x100002078 _OBJC_CLASS_$_Node
+           isa 0x1000020a0 _OBJC_METACLASS_$_Node
+    superclass 0x0
+         cache 0x0
+        vtable 0x0
+          data 0x1000022b8 (struct class_ro_t *)
+                    flags 0x186 RO_ROOT RO_HAS_CXX_STRUCTORS
+            instanceStart 0
+             instanceSize 28
+                 reserved 0x0
+               ivarLayout 0x100000e68
+                layout map: 0x11 
+                     name 0x100000e1e Node
+              baseMethods 0x100002138 (struct method_list_t *)
+		   entsize 24
+		     count 10
+		      name 0x100000e7a init
+		     types 0x100000e23 @16@0:8
+		       imp -[Node init]
+		      name 0x100000e7f makeChild:
+		     types 0x100000e2b @20@0:8i16
+		       imp -[Node makeChild:]
+		      name 0x100000e8a setNext:
+		     types 0x100000e36 v24@0:8@16
+		       imp -[Node setNext:]
+		      name 0x100000e93 setBack:
+		     types 0x100000e36 v24@0:8@16
+		       imp -[Node setBack:]
+		      name 0x100000e9c back
+		     types 0x100000e23 @16@0:8
+		       imp -[Node back]
+		      name 0x100000ea1 next
+		     types 0x100000e23 @16@0:8
+		       imp -[Node next]
+		      name 0x100000ea6 value
+		     types 0x100000e41 i16@0:8
+		       imp -[Node value]
+		      name 0x100000eac setValue:
+		     types 0x100000e49 v20@0:8i16
+		       imp -[Node setValue:]
+		      name 0x100000eb6 dealloc
+		     types 0x100000e54 v16@0:8
+		       imp -[Node dealloc]
+		      name 0x100000ebe .cxx_destruct
+		     types 0x100000e54 v16@0:8
+		       imp -[Node .cxx_destruct]
+            baseProtocols 0x0
+                    ivars 0x100002230
+                    entsize 32
+                      count 4
+			   offset 0x100002300 0
+			     name 0x100000ecc isa
+			     type 0x100000e5c #
+			alignment 3
+			     size 8
+			   offset 0x100002308 8
+			     name 0x100000ea1 next
+			     type 0x100000e5e @"Node"
+			alignment 3
+			     size 8
+			   offset 0x100002310 16
+			     name 0x100000e9c back
+			     type 0x100000e5e @"Node"
+			alignment 3
+			     size 8
+			   offset 0x100002318 24
+			     name 0x100000ea6 value
+			     type 0x100000e66 i
+			alignment 2
+			     size 4
+           weakIvarLayout 0x100000e6a
+                layout map: 0x21 
+           baseProperties 0x0
+Meta Class
+           isa 0x1000020a0 _OBJC_METACLASS_$_Node
+    superclass 0x100002078 _OBJC_CLASS_$_Node
+         cache 0x0
+        vtable 0x0
+          data 0x1000020f0 (struct class_ro_t *)
+                    flags 0x187 RO_META RO_ROOT RO_HAS_CXX_STRUCTORS
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000e1e Node
+              baseMethods 0x1000020d0 (struct method_list_t *)
+		   entsize 24
+		     count 1
+		      name 0x100000e74 alloc
+		     types 0x100000e23 @16@0:8
+		       imp +[Node alloc]
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Contents of (__DATA,__objc_classrefs) section
+00000001000020c8 0x100002078 _OBJC_CLASS_$_Node
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

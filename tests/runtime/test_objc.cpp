@@ -400,3 +400,42 @@ CIDER_TEST(mutated_objective_c_images_never_crash_the_runtime_loader) {
     CHECK(refused > 0);
     CHECK(total == 1200);
 }
+
+// ============================== memory management (0.4.5) ==================================================================
+CIDER_TEST(manual_reference_counting_pools_and_dealloc_chains) {
+    Run r = run(bin("objc_mrc"));
+    expect_exit(r, 42, "objc_mrc");
+    CHECK_EQ(r.out, std::string("mrc ok\n"));
+    CHECK_EQ(r.r.objc_live_objects, uint64_t{0});                // every object the program created was released and freed
+}
+
+CIDER_TEST(automatic_reference_counting_strong_weak_and_autoreleased_returns) {
+    Run r = run(bin("objc_arc"));
+    expect_exit(r, 42, "objc_arc");
+    CHECK_EQ(r.out, std::string("arc ok\n"));
+    CHECK_EQ(r.r.objc_live_objects, uint64_t{0});
+}
+
+CIDER_TEST(a_program_that_does_not_release_its_object_is_seen_as_leaking_it) {
+    Run r = run(bin("objc_calc"));
+    expect_exit(r, 42, "objc_calc");
+    CHECK_EQ(r.r.objc_live_objects, uint64_t{1});                // the Calculator is never freed by that program
+}
+
+CIDER_TEST(memory_management_errors_end_the_guest_with_a_diagnosis) {
+    const struct { const char* mode; const char* needle; } cases[] = {
+        {"o", "release of"}, {"r", "retain of"}, {"p", "invalid token"}};
+    for (auto& c : cases) {
+        Run r = run(bin("objc_memory_error"), {c.mode});
+        if (r.r.state != guest::State::Faulted) { report_failure(__FILE__, __LINE__, std::string("mode ") + c.mode + ": not faulted"); continue; }
+        if (r.r.message.find(c.needle) == std::string::npos) report_failure(__FILE__, __LINE__, std::string("mode ") + c.mode + ": " + r.r.message);
+        CHECK_EQ(r.out, std::string("before\n"));
+    }
+    Run n = run(bin("objc_memory_error"), {"n"});                  // no autorelease pool: a warning and a leak, the program goes on
+    expect_exit(n, 5, "autorelease without a pool");
+    CHECK_EQ(n.out, std::string("before\ncontinued\n"));
+    Run x = run(bin("objc_memory_error"), {"x"});                  // a -dealloc that forgets to free: the runtime frees the object
+    expect_exit(x, 6, "forgetful dealloc");
+    CHECK_EQ(x.out, std::string("before\nfreed=1\n"));
+    CHECK_EQ(x.r.objc_live_objects, uint64_t{1});                  // only the first object (never released by mode x) remains
+}

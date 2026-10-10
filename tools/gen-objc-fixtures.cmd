@@ -17,11 +17,16 @@ set "COMMON=--target=x86_64-apple-macos10.15 -x objective-c -O1 -ffreestanding -
 set "LD=ld64.lld -arch x86_64 -platform_version macos 10.15.0 12.0.0 -syslibroot sysroot -lSystem -lobjc"
 
 rem ---- single-executable programs (manual reference counting unless noted) ----------------------------------------------------
-for %%n in (objc_calc objc_inherit objc_dynamic objc_category objc_abi objc_error) do (
+for %%n in (objc_calc objc_inherit objc_dynamic objc_category objc_abi objc_error objc_mrc objc_memory_error) do (
   clang %COMMON% src\%%n.m -o obj\%%n.o || exit /b 1
   mkdir bin\%%n
   %LD% -o bin\%%n\%%n obj\%%n.o || exit /b 1
 )
+
+rem ---- ARC: compiled with -fobjc-arc ----------------------------------------------------------------------------------------------------
+clang %COMMON% -fobjc-arc -fno-objc-exceptions src\objc_arc.m -o obj\objc_arc.o || exit /b 1
+mkdir bin\objc_arc
+%LD% -o bin\objc_arc\objc_arc obj\objc_arc.o || exit /b 1
 
 rem ---- slide: the base class lives in a dylib that is newer than the header the executable was compiled against --------------------
 clang %COMMON% src\shape_v2.m -o obj\shape_v2.o || exit /b 1

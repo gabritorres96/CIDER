@@ -1,0 +1,56 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_arc\objc_arc:
+
+SYMBOL TABLE:
+0000000100000840 l     F __TEXT,__text +[Node alloc]
+0000000100000850 l     F __TEXT,__text -[Node init]
+0000000100002358 l     O __DATA,__bss _live
+0000000100000860 l     F __TEXT,__text -[Node makeChild:]
+00000001000020c8 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_
+0000000100000890 l     F __TEXT,__text -[Node setNext:]
+00000001000008b0 l     F __TEXT,__text -[Node setBack:]
+00000001000008d0 l     F __TEXT,__text -[Node back]
+00000001000008f0 l     F __TEXT,__text -[Node next]
+0000000100000900 l     F __TEXT,__text -[Node value]
+0000000100000910 l     F __TEXT,__text -[Node setValue:]
+0000000100000920 l     F __TEXT,__text -[Node dealloc]
+0000000100000940 l     F __TEXT,__text -[Node .cxx_destruct]
+0000000100002320 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_
+0000000100002328 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.21
+0000000100002330 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.22
+0000000100002338 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.23
+0000000100002340 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.24
+0000000100002348 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.25
+0000000100002360 l     O __DATA,__bss _global_weak
+00000001000022b8 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Node
+00000001000020f0 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Node
+00000001000020d0 l     O __DATA,__objc_const __OBJC_$_CLASS_METHODS_Node
+0000000100002138 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Node
+0000000100002230 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_Node
+0000000100002350 l     O __DATA,__data __dyld_private
+0000000100000970 g     F __TEXT,__text _main
+0000000100002078 g     O __DATA,__objc_data _OBJC_CLASS_$_Node
+00000001000020a0 g     O __DATA,__objc_data _OBJC_METACLASS_$_Node
+0000000100002300 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Node.isa
+0000000100002308 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Node.next
+0000000100002310 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Node.back
+0000000100002318 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Node.value
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _printf
+0000000000000000         *UND* dyld_stub_binder
+0000000000000000         *UND* __objc_empty_cache
+0000000000000000         *UND* _class_createInstance
+0000000000000000         *UND* _objc_alloc_init
+0000000000000000         *UND* _objc_autoreleasePoolPop
+0000000000000000         *UND* _objc_autoreleasePoolPush
+0000000000000000         *UND* _objc_autoreleaseReturnValue
+0000000000000000         *UND* _objc_destroyWeak
+0000000000000000         *UND* _objc_initWeak
+0000000000000000         *UND* _objc_loadWeakRetained
+0000000000000000         *UND* _objc_msgSend
+0000000000000000         *UND* _objc_release
+0000000000000000         *UND* _objc_retainAutoreleaseReturnValue
+0000000000000000         *UND* _objc_retainAutoreleasedReturnValue
+0000000000000000         *UND* _objc_storeStrong
+0000000000000000         *UND* _objc_storeWeak
+0000000000000000         *UND* _objc_unsafeClaimAutoreleasedReturnValue
+0000000000000000         *UND* _object_dispose

@@ -30,7 +30,8 @@ const char *class_getName(Class);
 Class class_getSuperclass(Class);
 BOOL class_isMetaClass(Class);
 unsigned long class_getInstanceSize(Class);
-id class_createInstance(Class, unsigned long);
+/* the object comes back with retain count 1: under ARC the compiler must be told (otherwise it retains the +0 result of a C function) */
+id class_createInstance(Class, unsigned long) __attribute__((ns_returns_retained));
 id object_dispose(id);
 Method class_getInstanceMethod(Class, SEL);
 Method class_getClassMethod(Class, SEL);

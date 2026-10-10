@@ -1,0 +1,56 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_mrc\objc_mrc:
+
+SYMBOL TABLE:
+0000000100000930 l     F __TEXT,__text +[Obj alloc]
+0000000100000940 l     F __TEXT,__text +[Obj objWithTag:]
+0000000100003040 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_
+0000000100000970 l     F __TEXT,__text -[Obj initWithTag:]
+0000000100003400 l     O __DATA,__bss _live
+0000000100000990 l     F __TEXT,__text -[Obj retain]
+00000001000009a0 l     F __TEXT,__text -[Obj release]
+00000001000009b0 l     F __TEXT,__text -[Obj autorelease]
+00000001000009c0 l     F __TEXT,__text -[Obj setChild:]
+00000001000009f0 l     F __TEXT,__text -[Obj tag]
+0000000100000a00 l     F __TEXT,__text -[Obj dealloc]
+0000000100003450 l     O __DATA,__bss _order_n
+0000000100003410 l     O __DATA,__bss _order
+0000000100000a50 l     F __TEXT,__text -[Special dealloc]
+0000000100003048 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.19
+0000000100003050 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.20
+00000001000033e8 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_
+0000000100003058 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.23
+0000000100003060 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.24
+00000001000033f0 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.25
+00000001000032a0 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Obj
+0000000100003140 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Obj
+0000000100003108 l     O __DATA,__objc_const __OBJC_$_CLASS_METHODS_Obj
+0000000100003188 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Obj
+0000000100003238 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_Obj
+0000000100003378 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Special
+00000001000032e8 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Special
+0000000100003330 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Special
+0000000100003350 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_Special
+00000001000033f8 l     O __DATA,__data __dyld_private
+0000000100000ab0 g     F __TEXT,__text _main
+0000000100003068 g     O __DATA,__objc_data _OBJC_CLASS_$_Obj
+0000000100003090 g     O __DATA,__objc_data _OBJC_METACLASS_$_Obj
+00000001000030b8 g     O __DATA,__objc_data _OBJC_CLASS_$_Special
+00000001000030e0 g     O __DATA,__objc_data _OBJC_METACLASS_$_Special
+00000001000033c0 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Obj.isa
+00000001000033c8 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Obj.child
+00000001000033d0 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Obj.tag
+00000001000033d8 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Special.extra
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _printf
+0000000000000000         *UND* dyld_stub_binder
+0000000000000000         *UND* __objc_empty_cache
+0000000000000000         *UND* _class_createInstance
+0000000000000000         *UND* _objc_alloc
+0000000000000000         *UND* _objc_autorelease
+0000000000000000         *UND* _objc_autoreleasePoolPop
+0000000000000000         *UND* _objc_autoreleasePoolPush
+0000000000000000         *UND* _objc_msgSend
+0000000000000000         *UND* _objc_msgSendSuper2
+0000000000000000         *UND* _objc_release
+0000000000000000         *UND* _objc_retain
+0000000000000000         *UND* _object_dispose

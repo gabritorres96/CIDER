@@ -1,0 +1,110 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_arc\objc_arc:
+
+Rebase table:
+segment  section            address     type
+__DATA_CONST __objc_classlist   0x100001018  pointer
+__DATA   __la_symbol_ptr    0x100002000  pointer
+__DATA   __la_symbol_ptr    0x100002008  pointer
+__DATA   __la_symbol_ptr    0x100002010  pointer
+__DATA   __la_symbol_ptr    0x100002018  pointer
+__DATA   __la_symbol_ptr    0x100002020  pointer
+__DATA   __la_symbol_ptr    0x100002028  pointer
+__DATA   __la_symbol_ptr    0x100002030  pointer
+__DATA   __la_symbol_ptr    0x100002038  pointer
+__DATA   __la_symbol_ptr    0x100002040  pointer
+__DATA   __la_symbol_ptr    0x100002048  pointer
+__DATA   __la_symbol_ptr    0x100002050  pointer
+__DATA   __la_symbol_ptr    0x100002058  pointer
+__DATA   __la_symbol_ptr    0x100002060  pointer
+__DATA   __la_symbol_ptr    0x100002068  pointer
+__DATA   __la_symbol_ptr    0x100002070  pointer
+__DATA   __objc_data        0x100002078  pointer
+__DATA   __objc_data        0x100002098  pointer
+__DATA   __objc_data        0x1000020A0  pointer
+__DATA   __objc_data        0x1000020A8  pointer
+__DATA   __objc_data        0x1000020C0  pointer
+__DATA   __objc_classrefs   0x1000020C8  pointer
+__DATA   __objc_const       0x1000020D8  pointer
+__DATA   __objc_const       0x1000020E0  pointer
+__DATA   __objc_const       0x1000020E8  pointer
+__DATA   __objc_const       0x100002108  pointer
+__DATA   __objc_const       0x100002110  pointer
+__DATA   __objc_const       0x100002140  pointer
+__DATA   __objc_const       0x100002148  pointer
+__DATA   __objc_const       0x100002150  pointer
+__DATA   __objc_const       0x100002158  pointer
+__DATA   __objc_const       0x100002160  pointer
+__DATA   __objc_const       0x100002168  pointer
+__DATA   __objc_const       0x100002170  pointer
+__DATA   __objc_const       0x100002178  pointer
+__DATA   __objc_const       0x100002180  pointer
+__DATA   __objc_const       0x100002188  pointer
+__DATA   __objc_const       0x100002190  pointer
+__DATA   __objc_const       0x100002198  pointer
+__DATA   __objc_const       0x1000021A0  pointer
+__DATA   __objc_const       0x1000021A8  pointer
+__DATA   __objc_const       0x1000021B0  pointer
+__DATA   __objc_const       0x1000021B8  pointer
+__DATA   __objc_const       0x1000021C0  pointer
+__DATA   __objc_const       0x1000021C8  pointer
+__DATA   __objc_const       0x1000021D0  pointer
+__DATA   __objc_const       0x1000021D8  pointer
+__DATA   __objc_const       0x1000021E0  pointer
+__DATA   __objc_const       0x1000021E8  pointer
+__DATA   __objc_const       0x1000021F0  pointer
+__DATA   __objc_const       0x1000021F8  pointer
+__DATA   __objc_const       0x100002200  pointer
+__DATA   __objc_const       0x100002208  pointer
+__DATA   __objc_const       0x100002210  pointer
+__DATA   __objc_const       0x100002218  pointer
+__DATA   __objc_const       0x100002220  pointer
+__DATA   __objc_const       0x100002228  pointer
+__DATA   __objc_const       0x100002238  pointer
+__DATA   __objc_const       0x100002240  pointer
+__DATA   __objc_const       0x100002248  pointer
+__DATA   __objc_const       0x100002258  pointer
+__DATA   __objc_const       0x100002260  pointer
+__DATA   __objc_const       0x100002268  pointer
+__DATA   __objc_const       0x100002278  pointer
+__DATA   __objc_const       0x100002280  pointer
+__DATA   __objc_const       0x100002288  pointer
+__DATA   __objc_const       0x100002298  pointer
+__DATA   __objc_const       0x1000022A0  pointer
+__DATA   __objc_const       0x1000022A8  pointer
+__DATA   __objc_const       0x1000022C8  pointer
+__DATA   __objc_const       0x1000022D0  pointer
+__DATA   __objc_const       0x1000022D8  pointer
+__DATA   __objc_const       0x1000022E8  pointer
+__DATA   __objc_const       0x1000022F0  pointer
+__DATA   __objc_selrefs     0x100002320  pointer
+__DATA   __objc_selrefs     0x100002328  pointer
+__DATA   __objc_selrefs     0x100002330  pointer
+__DATA   __objc_selrefs     0x100002338  pointer
+__DATA   __objc_selrefs     0x100002340  pointer
+__DATA   __objc_selrefs     0x100002348  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100001000 pointer         0 libobjc          _objc_release
+__DATA_CONST __got              0x100001008 pointer         0 libobjc          _objc_msgSend
+__DATA_CONST __got              0x100001010 pointer         0 libSystem        dyld_stub_binder
+__DATA   __objc_data        0x100002088 pointer         0 libobjc          __objc_empty_cache
+__DATA   __objc_data        0x1000020B0 pointer         0 libobjc          __objc_empty_cache
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100002000 libobjc          _class_createInstance
+__DATA   __la_symbol_ptr    0x100002008 libobjc          _objc_autoreleaseReturnValue
+__DATA   __la_symbol_ptr    0x100002010 libobjc          _objc_alloc_init
+__DATA   __la_symbol_ptr    0x100002018 libobjc          _objc_storeStrong
+__DATA   __la_symbol_ptr    0x100002020 libobjc          _objc_storeWeak
+__DATA   __la_symbol_ptr    0x100002028 libobjc          _objc_loadWeakRetained
+__DATA   __la_symbol_ptr    0x100002030 libobjc          _objc_retainAutoreleaseReturnValue
+__DATA   __la_symbol_ptr    0x100002038 libobjc          _objc_unsafeClaimAutoreleasedReturnValue
+__DATA   __la_symbol_ptr    0x100002040 libobjc          _object_dispose
+__DATA   __la_symbol_ptr    0x100002048 libobjc          _objc_destroyWeak
+__DATA   __la_symbol_ptr    0x100002050 libSystem        _printf
+__DATA   __la_symbol_ptr    0x100002058 libobjc          _objc_retainAutoreleasedReturnValue
+__DATA   __la_symbol_ptr    0x100002060 libobjc          _objc_autoreleasePoolPop
+__DATA   __la_symbol_ptr    0x100002068 libobjc          _objc_autoreleasePoolPush
+__DATA   __la_symbol_ptr    0x100002070 libobjc          _objc_initWeak

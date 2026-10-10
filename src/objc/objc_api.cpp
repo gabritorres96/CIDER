@@ -204,7 +204,10 @@ Addr w_class_createInstance(Addr cls, uint64_t extra) {
 }
 Addr w_object_dispose(Addr obj) {
     Runtime* rt = RT();
-    if (rt && rt->is_live_object(obj)) rt->dispose_instance(obj);
+    if (rt && rt->is_live_object(obj)) {
+        rt->destruct_instance(obj);              // like objc_destructInstance: ARC's .cxx_destruct releases strong ivars and destroys weak ones
+        rt->dispose_instance(obj);
+    }
     return 0;
 }
 

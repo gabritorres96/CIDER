@@ -1,0 +1,107 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_memory_error\objc_memory_error:
+Contents of (__DATA_CONST,__objc_classlist) section
+0000000100002018 0x100003038 _OBJC_CLASS_$_Obj
+           isa 0x100003060 _OBJC_METACLASS_$_Obj
+    superclass 0x0
+         cache 0x0
+        vtable 0x0
+          data 0x1000031d0 (struct class_ro_t *)
+                    flags 0x2 RO_ROOT
+            instanceStart 0
+             instanceSize 8
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000a86 Obj
+              baseMethods 0x100003140 (struct method_list_t *)
+		   entsize 24
+		     count 4
+		      name 0x100000ad0 retain
+		     types 0x100000a94 @16@0:8
+		       imp -[Obj retain]
+		      name 0x100000ad7 release
+		     types 0x100000a9c Vv16@0:8
+		       imp -[Obj release]
+		      name 0x100000adf autorelease
+		     types 0x100000a94 @16@0:8
+		       imp -[Obj autorelease]
+		      name 0x100000aeb dealloc
+		     types 0x100000aa5 v16@0:8
+		       imp -[Obj dealloc]
+            baseProtocols 0x0
+                    ivars 0x1000031a8
+                    entsize 32
+                      count 1
+			   offset 0x1000032c8 0
+			     name 0x100000af3 isa
+			     type 0x100000aad #
+			alignment 3
+			     size 8
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x100003060 _OBJC_METACLASS_$_Obj
+    superclass 0x100003038 _OBJC_CLASS_$_Obj
+         cache 0x0
+        vtable 0x0
+          data 0x1000030f8 (struct class_ro_t *)
+                    flags 0x3 RO_META RO_ROOT
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000a86 Obj
+              baseMethods 0x1000030d8 (struct method_list_t *)
+		   entsize 24
+		     count 1
+		      name 0x100000aca alloc
+		     types 0x100000a94 @16@0:8
+		       imp +[Obj alloc]
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+0000000100002020 0x1000030b0 _OBJC_CLASS_$_Forgetful
+           isa 0x100003088 _OBJC_METACLASS_$_Forgetful
+    superclass 0x100003038 _OBJC_CLASS_$_Obj
+         cache 0x0
+        vtable 0x0
+          data 0x100003280 (struct class_ro_t *)
+                    flags 0x0
+            instanceStart 8
+             instanceSize 8
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000a8a Forgetful
+              baseMethods 0x100003260 (struct method_list_t *)
+		   entsize 24
+		     count 1
+		      name 0x100000aeb dealloc
+		     types 0x100000aa5 v16@0:8
+		       imp -[Forgetful dealloc]
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x100003060 _OBJC_METACLASS_$_Obj
+    superclass 0x100003060 _OBJC_METACLASS_$_Obj
+         cache 0x0
+        vtable 0x0
+          data 0x100003218 (struct class_ro_t *)
+                    flags 0x1 RO_META
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000a8a Forgetful
+              baseMethods 0x0 (struct method_list_t *)
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Contents of (__DATA,__objc_classrefs) section
+00000001000032d0 0x100003038 _OBJC_CLASS_$_Obj
+00000001000032d8 0x1000030b0 _OBJC_CLASS_$_Forgetful
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES
