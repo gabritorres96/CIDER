@@ -1,0 +1,6 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\tlslib\libtls.dylib:
+
+Exports trie:
+0x000003B0  _lib_bump
+0x00001018  _lib_zero [per-thread]
+0x00001000  _lib_counter [per-thread]

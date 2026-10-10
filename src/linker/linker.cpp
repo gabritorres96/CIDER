@@ -40,6 +40,7 @@ public:
         vopts_ = o.validator;
         vopts_.linker_resolves_dependencies = true;
         vopts_.allow_initializers = true;
+        vopts_.allow_tls = true;
         if (!o.executable_path.empty()) {
             std::error_code ec;
             exe_dir_ = fs::absolute(o.executable_path, ec).parent_path();
@@ -63,6 +64,7 @@ public:
         if (!bind_all()) return false;
         if (!protect_all()) return false;
         if (!collect_initializers()) return false;
+        if (!collect_tls()) return false;
         for (auto& r : prog_.images_) { r->owned_bytes.clear(); r->owned_bytes.shrink_to_fit(); r->slice = {}; }
         return true;
     }
@@ -410,6 +412,61 @@ private:
                     }
                 }
             }
+        }
+        return true;
+    }
+
+    // Thread-local storage: template layout and descriptor validation. The descriptors themselves are served at run time by
+    // libSystem's tlv_get_addr (the first quad of every descriptor is bound to __tlv_bootstrap by the image's own fixups).
+    bool collect_tls() {
+        constexpr uint32_t kRegular = 0x11, kZerofill = 0x12, kVariables = 0x13;
+        constexpr uint64_t kMaxTemplate = 16ull << 20;
+        auto bootstrap = libsystem_.lookup("", "__tlv_bootstrap");
+        for (auto& r : prog_.images_) {
+            bool have_template = false;
+            uint64_t start = 0, end = 0, data_end = 0, align = 1;
+            std::vector<const macho::Section*> vars;
+            for (auto& seg : r->info.segments) {
+                for (auto& sec : seg.sections) {
+                    const uint32_t type = sec.flags & kSecTypeMask;
+                    if (type == kRegular || type == kZerofill) {
+                        if (sec.size == 0) continue;
+                        if (!have_template) { start = sec.addr; have_template = true; }
+                        else if (sec.addr < start) return fail(loader::LoadFailure::Incompatible, std::format("{}: thread-local sections are not in address order", r->leaf));
+                        end = std::max(end, sec.addr + sec.size);
+                        if (type == kRegular) data_end = std::max(data_end, sec.addr + sec.size);
+                        align = std::max<uint64_t>(align, uint64_t{1} << std::min<uint32_t>(sec.align, 20));
+                    } else if (type == kVariables && sec.size) {
+                        vars.push_back(&sec);
+                    }
+                }
+            }
+            if (!have_template && vars.empty()) continue;
+            const uint64_t size = have_template ? end - start : 0;
+            if (size > kMaxTemplate) return fail(loader::LoadFailure::Incompatible, std::format("{}: thread-local template larger than {} bytes", r->leaf, kMaxTemplate));
+            if (align > 4096) return fail(loader::LoadFailure::Unsupported, std::format("{}: thread-local alignment {} is not supported", r->leaf, align));
+            if (have_template && (!r->mapped.host_address(start) || !r->mapped.host_address(end - 1)))
+                return fail(loader::LoadFailure::Incompatible, std::format("{}: thread-local template is outside the mapped image", r->leaf));
+            // every descriptor: {thunk, key, offset}
+            for (auto* sec : vars) {
+                if (sec->size % 24 != 0) return fail(loader::LoadFailure::Incompatible, std::format("{}: {} is not a whole number of 24-byte descriptors", r->leaf, sec->name));
+                const uint8_t* d = r->mapped.host_address(sec->addr);
+                if (!d || !r->mapped.host_address(sec->addr + sec->size - 1)) return fail(loader::LoadFailure::Incompatible, std::format("{}: {} is outside the mapped image", r->leaf, sec->name));
+                for (uint64_t k = 0; k < sec->size / 24; ++k) {
+                    uint64_t thunk, offset;
+                    std::memcpy(&thunk, d + 24 * k, 8);
+                    std::memcpy(&offset, d + 24 * k + 16, 8);
+                    if (!bootstrap || thunk != bootstrap->address)
+                        return fail(loader::LoadFailure::Unsupported, std::format("{}: a thread-local descriptor has a thunk other than _tlv_bootstrap", r->leaf));
+                    if (offset >= size) return fail(loader::LoadFailure::Incompatible, std::format("{}: a thread-local descriptor points outside the template", r->leaf));
+                }
+                r->tls.descriptors += sec->size / 24;
+            }
+            r->tls.tmpl = static_cast<uint64_t>(static_cast<int64_t>(start) + r->mapped.slide);
+            r->tls.tmpl_size = size;
+            r->tls.init_size = have_template ? data_end - start : 0;
+            r->tls.align = align;
+            log::info(log::Category::Dyld, "{}: thread-local storage: {} variable(s), template {} bytes", r->leaf, r->tls.descriptors, size);
         }
         return true;
     }

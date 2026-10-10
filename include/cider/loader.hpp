@@ -35,6 +35,7 @@ struct ValidatorOptions {
     // `provided_libraries` is a missing dependency and Mach-O initializers are rejected.
     bool linker_resolves_dependencies = false;  // dependencies are searched, loaded and checked by the dynamic linker
     bool allow_initializers = false;            // __mod_init_func / __init_offsets are run by the dynamic linker
+    bool allow_tls = false;                     // S_THREAD_LOCAL_{REGULAR,ZEROFILL,VARIABLES,VARIABLE_POINTERS}: served by CIDER's tlv_get_addr
     bool as_dependency = false;                 // the image is a dylib loaded for another image (MH_DYLIB, no LC_MAIN)
 };
 

@@ -118,6 +118,13 @@ mkdir bin\chained
 mkdir bin\chainexe
 %LDC% -o bin\chainexe\chainexe obj\chain_exe.o -lSystem || exit /b 1
 
+rem ---- tls: Darwin x86_64 thread-local storage (descriptors bound to __tlv_bootstrap, no %gs in the guest) -------------------------
+mkdir bin\tlsexe
+%LD% -o bin\tlsexe\tlsexe obj\tls_exe.o -lSystem || exit /b 1
+mkdir bin\tlslib
+%LD% -dylib -install_name @rpath/libtls.dylib -o bin\tlslib\libtls.dylib obj\tls_lib.o -lSystem || exit /b 1
+%LD% -rpath @executable_path -L bin\tlslib -ltls -o bin\tlslib\tlslib obj\tls_main.o -lSystem || exit /b 1
+
 rem ---- snapshots of every Mach-O produced ----------------------------------------------------------------------------------------
 for /r bin %%f in (*) do (
   set "N=%%~nxf"

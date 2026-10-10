@@ -52,7 +52,9 @@ CIDER_TEST(registry_lists_exactly_the_documented_symbols) {
         "_clock_gettime", "_time", "_nanosleep", "_usleep", "_sleep", "_getppid", "__exit", "___error",
         // 0.3 strings, math, aggregates
         "_strcpy", "_strncpy", "_strcat", "_strchr", "_strrchr", "_strstr", "_strdup", "_atoi", "_strtol", "_sin", "_cos", "_tan", "_exp", "_log",
-        "_log10", "_atan", "_atan2", "_fmod", "_ldexp", "_frexp", "_div", "_ldiv"};
+        "_log10", "_atan", "_atan2", "_fmod", "_ldexp", "_frexp", "_div", "_ldiv",
+        // 0.3 thread-local storage
+        "__tlv_bootstrap", "_tlv_get_addr"};
     CHECK(names == expected);
     for (const auto& n : expected) CHECK(is_implemented(n));
     for (const char* n : {"___stdinp", "___stdoutp", "___stderrp"}) CHECK(is_implemented(n));

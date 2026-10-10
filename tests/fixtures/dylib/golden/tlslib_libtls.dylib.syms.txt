@@ -1,0 +1,10 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\tlslib\libtls.dylib:
+
+SYMBOL TABLE:
+0000000000001030 l     O __DATA,__thread_data _lib_counter$tlv$init
+0000000000001034 l     O __DATA,__thread_bss _lib_zero$tlv$init
+00000000000003b0 g     F __TEXT,__text _lib_bump
+0000000000001000 g     O __DATA,__thread_vars _lib_counter
+0000000000001018 g     O __DATA,__thread_vars _lib_zero
+0000000000000000         *UND* __tlv_bootstrap
+0000000000000000         *UND* dyld_stub_binder

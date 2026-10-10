@@ -1,0 +1,6 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\tlslib\tlslib:
+
+Exports trie:
+0x100000000  __mh_execute_header
+0x100000630  _main
+0x100002008  _exe_counter [per-thread]

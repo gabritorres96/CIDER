@@ -152,4 +152,53 @@ raw_exited:
     jmp cider_host_epilogue
 cider_guest_thunk_raw ENDP
 
+; Darwin thread-local-variable convention: `leaq _x(%rip), %rdi ; callq *(%rdi)`. The callee takes the descriptor in rdi,
+; returns the address in rax and PRESERVES EVERY OTHER REGISTER (clobbering only rax, r11 and the flags): compilers keep
+; live values in rcx/rdx/rsi/r8-r10 and xmm registers across the call. A Windows function would trash all of them, so this
+; thunk saves and restores the guest's volatile registers around it.
+; Entered like cider_guest_thunk but with the host function in r11 (the stub does not touch r10, which belongs to the guest).
+cider_guest_thunk_tlv PROC
+    mov rax, cider_current_call
+    mov qword ptr [rax+56], rsp          ; remember the guest stack
+    mov rsp, qword ptr [rax+48]          ; HOST stack
+    sub rsp, 192                         ; 32 shadow | +32 xmm0-5 (96) | +128 rcx rdx rsi rdi r8 r9 r10 (56) | padding
+    mov qword ptr [rsp+128], rcx
+    mov qword ptr [rsp+136], rdx
+    mov qword ptr [rsp+144], rsi
+    mov qword ptr [rsp+152], rdi
+    mov qword ptr [rsp+160], r8
+    mov qword ptr [rsp+168], r9
+    mov qword ptr [rsp+176], r10
+    movups xmmword ptr [rsp+32],  xmm0
+    movups xmmword ptr [rsp+48],  xmm1
+    movups xmmword ptr [rsp+64],  xmm2
+    movups xmmword ptr [rsp+80],  xmm3
+    movups xmmword ptr [rsp+96],  xmm4
+    movups xmmword ptr [rsp+112], xmm5
+    mov rcx, rdi                         ; Windows ABI: descriptor pointer
+    call r11
+    mov r11, cider_current_call
+    cmp qword ptr [r11+72], 0            ; did the function request exit() (a trap)?
+    jne tlv_exited
+    mov rcx, qword ptr [rsp+128]
+    mov rdx, qword ptr [rsp+136]
+    mov rsi, qword ptr [rsp+144]
+    mov rdi, qword ptr [rsp+152]
+    mov r8,  qword ptr [rsp+160]
+    mov r9,  qword ptr [rsp+168]
+    mov r10, qword ptr [rsp+176]
+    movups xmm0, xmmword ptr [rsp+32]
+    movups xmm1, xmmword ptr [rsp+48]
+    movups xmm2, xmmword ptr [rsp+64]
+    movups xmm3, xmmword ptr [rsp+80]
+    movups xmm4, xmmword ptr [rsp+96]
+    movups xmm5, xmmword ptr [rsp+112]
+    mov rsp, qword ptr [r11+56]          ; back to the guest stack; rax = result
+    ret
+tlv_exited:
+    mov rax, qword ptr [r11+80]
+    mov qword ptr [r11+64], rax
+    jmp cider_host_epilogue
+cider_guest_thunk_tlv ENDP
+
 END

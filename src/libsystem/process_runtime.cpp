@@ -22,7 +22,7 @@ Result<std::unique_ptr<LibSystemProvider>> LibSystemProvider::create() {
     for (const auto& s : implemented_symbols()) {
         if (p->index_.count(s.name)) return Error{ErrorCode::Malformed, std::string("duplicate libSystem symbol ") + s.name};
         p->index_[s.name] = specs.size();
-        specs.push_back({s.fn, s.raw});
+        specs.push_back({s.fn, s.raw, s.preserve_all});
     }
     auto t = abi::ThunkTable::build_specs(specs);
     if (!t.ok()) return t.error();

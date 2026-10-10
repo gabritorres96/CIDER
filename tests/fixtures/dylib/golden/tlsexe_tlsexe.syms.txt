@@ -1,0 +1,21 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\tlsexe\tlsexe:
+
+SYMBOL TABLE:
+0000000100002080 l     O __DATA,__thread_vars _local_tls
+00000001000020a0 l     O __DATA,__thread_data _counter$tlv$init
+00000001000020a8 l     O __DATA,__thread_data _tname$tlv$init
+00000001000020c0 l     O __DATA,__thread_bss _zeroed$tlv$init
+00000001000020d0 l     O __DATA,__thread_bss _big_zero$tlv$init
+00000001000022d0 l     O __DATA,__thread_bss _buffer$tlv$init
+00000001000020b0 l     O __DATA,__thread_data _local_tls$tlv$init
+0000000100002098 l     O __DATA,__data __dyld_private
+0000000100000630 g     F __TEXT,__text _main
+0000000100002008 g     O __DATA,__thread_vars _counter
+0000000100002020 g     O __DATA,__thread_vars _tname
+0000000100002038 g     O __DATA,__thread_vars _zeroed
+0000000100002050 g     O __DATA,__thread_vars _big_zero
+0000000100002068 g     O __DATA,__thread_vars _buffer
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* __tlv_bootstrap
+0000000000000000         *UND* _puts
+0000000000000000         *UND* dyld_stub_binder

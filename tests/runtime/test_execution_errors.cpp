@@ -94,7 +94,7 @@ CIDER_TEST(missing_library_dependency_is_reported_by_name) {
 CIDER_TEST(unsupported_features_are_refused_explicitly) {
     auto built = build_macho({});
     auto b = built.bytes;
-    patch32(b, built.cmd["text"] + 72 + 64, 0x11);           // __text section flags: thread-local storage
+    patch32(b, built.cmd["text"] + 72 + 64, 0x15);           // __text section flags: thread-local init functions (0x11-0x14 are served since 0.3.6)
     auto r = load_only(b);
     CHECK(r.state == guest::State::LoadFailed);
     CHECK(r.load_failure == loader::LoadFailure::Unsupported);

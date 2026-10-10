@@ -181,6 +181,7 @@ int cmd_run(const Options& o) {
     loader::ValidatorOptions vopts;
     vopts.linker_resolves_dependencies = true;   // the worker's dynamic linker searches, loads and checks the dylibs
     vopts.allow_initializers = true;
+    vopts.allow_tls = true;
     loader::ValidationReport vr = loader::validate_for_execution(*sl->image, vopts);
     if (!vr.ok()) {
         bool missing = false;

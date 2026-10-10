@@ -36,6 +36,16 @@ struct GuestFd {
     bool readable = false, writable = false, append = false;
 };
 
+// Thread-local storage of one image (Mach-O TLV protocol, see src/libsystem/tls.cpp).
+struct TlsImage {
+    uint64_t lo = 0, hi = 0;             // the image's mapped range: its TLV descriptors live inside
+    uint64_t tmpl = 0;                   // address of the template (start of the first __thread_data/__thread_bss section)
+    uint64_t tmpl_size = 0;              // template size: __thread_data + padding + __thread_bss
+    uint64_t init_size = 0;              // bytes copied from the template (the __thread_data part); the rest is zero
+    uint64_t align = 16;
+    uint8_t* block = nullptr;            // this (single) guest thread's storage, created on first use in the guest heap
+};
+
 // Per-guest-process state seen by the host functions (single guest at a time).
 struct RuntimeContext {
     RuntimeContext();
@@ -55,6 +65,7 @@ struct RuntimeContext {
     std::filesystem::path root;             // host directory the guest's "/" maps to; empty: file access is refused (EACCES)
     std::vector<GuestFd> fds;               // index = guest descriptor
     uint64_t file_stdin = 0, file_stdout = 0, file_stderr = 0;   // guest addresses of the three FILE objects
+    std::vector<TlsImage> tls_images;       // images with thread-local storage (filled by the dynamic linker)
 };
 
 void set_context(RuntimeContext* ctx);
@@ -67,6 +78,7 @@ struct HostSymbol {
     const char* name;  // as it appears in the Mach-O (leading underscore)
     void* fn;          // Windows x64 function (positional thunk) or abi::RawHostFn (raw thunk)
     bool raw = false;  // true: fn receives abi::GuestRegs* (variadic, mixed, stack arguments, aggregate returns)
+    bool preserve_all = false;   // true: Darwin TLV convention, every register except rax survives (tlv_get_addr)
 };
 const std::vector<HostSymbol>& implemented_symbols();
 bool is_implemented(std::string_view mach_o_symbol);

@@ -1,0 +1,10 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\tlsexe\tlsexe:
+
+Exports trie:
+0x100000000  __mh_execute_header
+0x100000630  _main
+0x100002020  _tname [per-thread]
+0x100002008  _counter [per-thread]
+0x100002068  _buffer [per-thread]
+0x100002050  _big_zero [per-thread]
+0x100002038  _zeroed [per-thread]

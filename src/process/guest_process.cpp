@@ -82,6 +82,17 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     ctx.sink = cfg.sink;
     ctx.root = cfg.root;
     provider.value()->install_stdio(ctx);
+    for (const auto& r : program->images()) {
+        if (!r->tls.present()) continue;
+        libsystem::TlsImage t;
+        t.lo = r->mapped.actual_base();
+        t.hi = t.lo + r->mapped.layout.span;
+        t.tmpl = r->tls.tmpl;
+        t.tmpl_size = r->tls.tmpl_size;
+        t.init_size = r->tls.init_size;
+        t.align = r->tls.align;
+        ctx.tls_images.push_back(t);
+    }
     libsystem::set_context(&ctx);
 
     // ---- Mach-O initializers (never Windows constructors): dependencies first, each exactly once ----------

@@ -65,6 +65,7 @@ extern "C" {
 uint64_t cider_enter_guest(GuestCall* call);
 void cider_guest_thunk();
 void cider_guest_thunk_raw();
+void cider_guest_thunk_tlv();
 extern GuestCall* cider_current_call;
 }
 
@@ -98,6 +99,10 @@ Result<GuestArgs> build_guest_args(GuestStack& stack, const std::vector<std::str
 struct ThunkSpec {
     void* fn = nullptr;     // Windows x64 function, or a RawHostFn when raw
     bool raw = false;       // true: the function receives GuestRegs* (see above)
+    // true: the Darwin TLV calling convention (cider_guest_thunk_tlv): one pointer argument in rdi, result in rax, and EVERY
+    // other register (rcx rdx rsi rdi r8-r10 xmm0-5 ...) is preserved for the guest, which keeps live values in them across
+    // the call. Used for tlv_get_addr only.
+    bool preserve_all = false;
 };
 
 class ThunkTable {

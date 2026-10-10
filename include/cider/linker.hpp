@@ -53,6 +53,11 @@ struct ImageRecord {
     std::vector<uint64_t> initializers;   // absolute addresses, in call order
     InitState init_state = InitState::NotStarted;
     uint64_t header = 0;              // address of the Mach-O header in memory
+    struct Tls {
+        uint64_t tmpl = 0, tmpl_size = 0, init_size = 0, align = 1;   // thread-local template (run-time addresses)
+        uint64_t descriptors = 0;                                      // number of TLV descriptors
+        bool present() const noexcept { return tmpl_size != 0 || descriptors != 0; }
+    } tls;
     size_t rebases = 0, binds = 0;
 };
 

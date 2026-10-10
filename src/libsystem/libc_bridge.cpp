@@ -170,6 +170,7 @@ const std::vector<HostSymbol>& implemented_symbols() {
     detail::add_stdio_symbols(t);
     detail::add_posix_symbols(t);
     detail::add_misc_symbols(t);
+    detail::add_tls_symbols(t);
     return t;
     }();
     return table;

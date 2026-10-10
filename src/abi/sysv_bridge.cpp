@@ -26,12 +26,13 @@ Result<ThunkTable> ThunkTable::build_specs(const std::vector<ThunkSpec>& fns) {
 
     const uint64_t positional = reinterpret_cast<uint64_t>(&cider_guest_thunk);
     const uint64_t raw = reinterpret_cast<uint64_t>(&cider_guest_thunk_raw);
+    const uint64_t tlv = reinterpret_cast<uint64_t>(&cider_guest_thunk_tlv);
     uint8_t* p = t.region_.base();
     for (size_t i = 0; i < fns.size(); ++i, p += kStride) {
         std::memset(p, 0xCC, kStride);                       // int3 padding
-        const uint64_t common = fns[i].raw ? raw : positional;
+        const uint64_t common = fns[i].preserve_all ? tlv : (fns[i].raw ? raw : positional);
         const uint64_t target = reinterpret_cast<uint64_t>(fns[i].fn);
-        p[0] = 0x49; p[1] = 0xBA;                            // mov r10, imm64
+        p[0] = 0x49; p[1] = fns[i].preserve_all ? 0xBB : 0xBA;   // mov r10, imm64  (r11 for the TLV thunk: r10 belongs to the guest there)
         std::memcpy(p + 2, &target, 8);
         p[10] = 0xFF; p[11] = 0x25; p[12] = p[13] = p[14] = p[15] = 0;   // jmp qword ptr [rip+0]
         std::memcpy(p + 16, &common, 8);                     // ... -> cider_guest_thunk

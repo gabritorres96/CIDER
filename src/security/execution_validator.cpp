@@ -42,7 +42,9 @@ ValidationReport validate_for_execution(const macho::Image& img, const Validator
     for (const auto& s : img.segments) {
         for (const auto& sec : s.sections) {
             const uint32_t type = sec.flags & 0xff;
-            if (type == 0x11 || type == 0x12 || type == 0x13 || type == 0x14 || type == 0x15)
+            if (type == 0x15)
+                add(r, K::Unsupported, std::format("thread-local initialisation functions ({},{}) are not supported", s.name, sec.name));
+            else if ((type == 0x11 || type == 0x12 || type == 0x13 || type == 0x14) && !opts.allow_tls)
                 add(r, K::Unsupported, std::format("thread-local storage section {},{} is not supported", s.name, sec.name));
             if ((type == 0x9 || type == 0x16) && sec.size && !opts.allow_initializers)
                 add(r, K::Unsupported, std::format("static initializers ({},{}) are not supported yet", s.name, sec.name));

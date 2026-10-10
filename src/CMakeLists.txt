@@ -28,7 +28,7 @@ if(CIDER_HAS_RUNTIME)
     loader/image_layout.cpp loader/segment_mapper.cpp loader/macho_loader.cpp
     linker/linker.cpp
     abi/sysv_bridge.cpp abi/stack_builder.cpp abi/entry_trampoline.asm
-    libsystem/libc_bridge.cpp libsystem/process_runtime.cpp libsystem/stdio.cpp libsystem/posix.cpp libsystem/misc.cpp libsystem/printf_format.cpp
+    libsystem/libc_bridge.cpp libsystem/process_runtime.cpp libsystem/stdio.cpp libsystem/posix.cpp libsystem/misc.cpp libsystem/tls.cpp libsystem/printf_format.cpp
     process/guest_process.cpp process/exit_handler.cpp process/supervisor.cpp process/worker.cpp)
   target_link_libraries(cider_runtime PUBLIC cider_core cider_macho cider_dyld)
 endif()

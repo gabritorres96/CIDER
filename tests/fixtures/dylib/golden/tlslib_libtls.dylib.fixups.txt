@@ -1,0 +1,12 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\tlslib\libtls.dylib:
+
+Rebase table:
+segment  section            address     type
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA   __thread_vars      0x00001000 pointer         0 libSystem        __tlv_bootstrap
+__DATA   __thread_vars      0x00001018 pointer         0 libSystem        __tlv_bootstrap
+
+Lazy bind table:
+segment  section            address     dylib            symbol
