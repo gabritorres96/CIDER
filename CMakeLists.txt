@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(CIDER VERSION 0.4.0 LANGUAGES CXX)
+project(CIDER VERSION 0.5.0 LANGUAGES CXX)
 
 if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   enable_language(ASM_MASM)   # entry_trampoline.asm (System V <-> Windows x64 bridge)

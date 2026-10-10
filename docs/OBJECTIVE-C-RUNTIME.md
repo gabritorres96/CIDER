@@ -99,3 +99,17 @@ class construction, the memory-management and ARC helpers above, `objc_getProper
 `+load` ordering + protocols, ABI return classes (`double`, `float`, struct in registers, `stret`, varargs, stack arguments, `nil`), ivar
 sliding, MRC, ARC with weak references and pools, error traps, hostile metadata. `tests/runtime/test_foundation.cpp` covers the Foundation
 subset. Rebuild the fixtures with `tools\llvm-env.cmd tools\gen-objc-fixtures.cmd`.
+
+## 0.5 additions
+
+* **Message forwarding** (0.5.4): `+resolveInstanceMethod:` / `+resolveClassMethod:` (may call `class_addMethod`), `-forwardingTargetForSelector:` (the call is replayed on the new receiver with the original
+  registers and stack arguments), `-methodSignatureForSelector:` + `-forwardInvocation:` with `NSMethodSignature` and `NSInvocation` (`getArgument:atIndex:`, `setArgument:atIndex:`, `getReturnValue:`,
+  `setReturnValue:`, `invoke`, `invokeWithTarget:`, `target`, `selector`). The "no method" IMP is a raw thunk (`objc_forward_message`) that receives every argument register. Supported types: integers, BOOL, pointers,
+  objects, classes, selectors, `float`, `double`, `void`. **Structures/unions/arrays/long double** (by value) are refused with a diagnosis; arguments passed on the stack are supported only on the forwarding-target path.
+  If nothing handles the message the old trap remains (`-[Class sel]: unrecognized selector sent to instance 0x...`). Tests: `objc_forward.m`.
+* **Exceptions: limited and honest.** `NSException` (create, `raise`, `raise:format:`, `name/reason/userInfo`) and `objc_exception_throw` exist and end the guest with the macOS text for an *uncaught* exception
+  (`*** Terminating app due to uncaught exception 'Name', reason: 'Reason'`). `@try/@catch/@finally` are **not supported**: they need the Darwin unwinder (`__Unwind_RaiseException`, `__objc_personality_v0`, DWARF
+  call-frame information of every guest and host frame in between) and unwinding through the host frames of the ABI bridge cannot be verified. A binary compiled with Objective-C exceptions imports weak EH-type bindings
+  and personality symbols and is **refused at load time** (`cider run` exit code 11, "weak binding information is not supported yet") rather than run with a broken catch. Compile guest code with `-fno-objc-exceptions`.
+* Blocks are Objective-C objects (`NSBlock`, [BLOCKS.md](BLOCKS.md)); `objc_retainBlock` is exported; the exported libobjc surface is now 82 functions.
+* Compiler `@protocol(X)` handles are recognised by `conformsToProtocol:` / `class_conformsToProtocol`.

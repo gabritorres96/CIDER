@@ -158,3 +158,13 @@ Nothing else is claimed.
 * **Callbacks** (`qsort`, `bsearch`, `atexit`): [CALLBACKS.md](CALLBACKS.md). **Threads** (`pthread_*`, cooperative): [THREADING.md](THREADING.md).
   **FILE streams** (`fopen` … `fclose`, opaque `FILE*`, binary mode, confined to `--root`): [DARWIN-RUNTIME.md](DARWIN-RUNTIME.md).
 * `GuestConfig`/`Outcome` gained `objc_live_objects` (objects still alive at exit).
+
+## 0.5 additions
+
+* **AppKit programs open real windows.** `cider run tests\fixtures\appkit\bin\hello_window\hello_window` shows a window "CIDER — Hello from macOS" (two labels, a "Clicks: N" counter, buttons "Click me" and "Close").
+  "Click me" runs `-[AppController buttonClicked:]` (compiled into the Mach-O), increments the counter kept in the program, updates the label and logs `Button clicked! count=N` with `NSLog`. "Close" (or the title bar X) closes the window,
+  the delegate ends the application, the event loop returns and the process exits with status 0 (`Application terminating` is the last log line). Programs that link AppKit have their default timeout lifted (24 h) unless `--timeout` is given.
+* New logs: `[CIDER][OBJC] AppKit: win32 GUI backend ready`, `AppKit: event loop started`, `AppKit: event loop ended`.
+* `Outcome` / in-process runs gained `gui_open_windows_at_exit` and `gui_native_objects_after`; `GuestConfig::gui_backend` ("win32" default, "offscreen" for tests) and `gui_script`.
+* Blocks, libdispatch, CoreFoundation, CoreGraphics geometry, forwarding: [BLOCKS.md](BLOCKS.md), [LIBDISPATCH.md](LIBDISPATCH.md), [FOUNDATION.md](FOUNDATION.md), [COREGRAPHICS.md](COREGRAPHICS.md), [OBJECTIVE-C-RUNTIME.md](OBJECTIVE-C-RUNTIME.md).
+* `cider sdk-scan <dir|file.tbd> [--json]` compares Apple text stubs with what CIDER implements ([APPLE-SDK-RESEARCH.md](APPLE-SDK-RESEARCH.md)).

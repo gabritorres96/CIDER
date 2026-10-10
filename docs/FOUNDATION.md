@@ -97,3 +97,26 @@ There is no Apple SDK in the repository. `tests/fixtures/objc/include/Foundation
 | `foundation_error` | Ten misuse modes that must end the guest with an exception-style message. |
 
 Run one: `cider run tests\fixtures\objc\bin\foundation_hello\foundation_hello` (stdout: log lines and `Guest exit code: 42`; stderr: `CIDER result: 42`).
+
+## 0.5 additions
+
+New classes (all host-written, all exercised by compiled fixtures): **NSMutableString** (`appendString:`, `appendFormat:`, `setString:`, `insertString:atIndex:`, `deleteCharactersInRange:`,
+`replaceCharactersInRange:withString:`, `stringWithCapacity:`; `copy` of a mutable string is an immutable snapshot), **NSData / NSMutableData** (`dataWithBytes:length:`, `length`, `bytes`, `getBytes:length:`, `isEqualToData:`,
+`subdataWithRange:`, `description` as `<0102 0304>`, `appendBytes:length:`, `appendData:`, `setLength:`, `replaceBytesInRange:withBytes:`, `mutableBytes`), **NSDate** (`date`, `dateWithTimeInterval...`, `timeIntervalSince1970`,
+`timeIntervalSinceNow`, `dateByAddingTimeInterval:`, `compare:`, `description` always in UTC), **NSURL** (`URLWithString:`, `fileURLWithPath:`, `absoluteString`, `path`, `scheme`, `host`, `query`, `lastPathComponent`,
+`pathExtension`, `URLByAppendingPathComponent:`), **NSError** (`errorWithDomain:code:userInfo:`, `domain`, `code`, `userInfo`, `localizedDescription`, constants `NSLocalizedDescriptionKey`, `NSFilePathErrorKey`, `NSCocoaErrorDomain`...),
+**NSFileManager** (`defaultManager`, `fileExistsAtPath:`(`isDirectory:`), `contentsAtPath:`, `createFileAtPath:contents:attributes:`, `removeItemAtPath:error:`, `createDirectoryAtPath:withIntermediateDirectories:attributes:error:`,
+`contentsOfDirectoryAtPath:error:`, `currentDirectoryPath` = "/"), **NSNotification / NSNotificationCenter**, **NSMethodSignature / NSInvocation**, **NSException** (uncaught only), NSString path helpers (`lastPathComponent`,
+`pathExtension`, `stringByDeletingLastPathComponent`, `stringByAppendingPathComponent:`, `isAbsolutePath`), block enumeration (`enumerateObjectsUsingBlock:`, `indexOfObjectPassingTest:`, `enumerateKeysAndObjectsUsingBlock:`).
+
+**File access respects `--root`**: a guest path is resolved lexically against the guest root, re-checked after link resolution and refused outside it; without `--root` every file operation fails (`createFile` returns NO, `contentsAtPath`
+returns nil, errors report "no permission"), exactly like `fopen`. The host filesystem outside the root is never reachable, and `removeItemAtPath:@"/"` refuses to delete the root itself. Not a sandbox: the guest still runs with the
+rights of the worker. Errors use `NSCocoaErrorDomain` codes 4 (no such file), 513 (no permission), 516 (exists), 256 (other).
+
+## CoreFoundation (0.5.5)
+
+The CF types CIDER knows **are** the Foundation objects (a `CFStringRef` is an `NSString`, a `CFArrayRef` an `NSArray`...): toll-free bridging by construction for exactly these types, no general bridging layer.
+Exported (CoreFoundation group): `CFRetain/Release/GetRetainCount/GetTypeID/Equal/Hash/CopyDescription/Show`, `CFString*` (create from a C string in UTF-8/ASCII/Latin-1, `CreateWithFormat` with `%@`, length, character at index, `GetCString`,
+`GetCStringPtr`, compare, copy, mutable create/append), `CFArray*` / `CFDictionary*` (create, mutable create, count, get, append/set/add/remove, keys and values; only the `kCFType...CallBacks` are accepted: NULL or custom callbacks are refused),
+`CFNumberCreate/GetValue`, `CFAbsoluteTimeGetCurrent`, and the run loop ([EVENT-LOOP.md](EVENT-LOOP.md)): `CFRunLoopGetMain/GetCurrent/Run/RunInMode/Stop/WakeUp`, version-0 sources, timers. Constants: `kCFAllocatorDefault`, `kCFTypeArrayCallBacks`,
+`kCFRunLoopDefaultMode`... **Not implemented**: CFData, CFDate, CFURL, CFSet, CFBoolean objects, CFAllocator (the argument is ignored), CFPropertyList, CFPreferences, observers, run loop modes.

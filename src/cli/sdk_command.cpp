@@ -46,6 +46,16 @@ bool read_text(const fs::path& p, std::string& out) {
 
 int cmd_sdk_scan(const Options& o) {
     if (o.positional.empty()) { std::fprintf(stderr, "usage: cider sdk-scan <file.tbd | directory> [--json]\n"); return 2; }
+    if (o.positional[0] == "@implemented") {                      // every host symbol CIDER implements: "<library> TAB <symbol>" (for coverage scripts)
+        static const char* libs[] = {"libSystem", "libobjc", "Foundation", "CoreFoundation", "CoreGraphics", "AppKit"};
+        for (const auto& h : libsystem::implemented_symbols()) std::printf("%s\t%s\n", libs[static_cast<int>(h.lib)], h.name);
+        for (const auto& d : libsystem::implemented_data_symbols()) std::printf("libSystem\t%s\n", d.name);
+        libsystem::RuntimeContext cctx;
+        cctx.objc = std::make_unique<objc::Runtime>(cctx);
+        objc::install_foundation(*cctx.objc);
+        for (const auto& n : cctx.objc->native_class_names()) std::printf("class\t%s\n", n.c_str());
+        return 0;
+    }
     fs::path root = fs::path(std::u8string(o.positional[0].begin(), o.positional[0].end()));
 #ifdef _WIN32
     {   // SDK trees contain paths longer than MAX_PATH: use the extended-length form

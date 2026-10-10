@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.5.0 — AppKit, Native Windows GUI & Apple SDK Research (experimental, 2026-10-11)
+
+Controlled fixtures only; no macOS application runs; no Cocoa; no Swift.
+
+### Added
+- **Apple SDK research**: `cider sdk-scan` (TAPI `.tbd` reader `cider::sdk::parse_tbd`, fuzzed by `fuzz_tbd`) compares SDK stubs with what CIDER implements; `tools/pkg_payload.py` and `tools/xip_inventory.py` open pbzx payloads and `.xip` files
+  read-only; `tools/app_coverage.py` measures an application against CIDER. Reports: [APPLE-SDK-RESEARCH.md](docs/APPLE-SDK-RESEARCH.md), [COTEDITOR-COMPATIBILITY.md](docs/COTEDITOR-COMPATIBILITY.md). `utilities/` is git-ignored.
+- **0.5.1 Blocks**: `_Block_copy/_release`, `_Block_object_assign/_dispose`, `__block` variables, `NSBlock` classes, `objc_retainBlock`, block-based Foundation enumeration. [BLOCKS.md](docs/BLOCKS.md).
+- **0.5.2 libdispatch**: main/serial/global queues on host-implemented guest threads, `dispatch_async/sync/after/once/apply/main`, groups, semaphores; main-queue blocks run only on the main thread. [LIBDISPATCH.md](docs/LIBDISPATCH.md).
+- **0.5.3 Foundation**: NSMutableString, NSData, NSMutableData, NSDate, NSURL, NSError, NSFileManager (confined to `--root`), NSNotification(Center), NSString path helpers. [FOUNDATION.md](docs/FOUNDATION.md).
+- **0.5.4 Forwarding and exceptions**: `+resolveInstanceMethod:`, `-forwardingTargetForSelector:`, `-forwardInvocation:` with NSMethodSignature/NSInvocation; NSException and `objc_exception_throw` for *uncaught* exceptions.
+  `@try/@catch` are **not supported**; such binaries are refused at load time.
+- **0.5.5 CoreFoundation basics**: CFRetain/Release, CFString/CFArray/CFDictionary/CFNumber on the Foundation objects, CFRunLoop sources and timers; one shared run loop ([EVENT-LOOP.md](docs/EVENT-LOOP.md)).
+- **0.5.6 CoreGraphics geometry**: independent geometry module, CGRect/CGPoint/CGSize functions with System V struct passing, AppKit↔Win32 coordinate and DPI conversion, autoresizing. [COREGRAPHICS.md](docs/COREGRAPHICS.md).
+- **0.5.7-0.5.10 AppKit and Win32**: NSApplication, NSWindow, NSView, NSControl, NSButton, NSTextField, NSEvent, NSScreen; GUI backend interface with a Win32 backend (real HWNDs, BUTTON/STATIC/EDIT controls, per-monitor DPI,
+  WM_COMMAND/WM_CLOSE/WM_SIZE/WM_DPICHANGED) and an offscreen backend; target/action from a real button click into Objective-C code compiled in the Mach-O; `hello_window`. [APPKIT.md](docs/APPKIT.md), [GUI-BACKEND.md](docs/GUI-BACKEND.md).
+- **0.5.11 Tests**: headless AppKit tests, interactive GUI tests that drive the real window with `BM_CLICK`/`WM_CLOSE` from a separate process (`ctest -L gui`), geometry and SDK parser unit tests, new fuzzer `fuzz_tbd`.
+
+### Changed
+- Version 0.4.0 → 0.5.0. `cider.exe` has a manifest (visual styles, per-monitor DPI, long paths). Programs that link AppKit run with the default timeout lifted (24 h) unless `--timeout` is given.
+- The frameworks re-export each other when resolving symbols (Foundation, CoreFoundation, CoreGraphics, AppKit); `libSystem` exports blocks and dispatch symbols.
+- `GuestThreads::create_native` and per-thread top-level calls in `Runtime::call_imp`; `Runtime::add_dynamic_provider` replaced the single dynamic-symbol hook.
+
+### Fixed
+- Double `Block_release` was silently accepted when the freed memory happened to keep a "global" flag bit (now decided by the image layout).
+- NSNotificationCenter no longer retains the sender filter object (it kept whole window trees alive).
+
+### Not done / known limits
+Swift, SwiftUI, `@try/@catch`, menus, drawing, NSTextView, images, Auto Layout, multi-monitor, concurrent queue parallelism, libdispatch sources. See [LIMITATIONS.md](docs/LIMITATIONS.md).
+
 ## 0.4.0 — Objective-C Runtime & Foundation Subset (experimental, 2026-10-10)
 
 Controlled fixtures only (clang + ld64.lld Mach-O programs); no macOS application runs; no Cocoa. Foundation is a host-written subset, not Apple's.

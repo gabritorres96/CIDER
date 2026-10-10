@@ -84,3 +84,13 @@ clauses); this project does not give legal advice — check the licence of what 
 * Callbacks are entered only at addresses inside a loaded image's code ([CALLBACKS.md](CALLBACKS.md)); no signal handlers.
 * The worker is still **not a sandbox**: Objective-C and Foundation code runs with the worker's full rights.
 * Only clang-built fixtures were run; no Apple-built binary and no downloaded application.
+
+## 0.5 (AppKit, Blocks, libdispatch, GUI)
+
+* AppKit is a **subset of 9 classes** creating native Windows controls ([APPKIT.md](APPKIT.md)): no menus, no text system, no drawing, no images, no panels, no Auto Layout, no nibs. **No general AppKit/Cocoa compatibility is claimed.**
+* **Swift is not supported at all**; every real application tried (CotEditor, Rectangle, Stats, MonitorControl) is a Swift app and is refused. SwiftUI does not exist.
+* `@try/@catch` are not supported (programs that use them are refused); uncaught `NSException` throws end the guest.
+* Message forwarding does not handle structures by value; blocks are a subset ([BLOCKS.md](BLOCKS.md)); libdispatch runs concurrent queues serially and has no sources ([LIBDISPATCH.md](LIBDISPATCH.md)).
+* GUI: only the main guest thread touches windows; the offscreen backend is a test device; the Win32 GUI tests need an interactive desktop; keyboard codes are Windows virtual-key codes; DPI scaling is per monitor but only the primary display is modelled.
+* The worker is **still not a sandbox**: guest code, including GUI programs, runs with the user rights. For GUI programs the default 60 s timeout is lifted to 24 h (an explicit `--timeout` still applies).
+* Release/ASan/fuzzing evidence is in [PROGRESS.md](PROGRESS.md); GitHub Actions has still never run.

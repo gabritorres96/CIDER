@@ -55,3 +55,22 @@ Programs that import `libobjc.A.dylib` and, optionally, the **Foundation subset*
 imports any other Foundation, CoreFoundation, AppKit, libc++, Swift or system symbol is refused (exit 12) with the symbol name, and a message that the subset
 does not implement ends the guest with `unrecognized selector`. The only Objective-C programs known to run are the clang-built fixtures in `tests/fixtures/objc`.
 **No compatibility with Cocoa, with real macOS applications or with Apple's Foundation as a whole is claimed**; Rectangle, Stats and MonitorControl remain refused.
+
+## What `cider run` adds (0.5)
+
+Programs that call **Blocks, libdispatch, CoreFoundation basics, CoreGraphics geometry, message forwarding and the AppKit subset** can run: [BLOCKS.md](BLOCKS.md), [LIBDISPATCH.md](LIBDISPATCH.md),
+[FOUNDATION.md](FOUNDATION.md), [COREGRAPHICS.md](COREGRAPHICS.md), [APPKIT.md](APPKIT.md). A program that links AppKit opens **real Windows windows**. The known working programs are the clang-built fixtures in
+`tests/fixtures/objc` and `tests/fixtures/appkit`. `@try/@catch` programs are refused (no unwinder); uncaught `NSException`s end the guest with the macOS message.
+
+### Real applications re-analysed in 0.5 (static analysis only, nothing executed)
+
+`tools/app_coverage.py` reads the x86_64 slice of each application with `llvm-objdump` and compares its imports with what CIDER implements (a host function or class exists; not verified behaviour).
+
+| Application | Imported symbols | CIDER implements | Swift runtime libraries linked | Verdict |
+|---|---:|---:|---:|---|
+| CotEditor 7.0.9 | 4,371 | 86 | 26 | refused (exit 12): missing libraries incl. the whole Swift runtime and SwiftUI; [COTEDITOR-COMPATIBILITY.md](COTEDITOR-COMPATIBILITY.md) |
+| Rectangle 2.0.3 | 1,208 | 94 | 19 | refused: Swift (342 libswiftCore imports) + SwiftUI (344) |
+| Stats 3.0.20 | 623 | 25 | 20 | refused: Swift (386 libswiftCore imports) |
+| MonitorControl 4.4.0 | 1,434 | 26 | 22 | refused: Swift (1,086 libswiftCore imports) |
+
+All four are Swift applications. The Swift runtime, not AppKit, is the first blocker; **none of them runs and none is claimed to**.

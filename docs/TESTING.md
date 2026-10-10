@@ -41,7 +41,15 @@ substring filter: `build/bin/Debug/test_dmg.exe extract_`. The integration suite
 | `test_threads` | 13 | pthread create/join/exit, mutex exactness and the unprotected-race control, per-thread TLS and errno, condition variables, `exit()` from a thread, thread limit, host thread state untouched, no leaks, deterministic scheduling, opaque handles, fault containment |
 | `test_objc` | 16 | metadata parsed vs `llvm-objdump --objc-meta-data`, compiled programs (calc → 42, inheritance, run-time classes, categories/`+load`/protocols, ABI return classes, ivar sliding, MRC, ARC/weak/pools), error traps, hostile-metadata matrix |
 | `test_foundation` | 7 | compiled Foundation programs: `CIDER result: 42`, NSString/NSNumber/NSArray/NSDictionary checks inside the guest, guest subclasses of NSObject, ten misuse diagnoses, patching the literal changes the output |
-
+| `test_sdk` | 4 | TAPI `.tbd` reader: v4 documents, multi-line lists, target filtering, limits, 20,000 random mutations |
+| `test_geometry` | 4 | rectangle algebra, AppKit↔Win32 coordinates, DPI scaling, child frames, autoresizing |
+| `test_blocks` | 3 | Blocks ABI: global/stack/heap blocks, `__block`, captured objects, runtime-invoked blocks, misuse |
+| `test_dispatch` | 3 | libdispatch: queues, groups, semaphores, once, after, worker→main sync, repeated runs, misuse |
+| `test_foundation_extra` | 3 | NSMutableString/NSData/NSDate/NSURL/NSError/NSFileManager (`--root` confinement), without a root |
+| `test_corefoundation` | 1 | CF functions, CGRect passing conventions, run loop timers/sources/main-queue blocks |
+| `test_objc_dynamic` | 4 | forwarding (resolve, target, invocation), unsupported struct forwarding, NSException, `@try` refusal |
+| `test_appkit` | 3 | AppKit classes on the offscreen backend (target/action, responders, autoresize, close/terminate, leak counters), `hello_window` headless |
+| `test_gui_win32` | 3 | **interactive**: the real `cider.exe` opens the real window; a controller process clicks with `BM_CLICK` and closes with `WM_CLOSE`; skipped without a desktop (`ctest -L gui`) |
 
 Skipped (printed as `[SKIP]`, exit code 0) when the input is absent: 7-Zip tests without 7-Zip, the symlink
 test without symlink privilege, and three that need explicit inputs:
@@ -134,3 +142,12 @@ New fuzzers: `fuzz_chained` (export trie + chained/classic fixup decoders) and `
 * ASan: `repeated_runs_do_not_leak_memory_or_address_space` allows 200 MiB growth under ASan (its quarantine of freed host blocks, up to 256 MiB, otherwise trips the 24 MiB release limit); a real
   guest leak of 150 × 8 MiB stacks would still fail it.
 * Threads are cooperative: the suite cannot, and does not claim to, find data races (no ThreadSanitizer on Windows here).
+
+## 0.5 notes
+
+* **Counts (Release, per executable): 490 run, 487 passed, 0 failed, 3 skipped, 36 suites** (0.4: 462 run, 27 suites).
+* Three kinds of GUI tests: unit (no GUI), headless integration (offscreen backend, in-process), interactive (real window). The interactive ones need an input desktop; they are skipped (not failed) in service sessions or when
+  `CIDER_NO_GUI_TESTS` is set, and they never block waiting: every wait has a timeout and the program under test is killed in the destructor.
+* Fixture generators: `tools\llvm-env.cmd tools\gen-objc-fixtures.cmd` (Objective-C, Foundation, blocks, dispatch, CF, forwarding), `tools\llvm-env.cmd tools\gen-appkit-fixtures.cmd` (AppKit; shares headers and stubs with the Objective-C fixtures).
+* New fuzzer `fuzz_tbd` (TAPI reader); `fuzz_objc` now also covers the new classes' installation. The SDK/xip/pkg tools are exercised against the real Apple downloads by hand, not in CTest (the downloads are not versioned).
+* `test_execution`'s memory-growth limit is wider under ASan (its allocator quarantine); `test_linker` uses SceneKit (not AppKit) as the example of an unavailable system library.

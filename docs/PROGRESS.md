@@ -1,50 +1,55 @@
 # Progress
 
-**Current phase: CIDER 0.4.0 — Objective-C runtime and Foundation subset. Implemented and verified for controlled fixtures only.
-No macOS application runs; Cocoa/AppKit/SwiftUI do not exist; Foundation is a host-written subset, not Apple's.**
-Last verified: 2026-10-10, Windows 11 Pro 10.0.26200, MSVC 14.51 + ml64, clang-cl/LLVM 23.1.3 (portable), CMake 4.2.3.
+**Current phase: CIDER 0.5.0 — AppKit subset, native Windows GUI, Blocks, libdispatch, Apple SDK research. Implemented and verified for controlled fixtures only.
+No macOS application runs; Cocoa does not exist; Swift and SwiftUI are not supported; AppKit and Foundation are host-written subsets.**
+Last verified: 2026-10-11, Windows 11 Pro 10.0.26200, MSVC 14.51 + ml64, clang-cl/LLVM 23.1.3 (portable), CMake 4.2.3.
 
-## What now works (0.4, on top of 0.3)
+## What now works (0.5, on top of 0.4)
 
 | Capability | Evidence |
-| --- | --- |
-| Host→guest callbacks: `qsort` with a Mach-O comparator, `bsearch`, `atexit`, nested callbacks, invalid targets refused | `test_callbacks` (18) |
-| `FILE` streams (`fopen` … `fclose`), byte-exact, opaque `FILE*`, `--root` | `test_streams` (6) |
-| pthreads (cooperative): create/join, mutex, condvar, once, keys, per-thread TLS/errno; host TEB/gs untouched | `test_threads` (13) |
-| Objective-C objc2 runtime: classes, metaclasses, categories, protocols, `+load`, ivar sliding, dispatch (all ABI return classes), run-time classes, MRC + ARC + weak + pools, traps | `test_objc` (16); parser checked against `llvm-objdump --objc-meta-data` |
-| Foundation subset + the reference program: `@"CIDER"`, `@[@20,@22]`, `NSLog(@"%@ result: %ld")` → stderr `CIDER result: 42`, `Guest exit code: 42`, 0 live objects | `test_foundation` (7), `test_cli`; patching `CIDER` in the file changes the output to `SIDER result: 42` |
+|---|---|
+| A clang-built Objective-C Mach-O creates a **real Windows window** (`hello_window`): title "CIDER — Hello from macOS", labels, "Click me" / "Close" buttons; clicks run guest methods, the counter lives in the program, Close ends the process with status 0 | `test_gui_win32` (3, interactive: a separate process finds the window and sends `BM_CLICK` / `WM_CLOSE`), `test_appkit` (3, headless) — also verified visually and by hand on the author's desktop |
+| Blocks (copy/release, `__block`, captured objects, runtime-invoked blocks) | `test_blocks` (3) |
+| libdispatch subset (main/serial/global queues, groups, semaphores, once, after, worker→main sync) | `test_dispatch` (3) |
+| Foundation: NSMutableString, NSData, NSDate, NSURL, NSError, NSFileManager (root-confined), NSNotificationCenter | `test_foundation_extra` (3), `test_appkit` |
+| CoreFoundation basics, CoreGraphics geometry with System V struct passing, shared run loop (timers, sources, main queue) | `test_corefoundation` (1), `test_geometry` (4) |
+| Message forwarding (resolve / forwarding target / NSInvocation), uncaught NSException, `@try` programs refused | `test_objc_dynamic` (4) |
+| Apple SDK `.tbd` reader and `cider sdk-scan` (3,702 stubs parsed, 0 failures) | `test_sdk` (4), [APPLE-SDK-RESEARCH.md](APPLE-SDK-RESEARCH.md) |
+| CotEditor, Rectangle, Stats, MonitorControl analysed statically: all are Swift apps, refused | [COTEDITOR-COMPATIBILITY.md](COTEDITOR-COMPATIBILITY.md), [COMPATIBILITY.md](COMPATIBILITY.md) |
 
-## Verification evidence (real runs, 2026-10-10)
+## Verification evidence (real runs, 2026-10-11)
 
 | Check | Result |
 | --- | --- |
-| Debug build + `ctest` | 27/27 suites pass |
-| Release build + `ctest` | 27/27 suites pass |
-| Test count (Release, per executable) | **462 run, 0 failed, 3 skipped** (0.3: 401 run, 2 skipped) |
-| Fresh build from scratch (new directory, Release) | configure + build rc 0; ctest 27/27 pass |
-| AddressSanitizer (clang-cl 23.1.3, all 27 suites incl. Objective-C/Foundation/threads/callbacks) | 0 errors, 27/27 pass (one memory-growth test needed a wider limit under ASan: quarantine) |
-| libFuzzer, 150 s each, seeds = all `tests/fixtures/objc/bin` + `dylib/bin` files | `fuzz_objc` (new) 27,766 runs; `fuzz_macho` 1,093,406; `fuzz_loader` 532,032; `fuzz_linker` 303,376; `fuzz_chained` 625,043 — no crash, leak, timeout or OOM |
+| Debug build + `ctest` | 36/36 suites pass |
+| Release build + `ctest` | 36/36 suites pass |
+| Test count (Release, per executable) | **490 run, 487 passed, 0 failed, 3 skipped** (0.4: 462 run) |
+| Fresh build from scratch (new directory, Release) | configure + build rc 0; ctest 36/36 pass |
+| AddressSanitizer (clang-cl, all 36 suites incl. AppKit, GUI window tests, blocks, dispatch) | 0 errors, 36/36 pass |
+| libFuzzer, 120 s each | `fuzz_objc` 9,251 runs; `fuzz_macho` 1,105,698; `fuzz_loader` 707,530; `fuzz_linker` 303,260; `fuzz_chained` 795,571; **`fuzz_tbd` (new)** 75,968 — no crash, leak, timeout or OOM |
+| Interactive GUI tests | passed on this machine (real window, `BM_CLICK`, `WM_CLOSE`); skipped automatically without an input desktop |
 | GitHub Actions | **NOT validated**: never ran on GitHub |
-| Real macOS apps | Rectangle, Stats, MonitorControl still refused (not re-run in 0.4) |
+| Real macOS apps executed | **none**; four analysed statically (all Swift) |
 
 ## Commits (local, no remote)
 
-`9ae9e64` 0.4.0 callbacks · `393f563` 0.4.1 FILE streams · `1e6789b` 0.4.2 threads/TLS · `3b7c863` 0.4.3/0.4.4 Objective-C runtime ·
-`35a5479` 0.4.5 memory management · `15933fa` 0.4.6 Foundation subset · plus the validation/documentation/version commit that follows.
+`97b993d` ignore `utilities/` · `f8d05ac` SDK analyzer · `efa710b` Blocks · `52a8f3e` libdispatch · `64d3f99` Foundation extension · `afb3204` CoreFoundation/CoreGraphics/run loop ·
+`f05a9fe` AppKit + Win32/offscreen backends + GUI tests · `b739541` forwarding + NSException · plus the documentation/version commit that follows.
 
-## Problems found while building 0.4 (all fixed, covered by tests)
-1. ld64.lld emits rebase/bind ULEB deltas that wrap backwards: the relocation engine accepts wrapped advances.
-2. `+load` of a category called a method from the category for the class → capture the class' own `+load` before attaching categories.
-3. `class_getInstanceSize` must be word-aligned; ARC fixtures need `-fno-objc-exceptions`; `class_createInstance` result needs `ns_returns_retained` in the hand-written header.
-4. `object_dispose` must run `.cxx_destruct` (ARC ivars).
-5. `exit()` in an atexit handler / thread join during exit lost the exit code.
-6. Compiler `@protocol(X)` handles were unknown to `conformsToProtocol:`; non-ASCII `@"…"` literals are UTF-16; `@[]`/`@{}` need `___NSArray0__`/`___NSDictionary0__`.
-7. Flaky `test_tls` stack-limit comparison; ASan quarantine vs. the 24 MiB growth limit.
+## Problems found while building 0.5 (all fixed, covered by tests)
+1. `_Block_copy` of a `__block` variable needs two references (the copying block and the frame that still disposes its own): with one, the variable was freed under the running block.
+2. Block names: the Mach-O symbols are `__Block_copy` (C name `_Block_copy`); the stubs and registry had the wrong spelling.
+3. A double `Block_release` was accepted when freed heap memory kept a "global" flag bit; the check now uses the image layout instead of block-owned bits.
+4. A dispatch worker retained its queue forever; workers now retire when only they reference the queue; dispatch objects are released after threads stop so leak counters are meaningful.
+5. `NSNotificationCenter` retained the sender filter and kept window trees alive.
+6. A new `NSWindow` had no content view; the default one is created at init.
+7. `std::filesystem` iteration of the SDK stopped silently at paths longer than `MAX_PATH` (extended-length paths now).
+8. ASan: the allocator quarantine pushed `repeated_runs_do_not_leak_memory_or_address_space` over its release limit; the limit is wider under ASan only.
 
 ## Known gaps
-CI never ran on GitHub; one machine; x86_64 only; threads are cooperative (no parallelism, no race detection); no signals/`dlopen`/`fork`/`mmap`; no blocks, exceptions, Swift; Foundation covers 9 classes only;
-`NSLog` has no timestamp prefix; lazy binds applied eagerly; worker is not a sandbox; fuzzing sessions are minutes long; no Cocoa. See [LIMITATIONS.md](LIMITATIONS.md).
+CI never ran on GitHub; one machine; x86_64 only; threads are cooperative; no Swift, SwiftUI, `@try/@catch`; AppKit has 9 classes and no menus, drawing, images, text system or Auto Layout; only the primary display is
+modelled; libdispatch runs concurrent queues serially; the worker is not a sandbox (GUI programs get a 24 h default timeout); fuzzing sessions are minutes long. See [LIMITATIONS.md](LIMITATIONS.md).
 
 ## Next phase (recommended, not started)
-0.5: blocks + a minimal libdispatch (queues on the cooperative scheduler), `NSString` mutability/`NSData`/`NSDate`/`NSFileManager`, `forwardInvocation:`/`resolveInstanceMethod:`, exceptions (`@try`), CoreFoundation basics,
-then the first AppKit skeleton on a Win32 backend.
+0.6: CoreGraphics drawing (`CGContext`, `drawRect:`), NSMenu/NSMenuItem and the menu bar, NSImage/NSColor/NSFont, NSTextView basics, NSTimer, NSUserDefaults/NSBundle, key-value coding and property introspection; in parallel a
+study of what it would take to host the open-source Swift runtime (the wall every real application hits).
