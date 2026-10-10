@@ -32,10 +32,16 @@ struct DictPayload : Payload {
     std::vector<Entry> entries;        // insertion order; lookup is a hash-filtered linear scan (documented O(n))
 };
 struct PoolPayload : Payload { Addr token = 0; };
+struct DataPayload : Payload { std::vector<uint8_t> bytes; };
+struct DatePayload : Payload { double since_reference = 0; };          // seconds since 2001-01-01 00:00:00 UTC
+struct URLPayload : Payload { std::string absolute, scheme, host, path, query; };
+struct ErrorPayload : Payload { Addr domain = 0, userinfo = 0; int64_t code = 0; };
 
 struct Classes {
     Class *object = nullptr, *string = nullptr, *constant_string = nullptr, *number = nullptr, *array = nullptr, *marray = nullptr,
-          *dict = nullptr, *mdict = nullptr, *pool = nullptr;
+          *dict = nullptr, *mdict = nullptr, *pool = nullptr, *mstring = nullptr, *data = nullptr, *mdata = nullptr, *date = nullptr, *url = nullptr,
+          *error = nullptr, *filemgr = nullptr;
+    std::vector<Class*> extra_payload;      // further classes whose instances keep a payload id at +8
 };
 Classes& classes();
 Runtime& rt();
@@ -83,5 +89,9 @@ void install_nsnumber(Runtime& rt);
 void install_nsarray(Runtime& rt);
 void install_nsdictionary(Runtime& rt);
 void install_misc(Runtime& rt);
+void install_nsextras(Runtime& rt);       // NSMutableString, NSData, NSMutableData, NSDate, NSURL, NSError, NSFileManager
+
+bool format_with_objects(const std::string& format, abi::ArgReader& args, std::string& out);   // printf with %@ (NSLog, stringWithFormat:)
+Addr immortal_string(const std::string& utf8);   // NSString in the runtime arena that is never released (framework constants)
 
 }  // namespace cider::foundation

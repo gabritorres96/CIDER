@@ -30,7 +30,7 @@ mkdir bin\objc_arc
 
 rem ---- Foundation subset (CIDER 0.4.6): ARC programs and MRC programs, linked against the hand-written Foundation.tbd -----------------
 set "LDF=ld64.lld -arch x86_64 -platform_version macos 10.15.0 12.0.0 -syslibroot sysroot -lSystem -lobjc -framework Foundation"
-for %%n in (foundation_hello foundation_string foundation_collections dispatch_basic dispatch_error) do (
+for %%n in (foundation_hello foundation_string foundation_collections dispatch_basic dispatch_error foundation_extra) do (
   clang %COMMON% -fobjc-arc -fno-objc-exceptions src\%%n.m -o obj\%%n.o || exit /b 1
   mkdir bin\%%n
   %LDF% -o bin\%%n\%%n obj\%%n.o || exit /b 1

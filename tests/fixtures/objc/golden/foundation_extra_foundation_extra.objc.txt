@@ -1,0 +1,13 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\foundation_extra\foundation_extra:
+Contents of (__DATA,__objc_classrefs) section
+0000000100006028 0x0 _OBJC_CLASS_$_NSMutableString
+0000000100006030 0x0 _OBJC_CLASS_$_NSData
+0000000100006038 0x0 _OBJC_CLASS_$_NSMutableData
+0000000100006040 0x0 _OBJC_CLASS_$_NSDate
+0000000100006048 0x0 _OBJC_CLASS_$_NSURL
+0000000100006050 0x0 _OBJC_CLASS_$_NSError
+0000000100006058 0x0 _OBJC_CLASS_$_NSDictionary
+0000000100006060 0x0 _OBJC_CLASS_$_NSFileManager
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

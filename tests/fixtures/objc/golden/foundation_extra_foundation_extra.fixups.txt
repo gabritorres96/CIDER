@@ -1,0 +1,226 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\foundation_extra\foundation_extra:
+
+Rebase table:
+segment  section            address     type
+__DATA_CONST __cfstring         0x100005050  pointer
+__DATA_CONST __cfstring         0x100005070  pointer
+__DATA_CONST __cfstring         0x100005090  pointer
+__DATA_CONST __cfstring         0x1000050B0  pointer
+__DATA_CONST __cfstring         0x1000050D0  pointer
+__DATA_CONST __cfstring         0x1000050F0  pointer
+__DATA_CONST __cfstring         0x100005110  pointer
+__DATA_CONST __cfstring         0x100005130  pointer
+__DATA_CONST __cfstring         0x100005150  pointer
+__DATA_CONST __cfstring         0x100005170  pointer
+__DATA_CONST __cfstring         0x100005190  pointer
+__DATA_CONST __cfstring         0x1000051B0  pointer
+__DATA_CONST __cfstring         0x1000051D0  pointer
+__DATA_CONST __cfstring         0x1000051F0  pointer
+__DATA_CONST __cfstring         0x100005210  pointer
+__DATA_CONST __cfstring         0x100005230  pointer
+__DATA_CONST __cfstring         0x100005250  pointer
+__DATA_CONST __cfstring         0x100005270  pointer
+__DATA_CONST __cfstring         0x100005290  pointer
+__DATA_CONST __cfstring         0x1000052B0  pointer
+__DATA_CONST __cfstring         0x1000052D0  pointer
+__DATA_CONST __cfstring         0x1000052F0  pointer
+__DATA_CONST __cfstring         0x100005310  pointer
+__DATA_CONST __cfstring         0x100005330  pointer
+__DATA_CONST __cfstring         0x100005350  pointer
+__DATA_CONST __cfstring         0x100005370  pointer
+__DATA_CONST __cfstring         0x100005390  pointer
+__DATA_CONST __cfstring         0x1000053B0  pointer
+__DATA_CONST __cfstring         0x1000053D0  pointer
+__DATA_CONST __cfstring         0x1000053F0  pointer
+__DATA_CONST __cfstring         0x100005410  pointer
+__DATA_CONST __cfstring         0x100005430  pointer
+__DATA_CONST __cfstring         0x100005450  pointer
+__DATA_CONST __cfstring         0x100005470  pointer
+__DATA_CONST __cfstring         0x100005490  pointer
+__DATA_CONST __cfstring         0x1000054B0  pointer
+__DATA_CONST __cfstring         0x1000054D0  pointer
+__DATA_CONST __cfstring         0x1000054F0  pointer
+__DATA_CONST __cfstring         0x100005510  pointer
+__DATA_CONST __cfstring         0x100005530  pointer
+__DATA_CONST __cfstring         0x100005550  pointer
+__DATA_CONST __cfstring         0x100005570  pointer
+__DATA_CONST __cfstring         0x100005590  pointer
+__DATA_CONST __cfstring         0x1000055B0  pointer
+__DATA_CONST __cfstring         0x1000055D0  pointer
+__DATA_CONST __cfstring         0x1000055F0  pointer
+__DATA_CONST __cfstring         0x100005610  pointer
+__DATA_CONST __cfstring         0x100005630  pointer
+__DATA_CONST __cfstring         0x100005650  pointer
+__DATA_CONST __cfstring         0x100005670  pointer
+__DATA_CONST __cfstring         0x100005690  pointer
+__DATA_CONST __cfstring         0x1000056B0  pointer
+__DATA_CONST __cfstring         0x1000056D0  pointer
+__DATA_CONST __cfstring         0x1000056F0  pointer
+__DATA_CONST __cfstring         0x100005710  pointer
+__DATA_CONST __cfstring         0x100005730  pointer
+__DATA_CONST __cfstring         0x100005750  pointer
+__DATA   __la_symbol_ptr    0x100006000  pointer
+__DATA   __la_symbol_ptr    0x100006008  pointer
+__DATA   __la_symbol_ptr    0x100006010  pointer
+__DATA   __la_symbol_ptr    0x100006018  pointer
+__DATA   __la_symbol_ptr    0x100006020  pointer
+__DATA   __objc_selrefs     0x100006068  pointer
+__DATA   __objc_selrefs     0x100006070  pointer
+__DATA   __objc_selrefs     0x100006078  pointer
+__DATA   __objc_selrefs     0x100006080  pointer
+__DATA   __objc_selrefs     0x100006088  pointer
+__DATA   __objc_selrefs     0x100006090  pointer
+__DATA   __objc_selrefs     0x100006098  pointer
+__DATA   __objc_selrefs     0x1000060A0  pointer
+__DATA   __objc_selrefs     0x1000060A8  pointer
+__DATA   __objc_selrefs     0x1000060B0  pointer
+__DATA   __objc_selrefs     0x1000060B8  pointer
+__DATA   __objc_selrefs     0x1000060C0  pointer
+__DATA   __objc_selrefs     0x1000060C8  pointer
+__DATA   __objc_selrefs     0x1000060D0  pointer
+__DATA   __objc_selrefs     0x1000060D8  pointer
+__DATA   __objc_selrefs     0x1000060E0  pointer
+__DATA   __objc_selrefs     0x1000060E8  pointer
+__DATA   __objc_selrefs     0x1000060F0  pointer
+__DATA   __objc_selrefs     0x1000060F8  pointer
+__DATA   __objc_selrefs     0x100006100  pointer
+__DATA   __objc_selrefs     0x100006108  pointer
+__DATA   __objc_selrefs     0x100006110  pointer
+__DATA   __objc_selrefs     0x100006118  pointer
+__DATA   __objc_selrefs     0x100006120  pointer
+__DATA   __objc_selrefs     0x100006128  pointer
+__DATA   __objc_selrefs     0x100006130  pointer
+__DATA   __objc_selrefs     0x100006138  pointer
+__DATA   __objc_selrefs     0x100006140  pointer
+__DATA   __objc_selrefs     0x100006148  pointer
+__DATA   __objc_selrefs     0x100006150  pointer
+__DATA   __objc_selrefs     0x100006158  pointer
+__DATA   __objc_selrefs     0x100006160  pointer
+__DATA   __objc_selrefs     0x100006168  pointer
+__DATA   __objc_selrefs     0x100006170  pointer
+__DATA   __objc_selrefs     0x100006178  pointer
+__DATA   __objc_selrefs     0x100006180  pointer
+__DATA   __objc_selrefs     0x100006188  pointer
+__DATA   __objc_selrefs     0x100006190  pointer
+__DATA   __objc_selrefs     0x100006198  pointer
+__DATA   __objc_selrefs     0x1000061A0  pointer
+__DATA   __objc_selrefs     0x1000061A8  pointer
+__DATA   __objc_selrefs     0x1000061B0  pointer
+__DATA   __objc_selrefs     0x1000061B8  pointer
+__DATA   __objc_selrefs     0x1000061C0  pointer
+__DATA   __objc_selrefs     0x1000061C8  pointer
+__DATA   __objc_selrefs     0x1000061D0  pointer
+__DATA   __objc_selrefs     0x1000061D8  pointer
+__DATA   __objc_selrefs     0x1000061E0  pointer
+__DATA   __objc_selrefs     0x1000061E8  pointer
+__DATA   __objc_selrefs     0x1000061F0  pointer
+__DATA   __objc_selrefs     0x1000061F8  pointer
+__DATA   __objc_selrefs     0x100006200  pointer
+__DATA   __objc_selrefs     0x100006208  pointer
+__DATA   __objc_selrefs     0x100006210  pointer
+__DATA   __objc_selrefs     0x100006218  pointer
+__DATA   __objc_selrefs     0x100006220  pointer
+__DATA   __objc_selrefs     0x100006228  pointer
+__DATA   __objc_selrefs     0x100006230  pointer
+__DATA   __objc_selrefs     0x100006238  pointer
+__DATA   __objc_selrefs     0x100006240  pointer
+__DATA   __objc_selrefs     0x100006248  pointer
+__DATA   __objc_selrefs     0x100006250  pointer
+__DATA   __objc_selrefs     0x100006258  pointer
+__DATA   __objc_selrefs     0x100006260  pointer
+__DATA   __objc_selrefs     0x100006268  pointer
+__DATA   __objc_selrefs     0x100006270  pointer
+__DATA   __objc_selrefs     0x100006278  pointer
+__DATA   __objc_selrefs     0x100006280  pointer
+__DATA   __objc_selrefs     0x100006288  pointer
+__DATA   __objc_selrefs     0x100006290  pointer
+__DATA   __objc_selrefs     0x100006298  pointer
+__DATA   __objc_selrefs     0x1000062A0  pointer
+__DATA   __objc_selrefs     0x1000062A8  pointer
+__DATA   __objc_selrefs     0x1000062B0  pointer
+__DATA   __objc_selrefs     0x1000062B8  pointer
+__DATA   __objc_selrefs     0x1000062C0  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100005000 pointer         0 libobjc          _objc_msgSend
+__DATA_CONST __got              0x100005008 pointer         0 libobjc          _objc_release
+__DATA_CONST __got              0x100005010 pointer         0 libobjc          _objc_retain
+__DATA_CONST __got              0x100005018 pointer         0 Foundation       _NSFilePathErrorKey
+__DATA_CONST __got              0x100005020 pointer         0 Foundation       _NSCocoaErrorDomain
+__DATA_CONST __got              0x100005028 pointer         0 Foundation       _NSPOSIXErrorDomain
+__DATA_CONST __got              0x100005030 pointer         0 Foundation       _NSLocalizedDescriptionKey
+__DATA_CONST __got              0x100005038 pointer         0 libSystem        dyld_stub_binder
+__DATA_CONST __cfstring         0x100005040 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005060 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005080 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000050A0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000050C0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000050E0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005100 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005120 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005140 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005160 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005180 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000051A0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000051C0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000051E0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005200 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005220 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005240 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005260 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005280 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000052A0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000052C0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000052E0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005300 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005320 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005340 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005360 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005380 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000053A0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000053C0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000053E0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005400 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005420 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005440 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005460 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005480 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000054A0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000054C0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000054E0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005500 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005520 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005540 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005560 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005580 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000055A0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000055C0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000055E0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005600 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005620 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005640 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005660 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005680 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000056A0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000056C0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000056E0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005700 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005720 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100005740 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA   __objc_classrefs   0x100006028 pointer         0 Foundation       _OBJC_CLASS_$_NSMutableString
+__DATA   __objc_classrefs   0x100006030 pointer         0 Foundation       _OBJC_CLASS_$_NSData
+__DATA   __objc_classrefs   0x100006038 pointer         0 Foundation       _OBJC_CLASS_$_NSMutableData
+__DATA   __objc_classrefs   0x100006040 pointer         0 Foundation       _OBJC_CLASS_$_NSDate
+__DATA   __objc_classrefs   0x100006048 pointer         0 Foundation       _OBJC_CLASS_$_NSURL
+__DATA   __objc_classrefs   0x100006050 pointer         0 Foundation       _OBJC_CLASS_$_NSError
+__DATA   __objc_classrefs   0x100006058 pointer         0 Foundation       _OBJC_CLASS_$_NSDictionary
+__DATA   __objc_classrefs   0x100006060 pointer         0 Foundation       _OBJC_CLASS_$_NSFileManager
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100006000 libobjc          _objc_retainAutoreleasedReturnValue
+__DATA   __la_symbol_ptr    0x100006008 libobjc          _objc_autoreleasePoolPop
+__DATA   __la_symbol_ptr    0x100006010 Foundation       _NSLog
+__DATA   __la_symbol_ptr    0x100006018 libobjc          _objc_alloc
+__DATA   __la_symbol_ptr    0x100006020 libobjc          _objc_autoreleasePoolPush

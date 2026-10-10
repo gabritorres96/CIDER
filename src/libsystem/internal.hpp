@@ -1,6 +1,7 @@
 #pragma once
 // Private to src/libsystem: how the implementation files contribute to the symbol table.
 #include <cstdint>
+#include <filesystem>
 #include <vector>
 
 #include "cider/guest_threads.hpp"
@@ -43,6 +44,8 @@ inline int64_t fail_errno(int e) {
     errno_ref() = e;
     return -1;
 }
+
+int resolve_guest_path(const char* guest, std::filesystem::path& host);   // confined to the guest root; 0 or a Darwin errno (EACCES without a root)
 
 // Guest descriptor primitives (posix.cpp) used by the FILE layer: -1 and errno on failure.
 int fd_open(const char* guest_path, int darwin_flags);

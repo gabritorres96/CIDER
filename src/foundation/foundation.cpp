@@ -58,8 +58,9 @@ uint64_t* payload_slot(Addr obj) {
     // only classes derived from the payload classes keep the payload id at +8
     const Classes& k = g_classes;
     if (k.constant_string && rt().is_kind_of(c, k.constant_string)) return nullptr;      // compiler-emitted literal: no payload
-    if (!(rt().is_kind_of(c, k.string) || rt().is_kind_of(c, k.number) || rt().is_kind_of(c, k.array) || rt().is_kind_of(c, k.dict) || rt().is_kind_of(c, k.pool)))
-        return nullptr;
+    bool known = rt().is_kind_of(c, k.string) || rt().is_kind_of(c, k.number) || rt().is_kind_of(c, k.array) || rt().is_kind_of(c, k.dict) || rt().is_kind_of(c, k.pool);
+    for (Class* x : k.extra_payload) known = known || rt().is_kind_of(c, x);
+    if (!known) return nullptr;
     return reinterpret_cast<uint64_t*>(obj + 8);
 }
 Payload* payload_of(Addr obj) {
@@ -171,6 +172,22 @@ std::string describe(Addr obj) {
     std::string_view sv;
     if (d && string_view_of(d, sv)) return std::string(sv);
     return "<unprintable object>";
+}
+
+bool format_with_objects(const std::string& format, abi::ArgReader& args, std::string& out) {
+    libsystem::ObjectFormatter objects = [](uint64_t obj, std::string& text) { text = describe(obj); return true; };
+    auto st = libsystem::format_printf(format.c_str(), args, out, 16u << 20, 8u << 20, &objects);
+    if (!st.ok) { libsystem::detail::trap("format: " + st.error); return false; }
+    return true;
+}
+Addr immortal_string(const std::string& utf8) {
+    const Addr obj = rt().arena_alloc(16, 16);
+    if (!obj) return 0;
+    auto p = std::make_unique<StringPayload>();
+    p->utf8 = utf8;
+    *reinterpret_cast<Addr*>(obj) = g_classes.string->addr;
+    *reinterpret_cast<uint64_t*>(obj + 8) = store_add(std::move(p));
+    return obj;
 }
 
 // ---- Foundation free functions -------------------------------------------------------------------------------------------------------
@@ -289,5 +306,6 @@ void install_foundation(Runtime& rt) {
     foundation::install_nsarray(rt);
     foundation::install_nsdictionary(rt);
     foundation::install_misc(rt);
+    foundation::install_nsextras(rt);
 }
 }  // namespace cider::objc

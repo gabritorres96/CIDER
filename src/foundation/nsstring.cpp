@@ -190,7 +190,49 @@ Addr i_componentsSeparatedByString(Addr self, Addr, Addr sep) {
     return new_array(std::move(parts), /*mutable=*/false, /*retain_items=*/false);     // the new strings already carry +1: the array takes them over
 }
 Addr i_description(Addr self, Addr) { return self; }
-Addr i_copyWithZone(Addr self, Addr, Addr) { return rt().retain(self); }                         // immutable: copy == retain
+Addr i_copyWithZone(Addr self, Addr, Addr) {
+    if (!is_kind(self, classes().mstring)) return rt().retain(self);                               // immutable: copy == retain
+    std::string_view sv;
+    return str_of(self, sv) ? new_string(std::string(sv)) : 0;                                      // NSMutableString: an immutable snapshot (+1)
+}
+Addr i_mutableCopyWithZone(Addr self, Addr, Addr) {
+    std::string_view sv;
+    if (!str_of(self, sv)) return 0;
+    const Addr o = rt().create_instance(classes().mstring, 0);
+    return o ? init_with(o, std::string(sv)) : 0;
+}
+// ---- path helpers (POSIX paths in UTF-8) ------------------------------------------------------------------------------------------------
+std::string last_component(std::string_view s) {
+    while (s.size() > 1 && s.back() == '/') s.remove_suffix(1);
+    const auto at = s.rfind('/');
+    return std::string(at == std::string_view::npos || s.size() == 1 ? s : s.substr(at + 1));
+}
+Addr i_lastPathComponent(Addr self, Addr) { std::string_view s; return str_of(self, s) ? new_string_autoreleased(last_component(s)) : 0; }
+Addr i_pathExtension(Addr self, Addr) {
+    std::string_view s;
+    if (!str_of(self, s)) return 0;
+    const std::string last = last_component(s);
+    const auto dot = last.rfind('.');
+    return new_string_autoreleased(dot == std::string::npos || dot == 0 ? std::string() : last.substr(dot + 1));
+}
+Addr i_stringByDeletingLastPathComponent(Addr self, Addr) {
+    std::string_view s;
+    if (!str_of(self, s)) return 0;
+    std::string t(s);
+    while (t.size() > 1 && t.back() == '/') t.pop_back();
+    const auto at = t.rfind('/');
+    if (at == std::string::npos) return new_string_autoreleased("");
+    return new_string_autoreleased(at == 0 ? "/" : t.substr(0, at));
+}
+Addr i_stringByAppendingPathComponent(Addr self, Addr, Addr other) {
+    std::string_view a, b;
+    if (!str_of(self, a) || !str_of(other, b)) { raise("NSInvalidArgumentException", "-[NSString stringByAppendingPathComponent:]: argument is not an NSString"); return 0; }
+    std::string t(a);
+    if (!t.empty() && t.back() != '/' && !b.empty() && b.front() != '/') t += '/';
+    else if (!t.empty() && t.back() == '/' && !b.empty() && b.front() == '/') b.remove_prefix(1);
+    return new_string_autoreleased(t + std::string(b));
+}
+uint64_t i_isAbsolutePath(Addr self, Addr) { std::string_view s; return str_of(self, s) && !s.empty() && s.front() == '/' ? 1 : 0; }
 
 template <class F> void* addr(F* f) { return reinterpret_cast<void*>(f); }
 
@@ -236,6 +278,12 @@ void install_nsstring(Runtime& r) {
         {"componentsSeparatedByString:", "@24@0:8@16", addr(i_componentsSeparatedByString), false},
         {"description", "@16@0:8", addr(i_description), false},
         {"copyWithZone:", "@24@0:8^{_NSZone=}16", addr(i_copyWithZone), false},
+        {"mutableCopyWithZone:", "@24@0:8^{_NSZone=}16", addr(i_mutableCopyWithZone), false},
+        {"lastPathComponent", "@16@0:8", addr(i_lastPathComponent), false},
+        {"pathExtension", "@16@0:8", addr(i_pathExtension), false},
+        {"stringByDeletingLastPathComponent", "@16@0:8", addr(i_stringByDeletingLastPathComponent), false},
+        {"stringByAppendingPathComponent:", "@24@0:8@16", addr(i_stringByAppendingPathComponent), false},
+        {"isAbsolutePath", "B16@0:8", addr(i_isAbsolutePath), false},
     });
 }
 

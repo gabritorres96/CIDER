@@ -10,7 +10,8 @@ compatibility-version: 300
 exports:
   - targets:         [ x86_64-macos ]
     symbols:         [ _NSLog, _NSStringFromClass, _NSClassFromString, _NSStringFromSelector, _NSSelectorFromString,
-                       ___CFConstantStringClassReference, ___NSArray0__, ___NSDictionary0__ ]
+                       ___CFConstantStringClassReference, ___NSArray0__, ___NSDictionary0__,
+                       _NSLocalizedDescriptionKey, _NSFilePathErrorKey, _NSUnderlyingErrorKey, _NSCocoaErrorDomain, _NSPOSIXErrorDomain, _NSURLErrorDomain ]
     objc-classes:    [ NSString, NSConstantString, NSNumber, NSArray, NSMutableArray, NSDictionary, NSMutableDictionary,
-                       NSAutoreleasePool ]
+                       NSAutoreleasePool, NSMutableString, NSData, NSMutableData, NSDate, NSURL, NSError, NSFileManager ]
 ...

@@ -507,3 +507,8 @@ void add_posix_symbols(std::vector<HostSymbol>& t) {
 }  // namespace detail
 
 }  // namespace cider::libsystem
+
+namespace cider::libsystem::detail {
+// Guest path -> host path inside the guest root (see resolve_path above); 0 or a Darwin errno. Used by the Foundation file classes.
+int resolve_guest_path(const char* guest, std::filesystem::path& host) { return resolve_path(guest, host); }
+}  // namespace cider::libsystem::detail

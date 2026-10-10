@@ -14,7 +14,7 @@ enum { NSOrderedAscending = -1, NSOrderedSame = 0, NSOrderedDescending = 1 };
 #define NSNotFound ((NSInteger)0x7fffffffffffffffL)
 typedef struct { unsigned long state; __unsafe_unretained id *itemsPtr; unsigned long *mutationsPtr; unsigned long extra[5]; } NSFastEnumerationState;
 
-@class NSString, NSNumber, NSArray, NSDictionary;
+@class NSString, NSNumber, NSArray, NSDictionary, NSData, NSDate, NSURL, NSError;
 
 @protocol NSCopying
 - (id)copyWithZone:(NSZone *)zone;
@@ -86,6 +86,22 @@ __attribute__((objc_root_class))
 - (NSString *)lowercaseString;
 - (NSString *)uppercaseString;
 - (NSArray *)componentsSeparatedByString:(NSString *)separator;
+- (NSString *)lastPathComponent;
+- (NSString *)pathExtension;
+- (NSString *)stringByDeletingLastPathComponent;
+- (NSString *)stringByAppendingPathComponent:(NSString *)component;
+- (BOOL)isAbsolutePath;
+@end
+
+@interface NSMutableString : NSString
++ (instancetype)stringWithCapacity:(NSUInteger)capacity;
+- (instancetype)initWithCapacity:(NSUInteger)capacity;
+- (void)appendString:(NSString *)string;
+- (void)appendFormat:(NSString *)format, ... __attribute__((format(__NSString__, 1, 2)));
+- (void)setString:(NSString *)string;
+- (void)insertString:(NSString *)string atIndex:(NSUInteger)index;
+- (void)deleteCharactersInRange:(NSRange)range;
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString *)string;
 @end
 
 @interface NSNumber : NSObject <NSCopying>
@@ -171,6 +187,89 @@ __attribute__((objc_root_class))
 - (void)setObject:(id)object forKeyedSubscript:(id<NSCopying>)key;
 - (void)removeObjectForKey:(id)key;
 - (void)removeAllObjects;
+@end
+
+@interface NSData : NSObject <NSCopying, NSMutableCopying>
++ (instancetype)data;
++ (instancetype)dataWithBytes:(const void *)bytes length:(NSUInteger)length;
++ (instancetype)dataWithData:(NSData *)data;
+- (instancetype)initWithBytes:(const void *)bytes length:(NSUInteger)length;
+- (NSUInteger)length;
+- (const void *)bytes;
+- (void)getBytes:(void *)buffer length:(NSUInteger)length;
+- (BOOL)isEqualToData:(NSData *)other;
+- (NSData *)subdataWithRange:(NSRange)range;
+@end
+@interface NSMutableData : NSData
++ (instancetype)dataWithCapacity:(NSUInteger)capacity;
++ (instancetype)dataWithLength:(NSUInteger)length;
+- (instancetype)initWithCapacity:(NSUInteger)capacity;
+- (void *)mutableBytes;
+- (void)appendBytes:(const void *)bytes length:(NSUInteger)length;
+- (void)appendData:(NSData *)data;
+- (void)setLength:(NSUInteger)length;
+- (void)increaseLengthBy:(NSUInteger)extra;
+- (void)replaceBytesInRange:(NSRange)range withBytes:(const void *)bytes;
+@end
+
+typedef double NSTimeInterval;
+@interface NSDate : NSObject <NSCopying>
++ (instancetype)date;
++ (instancetype)dateWithTimeIntervalSince1970:(NSTimeInterval)seconds;
++ (instancetype)dateWithTimeIntervalSinceReferenceDate:(NSTimeInterval)seconds;
++ (instancetype)dateWithTimeIntervalSinceNow:(NSTimeInterval)seconds;
+- (instancetype)initWithTimeIntervalSince1970:(NSTimeInterval)seconds;
+- (NSTimeInterval)timeIntervalSince1970;
+- (NSTimeInterval)timeIntervalSinceReferenceDate;
+- (NSTimeInterval)timeIntervalSinceNow;
+- (NSTimeInterval)timeIntervalSinceDate:(NSDate *)other;
+- (NSDate *)dateByAddingTimeInterval:(NSTimeInterval)seconds;
+- (NSComparisonResult)compare:(NSDate *)other;
+- (BOOL)isEqualToDate:(NSDate *)other;
+- (NSDate *)earlierDate:(NSDate *)other;
+- (NSDate *)laterDate:(NSDate *)other;
+@end
+
+@interface NSURL : NSObject <NSCopying>
++ (instancetype)URLWithString:(NSString *)string;
++ (instancetype)fileURLWithPath:(NSString *)path;
+- (NSString *)absoluteString;
+- (NSString *)relativeString;
+- (NSString *)path;
+- (NSString *)relativePath;
+- (NSString *)scheme;
+- (NSString *)host;
+- (NSString *)query;
+- (BOOL)isFileURL;
+- (NSString *)lastPathComponent;
+- (NSString *)pathExtension;
+- (NSURL *)URLByAppendingPathComponent:(NSString *)component;
+@end
+
+extern NSString *const NSLocalizedDescriptionKey;
+extern NSString *const NSFilePathErrorKey;
+extern NSString *const NSUnderlyingErrorKey;
+extern NSString *const NSCocoaErrorDomain;
+extern NSString *const NSPOSIXErrorDomain;
+@interface NSError : NSObject <NSCopying>
++ (instancetype)errorWithDomain:(NSString *)domain code:(NSInteger)code userInfo:(NSDictionary *)userInfo;
+- (instancetype)initWithDomain:(NSString *)domain code:(NSInteger)code userInfo:(NSDictionary *)userInfo;
+- (NSString *)domain;
+- (NSInteger)code;
+- (NSDictionary *)userInfo;
+- (NSString *)localizedDescription;
+@end
+
+@interface NSFileManager : NSObject
++ (NSFileManager *)defaultManager;
+- (BOOL)fileExistsAtPath:(NSString *)path;
+- (BOOL)fileExistsAtPath:(NSString *)path isDirectory:(BOOL *)isDirectory;
+- (NSData *)contentsAtPath:(NSString *)path;
+- (BOOL)createFileAtPath:(NSString *)path contents:(NSData *)data attributes:(NSDictionary *)attributes;
+- (BOOL)removeItemAtPath:(NSString *)path error:(NSError **)error;
+- (BOOL)createDirectoryAtPath:(NSString *)path withIntermediateDirectories:(BOOL)intermediate attributes:(NSDictionary *)attributes error:(NSError **)error;
+- (NSArray *)contentsOfDirectoryAtPath:(NSString *)path error:(NSError **)error;
+- (NSString *)currentDirectoryPath;
 @end
 
 @interface NSAutoreleasePool : NSObject
