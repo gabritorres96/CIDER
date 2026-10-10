@@ -3,6 +3,7 @@
 #include <format>
 #include <unordered_map>
 
+#include "cider/dispatch.hpp"
 #include "cider/libsystem.hpp"
 #include "cider/log.hpp"
 #include "cider/objc.hpp"
@@ -263,6 +264,7 @@ void install_foundation(Runtime& rt) {
             foundation::Class* c = rt.class_named(name == "__NSConcreteStackBlock" ? "__NSStackBlock__" : name == "__NSConcreteGlobalBlock" ? "__NSGlobalBlock__" : "__NSMallocBlock__");
             return c ? std::optional<uint64_t>(c->addr) : std::nullopt;
         }
+        if (auto d = dispatch::data_symbol(name)) return d;
         const bool arr = name == "___NSArray0__", dic = name == "___NSDictionary0__";
         if (!arr && !dic) return std::nullopt;
         auto& made = *made_ptr;
@@ -280,6 +282,7 @@ void install_foundation(Runtime& rt) {
     rt.set_native_owner("libobjc");               // Apple exports NSObject from libobjc
     foundation::install_nsobject(rt);
     libsystem::detail::install_block_classes(rt);
+    dispatch::install(rt);
     rt.set_native_owner("Foundation");
     foundation::install_nsstring(rt);
     foundation::install_nsnumber(rt);

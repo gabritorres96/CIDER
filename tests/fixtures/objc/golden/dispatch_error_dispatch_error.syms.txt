@@ -1,0 +1,36 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\dispatch_error\dispatch_error:
+
+SYMBOL TABLE:
+00000001000010b8 l     O __DATA_CONST,__const ___block_literal_global.7
+00000001000010d8 l     O __DATA_CONST,__const ___block_literal_global.10
+00000001000008c0 l     F __TEXT,__text ___main_block_invoke_2
+0000000100001048 l     O __DATA_CONST,__const ___block_literal_global
+00000001000008a0 l     F __TEXT,__text ___main_block_invoke
+0000000100001068 l     O __DATA_CONST,__const ___block_literal_global.5
+00000001000008e0 l     F __TEXT,__text ___main_block_invoke_3
+0000000100000920 l     F __TEXT,__text ___main_block_invoke.6
+0000000100000940 l     F __TEXT,__text ___main_block_invoke_2.9
+0000000100002050 l     O __DATA,__data __dyld_private
+0000000100000900 l     F __TEXT,__text .hidden ___copy_helper_block_8_32s
+0000000100000910 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32s
+0000000100001028 l     O __DATA_CONST,__const .hidden ___block_descriptor_32_e5_v8?0l
+0000000100001088 l     O __DATA_CONST,__const .hidden ___block_descriptor_40_8_32s_e5_v8?0l
+00000001000006c0 g     F __TEXT,__text _main
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* __NSConcreteGlobalBlock
+0000000000000000         *UND* __NSConcreteStackBlock
+0000000000000000         *UND* __dispatch_main_q
+0000000000000000         *UND* _dispatch_async
+0000000000000000         *UND* _dispatch_group_create
+0000000000000000         *UND* _dispatch_group_leave
+0000000000000000         *UND* _dispatch_once
+0000000000000000         *UND* _dispatch_queue_create
+0000000000000000         *UND* _dispatch_semaphore_create
+0000000000000000         *UND* _dispatch_semaphore_wait
+0000000000000000         *UND* _dispatch_sync
+0000000000000000         *UND* _exit
+0000000000000000         *UND* dyld_stub_binder
+0000000000000000         *UND* _objc_release
+0000000000000000         *UND* _objc_retain
+0000000000000000         *UND* _NSLog
+0000000000000000         *UND* ___CFConstantStringClassReference

@@ -182,6 +182,7 @@ template <class F> void* addr(F* f) { return reinterpret_cast<void*>(f); }
 
 Addr w_objc_retain(Addr o) { return RT() ? RT()->retain(o) : 0; }
 void w_objc_release(Addr o) { if (RT()) RT()->release(o); }
+Addr w_objc_retainBlock(Addr o) { if (!o) return 0; return libsystem::detail::block_is_object(o) ? libsystem::detail::block_retain(o) : (RT() ? RT()->retain(o) : 0); }
 Addr w_objc_autorelease(Addr o) { return RT() ? RT()->autorelease(o) : 0; }
 Addr w_objc_retainAutorelease(Addr o) { return RT() ? RT()->autorelease(RT()->retain(o)) : 0; }
 Addr w_objc_retainAutoreleaseReturnValue(Addr o) { return w_objc_retainAutorelease(o); }
@@ -259,6 +260,7 @@ void add_objc_memory_symbols(std::vector<libsystem::HostSymbol>& t) {
     fn("_objc_retain", addr(w_objc_retain));
     fn("_objc_release", addr(w_objc_release));
     fn("_objc_autorelease", addr(w_objc_autorelease));
+    fn("_objc_retainBlock", addr(w_objc_retainBlock));
     fn("_objc_retainAutorelease", addr(w_objc_retainAutorelease));
     fn("_objc_retainAutoreleaseReturnValue", addr(w_objc_retainAutoreleaseReturnValue));
     fn("_objc_autoreleaseReturnValue", addr(w_objc_autoreleaseReturnValue));

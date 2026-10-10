@@ -128,7 +128,9 @@ unsigned long __stdcall GuestThreads::thread_main(void* arg) {
 void GuestThreads::run_thread(ThreadState* ts) {
     acquire(ts);                                                  // waits for the guest lock; the thread starts with a clean abi state
     ts->started = true;
-    if (!exit_requested_) {
+    if (!exit_requested_ && ts->native_body) {
+        ts->native_body();
+    } else if (!exit_requested_) {
         abi::GuestCallArgs args;
         args.push_int(ts->start_arg);
         log::debug(log::Category::Execution, "guest thread {} starts at {:#x}", ts->id, ts->start_fn);
@@ -141,7 +143,13 @@ void GuestThreads::run_thread(ThreadState* ts) {
     release(ts);
 }
 
-int GuestThreads::create(uint64_t fn, uint64_t arg, size_t stack_size, uint64_t& handle) {
+int GuestThreads::create_native(std::function<void()> body, uint64_t& handle) {
+    const int rc = create(0, 0, 0, handle, std::move(body));
+    if (rc == 0) if (ThreadState* t = find(id_of(handle))) t->detached = true;
+    return rc;
+}
+
+int GuestThreads::create(uint64_t fn, uint64_t arg, size_t stack_size, uint64_t& handle, std::function<void()> native) {
     // sweep finished detached threads
     for (auto it = threads_.begin(); it != threads_.end();) {
         ThreadState& t = *it->second;
@@ -161,6 +169,7 @@ int GuestThreads::create(uint64_t fn, uint64_t arg, size_t stack_size, uint64_t&
     ts->id = next_id_++;
     ts->start_fn = fn;
     ts->start_arg = arg;
+    ts->native_body = std::move(native);
     ts->stack = std::make_unique<abi::GuestStack>(std::move(stack.value()));
     ThreadState* raw = ts.get();
     HANDLE h = CreateThread(nullptr, 4u << 20, reinterpret_cast<LPTHREAD_START_ROUTINE>(&GuestThreads::thread_main), raw, STACK_SIZE_PARAM_IS_A_RESERVATION, nullptr);

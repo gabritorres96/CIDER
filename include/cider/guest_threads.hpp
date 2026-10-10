@@ -14,6 +14,7 @@
 //  * The Windows TEB, %gs, TlsAlloc slots are never touched; thread-local storage blocks are per guest thread (see tls.cpp).
 #include <atomic>
 #include <condition_variable>
+#include <functional>
 #include <cstdint>
 #include <map>
 #include <memory>
@@ -33,6 +34,7 @@ struct ThreadState {
     bool exiting = false;                    // pthread_exit() was called
     uint64_t retval = 0;
     uint64_t start_fn = 0, start_arg = 0;
+    std::function<void()> native_body;       // host-implemented thread (libdispatch workers): runs under the guest lock instead of start_fn
     std::unique_ptr<abi::GuestStack> stack;
     void* os_thread = nullptr;               // Win32 thread handle (owned)
     abi::AbiThreadState abi{};               // saved while the thread does not own the guest lock
@@ -90,7 +92,9 @@ public:
     int exit_code() const { return exit_code_; }
 
     // ---- pthread operations (return Darwin errno values) -------------------------------------------------------------------------
-    int create(uint64_t fn, uint64_t arg, size_t stack_size, uint64_t& handle);
+    int create(uint64_t fn, uint64_t arg, size_t stack_size, uint64_t& handle, std::function<void()> native = {});
+    // A thread whose body is host code (it may call guest code through Runtime::call_imp on its own guest stack). Detached; stops when the process exits.
+    int create_native(std::function<void()> body, uint64_t& handle);
     int join(uint64_t handle, uint64_t* retval);
     int detach(uint64_t handle);
     void exit_thread(uint64_t retval);        // pthread_exit

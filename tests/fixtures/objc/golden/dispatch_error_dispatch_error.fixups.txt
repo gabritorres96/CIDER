@@ -1,0 +1,57 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\dispatch_error\dispatch_error:
+
+Rebase table:
+segment  section            address     type
+__DATA_CONST __const            0x100001038  pointer
+__DATA_CONST __const            0x100001058  pointer
+__DATA_CONST __const            0x100001060  pointer
+__DATA_CONST __const            0x100001078  pointer
+__DATA_CONST __const            0x100001080  pointer
+__DATA_CONST __const            0x100001098  pointer
+__DATA_CONST __const            0x1000010A0  pointer
+__DATA_CONST __const            0x1000010A8  pointer
+__DATA_CONST __const            0x1000010C8  pointer
+__DATA_CONST __const            0x1000010D0  pointer
+__DATA_CONST __const            0x1000010E8  pointer
+__DATA_CONST __const            0x1000010F0  pointer
+__DATA_CONST __cfstring         0x100001108  pointer
+__DATA_CONST __cfstring         0x100001128  pointer
+__DATA_CONST __cfstring         0x100001148  pointer
+__DATA   __la_symbol_ptr    0x100002000  pointer
+__DATA   __la_symbol_ptr    0x100002008  pointer
+__DATA   __la_symbol_ptr    0x100002010  pointer
+__DATA   __la_symbol_ptr    0x100002018  pointer
+__DATA   __la_symbol_ptr    0x100002020  pointer
+__DATA   __la_symbol_ptr    0x100002028  pointer
+__DATA   __la_symbol_ptr    0x100002030  pointer
+__DATA   __la_symbol_ptr    0x100002038  pointer
+__DATA   __la_symbol_ptr    0x100002040  pointer
+__DATA   __la_symbol_ptr    0x100002048  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100001000 pointer         0 libSystem        __dispatch_main_q
+__DATA_CONST __got              0x100001008 pointer         0 libobjc          _objc_release
+__DATA_CONST __got              0x100001010 pointer         0 libobjc          _objc_retain
+__DATA_CONST __got              0x100001018 pointer         0 libSystem        __NSConcreteStackBlock
+__DATA_CONST __got              0x100001020 pointer         0 libSystem        dyld_stub_binder
+__DATA_CONST __const            0x100001048 pointer         0 libSystem        __NSConcreteGlobalBlock
+__DATA_CONST __const            0x100001068 pointer         0 libSystem        __NSConcreteGlobalBlock
+__DATA_CONST __const            0x1000010B8 pointer         0 libSystem        __NSConcreteGlobalBlock
+__DATA_CONST __const            0x1000010D8 pointer         0 libSystem        __NSConcreteGlobalBlock
+__DATA_CONST __cfstring         0x1000010F8 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100001118 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100001138 pointer         0 Foundation       ___CFConstantStringClassReference
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100002000 Foundation       _NSLog
+__DATA   __la_symbol_ptr    0x100002008 libSystem        _dispatch_sync
+__DATA   __la_symbol_ptr    0x100002010 libSystem        _dispatch_queue_create
+__DATA   __la_symbol_ptr    0x100002018 libSystem        _dispatch_group_leave
+__DATA   __la_symbol_ptr    0x100002020 libSystem        _dispatch_group_create
+__DATA   __la_symbol_ptr    0x100002028 libSystem        _dispatch_semaphore_wait
+__DATA   __la_symbol_ptr    0x100002030 libSystem        _dispatch_semaphore_create
+__DATA   __la_symbol_ptr    0x100002038 libSystem        _dispatch_async
+__DATA   __la_symbol_ptr    0x100002040 libSystem        _dispatch_once
+__DATA   __la_symbol_ptr    0x100002048 libSystem        _exit

@@ -413,6 +413,8 @@ uint64_t Runtime::call_imp(Addr imp, std::initializer_list<uint64_t> args) {
     abi::CallOutcome o;
     if (abi::cider_current_call) {
         o = abi::call_guest_nested(imp, a);
+    } else if (libsystem::ThreadState* ts = libsystem::GuestThreads::current(); ts && !ts->is_main && ts->stack) {
+        o = abi::call_guest_args(imp, *ts->stack, ts->stack->top() - 64, a);          // host-implemented thread (dispatch worker): its own stack
     } else if (top_stack_) {
         o = abi::call_guest_args(imp, *top_stack_, top_sp_, a);
     } else {

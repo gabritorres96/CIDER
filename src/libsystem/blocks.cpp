@@ -94,7 +94,9 @@ uint64_t w_block_copy(uint64_t arg) {
 void w_block_release(uint64_t arg) {
     if (!arg) return;
     if (!g_heap_blocks.count(arg)) {
-        if (ok(arg, sizeof(BlockLiteral)) && (reinterpret_cast<BlockLiteral*>(arg)->flags & kIsGlobal)) return;
+        RuntimeContext* c = context();
+        // a global block lives in a loaded image; the flag alone is not trusted (freed heap memory can hold any bits)
+        if (c && c->objc && c->objc->is_static_object(arg) && ok(arg, sizeof(BlockLiteral)) && (reinterpret_cast<BlockLiteral*>(arg)->flags & kIsGlobal)) return;
         if (ok(arg, 8) && *reinterpret_cast<const uint64_t*>(arg) == g_stack_isa) return;     // stack block: nothing to release
         trap(std::format("_Block_release of {:#x}, which is not a heap block (double release or invalid pointer)", arg));
         return;

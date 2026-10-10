@@ -85,7 +85,7 @@ std::optional<dyld::ResolvedSymbol> LibSystemProvider::lookup(std::string_view l
     if (auto it = data_index_.find(symbol); it != data_index_.end()) return dyld::ResolvedSymbol{it->second, false};
     if (dynamic_) {
         // Objective-C classes and Foundation data are only visible through libobjc / Foundation, never through libSystem
-        if (!want || *want != Lib::System || symbol.rfind("__NSConcrete", 0) == 0)       // block isa symbols come from libSystem
+        if (!want || *want != Lib::System || symbol.rfind("__NSConcrete", 0) == 0 || symbol.rfind("__dispatch_", 0) == 0)       // block isa and dispatch objects come from libSystem
             if (auto a = dynamic_(symbol)) return dyld::ResolvedSymbol{*a, false};
     }
     return std::nullopt;
