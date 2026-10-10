@@ -128,7 +128,10 @@ Result<ProcessResult> run_process_ex(const std::filesystem::path& exe, const std
 
     PROCESS_INFORMATION pi{};
     // Application name is given explicitly: no PATH / current-directory search.
-    if (!CreateProcessW(exe.c_str(), wcmd.data(), nullptr, nullptr, TRUE, CREATE_NO_WINDOW | CREATE_SUSPENDED, nullptr,
+    // CREATE_NO_WINDOW gives the child a fresh hidden console, which invalidates inherited console handles: the
+    // child's stdout/stderr would vanish when the parent runs in a terminal. Inherit the parent's console instead.
+    const DWORD flags = CREATE_SUSPENDED | (opts.inherit_stdio ? 0 : CREATE_NO_WINDOW);
+    if (!CreateProcessW(exe.c_str(), wcmd.data(), nullptr, nullptr, TRUE, flags, nullptr,
                         nullptr, &si, &pi))
         return Error{ErrorCode::Io, std::format("cannot start {} (error {})", path_to_utf8(exe), GetLastError())};
     Handle process, thread;

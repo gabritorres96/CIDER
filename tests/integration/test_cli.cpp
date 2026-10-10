@@ -490,3 +490,84 @@ CIDER_TEST(run_an_application_bundle) {
     CHECK_EQ(r.code, 0);
     CHECK(has(r, "Guest exit code: 42"));
 }
+
+// ---- regression (0.2.0 -> 0.3.0): output of the guest must reach a real console ----------------------------------------------
+// `cider run hello` printed nothing when stdout was a console (the worker was created with CREATE_NO_WINDOW, which
+// gave it a fresh hidden console and invalidated the inherited console handles). Pipe-based tests could not see it.
+// This test runs cider.exe attached to a genuine pseudo console (ConPTY), exactly like a terminal window.
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
+namespace {
+std::optional<std::string> run_in_pseudo_console(const std::wstring& cmdline) {
+    HANDLE in_r = nullptr, in_w = nullptr, out_r = nullptr, out_w = nullptr;
+    // A pseudo console child inherits the PARENT's redirected std handles when the parent owns no console.
+    DWORD pids[2];
+    if (GetConsoleProcessList(pids, 2) == 0) AllocConsole();
+    if (!CreatePipe(&in_r, &in_w, nullptr, 0) || !CreatePipe(&out_r, &out_w, nullptr, 0)) return std::nullopt;
+    HPCON pc = nullptr;
+    if (FAILED(CreatePseudoConsole({120, 40}, in_r, out_w, 0, &pc))) return std::nullopt;
+    CloseHandle(in_r);
+    CloseHandle(out_w);
+    SIZE_T sz = 0;
+    InitializeProcThreadAttributeList(nullptr, 1, 0, &sz);
+    std::vector<uint8_t> attr(sz);
+    auto* al = reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(attr.data());
+    InitializeProcThreadAttributeList(al, 1, 0, &sz);
+    UpdateProcThreadAttribute(al, 0, PROC_THREAD_ATTRIBUTE_PSEUDOCONSOLE, pc, sizeof pc, nullptr, nullptr);
+    STARTUPINFOEXW si{};
+    si.StartupInfo.cb = sizeof si;
+    si.lpAttributeList = al;
+    PROCESS_INFORMATION pi{};
+    std::wstring cmd = cmdline;
+    // The child must not see this process's (possibly redirected) std handles, only the pseudo console.
+    const HANDLE old_in = GetStdHandle(STD_INPUT_HANDLE), old_out = GetStdHandle(STD_OUTPUT_HANDLE), old_err = GetStdHandle(STD_ERROR_HANDLE);
+    SetStdHandle(STD_INPUT_HANDLE, nullptr);
+    SetStdHandle(STD_OUTPUT_HANDLE, nullptr);
+    SetStdHandle(STD_ERROR_HANDLE, nullptr);
+    const BOOL created = CreateProcessW(nullptr, cmd.data(), nullptr, nullptr, FALSE, EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, &si.StartupInfo, &pi);
+    SetStdHandle(STD_INPUT_HANDLE, old_in);
+    SetStdHandle(STD_OUTPUT_HANDLE, old_out);
+    SetStdHandle(STD_ERROR_HANDLE, old_err);
+    if (!created) return std::nullopt;
+    std::string captured;
+    // Drain on this thread while the child runs; ClosePseudoConsole afterwards flushes the remaining output.
+    auto drain = [&](DWORD ms) {
+        const ULONGLONG end = GetTickCount64() + ms;
+        while (GetTickCount64() < end) {
+            DWORD avail = 0;
+            if (!PeekNamedPipe(out_r, nullptr, 0, nullptr, &avail, nullptr)) return;
+            if (avail == 0) { Sleep(20); continue; }
+            char buf[4096];
+            DWORD got = 0;
+            if (!ReadFile(out_r, buf, sizeof buf, &got, nullptr) || got == 0) return;
+            captured.append(buf, got);
+        }
+    };
+    const ULONGLONG deadline = GetTickCount64() + 60000;
+    while (WaitForSingleObject(pi.hProcess, 0) == WAIT_TIMEOUT && GetTickCount64() < deadline) drain(50);
+    drain(500);
+    CloseHandle(pi.hThread);
+    CloseHandle(pi.hProcess);
+    ClosePseudoConsole(pc);
+    drain(200);
+    CloseHandle(in_w);
+    CloseHandle(out_r);
+    DeleteProcThreadAttributeList(al);
+    return captured;
+}
+}  // namespace
+
+CIDER_TEST(run_guest_output_reaches_a_real_console) {
+    const char* exe = std::getenv("CIDER_EXE");
+    REQUIRE(exe != nullptr);
+    std::wstring cmd = L"\"" + fs::absolute(path_from_utf8(exe)).wstring() + L"\" run \"" + exec_bin("hello").wstring() +
+                       L"\" --log-level warn";
+    auto out = run_in_pseudo_console(cmd);
+    if (!out) SKIP("pseudo console not available in this session");
+    CHECK(out->find("Hello from macOS!") != std::string::npos);
+    CHECK(out->find("second line via write") != std::string::npos);
+    CHECK(out->find("Guest exit code: 0") != std::string::npos);
+}
+#endif
