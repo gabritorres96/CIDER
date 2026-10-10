@@ -219,5 +219,5 @@ CIDER_TEST(guest_call_struct_layout_matches_the_assembly) {
     // offsets are hard-coded in entry_trampoline.asm; abi.hpp static_asserts them, this documents the numbers
     CHECK_EQ(offsetof(abi::GuestCall, host_rsp), size_t{48});
     CHECK_EQ(offsetof(abi::GuestCall, exited), size_t{72});
-    CHECK_EQ(sizeof(abi::GuestCall), size_t{88});
+    CHECK_EQ(sizeof(abi::GuestCall), size_t{200});
 }

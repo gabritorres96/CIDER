@@ -1,0 +1,26 @@
+atexit_exit:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	48 8d 3d 25 00 00 00	leaq	_first(%rip), %rdi
+10000054b:	e8 62 00 00 00	callq	0x1000005b2 ## symbol stub for: _atexit
+100000550:	48 8d 3d 39 00 00 00	leaq	_quitter(%rip), %rdi
+100000557:	e8 56 00 00 00	callq	0x1000005b2 ## symbol stub for: _atexit
+10000055c:	bf 03 00 00 00	movl	$0x3, %edi
+100000561:	e8 46 00 00 00	callq	0x1000005ac ## symbol stub for: _exit
+100000566:	66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_first:
+100000570:	55	pushq	%rbp
+100000571:	48 89 e5	movq	%rsp, %rbp
+100000574:	48 8d 3d 73 00 00 00	leaq	0x73(%rip), %rdi ## literal pool for: "first"
+10000057b:	5d	popq	%rbp
+10000057c:	e9 37 00 00 00	jmp	0x1000005b8 ## symbol stub for: _puts
+100000581:	66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_quitter:
+100000590:	55	pushq	%rbp
+100000591:	48 89 e5	movq	%rsp, %rbp
+100000594:	48 8d 3d 59 00 00 00	leaq	0x59(%rip), %rdi ## literal pool for: "quitter"
+10000059b:	e8 18 00 00 00	callq	0x1000005b8 ## symbol stub for: _puts
+1000005a0:	bf 09 00 00 00	movl	$0x9, %edi
+1000005a5:	e8 02 00 00 00	callq	0x1000005ac ## symbol stub for: _exit

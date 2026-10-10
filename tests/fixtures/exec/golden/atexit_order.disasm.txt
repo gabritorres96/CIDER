@@ -1,0 +1,39 @@
+atexit_order:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	48 8d 3d 35 00 00 00	leaq	_h1(%rip), %rdi
+10000054b:	e8 96 00 00 00	callq	0x1000005e6 ## symbol stub for: _atexit
+100000550:	48 8d 3d 49 00 00 00	leaq	_h2(%rip), %rdi
+100000557:	e8 8a 00 00 00	callq	0x1000005e6 ## symbol stub for: _atexit
+10000055c:	48 8d 3d 5d 00 00 00	leaq	_h3(%rip), %rdi
+100000563:	e8 7e 00 00 00	callq	0x1000005e6 ## symbol stub for: _atexit
+100000568:	48 8d 3d a1 00 00 00	leaq	0xa1(%rip), %rdi ## literal pool for: "main"
+10000056f:	e8 6c 00 00 00	callq	0x1000005e0 ## symbol stub for: _puts
+100000574:	b8 05 00 00 00	movl	$0x5, %eax
+100000579:	5d	popq	%rbp
+10000057a:	c3	retq
+10000057b:	0f 1f 44 00 00	nopl	(%rax,%rax)
+_h1:
+100000580:	55	pushq	%rbp
+100000581:	48 89 e5	movq	%rsp, %rbp
+100000584:	48 8d 3d 8a 00 00 00	leaq	0x8a(%rip), %rdi ## literal pool for: "handler 1"
+10000058b:	5d	popq	%rbp
+10000058c:	e9 4f 00 00 00	jmp	0x1000005e0 ## symbol stub for: _puts
+100000591:	66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_h2:
+1000005a0:	55	pushq	%rbp
+1000005a1:	48 89 e5	movq	%rsp, %rbp
+1000005a4:	48 8d 3d 74 00 00 00	leaq	0x74(%rip), %rdi ## literal pool for: "handler 2"
+1000005ab:	5d	popq	%rbp
+1000005ac:	e9 2f 00 00 00	jmp	0x1000005e0 ## symbol stub for: _puts
+1000005b1:	66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_h3:
+1000005c0:	55	pushq	%rbp
+1000005c1:	48 89 e5	movq	%rsp, %rbp
+1000005c4:	48 8d 3d 5e 00 00 00	leaq	0x5e(%rip), %rdi ## literal pool for: "handler 3"
+1000005cb:	e8 10 00 00 00	callq	0x1000005e0 ## symbol stub for: _puts
+1000005d0:	48 8d 3d a9 ff ff ff	leaq	_h1(%rip), %rdi
+1000005d7:	5d	popq	%rbp
+1000005d8:	e9 09 00 00 00	jmp	0x1000005e6 ## symbol stub for: _atexit

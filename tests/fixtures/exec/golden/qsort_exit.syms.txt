@@ -1,0 +1,13 @@
+qsort_exit:
+
+SYMBOL TABLE:
+00000001000005e0 l     F __TEXT,__text _bye
+0000000100000600 l     F __TEXT,__text _cmp
+0000000100002020 l     O __DATA,__data __dyld_private
+0000000100000590 g     F __TEXT,__text _main
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _atexit
+0000000000000000         *UND* _exit
+0000000000000000         *UND* _puts
+0000000000000000         *UND* _qsort
+0000000000000000         *UND* dyld_stub_binder

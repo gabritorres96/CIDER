@@ -90,6 +90,11 @@ void _exit(int) __attribute__((noreturn));
 int *__error(void);
 #define errno (*__error())
 
+/* callbacks */
+void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
+void *bsearch(const void *, const void *, size_t, size_t, int (*)(const void *, const void *));
+int atexit(void (*)(void));
+
 /* libc odds and ends */
 size_t strlen(const char *);
 int strcmp(const char *, const char *);

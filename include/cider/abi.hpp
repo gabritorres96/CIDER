@@ -32,10 +32,19 @@ struct GuestCall {
     uint64_t result = 0;           // 64 rax of the guest function / exit code
     uint64_t exited = 0;           // 72 set by exit()
     uint64_t exit_code = 0;        // 80
+    uint64_t arg_r8 = 0;           // 88  5th and 6th integer arguments (callbacks)
+    uint64_t arg_r9 = 0;           // 96
+    uint64_t xmm_arg[8] = {};      // 104 xmm0..xmm7 (low 64 bits: doubles, or floats in the low 32 bits)
+    uint64_t ret_rdx = 0;          // 168 second integer result (rax:rdx aggregates)
+    uint64_t ret_xmm0 = 0;         // 176
+    uint64_t ret_xmm1 = 0;         // 184
+    uint64_t al = 0;               // 192 number of vector registers used (variadic callees)
 };
 static_assert(offsetof(GuestCall, fn) == 0 && offsetof(GuestCall, stack_top) == 8 && offsetof(GuestCall, arg) == 16 &&
               offsetof(GuestCall, host_rsp) == 48 && offsetof(GuestCall, guest_rsp) == 56 && offsetof(GuestCall, result) == 64 &&
-              offsetof(GuestCall, exited) == 72 && offsetof(GuestCall, exit_code) == 80 && sizeof(GuestCall) == 88,
+              offsetof(GuestCall, exited) == 72 && offsetof(GuestCall, exit_code) == 80 && offsetof(GuestCall, arg_r8) == 88 &&
+              offsetof(GuestCall, xmm_arg) == 104 && offsetof(GuestCall, ret_rdx) == 168 && offsetof(GuestCall, ret_xmm1) == 184 &&
+              offsetof(GuestCall, al) == 192 && sizeof(GuestCall) == 200,
               "GuestCall layout is mirrored in entry_trampoline.asm");
 
 // Everything a System V callee can look at when guest code calls a "raw" host function (src/abi/entry_trampoline.asm,
@@ -157,12 +166,46 @@ private:
 struct CallOutcome {
     uint64_t value = 0;      // rax of the guest function (or the exit code when exited)
     bool exited = false;     // guest called exit()
+    uint64_t rdx = 0;        // second integer result
+    uint64_t xmm0 = 0, xmm1 = 0;   // vector results (low 64 bits)
+    bool refused = false;    // a nested call was refused (depth, stack space, invalid target); nothing ran
+    std::string refusal;
+};
+
+// Arguments of a call INTO guest code, System V classification: integers in rdi..r9 then the stack, doubles in xmm0-7 then the
+// stack (stack slots shared in call order, 8 bytes each).
+class GuestCallArgs {
+public:
+    GuestCallArgs& push_int(uint64_t v);
+    GuestCallArgs& push_double(double d);
+    GuestCallArgs& push_float(float f);          // a float occupies the low 32 bits of an xmm register / stack slot
+    GuestCallArgs& variadic() { variadic_ = true; return *this; }   // set AL = number of vector registers used
+    uint64_t ints[6] = {};
+    uint64_t xmm[8] = {};
+    unsigned n_int = 0, n_xmm = 0;
+    std::vector<uint64_t> stack;
+    bool variadic_ = false;
 };
 
 // Runs `fn` (an address in executable guest memory) on `stack` with up to four System V integer
 // arguments. Single threaded: only one guest call may be active at a time.
 CallOutcome call_guest(uint64_t fn, const GuestStack& stack, uint64_t initial_sp, uint64_t a0 = 0, uint64_t a1 = 0,
                        uint64_t a2 = 0, uint64_t a3 = 0);
+
+// CALLBACKS (host -> guest). Valid only from a host function that the guest itself called through a thunk, i.e. while a guest
+// call is active. The callee runs on the SAME guest stack, below the red zone (128 bytes) of the interrupted guest frame, with a fresh
+// GuestCall; the host's callee-saved registers are preserved by cider_enter_guest and the guest's own by the System V callee.
+// Nested callbacks are allowed up to kMaxCallbackDepth. If the callee (or anything it calls) invokes exit(), the request is
+// propagated to the interrupted call and `exited` is true: the host function must return promptly.
+// `fn` must be accepted by the validator (set_callback_validator); refused calls run nothing.
+constexpr unsigned kMaxCallbackDepth = 64;
+CallOutcome call_guest_nested(uint64_t fn, const GuestCallArgs& args);
+// Top-level call with all argument classes.
+CallOutcome call_guest_args(uint64_t fn, const GuestStack& stack, uint64_t initial_sp, const GuestCallArgs& args);
+// Predicate telling whether `fn` is an address guest code may legitimately be called at. Default (none): nothing is accepted.
+using CallbackValidator = bool (*)(uint64_t fn);
+void set_callback_validator(CallbackValidator v);
+unsigned callback_depth();
 
 // Called by exit(): marks the active call as exited with `code`; the thunk then unwinds to the host.
 void request_guest_exit(uint64_t code);

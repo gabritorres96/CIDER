@@ -93,7 +93,10 @@ struct HostTlsState {
     DWORD slot;
     void* slot_value;
     bool operator==(const HostTlsState& o) const {
-        return teb_self == o.teb_self && tls_pointer == o.tls_pointer && stack_base == o.stack_base && stack_limit == o.stack_limit && host_tls == o.host_tls &&
+        return teb_self == o.teb_self && tls_pointer == o.tls_pointer && stack_base == o.stack_base && host_tls == o.host_tls &&
+               // NOTE: NT_TIB.StackLimit (gs:[0x10]) is deliberately NOT compared: Windows itself moves it down when the host stack
+               // grows into its guard page (any deep host call does it), which is not a TLS side effect. It must only never move UP.
+               stack_limit <= o.stack_limit &&
                host_tls_addr == o.host_tls_addr && slot == o.slot && slot_value == o.slot_value;
     }
 };

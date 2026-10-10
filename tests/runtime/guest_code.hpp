@@ -43,6 +43,7 @@ public:
         if (!region_.protect(0, sz, memory::Prot::ReadExecute).ok()) throw AbortTest{};
     }
     uint64_t address() const { return reinterpret_cast<uint64_t>(region_.base()); }
+    size_t size() const { return region_.size(); }
 
 private:
     memory::Region region_;

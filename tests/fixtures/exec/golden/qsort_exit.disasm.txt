@@ -1,0 +1,34 @@
+qsort_exit:
+(__TEXT,__text) section
+_main:
+100000590:	55	pushq	%rbp
+100000591:	48 89 e5	movq	%rsp, %rbp
+100000594:	48 83 ec 10	subq	$0x10, %rsp
+100000598:	0f 28 05 d1 00 00 00	movaps	0xd1(%rip), %xmm0
+10000059f:	0f 29 45 f0	movaps	%xmm0, -0x10(%rbp)
+1000005a3:	48 8d 3d 36 00 00 00	leaq	_bye(%rip), %rdi
+1000005aa:	e8 73 00 00 00	callq	0x100000622 ## symbol stub for: _atexit
+1000005af:	48 8d 0d 4a 00 00 00	leaq	_cmp(%rip), %rcx
+1000005b6:	48 8d 7d f0	leaq	-0x10(%rbp), %rdi
+1000005ba:	be 04 00 00 00	movl	$0x4, %esi
+1000005bf:	ba 04 00 00 00	movl	$0x4, %edx
+1000005c4:	e8 53 00 00 00	callq	0x10000061c ## symbol stub for: _qsort
+1000005c9:	b8 63 00 00 00	movl	$0x63, %eax
+1000005ce:	48 83 c4 10	addq	$0x10, %rsp
+1000005d2:	5d	popq	%rbp
+1000005d3:	c3	retq
+1000005d4:	66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_bye:
+1000005e0:	55	pushq	%rbp
+1000005e1:	48 89 e5	movq	%rsp, %rbp
+1000005e4:	48 8d 3d 95 00 00 00	leaq	0x95(%rip), %rdi ## literal pool for: "bye"
+1000005eb:	5d	popq	%rbp
+1000005ec:	e9 37 00 00 00	jmp	0x100000628 ## symbol stub for: _puts
+1000005f1:	66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_cmp:
+100000600:	55	pushq	%rbp
+100000601:	48 89 e5	movq	%rsp, %rbp
+100000604:	48 8d 3d 79 00 00 00	leaq	0x79(%rip), %rdi ## literal pool for: "comparing"
+10000060b:	e8 18 00 00 00	callq	0x100000628 ## symbol stub for: _puts
+100000610:	bf 0b 00 00 00	movl	$0xb, %edi
+100000615:	e8 14 00 00 00	callq	0x10000062e ## symbol stub for: _exit

@@ -11,7 +11,7 @@ if exist "%R%\obj" rmdir /s /q "%R%\obj"
 if exist "%R%\bin" rmdir /s /q "%R%\bin"
 mkdir "%R%\obj" "%R%\bin" "%R%\golden" 2>nul
 
-set "NAMES=ret42 ret7 ret99 math stack calls globals bss libcall hello args missing exitcall crash spin malloc fmath recurse hog pid printf_int printf_double printf_str printf_mixed snprintf stdio_out files_read files_write time_clock abi_ret unsupported ids open_path"
+set "NAMES=ret42 ret7 ret99 math stack calls globals bss libcall hello args missing exitcall crash spin malloc fmath recurse hog pid printf_int printf_double printf_str printf_mixed snprintf stdio_out files_read files_write time_clock abi_ret unsupported ids open_path qsort_ints qsort_records qsort_nested atexit_order atexit_exit atexit_skipped qsort_exit qsort_bad"
 set "CFLAGS=--target=x86_64-apple-macos10.15 -O1 -ffreestanding -nostdinc -fno-builtin -fno-stack-protector -fno-ident -c"
 
 pushd "%R%\src"

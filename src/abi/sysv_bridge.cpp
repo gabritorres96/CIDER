@@ -44,20 +44,6 @@ Result<ThunkTable> ThunkTable::build_specs(const std::vector<ThunkSpec>& fns) {
     return t;
 }
 
-CallOutcome call_guest(uint64_t fn, const GuestStack& stack, uint64_t initial_sp, uint64_t a0, uint64_t a1, uint64_t a2, uint64_t a3) {
-    (void)stack;
-    GuestCall call;
-    call.fn = reinterpret_cast<void*>(fn);
-    call.stack_top = initial_sp & ~uint64_t{15};
-    call.arg[0] = a0; call.arg[1] = a1; call.arg[2] = a2; call.arg[3] = a3;
-    log::debug(log::Category::Abi, "entering guest function {:#x} (rsp {:#x})", fn, call.stack_top);
-    cider_enter_guest(&call);
-    CallOutcome o;
-    o.exited = call.exited != 0;
-    o.value = call.result;
-    return o;
-}
-
 // ---- System V argument readers ---------------------------------------------------------------------------------
 uint64_t RegsReader::next_int() {
     if (gp_ < 6) return r_.gp[gp_++];

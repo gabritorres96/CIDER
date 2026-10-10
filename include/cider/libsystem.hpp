@@ -66,9 +66,15 @@ struct RuntimeContext {
     std::vector<GuestFd> fds;               // index = guest descriptor
     uint64_t file_stdin = 0, file_stdout = 0, file_stderr = 0;   // guest addresses of the three FILE objects
     std::vector<TlsImage> tls_images;       // images with thread-local storage (filled by the dynamic linker)
+    // ---- callbacks (0.4) -------------------------------------------------------------------------------------
+    std::vector<std::pair<uint64_t, uint64_t>> code_ranges;   // [lo, hi) executable guest code a callback may target (+ libSystem thunks)
+    std::vector<uint64_t> atexit_handlers;  // guest functions registered with atexit(), run in reverse order
+    bool skip_atexit = false;               // _exit(): handlers do not run
 };
 
 void set_context(RuntimeContext* ctx);
+// True when `fn` lies in a registered executable guest range: the only addresses the host may call back into.
+bool is_valid_callback(uint64_t fn);
 RuntimeContext* context();
 
 // Writes to the guest's stdout (fd 1) or stderr (fd 2): through RuntimeContext::sink, else the process handles.
@@ -98,6 +104,8 @@ public:
     bool provides_library(std::string_view install_name) const override;
     // Addresses of the FILE objects behind stdin/stdout/stderr (to be stored in the RuntimeContext).
     void install_stdio(RuntimeContext& ctx) const;
+    // [lo, hi) of the thunk table: guest code may legitimately pass libSystem functions (strcmp...) as callbacks.
+    std::pair<uint64_t, uint64_t> thunk_range() const { return {table_.address(0), table_.address(0) + table_.size() * abi::ThunkTable::kStride}; }
 
 private:
     abi::ThunkTable table_;

@@ -1,0 +1,18 @@
+atexit_skipped:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	48 8d 3d 25 00 00 00	leaq	_never(%rip), %rdi
+10000054b:	e8 40 00 00 00	callq	0x100000590 ## symbol stub for: _atexit
+100000550:	48 8d 3d 6f 00 00 00	leaq	0x6f(%rip), %rdi ## literal pool for: "main"
+100000557:	e8 2e 00 00 00	callq	0x10000058a ## symbol stub for: _puts
+10000055c:	bf 03 00 00 00	movl	$0x3, %edi
+100000561:	e8 1e 00 00 00	callq	0x100000584 ## symbol stub for: __exit
+100000566:	66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_never:
+100000570:	55	pushq	%rbp
+100000571:	48 89 e5	movq	%rsp, %rbp
+100000574:	48 8d 3d 50 00 00 00	leaq	0x50(%rip), %rdi ## literal pool for: "must not run"
+10000057b:	5d	popq	%rbp
+10000057c:	e9 09 00 00 00	jmp	0x10000058a ## symbol stub for: _puts

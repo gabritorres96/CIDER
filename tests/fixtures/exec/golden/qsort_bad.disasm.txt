@@ -1,0 +1,40 @@
+qsort_bad:
+(__TEXT,__text) section
+_main:
+100000540:	b8 6e 00 00 00	movl	$0x6e, %eax
+100000545:	83 ff 02	cmpl	$0x2, %edi
+100000548:	7c 07	jl	0x100000551
+10000054a:	48 8b 46 08	movq	0x8(%rsi), %rax
+10000054e:	0f be 00	movsbl	(%rax), %eax
+100000551:	55	pushq	%rbp
+100000552:	48 89 e5	movq	%rsp, %rbp
+100000555:	53	pushq	%rbx
+100000556:	50	pushq	%rax
+100000557:	c7 45 f4 00 00 00 00	movl	$0x0, -0xc(%rbp)
+10000055e:	83 f8 64	cmpl	$0x64, %eax
+100000561:	74 17	je	0x10000057a
+100000563:	83 f8 68	cmpl	$0x68, %eax
+100000566:	74 0c	je	0x100000574
+100000568:	83 f8 6c	cmpl	$0x6c, %eax
+10000056b:	75 16	jne	0x100000583
+10000056d:	bb 00 10 00 00	movl	$0x1000, %ebx
+100000572:	eb 11	jmp	0x100000585
+100000574:	48 8d 5d f4	leaq	-0xc(%rbp), %rbx
+100000578:	eb 0b	jmp	0x100000585
+10000057a:	48 8d 1d 8f 1a 00 00	leaq	_table(%rip), %rbx
+100000581:	eb 02	jmp	0x100000585
+100000583:	31 db	xorl	%ebx, %ebx
+100000585:	48 8d 3d 68 00 00 00	leaq	0x68(%rip), %rdi ## literal pool for: "before"
+10000058c:	e8 33 00 00 00	callq	0x1000005c4 ## symbol stub for: _puts
+100000591:	48 8d 3d 78 1a 00 00	leaq	_table(%rip), %rdi
+100000598:	be 04 00 00 00	movl	$0x4, %esi
+10000059d:	ba 04 00 00 00	movl	$0x4, %edx
+1000005a2:	48 89 d9	movq	%rbx, %rcx
+1000005a5:	e8 20 00 00 00	callq	0x1000005ca ## symbol stub for: _qsort
+1000005aa:	48 8d 3d 4a 00 00 00	leaq	0x4a(%rip), %rdi ## literal pool for: "after"
+1000005b1:	e8 0e 00 00 00	callq	0x1000005c4 ## symbol stub for: _puts
+1000005b6:	b8 05 00 00 00	movl	$0x5, %eax
+1000005bb:	48 83 c4 08	addq	$0x8, %rsp
+1000005bf:	5b	popq	%rbx
+1000005c0:	5d	popq	%rbp
+1000005c1:	c3	retq

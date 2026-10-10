@@ -54,12 +54,14 @@ CIDER_TEST(registry_lists_exactly_the_documented_symbols) {
         "_strcpy", "_strncpy", "_strcat", "_strchr", "_strrchr", "_strstr", "_strdup", "_atoi", "_strtol", "_sin", "_cos", "_tan", "_exp", "_log",
         "_log10", "_atan", "_atan2", "_fmod", "_ldexp", "_frexp", "_div", "_ldiv",
         // 0.3 thread-local storage
-        "__tlv_bootstrap", "_tlv_get_addr"};
+        "__tlv_bootstrap", "_tlv_get_addr",
+        // 0.4 callbacks
+        "_qsort", "_bsearch", "_atexit"};
     CHECK(names == expected);
     for (const auto& n : expected) CHECK(is_implemented(n));
     for (const char* n : {"___stdinp", "___stdoutp", "___stderrp"}) CHECK(is_implemented(n));
     // honest negatives: NOT implemented, so binaries importing them are rejected at load time
-    for (const char* n : {"_fopen", "_fread", "_fgets", "_fork", "_execve", "_signal", "_pthread_create", "_mmap", "_qsort", "_dlopen", "_sysctl", "_sscanf", "_scanf"})
+    for (const char* n : {"_fopen", "_fread", "_fgets", "_fork", "_execve", "_signal", "_pthread_create", "_mmap", "_dlopen", "_sysctl", "_sscanf", "_scanf"})
         CHECK(!is_implemented(n));
 }
 

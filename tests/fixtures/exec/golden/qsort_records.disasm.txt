@@ -1,0 +1,143 @@
+qsort_records:
+(__TEXT,__text) section
+_main:
+1000005e0:	55	pushq	%rbp
+1000005e1:	48 89 e5	movq	%rsp, %rbp
+1000005e4:	41 56	pushq	%r14
+1000005e6:	53	pushq	%rbx
+1000005e7:	48 81 ec a0 00 00 00	subq	$0xa0, %rsp
+1000005ee:	48 8b 05 3b 0a 00 00	movq	0xa3b(%rip), %rax
+1000005f5:	48 89 45 90	movq	%rax, -0x70(%rbp)
+1000005f9:	0f 28 05 20 0a 00 00	movaps	0xa20(%rip), %xmm0
+100000600:	0f 29 45 80	movaps	%xmm0, -0x80(%rbp)
+100000604:	0f 28 05 05 0a 00 00	movaps	0xa05(%rip), %xmm0
+10000060b:	0f 29 85 70 ff ff ff	movaps	%xmm0, -0x90(%rbp)
+100000612:	48 8d 0d f7 01 00 00	leaq	_cmp_str(%rip), %rcx
+100000619:	48 8d bd 70 ff ff ff	leaq	-0x90(%rbp), %rdi
+100000620:	be 05 00 00 00	movl	$0x5, %esi
+100000625:	ba 08 00 00 00	movl	$0x8, %edx
+10000062a:	e8 19 02 00 00	callq	0x100000848 ## symbol stub for: _qsort
+10000062f:	48 8d 1d 73 02 00 00	leaq	0x273(%rip), %rbx ## literal pool for: "%s "
+100000636:	45 31 f6	xorl	%r14d, %r14d
+100000639:	0f 1f 80 00 00 00 00	nopl	(%rax)
+100000640:	4a 8b b4 f5 70 ff ff ff	movq	-0x90(%rbp,%r14,8), %rsi
+100000648:	48 89 df	movq	%rbx, %rdi
+10000064b:	31 c0	xorl	%eax, %eax
+10000064d:	e8 f0 01 00 00	callq	0x100000842 ## symbol stub for: _printf
+100000652:	49 ff c6	incq	%r14
+100000655:	49 83 fe 05	cmpq	$0x5, %r14
+100000659:	75 e5	jne	0x100000640
+10000065b:	48 8d 3d 4b 02 00 00	leaq	0x24b(%rip), %rdi ## literal pool for: "\n"
+100000662:	31 c0	xorl	%eax, %eax
+100000664:	e8 d9 01 00 00	callq	0x100000842 ## symbol stub for: _printf
+100000669:	48 8b bd 70 ff ff ff	movq	-0x90(%rbp), %rdi
+100000670:	48 8d 35 1a 02 00 00	leaq	0x21a(%rip), %rsi ## literal pool for: "apple"
+100000677:	e8 d2 01 00 00	callq	0x10000084e ## symbol stub for: _strcmp
+10000067c:	bb 01 00 00 00	movl	$0x1, %ebx
+100000681:	85 c0	testl	%eax, %eax
+100000683:	75 14	jne	0x100000699
+100000685:	48 8b 7d 90	movq	-0x70(%rbp), %rdi
+100000689:	48 8d 35 fc 01 00 00	leaq	0x1fc(%rip), %rsi ## literal pool for: "pear"
+100000690:	e8 b9 01 00 00	callq	0x10000084e ## symbol stub for: _strcmp
+100000695:	85 c0	testl	%eax, %eax
+100000697:	74 0e	je	0x1000006a7
+100000699:	89 d8	movl	%ebx, %eax
+10000069b:	48 81 c4 a0 00 00 00	addq	$0xa0, %rsp
+1000006a2:	5b	popq	%rbx
+1000006a3:	41 5e	popq	%r14
+1000006a5:	5d	popq	%rbp
+1000006a6:	c3	retq
+1000006a7:	0f 28 05 42 02 00 00	movaps	0x242(%rip), %xmm0
+1000006ae:	0f 29 45 d0	movaps	%xmm0, -0x30(%rbp)
+1000006b2:	0f 28 05 27 02 00 00	movaps	0x227(%rip), %xmm0
+1000006b9:	0f 29 45 c0	movaps	%xmm0, -0x40(%rbp)
+1000006bd:	0f 28 05 0c 02 00 00	movaps	0x20c(%rip), %xmm0
+1000006c4:	0f 29 45 b0	movaps	%xmm0, -0x50(%rbp)
+1000006c8:	0f 28 05 f1 01 00 00	movaps	0x1f1(%rip), %xmm0
+1000006cf:	0f 29 45 a0	movaps	%xmm0, -0x60(%rbp)
+1000006d3:	48 c7 45 e0 05 00 00 00	movq	$0x5, -0x20(%rbp)
+1000006db:	48 8d 0d 3e 01 00 00	leaq	_cmp_rec(%rip), %rcx
+1000006e2:	48 8d 7d a0	leaq	-0x60(%rbp), %rdi
+1000006e6:	be 06 00 00 00	movl	$0x6, %esi
+1000006eb:	ba 0c 00 00 00	movl	$0xc, %edx
+1000006f0:	e8 53 01 00 00	callq	0x100000848 ## symbol stub for: _qsort
+1000006f5:	48 8d 1d b3 01 00 00	leaq	0x1b3(%rip), %rbx ## literal pool for: "%d:%d "
+1000006fc:	45 31 f6	xorl	%r14d, %r14d
+1000006ff:	90	nop
+100000700:	42 8b 74 35 a0	movl	-0x60(%rbp,%r14), %esi
+100000705:	42 8b 54 35 a4	movl	-0x5c(%rbp,%r14), %edx
+10000070a:	48 89 df	movq	%rbx, %rdi
+10000070d:	31 c0	xorl	%eax, %eax
+10000070f:	e8 2e 01 00 00	callq	0x100000842 ## symbol stub for: _printf
+100000714:	49 83 c6 0c	addq	$0xc, %r14
+100000718:	49 83 fe 48	cmpq	$0x48, %r14
+10000071c:	75 e2	jne	0x100000700
+10000071e:	48 8d 3d 88 01 00 00	leaq	0x188(%rip), %rdi ## literal pool for: "\n"
+100000725:	31 c0	xorl	%eax, %eax
+100000727:	e8 16 01 00 00	callq	0x100000842 ## symbol stub for: _printf
+10000072c:	83 7d a4 01	cmpl	$0x1, -0x5c(%rbp)
+100000730:	bb 02 00 00 00	movl	$0x2, %ebx
+100000735:	0f 85 5e ff ff ff	jne	0x100000699
+10000073b:	83 7d b0 04	cmpl	$0x4, -0x50(%rbp)
+10000073f:	0f 85 54 ff ff ff	jne	0x100000699
+100000745:	83 7d c8 00	cmpl	$0x0, -0x38(%rbp)
+100000749:	0f 85 4a ff ff ff	jne	0x100000699
+10000074f:	83 7d d4 02	cmpl	$0x2, -0x2c(%rbp)
+100000753:	0f 85 40 ff ff ff	jne	0x100000699
+100000759:	83 7d e0 05	cmpl	$0x5, -0x20(%rbp)
+10000075d:	0f 85 36 ff ff ff	jne	0x100000699
+100000763:	0f 28 05 b6 01 00 00	movaps	0x1b6(%rip), %xmm0
+10000076a:	0f 29 85 60 ff ff ff	movaps	%xmm0, -0xa0(%rbp)
+100000771:	0f 28 05 98 01 00 00	movaps	0x198(%rip), %xmm0
+100000778:	0f 29 85 50 ff ff ff	movaps	%xmm0, -0xb0(%rbp)
+10000077f:	c7 45 e8 0b 00 00 00	movl	$0xb, -0x18(%rbp)
+100000786:	c7 45 ec 04 00 00 00	movl	$0x4, -0x14(%rbp)
+10000078d:	4c 8d 05 9c 00 00 00	leaq	_cmp_int(%rip), %r8
+100000794:	48 8d 7d e8	leaq	-0x18(%rbp), %rdi
+100000798:	48 8d 9d 50 ff ff ff	leaq	-0xb0(%rbp), %rbx
+10000079f:	ba 08 00 00 00	movl	$0x8, %edx
+1000007a4:	b9 04 00 00 00	movl	$0x4, %ecx
+1000007a9:	48 89 de	movq	%rbx, %rsi
+1000007ac:	e8 8b 00 00 00	callq	0x10000083c ## symbol stub for: _bsearch
+1000007b1:	48 85 c0	testq	%rax, %rax
+1000007b4:	0f 94 c1	sete	%cl
+1000007b7:	48 29 d8	subq	%rbx, %rax
+1000007ba:	48 83 f8 14	cmpq	$0x14, %rax
+1000007be:	0f 95 c0	setne	%al
+1000007c1:	bb 03 00 00 00	movl	$0x3, %ebx
+1000007c6:	08 c8	orb	%cl, %al
+1000007c8:	0f 85 cb fe ff ff	jne	0x100000699
+1000007ce:	4c 8d 05 5b 00 00 00	leaq	_cmp_int(%rip), %r8
+1000007d5:	48 8d 7d ec	leaq	-0x14(%rbp), %rdi
+1000007d9:	48 8d b5 50 ff ff ff	leaq	-0xb0(%rbp), %rsi
+1000007e0:	ba 08 00 00 00	movl	$0x8, %edx
+1000007e5:	b9 04 00 00 00	movl	$0x4, %ecx
+1000007ea:	e8 4d 00 00 00	callq	0x10000083c ## symbol stub for: _bsearch
+1000007ef:	48 85 c0	testq	%rax, %rax
+1000007f2:	b8 2a 00 00 00	movl	$0x2a, %eax
+1000007f7:	bb 04 00 00 00	movl	$0x4, %ebx
+1000007fc:	0f 44 d8	cmovel	%eax, %ebx
+1000007ff:	e9 95 fe ff ff	jmp	0x100000699
+100000804:	66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_cmp_str:
+100000810:	55	pushq	%rbp
+100000811:	48 89 e5	movq	%rsp, %rbp
+100000814:	48 8b 3f	movq	(%rdi), %rdi
+100000817:	48 8b 36	movq	(%rsi), %rsi
+10000081a:	5d	popq	%rbp
+10000081b:	e9 2e 00 00 00	jmp	0x10000084e ## symbol stub for: _strcmp
+_cmp_rec:
+100000820:	55	pushq	%rbp
+100000821:	48 89 e5	movq	%rsp, %rbp
+100000824:	8b 07	movl	(%rdi), %eax
+100000826:	2b 06	subl	(%rsi), %eax
+100000828:	5d	popq	%rbp
+100000829:	c3	retq
+10000082a:	66 0f 1f 44 00 00	nopw	(%rax,%rax)
+_cmp_int:
+100000830:	55	pushq	%rbp
+100000831:	48 89 e5	movq	%rsp, %rbp
+100000834:	8b 07	movl	(%rdi), %eax
+100000836:	2b 06	subl	(%rsi), %eax
+100000838:	5d	popq	%rbp
+100000839:	c3	retq

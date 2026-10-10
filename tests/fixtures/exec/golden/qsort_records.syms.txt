@@ -1,0 +1,14 @@
+qsort_records:
+
+SYMBOL TABLE:
+0000000100000810 l     F __TEXT,__text _cmp_str
+0000000100000820 l     F __TEXT,__text _cmp_rec
+0000000100000830 l     F __TEXT,__text _cmp_int
+0000000100002020 l     O __DATA,__data __dyld_private
+00000001000005e0 g     F __TEXT,__text _main
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _bsearch
+0000000000000000         *UND* _printf
+0000000000000000         *UND* _qsort
+0000000000000000         *UND* _strcmp
+0000000000000000         *UND* dyld_stub_binder

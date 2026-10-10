@@ -1,0 +1,71 @@
+qsort_nested:
+(__TEXT,__text) section
+_main:
+100000630:	55	pushq	%rbp
+100000631:	48 89 e5	movq	%rsp, %rbp
+100000634:	48 83 ec 20	subq	$0x20, %rsp
+100000638:	0f 28 05 21 01 00 00	movaps	0x121(%rip), %xmm0
+10000063f:	0f 29 45 e0	movaps	%xmm0, -0x20(%rbp)
+100000643:	48 b8 02 00 00 00 01 00 00 00	movabsq	$0x100000002, %rax
+10000064d:	48 89 45 f0	movq	%rax, -0x10(%rbp)
+100000651:	48 8d 0d 68 00 00 00	leaq	_cmp_outer(%rip), %rcx
+100000658:	48 8d 7d e0	leaq	-0x20(%rbp), %rdi
+10000065c:	be 06 00 00 00	movl	$0x6, %esi
+100000661:	ba 04 00 00 00	movl	$0x4, %edx
+100000666:	e8 c7 00 00 00	callq	0x100000732 ## symbol stub for: _qsort
+10000066b:	b8 01 00 00 00	movl	$0x1, %eax
+100000670:	8b 4c 85 dc	movl	-0x24(%rbp,%rax,4), %ecx
+100000674:	48 39 c8	cmpq	%rcx, %rax
+100000677:	75 33	jne	0x1000006ac
+100000679:	48 ff c0	incq	%rax
+10000067c:	48 83 f8 07	cmpq	$0x7, %rax
+100000680:	75 ee	jne	0x100000670
+100000682:	8b 35 90 19 00 00	movl	_depth_max(%rip), %esi
+100000688:	48 8d 3d e9 00 00 00	leaq	0xe9(%rip), %rdi ## literal pool for: "outer comparisons: %d\n"
+10000068f:	31 c0	xorl	%eax, %eax
+100000691:	e8 96 00 00 00	callq	0x10000072c ## symbol stub for: _printf
+100000696:	83 3d 7b 19 00 00 00	cmpl	$0x0, _depth_max(%rip)
+10000069d:	b9 2a 00 00 00	movl	$0x2a, %ecx
+1000006a2:	b8 02 00 00 00	movl	$0x2, %eax
+1000006a7:	0f 4f c1	cmovgl	%ecx, %eax
+1000006aa:	eb 05	jmp	0x1000006b1
+1000006ac:	b8 01 00 00 00	movl	$0x1, %eax
+1000006b1:	48 83 c4 20	addq	$0x20, %rsp
+1000006b5:	5d	popq	%rbp
+1000006b6:	c3	retq
+1000006b7:	66 0f 1f 84 00 00 00 00 00	nopw	(%rax,%rax)
+_cmp_outer:
+1000006c0:	55	pushq	%rbp
+1000006c1:	48 89 e5	movq	%rsp, %rbp
+1000006c4:	41 56	pushq	%r14
+1000006c6:	53	pushq	%rbx
+1000006c7:	48 83 ec 10	subq	$0x10, %rsp
+1000006cb:	48 89 f3	movq	%rsi, %rbx
+1000006ce:	49 89 fe	movq	%rdi, %r14
+1000006d1:	0f 28 05 b8 00 00 00	movaps	0xb8(%rip), %xmm0
+1000006d8:	0f 29 45 e0	movaps	%xmm0, -0x20(%rbp)
+1000006dc:	48 8d 0d 3d 00 00 00	leaq	_cmp_inner(%rip), %rcx
+1000006e3:	48 8d 7d e0	leaq	-0x20(%rbp), %rdi
+1000006e7:	be 04 00 00 00	movl	$0x4, %esi
+1000006ec:	ba 04 00 00 00	movl	$0x4, %edx
+1000006f1:	e8 3c 00 00 00	callq	0x100000732 ## symbol stub for: _qsort
+1000006f6:	83 7d e0 01	cmpl	$0x1, -0x20(%rbp)
+1000006fa:	75 06	jne	0x100000702
+1000006fc:	83 7d ec 04	cmpl	$0x4, -0x14(%rbp)
+100000700:	74 0a	je	0x10000070c
+100000702:	c7 05 0c 19 00 00 18 fc ff ff	movl	$0xfffffc18, _depth_max(%rip)
+10000070c:	ff 05 06 19 00 00	incl	_depth_max(%rip)
+100000712:	41 8b 06	movl	(%r14), %eax
+100000715:	2b 03	subl	(%rbx), %eax
+100000717:	48 83 c4 10	addq	$0x10, %rsp
+10000071b:	5b	popq	%rbx
+10000071c:	41 5e	popq	%r14
+10000071e:	5d	popq	%rbp
+10000071f:	c3	retq
+_cmp_inner:
+100000720:	55	pushq	%rbp
+100000721:	48 89 e5	movq	%rsp, %rbp
+100000724:	8b 07	movl	(%rdi), %eax
+100000726:	2b 06	subl	(%rsi), %eax
+100000728:	5d	popq	%rbp
+100000729:	c3	retq

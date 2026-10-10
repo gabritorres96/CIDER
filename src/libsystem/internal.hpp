@@ -10,6 +10,7 @@ namespace cider::libsystem::detail {
 void add_stdio_symbols(std::vector<HostSymbol>& out);   // stdio.cpp : printf family, fwrite, fputs, ...
 void add_posix_symbols(std::vector<HostSymbol>& out);   // posix.cpp : files, time, process ids, errno
 void add_misc_symbols(std::vector<HostSymbol>& out);    // misc.cpp  : more string and math functions, div/ldiv
+void add_callback_symbols(std::vector<HostSymbol>& out); // callbacks.cpp: qsort, bsearch, atexit
 void add_tls_symbols(std::vector<HostSymbol>& out);     // tls.cpp   : __tlv_bootstrap / tlv_get_addr
 
 // Darwin errno values (<sys/errno.h>). They differ from Windows' and from Linux' (EAGAIN is 35 here, 11 on Linux).

@@ -13,7 +13,10 @@ constexpr size_t kFileObjectSize = 64;       // opaque FILE objects: [0] magic, 
 constexpr uint64_t kFileMagic = 0x43494445522d4649ull;   // "CIDER-FI"
 }  // namespace
 
-void set_context(RuntimeContext* ctx) { g_ctx = ctx; }
+void set_context(RuntimeContext* ctx) {
+    g_ctx = ctx;
+    abi::set_callback_validator(ctx ? &is_valid_callback : nullptr);
+}
 RuntimeContext* context() { return g_ctx; }
 
 Result<std::unique_ptr<LibSystemProvider>> LibSystemProvider::create() {

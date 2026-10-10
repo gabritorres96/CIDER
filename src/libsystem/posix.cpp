@@ -431,7 +431,10 @@ int w_getppid() {
     CloseHandle(snap);
     return parent ? static_cast<int>(parent) : 1;
 }
-void w_exit_now(int code) { abi::request_guest_exit(static_cast<uint32_t>(code)); }   // _exit: the guest has no atexit handlers anyway
+void w_exit_now(int code) {
+    if (RuntimeContext* c = context()) c->skip_atexit = true;   // _exit: no atexit handlers
+    abi::request_guest_exit(static_cast<uint32_t>(code));
+}   // _exit: the guest has no atexit handlers anyway
 
 int* w_errno_location() {
     static int fallback = 0;

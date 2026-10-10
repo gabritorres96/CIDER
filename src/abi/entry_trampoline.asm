@@ -37,16 +37,30 @@ cider_enter_guest PROC
     mov rbx, rcx
     mov qword ptr [rbx+48], rsp          ; host_rsp (16-byte aligned)
     mov cider_current_call, rbx
-    mov rax, qword ptr [rbx+0]           ; guest function
+    mov r10, qword ptr [rbx+0]           ; guest function
+    movq xmm0, qword ptr [rbx+104]       ; System V vector argument registers (doubles / floats)
+    movq xmm1, qword ptr [rbx+112]
+    movq xmm2, qword ptr [rbx+120]
+    movq xmm3, qword ptr [rbx+128]
+    movq xmm4, qword ptr [rbx+136]
+    movq xmm5, qword ptr [rbx+144]
+    movq xmm6, qword ptr [rbx+152]
+    movq xmm7, qword ptr [rbx+160]
     mov rdi, qword ptr [rbx+16]          ; System V integer argument registers
     mov rsi, qword ptr [rbx+24]
     mov rdx, qword ptr [rbx+32]
     mov rcx, qword ptr [rbx+40]
-    mov rsp, qword ptr [rbx+8]           ; switch to the guest stack (16-byte aligned: after CALL, rsp%16 == 8)
+    mov r8,  qword ptr [rbx+88]
+    mov r9,  qword ptr [rbx+96]
+    mov eax, dword ptr [rbx+192]         ; AL = vector registers used (variadic callees)
+    mov rsp, qword ptr [rbx+8]           ; guest stack: 16-byte aligned, stack arguments already stored at [rsp]
     cld                                  ; System V requires DF=0 at calls
-    call rax                             ; <-- guest code runs here
+    call r10                             ; <-- guest code runs here
     mov r11, cider_current_call
     mov qword ptr [r11+64], rax
+    mov qword ptr [r11+168], rdx         ; second integer result
+    movq qword ptr [r11+176], xmm0       ; vector results
+    movq qword ptr [r11+184], xmm1
     jmp cider_host_epilogue
 cider_enter_guest ENDP
 

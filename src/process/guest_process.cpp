@@ -82,6 +82,14 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     ctx.sink = cfg.sink;
     ctx.root = cfg.root;
     provider.value()->install_stdio(ctx);
+    // Callbacks may only target executable code of the loaded images and the libSystem thunks.
+    for (const auto& r : program->images())
+        for (const auto& s : r->mapped.layout.segments)
+            if (s.final_prot == memory::Prot::ReadExecute) {
+                const uint64_t seg_lo = static_cast<uint64_t>(static_cast<int64_t>(s.vmaddr) + r->mapped.slide);
+                ctx.code_ranges.emplace_back(seg_lo, seg_lo + s.vmsize);
+            }
+    ctx.code_ranges.push_back(provider.value()->thunk_range());
     for (const auto& r : program->images()) {
         if (!r->tls.present()) continue;
         libsystem::TlsImage t;
@@ -125,6 +133,17 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     log::info(log::Category::Execution, "entering guest code at {:#x}", program->entry_address());
     log::info(log::Category::Execution, "Guest started");
     abi::CallOutcome r = abi::call_guest(program->entry_address(), stack.value(), g.initial_sp, g.argc, g.argv, g.envp, g.apple);
+
+    // atexit handlers: reverse order, after main returned or exit() was called (not after _exit or a trap). A handler that calls
+    // exit() replaces the exit code and ends the sequence.
+    uint64_t final_code = r.value;
+    while (ctx.fault.empty() && !ctx.skip_atexit && !ctx.atexit_handlers.empty()) {
+        const uint64_t fn = ctx.atexit_handlers.back();
+        ctx.atexit_handlers.pop_back();
+        log::info(log::Category::Execution, "running atexit handler at {:#x}", fn);
+        abi::CallOutcome h = abi::call_guest(fn, stack.value(), g.initial_sp);
+        if (h.exited) { final_code = h.value; break; }
+    }
     libsystem::set_context(nullptr);
 
     if (!ctx.fault.empty()) {
@@ -133,7 +152,7 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
         log::error("guest faulted: {}", ctx.fault);
     } else {
         out.state = State::Exited;
-        out.exit_code = static_cast<int32_t>(static_cast<uint32_t>(r.value));
+        out.exit_code = static_cast<int32_t>(static_cast<uint32_t>(final_code));
         out.returned_from_main = !r.exited;
         log::info(log::Category::Execution, "guest {} {}", r.exited ? "called exit with" : "returned", out.exit_code);
     }
