@@ -1,6 +1,6 @@
 # ABI notes: System V AMD64 (macOS) vs Windows x64
 
-Research notes for the loader/trampolines (0.2). **No ABI adaptation is implemented in 0.1.**
+Reference table of the ABI differences; the implemented part is described at the end of this file (CIDER 0.2).
 Running x86_64 instructions natively does not make a macOS binary compatible: the ABI, the
 libraries and the system calls all differ.
 
@@ -32,3 +32,23 @@ Consequences for CIDER (to design and test, not yet built):
   QEMU user-mode, LLVM-based dynamic binary translation. Windows ARM64 host + macOS ARM64 guest is
   the cheaper scenario (native execution; ABIs still differ: Apple deviates from AAPCS64 in
   variadic and `x18` handling).
+
+## What CIDER 0.2 implements (src/abi, tests in test_abi / test_execution)
+
+| Concern | Implementation | Verified by |
+| --- | --- | --- |
+| Entering System V code from Windows x64 | `cider_enter_guest` (MASM): saves rbx rbp rdi rsi r12-r15 xmm6-xmm15, switches rsp to the guest stack, loads rdi/rsi/rdx/rcx, `cld`, `call` | guest clobbers all of those registers; host values compared afterwards |
+| Argument registers | System V integer arguments: rdi, rsi, rdx, rcx (entry) and rdi..r9 (thunks) | machine code with `imul` per register |
+| Stack alignment | initial rsp 16-byte aligned before the `call`, so the callee sees rsp % 16 == 8 | guest returns `rsp & 15` == 8 |
+| Red zone | guest runs on a host-allocated stack with room below rsp | guest leaf code writes 128 bytes below rsp |
+| Calls guest → host | per-symbol stub (`mov r10, fn; jmp thunk`) → `cider_guest_thunk`: rdi,rsi,rdx,rcx → rcx,rdx,r8,r9; r8,r9 → Windows stack slots 5/6; 32-byte shadow space; runs on the **host** stack | 2-, 4- and 6-argument host functions called from guest code |
+| Return values | `eax`/`rax` and `xmm0` pass through untouched | int, 64-bit, pointer and `double` results |
+| `double` arguments | xmm0/xmm1 identical on both ABIs when they are the first/second *positional* argument | `sqrt`, `pow`, `floor`, ... called from a real Mach-O (fixture `fmath`) |
+| `exit()` | host function sets `GuestCall::exited`; the thunk returns to the host epilogue instead of the guest | code after `exit` never runs |
+| Unwinding | none: an exception inside guest code terminates the worker | `crash`, `recurse`, `ud2` tests |
+
+Still **not** handled: > 6 integer arguments, variadic callees (`al`), struct returns by hidden pointer or in
+rax:rdx, mixed integer/double signatures (positional slots differ), `long double`, callbacks host → guest,
+re-entrancy (one active guest call), SEH/DWARF unwinding across the boundary, `gs`-relative thread storage
+(Windows owns `gs`; macOS code using `%gs:` would read the TEB), raw `syscall` instructions (Windows would
+interpret the number as an NT service).

@@ -21,6 +21,13 @@ system directories), `outside-bundle` (resolved but escaping the bundle). Weak d
 missing do not downgrade the verdict. The closure follows bundled libraries (max 512 images,
 cycle-safe) using the loader's rpaths plus its ancestors'.
 
+## What `cider run` adds (0.2)
+
+`cider run` is the only place where execution is observed. Its result is a fact about *that run of that binary*, not a
+compatibility rating: `compatibility` still reports "execution not confirmed" for every file. Binaries known to run today:
+only the controlled fixtures in `tests/fixtures/exec` (see EXECUTION.md). Every real application tried is refused at
+validation with a precise missing-library message.
+
 ## Not implemented
 
 The local compatibility database and per-application profiles (`compatibility/profiles`) are
@@ -29,5 +36,7 @@ with the first option they control.
 
 ## Tested applications
 
-None. No real macOS application has been run or even analysed by the automated tests; fixtures are
-synthetic (see TESTING.md). No compatibility with any real application is claimed.
+Real applications **executed**: none. In 0.1.1 three real apps (Rectangle, Stats, MonitorControl) were analysed statically
+and extracted from their DMGs; in 0.2 `cider run` refuses them (exit 12: Foundation/AppKit/libobjc/Swift runtime/embedded
+frameworks are not available). Programs executed successfully: only the LLVM-built fixtures listed in EXECUTION.md.
+No compatibility with any real application is claimed.

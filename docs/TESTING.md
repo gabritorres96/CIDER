@@ -9,7 +9,7 @@ No third-party test framework: `tests/unit/test_framework.hpp` is a ~70-line har
 substring filter: `build/bin/Debug/test_dmg.exe extract_`. The integration suite needs
 `CIDER_EXE` (set automatically by CTest).
 
-## Suites (166 tests with all optional inputs; 164 run + 3 skipped without them)
+## Suites (294 tests with all optional inputs; 291 run + 3 skipped without them)
 
 | Executable | Tests | Covers |
 | --- | --- | --- |
@@ -22,7 +22,15 @@ substring filter: `build/bin/Debug/test_dmg.exe extract_`. The integration suite
 | `test_mutation_fuzz` | 4 | 20 000 random mutations each of Mach-O/FAT and plists, garbage input, regression |
 | `test_dmg` | 36 | UDIF structure and corruption, encrypted/sparse/raw detection, path/listing validation, process runner, 7-Zip extraction (limits, cleanup, traversal, long paths, links, hdiutil-like layout), optional real DMGs |
 | `test_real_macho` | 13 | LLVM-built fixtures vs llvm-objdump goldens, live llvm-objdump, optional real-world apps |
-| `test_cli` | 15 | the real `cider.exe`: all commands, exit codes, JSON validity, DMG end-to-end, real fixtures |
+| `test_cli` | 24 | the real `cider.exe`: all commands, exit codes, JSON validity, DMG end-to-end, real fixtures, `cider run` (text, JSON, exit codes 0/11/12/14, bundle, timeout) |
+| `test_memory` | 10 | VirtualAlloc/Protect/Query wrapper: W^X mapping of protections, range/overflow checks, release on destruction, relocation |
+| `test_abi` | 14 | **hand-assembled** System V code: argument registers, alignment, red zone, callee-saved register preservation (MASM self-test), thunks with 2/4/6 integer args and doubles, exit, guard page |
+| `test_loader` | 23 | layout planning (RWX, overlap, alignment, overflow, entry, limits), validator, mapping (file bytes in memory, zero-fill, per-page W^X), fixups, cleanup after failure, mutated executables, fixture metadata vs llvm-objdump |
+| `test_entry` | 9 | LC_MAIN contract (entry == `_main` from llvm-objdump), argv/envp/apple block, stack limits, `args` fixture |
+| `test_symbols` | 13 | rebase/bind/lazy-bind opcode decoding (hand-made and malformed streams), decoded fixups vs `llvm-objdump --rebase --bind --lazy-bind` for 17 binaries, resolver with a fake and the real provider |
+| `test_runtime` | 11 | every libSystem function called from guest code through the thunks, registry honesty, guest heap lifetime |
+| `test_execution` | 21 | **real execution** of the Mach-O fixtures A–H in-process with independently computed expectations, binary patching (authenticity), relocation/slide, repeated runs without leaks |
+| `test_execution_errors` | 18 | load failures (nothing runs), result protocol, worker process: crash, illegal instruction, stack overflow, timeout, memory limit, separate pid, captured output |
 
 Skipped (printed as `[SKIP]`, exit code 0) when the input is absent: 7-Zip tests without 7-Zip, the symlink
 test without symlink privilege, and three that need explicit inputs:
@@ -36,6 +44,15 @@ test without symlink privilege, and three that need explicit inputs:
 `tools/validate-real-dmgs.ps1` downloads three official DMGs and sets these up; the test-suite itself never
 downloads anything.
 
+## Execution fixtures (0.2)
+
+`tests/fixtures/exec` — 20 C programs (`src/`) compiled by `clang --target=x86_64-apple-macos10.15` and linked by `ld64.lld` against a
+hand-written `libSystem.tbd` (`tools/gen-exec-fixtures.cmd`; binaries, `llvm-objdump` snapshots incl. disassembly and
+rebase/bind tables are committed). A: `ret42 ret7 ret99`, B: `math`, C: `stack`, D: `calls`, E: `globals`, F: `bss`,
+G: `libcall`, H: `hello`, I: `args`, J: `missing` (imports the unimplemented `_fork`), plus `exitcall`, `malloc`, `fmath`,
+`crash`, `spin`, `recurse`, `hog`, `pid` for failure/limit tests. All use the LC_MAIN protocol (the real dyld one); none
+needs more than the documented subset. `test_execution` asserts values computed in C++ independently of the guest.
+
 ## Fixtures — what they are and are not
 
 * **Real (since 0.1.1)**: `tests/fixtures/real` — Mach-O built by LLVM 23.1.3 (`tools/gen-real-fixtures.cmd`), against a
@@ -45,6 +62,8 @@ downloads anything.
   in code for malformed-input tests and DMG logic (raw or zlib-"stored" chunks; `real_layout` mimics the
   MBR/GPT/free partitions of hdiutil images). No HFS+/APFS writer exists.
 * `tests/fixtures/regression`: inputs that once crashed CIDER (libFuzzer finding).
+* `test_abi` guest code is **hand-assembled machine code** (byte arrays in the test) so the ABI bridge is tested
+  independently of any compiler.
 * Embedded "code" is never executed.
 
 ## Sanitizers and fuzzing (clang-cl + portable LLVM)
@@ -66,7 +85,10 @@ sources: `-DCIDER_BUILD_FUZZERS=ON -DCIDER_LIBFUZZER_SRC=<llvm-project>/compiler
 build-fuzz\bin\fuzz_macho.exe corpus_dir -max_total_time=300 -max_len=65536
 ```
 
-Results of the 0.1.1 campaign: [REAL-WORLD.md](REAL-WORLD.md) / [PROGRESS.md](PROGRESS.md).
+ASan notes for 0.2: the whole suite (all 294 tests, including real guest execution and the worker crash/limit tests) runs clean
+under clang-cl ASan. Guest memory is outside ASan's view by construction (guest code is not instrumented, its heap is a private
+Win32 heap, not the ASan allocator). Fuzz harness `fuzz_loader` exercises the loader only (mutated binaries are mapped and
+released, **never executed**). Results: [PROGRESS.md](PROGRESS.md), [REAL-WORLD.md](REAL-WORLD.md) (0.1.1 campaign).
 
 ## Reproducing a failure
 

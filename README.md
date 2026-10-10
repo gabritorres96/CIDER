@@ -5,11 +5,15 @@
 A macOS → Windows compatibility layer, in the spirit of Wine but in the opposite direction.
 Not an emulator, not a VM, no macOS and no XNU kernel required.
 
-> **Status: CIDER 0.1.1 — static inspector only, validated against real binaries and DMGs.**
-> CIDER 0.1 **cannot run any macOS program.** It reads and validates Mach-O files, `.app`
-> bundles and `.dmg` images. `cider run` exists only to say so. No application is claimed to be
-> compatible: every "compatible" verdict in this release means *"static analysis passed"*, never
-> *"it runs"*. See [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
+> **Status: CIDER 0.2.0 — first experimental execution runtime.**
+> CIDER can now **execute machine code from Mach-O x86_64 files on Windows** (no emulator, no VM, no XNU):
+> `cider run ret42` maps the binary, bridges the System V ABI and prints `Guest exit code: 42`.
+> **Only controlled test programs run** (clang + ld64.lld fixtures importing 24 libSystem functions).
+> **No macOS application runs**: the three real apps tried (Rectangle, Stats, MonitorControl) are refused because
+> Foundation, AppKit, libobjc and the Swift runtime do not exist yet. Static verdicts such as "analysis compatible"
+> still mean "static analysis passed", never "it runs". Execution happens in a separate worker process that
+> limits crashes and resources but is **not a sandbox**. See [docs/EXECUTION.md](docs/EXECUTION.md) and
+> [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
 
 ## What works (verified by the test-suite and real-world runs, see [docs/PROGRESS.md](docs/PROGRESS.md), [docs/REAL-WORLD.md](docs/REAL-WORLD.md))
 
@@ -22,7 +26,8 @@ Not an emulator, not a VM, no macOS and no XNU kernel required.
 | Dependency resolution (`@rpath`, `@executable_path`, `@loader_path`), transitive | static only |
 | DMG: UDIF `koly` trailer, partitions, compression types | works |
 | DMG extraction | **optional**, through external 7-Zip; limits and path-traversal protection |
-| Loader, dyld, libSystem, Objective-C, Foundation, AppKit | **not implemented** (0.2 – 0.5) |
+| **Run** controlled Mach-O x86_64 programs (loader, W^X mapping, rebase/bind/lazy-bind, SysV→Win64 bridge, 24 libSystem functions, worker process) | works for the fixtures in `tests/fixtures/exec` — [EXECUTION.md](docs/EXECUTION.md) |
+| Objective-C, Foundation, AppKit, dependent dylibs/frameworks, chained fixups, TLS, threads, printf/stdio | **not implemented** (0.3 – 0.5) |
 
 ## Commands
 
@@ -33,15 +38,17 @@ cider dmg-info <image.dmg>
 cider extract <image.dmg> --output <dir>
 cider dependencies <program | App.app>
 cider compatibility <program | App.app>
-cider run <...>                                 # not available in 0.1 (exit code 2)
+cider run <program | App.app> [-- args]          # EXPERIMENTAL: execute a Mach-O x86_64 program
 cider logs [file]
 cider doctor
 ```
 
 Global options: `--json`, `--symbols`, `--log-level trace|debug|info|warn|error|fatal|off`,
 `--log-file <path>`, `--7z <path>`, `--max-size <MiB>`, `--temp-dir <dir>`.
-Exit codes: `0` ok · `1` invalid input or failure · `2` usage error / unavailable command ·
-`3` partial result (disk image structure read but the 7-Zip backend is missing).
+Exit codes: `0` ok · `1` invalid input or failure · `2` usage error · `3` partial result (disk image structure
+read but the 7-Zip backend is missing). `cider run` has its own table: `0` the guest ran to completion (its exit
+code is printed / in `--json`), `10` internal error, `11` file incompatible, `12` library or symbol not available,
+`13` load failure, `14` guest crash/trap/timeout. Extra option: `--timeout <seconds>` (run).
 
 Example:
 
@@ -61,11 +68,24 @@ Compatibility: analysis compatible
 - Execution support not yet confirmed
 ```
 
-Analysis is strictly static: nothing from a Mach-O file or a disk image is ever executed.
+Analysis commands are strictly static: nothing from a Mach-O file or a disk image is executed except by an explicit
+`cider run`.
+
+```text
+> cider run tests/fixtures/exec/bin/ret42
+[CIDER][LOADER] Mach-O x86_64 detected (3 segment(s), 13 load command(s))
+[CIDER][MEMORY] mapping __TEXT at 0x100000000 (0x1000 bytes from file, 0x0 bytes zero-fill)
+[CIDER][ABI] preparing the guest execution environment
+[CIDER][EXECUTION] entering guest code at 0x1000002d0
+[CIDER][EXECUTION] guest returned 42
+[CIDER][PROCESS] cleanup completed
+
+Guest exit code: 42
+```
 
 ## Building
 
-Requirements: Windows 10/11, Visual Studio 2022+ (C++ workload) or any C++20 compiler, CMake ≥ 3.21.
+Requirements: Windows 10/11 x64, Visual Studio 2022+ (C++ workload, includes MASM) , CMake ≥ 3.21.
 Optional: [7-Zip](https://www.7-zip.org/) for `.dmg` extraction.
 
 ```bash
@@ -80,7 +100,7 @@ More: [docs/BUILDING.md](docs/BUILDING.md), [docs/TESTING.md](docs/TESTING.md).
 ## Documentation
 
 [ARCHITECTURE](docs/ARCHITECTURE.md) · [MACHO](docs/MACHO.md) · [DMG](docs/DMG.md) ·
-[LOADER](docs/LOADER.md) · [DARWIN](docs/DARWIN.md) · [ABI](docs/ABI.md) ·
+[EXECUTION](docs/EXECUTION.md) · [LOADER](docs/LOADER.md) · [DARWIN](docs/DARWIN.md) · [ABI](docs/ABI.md) ·
 [COMPATIBILITY](docs/COMPATIBILITY.md) · [ROADMAP](docs/ROADMAP.md) · [TESTING](docs/TESTING.md) ·
 [REAL-WORLD](docs/REAL-WORLD.md) · [LIMITATIONS](docs/LIMITATIONS.md) · [CHANGELOG](CHANGELOG.md) · [LICENSES](docs/LICENSES.md) · [PROGRESS](docs/PROGRESS.md)
 

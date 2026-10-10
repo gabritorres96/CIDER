@@ -1,36 +1,50 @@
 # Loader and cider-dyld
 
-**Status: NOT IMPLEMENTED in 0.1.** This document is a design note for 0.2. Nothing here exists in
-code except the path-level helpers in `cider_dyld` (`@rpath`/`@loader_path`/`@executable_path`
-expansion and system-path classification), which only produce candidate file names.
+**Status (CIDER 0.2): implemented for controlled x86_64 executables.** Sources: `src/loader`, `src/memory`,
+`src/security`, `src/dyld`. Public API: `include/cider/loader.hpp`, `memory.hpp`, `fixups.hpp`.
+How a whole run fits together: [EXECUTION.md](EXECUTION.md).
 
-## Plan for 0.2 (controlled fixtures first)
+## Pipeline (`loader::load_macho`)
 
-1. Validate the image with `macho::parse_file` (already done by the inspector); refuse anything
-   that is not a thin x86_64 `MH_EXECUTE` built for macOS.
-2. Reserve address space with `VirtualAlloc(MEM_RESERVE)` at the preferred base, commit and copy
-   each segment, then set final page protections with `VirtualProtect`, never leaving a page both
-   writable and executable (W^X): map writable, copy, then switch to read/execute.
-3. `__PAGEZERO` is not mapped; the Windows low-address reservation already faults null accesses,
-   but the 4 GiB hole assumed by macOS programs is not reproduced (see ABI.md).
-4. Apply rebase/bind information (classic opcodes first; lazy binding resolved eagerly at start;
-   chained fixups later), resolving symbols against CIDER-provided libSystem stubs.
-5. Prepare the stack and the Darwin entry convention (`argc/argv/envp/apple[]`), run initialisers
-   (`__mod_init_func`), then enter `LC_MAIN`'s entry through an ABI trampoline (System V → Win64
-   at the boundary, and back for callbacks).
-6. Exit code comes from `exit()` as implemented by CIDER's libSystem, not from the machine code
-   returning into an uninitialised frame.
+Strict separation between stages; nothing before step 5 touches process memory.
 
-## Acceptance for 0.2 (from the roadmap)
+1. **Static analysis** — `macho::parse_file` (0.1 parser); picks the x86_64 slice of a FAT file.
+2. **Validation** (`security/execution_validator.cpp`) — x86_64, `MH_EXECUTE`, macOS platform, not encrypted, has
+   `LC_MAIN` (not `LC_UNIXTHREAD`), no chained fixups, no weak-binding info, no TLS sections, no non-empty
+   `__mod_init_func`/`__init_offsets`/terminators, every non-weak dylib is provided (only `libSystem.B.dylib`).
+   Issues are classified `Incompatible`, `Unsupported` or `MissingDependency`.
+3. **Layout** (`loader/image_layout.cpp`, pure computation) — unmapped: `__PAGEZERO`, `__LINKEDIT`, empty segments.
+   Per mapped segment: page-aligned address, size rounded up (overflow-checked), `filesize ≤ vmsize`, W^X-safe
+   protection, no overlap after rounding, image span ≤ 1 GiB, base 64 KiB aligned (Windows reservation
+   granularity), entry point inside an executable mapped segment, stack size from `LC_MAIN` (default 8 MiB, max 64 MiB).
+4. **Fixups and symbols** (`dyld/relocation_engine.cpp`, `dyld/symbol_resolver.cpp`) — decode rebase, bind and
+   lazy-bind opcode streams; resolve every bind **before** mapping so unresolved symbols fail with no side effects.
+5. **Mapping** (`loader/segment_mapper.cpp`) — `VirtualAlloc(MEM_RESERVE)` of the span at the preferred base
+   (`0x100000000`), falling back to any 64 KiB-aligned address (the slide is applied by the rebases); commit every
+   segment ReadWrite, copy file bytes, zero the rest.
+6. **Fixups applied** — rebases add the slide, binds write System V thunk addresses (+ addend).
+7. **Final protections** — `__TEXT` r-x (instruction cache flushed), `__DATA` rw-, `__DATA_CONST` r--. Never RWX.
 
-Run a controlled x86_64 Mach-O test program and obtain its real exit code. Until then `cider run`
-reports "not available".
+Any failure after step 5 releases the reservation (RAII `memory::Region`); tests verify the address range is free again.
 
-## Open problems to investigate before coding
+## Supported fixups (cider-dyld, `LC_DYLD_INFO_ONLY`)
 
-* `%gs`-relative TLS: macOS user code uses `gs` for thread-local storage and `pthread_self`;
-  Windows x64 uses `gs` for the TEB. Options: thread-local-variable descriptor rewriting at bind
-  time, or running Darwin code with a swapped GS base (requires a Windows driver or
-  `WriteGsBase` where available) — not decided.
-* Exception unwinding across Darwin frames (DWARF CFI in `__eh_frame`) vs Windows SEH.
-* Which `dyld` private APIs a minimal program really touches (`_dyld_*`, `__tlv_bootstrap`).
+| Mechanism | Support |
+| --- | --- |
+| Rebase: pointer type, all 8 opcodes | yes (verified against `llvm-objdump --rebase` on 20 binaries) |
+| Bind: pointer type, ordinals imm/ULEB, special ordinals (-1 main exe, -2 flat), symbol flags (weak import), addends, all `DO_BIND*` forms | yes (verified against `--bind`) |
+| Lazy bind stream | decoded and **applied eagerly** (verified against `--lazy-bind`); `dyld_stub_binder` traps |
+| Weak imports | bound to 0 with a warning |
+| Binding to the image itself (ordinal 0) or to the main executable (-1) | rejected ("not supported yet") |
+| Bind types other than pointer, threaded binds, weak-binding streams | rejected |
+| Chained fixups (`LC_DYLD_CHAINED_FIXUPS`) | **rejected** with a clear message; link with `-no_fixup_chains` |
+| Re-exported libraries, two-level namespace semantics beyond "the ordinal names the library" | not implemented |
+
+Symbol resolution consults a `SymbolProvider`; the only provider is CIDER's libSystem subset. A symbol of
+`libSystem.B.dylib` that CIDER does not implement is *unresolved*, never mapped to a same-named Windows function.
+
+## Not done (needed for real applications)
+
+Loading dependent dylibs/frameworks (`@rpath`), `__mod_init_func` and `dyld` initialization order, TLS,
+`gs`-based thread-local storage (the main open risk, see ABI.md), Objective-C metadata registration, exception
+unwind tables, `__PAGEZERO` emulation, ASLR policy beyond "preferred base or relocate", ARM64.

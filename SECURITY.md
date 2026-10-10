@@ -6,13 +6,14 @@ CIDER treats every macOS executable, bundle and disk image as **untrusted**.
 
 | Property | 0.1 status |
 | --- | --- |
-| Static analysis never executes input code | yes — there is no loader in 0.1 |
+| Static analysis never executes input code | yes — only `cider run` executes guest code, in a separate worker process |
 | Bounds-checked, overflow-safe parsing (Mach-O, FAT, plist, UDIF) | yes, covered by malformed-input tests and deterministic mutation fuzzing |
 | Resource limits (file size, load commands, symbols, plist depth/nodes, UDIF XML/chunks) | yes (see `Limits` structs) |
 | DMG extraction path-traversal protection | yes: every listed path is validated before extraction, the extracted tree is re-verified afterwards (no links, nothing outside the output directory) |
 | DMG extraction size / file-count limits | yes, checked on listings *before* extraction and on the result afterwards |
 | External process hardening (7-Zip) | absolute path only, no stdin, output cap, timeout, killed with CIDER (Windows Job Object) |
-| Sandbox / process isolation for running applications | **no** — nothing is run in 0.1, and no sandbox exists yet. Do not assume future `cider run` is a security boundary until it is implemented *and* verified |
+| Process isolation for `cider run` (0.2) | worker process + Job Object (kill-on-close, 1 process, memory cap, UI limits, timeout): contains **crashes and runaway resource use** of the guest |
+| Sandbox | **no** — guest machine code runs natively with the user's rights (raw NT syscalls, files, network). Never run untrusted binaries; none of the downloaded applications was ever executed |
 | Cryptographic verification of code signatures | **no** — signatures are parsed, never verified |
 
 Known limits: 7-Zip is a third-party parser of complex formats and is *not* sandboxed by CIDER

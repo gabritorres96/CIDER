@@ -1,7 +1,8 @@
 # Darwin layer (`cider-darwin`) and libSystem
 
-**Status: NOT IMPLEMENTED in 0.1.** `src/darwin`, `src/libsystem`, `src/process`, `src/memory`
-and `src/filesystem` contain only README placeholders. This is the design intent.
+**Status: mostly NOT IMPLEMENTED.** CIDER 0.2 provides only the 24-function libSystem subset in `src/libsystem` (see
+[EXECUTION.md](EXECUTION.md)). `src/darwin` and `src/filesystem` are README placeholders. The rest of this file is
+the design intent for 0.3.
 
 ## Principle
 

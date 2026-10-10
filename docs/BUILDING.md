@@ -6,6 +6,8 @@
 * A C++20 compiler. Developed and tested with MSVC 14.51 (Visual Studio 2026 Community, "Desktop
   development with C++"). Visual Studio 2022 should work; **only MSVC was tested**.
 * CMake ≥ 3.21 (tested with 4.2.3).
+* The 0.2 runtime needs MASM (`ml64.exe`, part of the same "Desktop development with C++" workload; CMake enables
+  `ASM_MASM` automatically on Windows x64).
 * Optional: 7-Zip (for `.dmg` extraction; tested with 7-Zip 25.01). Install from <https://www.7-zip.org/>.
 * Optional: the "C++ AddressSanitizer" Visual Studio component for `-DCIDER_SANITIZE=ON`.
 * Optional, for real-world validation (all kept out of git, no global install):
