@@ -8,6 +8,7 @@
 #include "cider/abi.hpp"
 #include "cider/libsystem.hpp"
 #include "cider/log.hpp"
+#include "cider/guest_threads.hpp"
 #include "internal.hpp"
 
 #ifdef _WIN32
@@ -34,7 +35,10 @@ int w_putchar(int c) {
 }
 
 // ---- process ----------------------------------------------------------------------------------
-void w_exit(int code) { abi::request_guest_exit(static_cast<uint32_t>(code)); }
+void w_exit(int code) {
+    if (RuntimeContext* c = context(); c && c->threads) c->threads->request_exit(code);   // every other guest thread unwinds
+    abi::request_guest_exit(static_cast<uint32_t>(code));
+}
 int w_getpid() {
 #ifdef _WIN32
     return static_cast<int>(GetCurrentProcessId());
@@ -173,6 +177,7 @@ const std::vector<HostSymbol>& implemented_symbols() {
     detail::add_tls_symbols(t);
     detail::add_callback_symbols(t);
     detail::add_stream_symbols(t);
+    detail::add_pthread_symbols(t);
     return t;
     }();
     return table;

@@ -24,6 +24,7 @@
 #include "cider/libsystem.hpp"
 #include "cider/log.hpp"
 #include "cider/util.hpp"
+#include "cider/guest_threads.hpp"
 #include "internal.hpp"
 
 namespace cider::libsystem {
@@ -406,22 +407,28 @@ int64_t w_time(int64_t* out) {
     return t;
 }
 
+// Sleeping gives the other guest threads the guest lock (and unwinds this one if the process is exiting).
+void guest_sleep(uint64_t ms) {
+    RuntimeContext* c = context();
+    if (c && c->threads) { c->threads->sleep_ms(ms); return; }
+    while (ms) {
+        const DWORD slice = static_cast<DWORD>(std::min<uint64_t>(ms, 1u << 20));
+        Sleep(slice);
+        ms -= slice;
+    }
+}
+
 int64_t w_nanosleep(const DarwinTimespec* req, DarwinTimespec* rem) {
     if (!req) return fail_errno(detail::kEFAULT);
     if (req->tv_sec < 0 || req->tv_nsec < 0 || req->tv_nsec >= 1000000000) return fail_errno(detail::kEINVAL);
     const uint64_t ms = static_cast<uint64_t>(req->tv_sec) * 1000 + (static_cast<uint64_t>(req->tv_nsec) + 999999) / 1000000;
     // Sleep in slices so a very long request cannot exceed DWORD range.
-    uint64_t left = ms;
-    while (left) {
-        const DWORD slice = static_cast<DWORD>(std::min<uint64_t>(left, 1u << 20));
-        Sleep(slice);
-        left -= slice;
-    }
+    guest_sleep(ms);
     if (rem) { rem->tv_sec = 0; rem->tv_nsec = 0; }
     return 0;
 }
-int w_usleep(uint32_t us) { Sleep((us + 999) / 1000); return 0; }
-uint32_t w_sleep(uint32_t s) { Sleep(s * 1000u); return 0; }
+int w_usleep(uint32_t us) { guest_sleep((us + 999) / 1000); return 0; }
+uint32_t w_sleep(uint32_t s) { guest_sleep(s * 1000ull); return 0; }
 
 // ---- process identity ---------------------------------------------------------------------------------------------------------
 int w_getppid() {
@@ -437,15 +444,14 @@ int w_getppid() {
     return parent ? static_cast<int>(parent) : 1;
 }
 void w_exit_now(int code) {
-    if (RuntimeContext* c = context()) c->skip_atexit = true;   // _exit: no atexit handlers
+    if (RuntimeContext* c = context()) {
+        c->skip_atexit = true;                                  // _exit: no atexit handlers
+        if (c->threads) c->threads->request_exit(code);
+    }
     abi::request_guest_exit(static_cast<uint32_t>(code));
 }   // _exit: the guest has no atexit handlers anyway
 
-int* w_errno_location() {
-    static int fallback = 0;
-    RuntimeContext* c = context();
-    return c ? &c->errno_value : &fallback;
-}
+int* w_errno_location() { return &detail::errno_ref(); }
 
 template <class F> void* addr(F* f) { return reinterpret_cast<void*>(f); }
 
@@ -455,6 +461,7 @@ template <class F> void* addr(F* f) { return reinterpret_cast<void*>(f); }
 }  // namespace
 
 RuntimeContext::~RuntimeContext() {
+    threads.reset();                                  // joins the OS threads before anything they could touch goes away
 #ifdef _WIN32
     for (auto& f : fds)
         if (f.kind == GuestFd::Kind::File && f.handle) CloseHandle(static_cast<HANDLE>(f.handle));

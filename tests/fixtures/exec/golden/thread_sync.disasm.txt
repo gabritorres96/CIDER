@@ -1,0 +1,222 @@
+thread_sync:
+(__TEXT,__text) section
+_main:
+100000590:	55	pushq	%rbp
+100000591:	48 89 e5	movq	%rsp, %rbp
+100000594:	41 56	pushq	%r14
+100000596:	53	pushq	%rbx
+100000597:	48 81 ec d0 00 00 00	subq	$0xd0, %rsp
+10000059e:	48 8d 15 8b 02 00 00	leaq	_consumer(%rip), %rdx
+1000005a5:	48 8d 7d d8	leaq	-0x28(%rbp), %rdi
+1000005a9:	31 f6	xorl	%esi, %esi
+1000005ab:	31 c9	xorl	%ecx, %ecx
+1000005ad:	e8 56 03 00 00	callq	0x100000908 ## symbol stub for: _pthread_create
+1000005b2:	e8 8d 03 00 00	callq	0x100000944 ## symbol stub for: _sched_yield
+1000005b7:	48 8d 1d ba 1a 00 00	leaq	_m(%rip), %rbx
+1000005be:	48 89 df	movq	%rbx, %rdi
+1000005c1:	e8 4e 03 00 00	callq	0x100000914 ## symbol stub for: _pthread_mutex_lock
+1000005c6:	c6 05 33 1b 00 00 01	movb	$0x1, _produced(%rip)
+1000005cd:	c6 05 30 1b 00 00 01	movb	$0x1, _ready(%rip)
+1000005d4:	48 8d 3d dd 1a 00 00	leaq	_cv(%rip), %rdi
+1000005db:	e8 5e 03 00 00	callq	0x10000093e ## symbol stub for: _pthread_cond_signal
+1000005e0:	48 89 df	movq	%rbx, %rdi
+1000005e3:	e8 38 03 00 00	callq	0x100000920 ## symbol stub for: _pthread_mutex_unlock
+1000005e8:	48 8b 7d d8	movq	-0x28(%rbp), %rdi
+1000005ec:	31 f6	xorl	%esi, %esi
+1000005ee:	e8 0f 03 00 00	callq	0x100000902 ## symbol stub for: _pthread_join
+1000005f3:	b8 01 00 00 00	movl	$0x1, %eax
+1000005f8:	83 3d 09 1b 00 00 2a	cmpl	$0x2a, _consumed(%rip)
+1000005ff:	0f 85 2b 01 00 00	jne	0x100000730
+100000605:	0f 57 c0	xorps	%xmm0, %xmm0
+100000608:	0f 29 45 90	movaps	%xmm0, -0x70(%rbp)
+10000060c:	0f 29 45 c0	movaps	%xmm0, -0x40(%rbp)
+100000610:	0f 29 45 b0	movaps	%xmm0, -0x50(%rbp)
+100000614:	0f 29 45 a0	movaps	%xmm0, -0x60(%rbp)
+100000618:	48 c7 45 90 a7 ab aa 32	movq	$0x32aaaba7, -0x70(%rbp)
+100000620:	48 8d 5d 90	leaq	-0x70(%rbp), %rbx
+100000624:	48 89 df	movq	%rbx, %rdi
+100000627:	e8 e8 02 00 00	callq	0x100000914 ## symbol stub for: _pthread_mutex_lock
+10000062c:	48 89 df	movq	%rbx, %rdi
+10000062f:	e8 04 03 00 00	callq	0x100000938 ## symbol stub for: _pthread_mutex_trylock
+100000634:	89 c1	movl	%eax, %ecx
+100000636:	b8 02 00 00 00	movl	$0x2, %eax
+10000063b:	83 f9 10	cmpl	$0x10, %ecx
+10000063e:	0f 85 ec 00 00 00	jne	0x100000730
+100000644:	48 8d 7d 90	leaq	-0x70(%rbp), %rdi
+100000648:	e8 c7 02 00 00	callq	0x100000914 ## symbol stub for: _pthread_mutex_lock
+10000064d:	89 c1	movl	%eax, %ecx
+10000064f:	b8 03 00 00 00	movl	$0x3, %eax
+100000654:	83 f9 0b	cmpl	$0xb, %ecx
+100000657:	0f 85 d3 00 00 00	jne	0x100000730
+10000065d:	48 89 df	movq	%rbx, %rdi
+100000660:	e8 bb 02 00 00	callq	0x100000920 ## symbol stub for: _pthread_mutex_unlock
+100000665:	48 89 df	movq	%rbx, %rdi
+100000668:	e8 b3 02 00 00	callq	0x100000920 ## symbol stub for: _pthread_mutex_unlock
+10000066d:	89 c1	movl	%eax, %ecx
+10000066f:	b8 04 00 00 00	movl	$0x4, %eax
+100000674:	83 f9 01	cmpl	$0x1, %ecx
+100000677:	0f 85 b3 00 00 00	jne	0x100000730
+10000067d:	48 8d 9d 20 ff ff ff	leaq	-0xe0(%rbp), %rbx
+100000684:	48 89 df	movq	%rbx, %rdi
+100000687:	e8 a6 02 00 00	callq	0x100000932 ## symbol stub for: _pthread_mutexattr_init
+10000068c:	48 89 df	movq	%rbx, %rdi
+10000068f:	be 02 00 00 00	movl	$0x2, %esi
+100000694:	e8 93 02 00 00	callq	0x10000092c ## symbol stub for: _pthread_mutexattr_settype
+100000699:	4c 8d b5 50 ff ff ff	leaq	-0xb0(%rbp), %r14
+1000006a0:	4c 89 f7	movq	%r14, %rdi
+1000006a3:	48 89 de	movq	%rbx, %rsi
+1000006a6:	e8 7b 02 00 00	callq	0x100000926 ## symbol stub for: _pthread_mutex_init
+1000006ab:	4c 89 f7	movq	%r14, %rdi
+1000006ae:	e8 61 02 00 00	callq	0x100000914 ## symbol stub for: _pthread_mutex_lock
+1000006b3:	89 c1	movl	%eax, %ecx
+1000006b5:	b8 05 00 00 00	movl	$0x5, %eax
+1000006ba:	85 c9	testl	%ecx, %ecx
+1000006bc:	75 72	jne	0x100000730
+1000006be:	48 8d bd 50 ff ff ff	leaq	-0xb0(%rbp), %rdi
+1000006c5:	e8 4a 02 00 00	callq	0x100000914 ## symbol stub for: _pthread_mutex_lock
+1000006ca:	85 c0	testl	%eax, %eax
+1000006cc:	74 07	je	0x1000006d5
+1000006ce:	b8 05 00 00 00	movl	$0x5, %eax
+1000006d3:	eb 5b	jmp	0x100000730
+1000006d5:	48 8d bd 50 ff ff ff	leaq	-0xb0(%rbp), %rdi
+1000006dc:	e8 33 02 00 00	callq	0x100000914 ## symbol stub for: _pthread_mutex_lock
+1000006e1:	85 c0	testl	%eax, %eax
+1000006e3:	b8 05 00 00 00	movl	$0x5, %eax
+1000006e8:	75 46	jne	0x100000730
+1000006ea:	48 8d 9d 50 ff ff ff	leaq	-0xb0(%rbp), %rbx
+1000006f1:	48 89 df	movq	%rbx, %rdi
+1000006f4:	e8 27 02 00 00	callq	0x100000920 ## symbol stub for: _pthread_mutex_unlock
+1000006f9:	48 89 df	movq	%rbx, %rdi
+1000006fc:	e8 1f 02 00 00	callq	0x100000920 ## symbol stub for: _pthread_mutex_unlock
+100000701:	48 89 df	movq	%rbx, %rdi
+100000704:	e8 11 02 00 00	callq	0x10000091a ## symbol stub for: _pthread_mutex_destroy
+100000709:	89 c1	movl	%eax, %ecx
+10000070b:	b8 06 00 00 00	movl	$0x6, %eax
+100000710:	83 f9 10	cmpl	$0x10, %ecx
+100000713:	75 1b	jne	0x100000730
+100000715:	48 89 df	movq	%rbx, %rdi
+100000718:	e8 03 02 00 00	callq	0x100000920 ## symbol stub for: _pthread_mutex_unlock
+10000071d:	48 89 df	movq	%rbx, %rdi
+100000720:	e8 f5 01 00 00	callq	0x10000091a ## symbol stub for: _pthread_mutex_destroy
+100000725:	89 c1	movl	%eax, %ecx
+100000727:	b8 07 00 00 00	movl	$0x7, %eax
+10000072c:	85 c9	testl	%ecx, %ecx
+10000072e:	74 0c	je	0x10000073c
+100000730:	48 81 c4 d0 00 00 00	addq	$0xd0, %rsp
+100000737:	5b	popq	%rbx
+100000738:	41 5e	popq	%r14
+10000073a:	5d	popq	%rbp
+10000073b:	c3	retq
+10000073c:	48 8d bd 50 ff ff ff	leaq	-0xb0(%rbp), %rdi
+100000743:	e8 cc 01 00 00	callq	0x100000914 ## symbol stub for: _pthread_mutex_lock
+100000748:	85 c0	testl	%eax, %eax
+10000074a:	0f 84 c9 00 00 00	je	0x100000819
+100000750:	45 31 f6	xorl	%r14d, %r14d
+100000753:	48 8d 1d 46 01 00 00	leaq	_once_worker(%rip), %rbx
+10000075a:	49 8d 3c 2e	leaq	(%r14,%rbp), %rdi
+10000075e:	48 81 c7 30 ff ff ff	addq	$-0xd0, %rdi
+100000765:	31 f6	xorl	%esi, %esi
+100000767:	48 89 da	movq	%rbx, %rdx
+10000076a:	31 c9	xorl	%ecx, %ecx
+10000076c:	e8 97 01 00 00	callq	0x100000908 ## symbol stub for: _pthread_create
+100000771:	49 83 c6 08	addq	$0x8, %r14
+100000775:	49 83 fe 18	cmpq	$0x18, %r14
+100000779:	75 df	jne	0x10000075a
+10000077b:	31 db	xorl	%ebx, %ebx
+10000077d:	48 8b bc dd 30 ff ff ff	movq	-0xd0(%rbp,%rbx,8), %rdi
+100000785:	31 f6	xorl	%esi, %esi
+100000787:	e8 76 01 00 00	callq	0x100000902 ## symbol stub for: _pthread_join
+10000078c:	48 ff c3	incq	%rbx
+10000078f:	48 83 fb 03	cmpq	$0x3, %rbx
+100000793:	75 e8	jne	0x10000077d
+100000795:	48 8d 3d 4c 19 00 00	leaq	_once(%rip), %rdi
+10000079c:	48 8d 35 1d 01 00 00	leaq	_init_once(%rip), %rsi
+1000007a3:	e8 66 01 00 00	callq	0x10000090e ## symbol stub for: _pthread_once
+1000007a8:	b8 09 00 00 00	movl	$0x9, %eax
+1000007ad:	83 3d 58 19 00 00 01	cmpl	$0x1, _once_count(%rip)
+1000007b4:	0f 85 76 ff ff ff	jne	0x100000730
+1000007ba:	e8 3d 01 00 00	callq	0x1000008fc ## symbol stub for: ___error
+1000007bf:	c7 00 07 00 00 00	movl	$0x7, (%rax)
+1000007c5:	48 c7 45 e8 00 00 00 00	movq	$0x0, -0x18(%rbp)
+1000007cd:	48 8d 15 fc 00 00 00	leaq	_errno_worker(%rip), %rdx
+1000007d4:	48 8d 7d e0	leaq	-0x20(%rbp), %rdi
+1000007d8:	31 f6	xorl	%esi, %esi
+1000007da:	31 c9	xorl	%ecx, %ecx
+1000007dc:	e8 27 01 00 00	callq	0x100000908 ## symbol stub for: _pthread_create
+1000007e1:	48 8b 7d e0	movq	-0x20(%rbp), %rdi
+1000007e5:	48 8d 75 e8	leaq	-0x18(%rbp), %rsi
+1000007e9:	e8 14 01 00 00	callq	0x100000902 ## symbol stub for: _pthread_join
+1000007ee:	b8 0a 00 00 00	movl	$0xa, %eax
+1000007f3:	48 83 7d e8 02	cmpq	$0x2, -0x18(%rbp)
+1000007f8:	0f 85 32 ff ff ff	jne	0x100000730
+1000007fe:	e8 f9 00 00 00	callq	0x1000008fc ## symbol stub for: ___error
+100000803:	48 89 c1	movq	%rax, %rcx
+100000806:	31 c0	xorl	%eax, %eax
+100000808:	83 39 07	cmpl	$0x7, (%rcx)
+10000080b:	0f 94 c0	sete	%al
+10000080e:	c1 e0 05	shll	$0x5, %eax
+100000811:	83 c8 0a	orl	$0xa, %eax
+100000814:	e9 17 ff ff ff	jmp	0x100000730
+100000819:	b8 08 00 00 00	movl	$0x8, %eax
+10000081e:	e9 0d ff ff ff	jmp	0x100000730
+100000823:	66 66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_consumer:
+100000830:	55	pushq	%rbp
+100000831:	48 89 e5	movq	%rsp, %rbp
+100000834:	41 56	pushq	%r14
+100000836:	53	pushq	%rbx
+100000837:	48 8d 3d 3a 18 00 00	leaq	_m(%rip), %rdi
+10000083e:	e8 d1 00 00 00	callq	0x100000914 ## symbol stub for: _pthread_mutex_lock
+100000843:	80 3d ba 18 00 00 00	cmpb	$0x0, _ready(%rip)
+10000084a:	75 28	jne	0x100000874
+10000084c:	48 8d 1d 65 18 00 00	leaq	_cv(%rip), %rbx
+100000853:	4c 8d 35 1e 18 00 00	leaq	_m(%rip), %r14
+10000085a:	66 0f 1f 44 00 00	nopw	(%rax,%rax)
+100000860:	48 89 df	movq	%rbx, %rdi
+100000863:	4c 89 f6	movq	%r14, %rsi
+100000866:	e8 df 00 00 00	callq	0x10000094a ## symbol stub for: _pthread_cond_wait
+10000086b:	80 3d 92 18 00 00 01	cmpb	$0x1, _ready(%rip)
+100000872:	75 ec	jne	0x100000860
+100000874:	31 c0	xorl	%eax, %eax
+100000876:	80 3d 83 18 00 00 00	cmpb	$0x0, _produced(%rip)
+10000087d:	b9 2a 00 00 00	movl	$0x2a, %ecx
+100000882:	0f 44 c8	cmovel	%eax, %ecx
+100000885:	89 0d 7d 18 00 00	movl	%ecx, _consumed(%rip)
+10000088b:	48 8d 3d e6 17 00 00	leaq	_m(%rip), %rdi
+100000892:	e8 89 00 00 00	callq	0x100000920 ## symbol stub for: _pthread_mutex_unlock
+100000897:	31 c0	xorl	%eax, %eax
+100000899:	5b	popq	%rbx
+10000089a:	41 5e	popq	%r14
+10000089c:	5d	popq	%rbp
+10000089d:	c3	retq
+10000089e:	66 90	nop
+_once_worker:
+1000008a0:	55	pushq	%rbp
+1000008a1:	48 89 e5	movq	%rsp, %rbp
+1000008a4:	48 8d 3d 3d 18 00 00	leaq	_once(%rip), %rdi
+1000008ab:	48 8d 35 0e 00 00 00	leaq	_init_once(%rip), %rsi
+1000008b2:	e8 57 00 00 00	callq	0x10000090e ## symbol stub for: _pthread_once
+1000008b7:	31 c0	xorl	%eax, %eax
+1000008b9:	5d	popq	%rbp
+1000008ba:	c3	retq
+1000008bb:	0f 1f 44 00 00	nopl	(%rax,%rax)
+_init_once:
+1000008c0:	55	pushq	%rbp
+1000008c1:	48 89 e5	movq	%rsp, %rbp
+1000008c4:	ff 05 42 18 00 00	incl	_once_count(%rip)
+1000008ca:	5d	popq	%rbp
+1000008cb:	c3	retq
+1000008cc:	0f 1f 40 00	nopl	(%rax)
+_errno_worker:
+1000008d0:	55	pushq	%rbp
+1000008d1:	48 89 e5	movq	%rsp, %rbp
+1000008d4:	e8 23 00 00 00	callq	0x1000008fc ## symbol stub for: ___error
+1000008d9:	c7 00 63 00 00 00	movl	$0x63, (%rax)
+1000008df:	48 8d 3d 18 01 00 00	leaq	0x118(%rip), %rdi ## literal pool for: "no-such-file-for-the-thread"
+1000008e6:	31 f6	xorl	%esi, %esi
+1000008e8:	31 c0	xorl	%eax, %eax
+1000008ea:	e8 61 00 00 00	callq	0x100000950 ## symbol stub for: _open
+1000008ef:	e8 08 00 00 00	callq	0x1000008fc ## symbol stub for: ___error
+1000008f4:	48 63 00	movslq	(%rax), %rax
+1000008f7:	5d	popq	%rbp
+1000008f8:	c3	retq

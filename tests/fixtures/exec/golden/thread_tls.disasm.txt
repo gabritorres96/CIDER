@@ -1,0 +1,126 @@
+thread_tls:
+(__TEXT,__text) section
+_main:
+100000630:	55	pushq	%rbp
+100000631:	48 89 e5	movq	%rsp, %rbp
+100000634:	41 57	pushq	%r15
+100000636:	41 56	pushq	%r14
+100000638:	53	pushq	%rbx
+100000639:	48 83 ec 28	subq	$0x28, %rsp
+10000063d:	48 8d 3d e4 19 00 00	leaq	_counter(%rip), %rdi
+100000644:	ff 17	callq	*(%rdi)
+100000646:	48 89 c3	movq	%rax, %rbx
+100000649:	ff 00	incl	(%rax)
+10000064b:	48 8d 3d 06 1a 00 00	leaq	_zeroed(%rip), %rdi
+100000652:	ff 17	callq	*(%rdi)
+100000654:	49 89 c6	movq	%rax, %r14
+100000657:	48 c7 00 07 00 00 00	movq	$0x7, (%rax)
+10000065e:	48 c7 45 d8 00 00 00 00	movq	$0x0, -0x28(%rbp)
+100000666:	48 c7 45 e0 00 00 00 00	movq	$0x0, -0x20(%rbp)
+10000066e:	4c 8d 3d bb 00 00 00	leaq	_worker(%rip), %r15
+100000675:	48 8d 7d c8	leaq	-0x38(%rbp), %rdi
+100000679:	b9 01 00 00 00	movl	$0x1, %ecx
+10000067e:	31 f6	xorl	%esi, %esi
+100000680:	4c 89 fa	movq	%r15, %rdx
+100000683:	e8 6a 01 00 00	callq	0x1000007f2 ## symbol stub for: _pthread_create
+100000688:	48 8d 7d d0	leaq	-0x30(%rbp), %rdi
+10000068c:	b9 02 00 00 00	movl	$0x2, %ecx
+100000691:	31 f6	xorl	%esi, %esi
+100000693:	4c 89 fa	movq	%r15, %rdx
+100000696:	e8 57 01 00 00	callq	0x1000007f2 ## symbol stub for: _pthread_create
+10000069b:	48 8b 7d c8	movq	-0x38(%rbp), %rdi
+10000069f:	48 8d 75 d8	leaq	-0x28(%rbp), %rsi
+1000006a3:	e8 44 01 00 00	callq	0x1000007ec ## symbol stub for: _pthread_join
+1000006a8:	48 8b 7d d0	movq	-0x30(%rbp), %rdi
+1000006ac:	48 8d 75 e0	leaq	-0x20(%rbp), %rsi
+1000006b0:	e8 37 01 00 00	callq	0x1000007ec ## symbol stub for: _pthread_join
+1000006b5:	48 8b 75 d8	movq	-0x28(%rbp), %rsi
+1000006b9:	48 8b 55 e0	movq	-0x20(%rbp), %rdx
+1000006bd:	8b 0b	movl	(%rbx), %ecx
+1000006bf:	48 8d 3d 7a 19 00 00	leaq	_name(%rip), %rdi
+1000006c6:	ff 17	callq	*(%rdi)
+1000006c8:	49 89 c7	movq	%rax, %r15
+1000006cb:	4d 8b 0e	movq	(%r14), %r9
+1000006ce:	48 8d 3d 6d 01 00 00	leaq	0x16d(%rip), %rdi ## literal pool for: "a=%ld b=%ld main=%d %s %ld\n"
+1000006d5:	49 89 c0	movq	%rax, %r8
+1000006d8:	31 c0	xorl	%eax, %eax
+1000006da:	e8 07 01 00 00	callq	0x1000007e6 ## symbol stub for: _printf
+1000006df:	48 83 7d d8 69	cmpq	$0x69, -0x28(%rbp)
+1000006e4:	b8 01 00 00 00	movl	$0x1, %eax
+1000006e9:	75 35	jne	0x100000720
+1000006eb:	48 83 7d e0 6e	cmpq	$0x6e, -0x20(%rbp)
+1000006f0:	75 2e	jne	0x100000720
+1000006f2:	83 3b 65	cmpl	$0x65, (%rbx)
+1000006f5:	b8 02 00 00 00	movl	$0x2, %eax
+1000006fa:	75 24	jne	0x100000720
+1000006fc:	49 83 3e 07	cmpq	$0x7, (%r14)
+100000700:	75 1e	jne	0x100000720
+100000702:	48 8d 35 55 01 00 00	leaq	0x155(%rip), %rsi ## literal pool for: "template"
+100000709:	4c 89 ff	movq	%r15, %rdi
+10000070c:	e8 cf 00 00 00	callq	0x1000007e0 ## symbol stub for: _strcmp
+100000711:	85 c0	testl	%eax, %eax
+100000713:	b9 2a 00 00 00	movl	$0x2a, %ecx
+100000718:	b8 02 00 00 00	movl	$0x2, %eax
+10000071d:	0f 44 c1	cmovel	%ecx, %eax
+100000720:	48 83 c4 28	addq	$0x28, %rsp
+100000724:	5b	popq	%rbx
+100000725:	41 5e	popq	%r14
+100000727:	41 5f	popq	%r15
+100000729:	5d	popq	%rbp
+10000072a:	c3	retq
+10000072b:	0f 1f 44 00 00	nopl	(%rax,%rax)
+_worker:
+100000730:	55	pushq	%rbp
+100000731:	48 89 e5	movq	%rsp, %rbp
+100000734:	41 57	pushq	%r15
+100000736:	41 56	pushq	%r14
+100000738:	41 55	pushq	%r13
+10000073a:	41 54	pushq	%r12
+10000073c:	53	pushq	%rbx
+10000073d:	50	pushq	%rax
+10000073e:	49 89 ff	movq	%rdi, %r15
+100000741:	48 8d 3d e0 18 00 00	leaq	_counter(%rip), %rdi
+100000748:	ff 17	callq	*(%rdi)
+10000074a:	48 89 c3	movq	%rax, %rbx
+10000074d:	8b 08	movl	(%rax), %ecx
+10000074f:	48 8d 3d 02 19 00 00	leaq	_zeroed(%rip), %rdi
+100000756:	ff 17	callq	*(%rdi)
+100000758:	49 c7 c4 ff ff ff ff	movq	$-0x1, %r12
+10000075f:	83 f9 64	cmpl	$0x64, %ecx
+100000762:	75 68	jne	0x1000007cc
+100000764:	49 89 c6	movq	%rax, %r14
+100000767:	48 83 38 00	cmpq	$0x0, (%rax)
+10000076b:	75 5f	jne	0x1000007cc
+10000076d:	48 8d 3d cc 18 00 00	leaq	_name(%rip), %rdi
+100000774:	ff 17	callq	*(%rdi)
+100000776:	49 89 c5	movq	%rax, %r13
+100000779:	48 8d 35 de 00 00 00	leaq	0xde(%rip), %rsi ## literal pool for: "template"
+100000780:	48 89 c7	movq	%rax, %rdi
+100000783:	e8 58 00 00 00	callq	0x1000007e0 ## symbol stub for: _strcmp
+100000788:	85 c0	testl	%eax, %eax
+10000078a:	75 40	jne	0x1000007cc
+10000078c:	43 8d 04 bf	leal	(%r15,%r15,4), %eax
+100000790:	01 03	addl	%eax, (%rbx)
+100000792:	41 c6 45 00 54	movb	$0x54, (%r13)
+100000797:	49 8d 47 30	leaq	0x30(%r15), %rax
+10000079b:	48 89 45 d0	movq	%rax, -0x30(%rbp)
+10000079f:	41 88 45 01	movb	%al, 0x1(%r13)
+1000007a3:	4d 69 ff e8 03 00 00	imulq	$0x3e8, %r15, %r15
+1000007aa:	4d 89 3e	movq	%r15, (%r14)
+1000007ad:	e8 46 00 00 00	callq	0x1000007f8 ## symbol stub for: _sched_yield
+1000007b2:	49 0f be 45 01	movsbq	0x1(%r13), %rax
+1000007b7:	49 c7 c4 fe ff ff ff	movq	$-0x2, %r12
+1000007be:	48 39 45 d0	cmpq	%rax, -0x30(%rbp)
+1000007c2:	75 08	jne	0x1000007cc
+1000007c4:	4d 39 3e	cmpq	%r15, (%r14)
+1000007c7:	75 03	jne	0x1000007cc
+1000007c9:	4c 63 23	movslq	(%rbx), %r12
+1000007cc:	4c 89 e0	movq	%r12, %rax
+1000007cf:	48 83 c4 08	addq	$0x8, %rsp
+1000007d3:	5b	popq	%rbx
+1000007d4:	41 5c	popq	%r12
+1000007d6:	41 5d	popq	%r13
+1000007d8:	41 5e	popq	%r14
+1000007da:	41 5f	popq	%r15
+1000007dc:	5d	popq	%rbp
+1000007dd:	c3	retq

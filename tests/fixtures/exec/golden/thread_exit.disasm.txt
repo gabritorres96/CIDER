@@ -1,0 +1,126 @@
+thread_exit:
+(__TEXT,__text) section
+_main:
+100000540:	b8 6d 00 00 00	movl	$0x6d, %eax
+100000545:	83 ff 02	cmpl	$0x2, %edi
+100000548:	7c 07	jl	0x100000551
+10000054a:	48 8b 46 08	movq	0x8(%rsi), %rax
+10000054e:	0f be 00	movsbl	(%rax), %eax
+100000551:	55	pushq	%rbp
+100000552:	48 89 e5	movq	%rsp, %rbp
+100000555:	41 57	pushq	%r15
+100000557:	41 56	pushq	%r14
+100000559:	53	pushq	%rbx
+10000055a:	48 81 ec 48 06 00 00	subq	$0x648, %rsp
+100000561:	83 f8 66	cmpl	$0x66, %eax
+100000564:	0f 84 c2 00 00 00	je	0x10000062c
+10000056a:	83 f8 6c	cmpl	$0x6c, %eax
+10000056d:	74 4c	je	0x1000005bb
+10000056f:	83 f8 78	cmpl	$0x78, %eax
+100000572:	0f 85 e0 00 00 00	jne	0x100000658
+100000578:	48 8d 15 31 01 00 00	leaq	_sleeper(%rip), %rdx
+10000057f:	48 8d bd a0 f9 ff ff	leaq	-0x660(%rbp), %rdi
+100000586:	31 f6	xorl	%esi, %esi
+100000588:	31 c9	xorl	%ecx, %ecx
+10000058a:	e8 97 01 00 00	callq	0x100000726 ## symbol stub for: _pthread_create
+10000058f:	48 8d 15 3a 01 00 00	leaq	_quitter(%rip), %rdx
+100000596:	48 8d 7d e0	leaq	-0x20(%rbp), %rdi
+10000059a:	31 f6	xorl	%esi, %esi
+10000059c:	31 c9	xorl	%ecx, %ecx
+10000059e:	e8 83 01 00 00	callq	0x100000726 ## symbol stub for: _pthread_create
+1000005a3:	48 8b bd a0 f9 ff ff	movq	-0x660(%rbp), %rdi
+1000005aa:	31 f6	xorl	%esi, %esi
+1000005ac:	e8 7b 01 00 00	callq	0x10000072c ## symbol stub for: _pthread_join
+1000005b1:	b8 63 00 00 00	movl	$0x63, %eax
+1000005b6:	e9 e6 00 00 00	jmp	0x1000006a1
+1000005bb:	4c 8d b5 a0 f9 ff ff	leaq	-0x660(%rbp), %r14
+1000005c2:	31 db	xorl	%ebx, %ebx
+1000005c4:	4c 8d 3d e5 00 00 00	leaq	_sleeper(%rip), %r15
+1000005cb:	0f 1f 44 00 00	nopl	(%rax,%rax)
+1000005d0:	4c 89 f7	movq	%r14, %rdi
+1000005d3:	31 f6	xorl	%esi, %esi
+1000005d5:	4c 89 fa	movq	%r15, %rdx
+1000005d8:	31 c9	xorl	%ecx, %ecx
+1000005da:	e8 47 01 00 00	callq	0x100000726 ## symbol stub for: _pthread_create
+1000005df:	85 c0	testl	%eax, %eax
+1000005e1:	75 17	jne	0x1000005fa
+1000005e3:	48 ff c3	incq	%rbx
+1000005e6:	49 83 c6 08	addq	$0x8, %r14
+1000005ea:	48 81 fb c8 00 00 00	cmpq	$0xc8, %rbx
+1000005f1:	75 dd	jne	0x1000005d0
+1000005f3:	31 c0	xorl	%eax, %eax
+1000005f5:	bb c8 00 00 00	movl	$0xc8, %ebx
+1000005fa:	48 8d 3d a3 01 00 00	leaq	0x1a3(%rip), %rdi ## literal pool for: "created=%d err=%d\n"
+100000601:	89 de	movl	%ebx, %esi
+100000603:	89 c2	movl	%eax, %edx
+100000605:	41 89 c6	movl	%eax, %r14d
+100000608:	31 c0	xorl	%eax, %eax
+10000060a:	e8 23 01 00 00	callq	0x100000732 ## symbol stub for: _printf
+10000060f:	83 c3 c3	addl	$-0x3d, %ebx
+100000612:	31 c0	xorl	%eax, %eax
+100000614:	83 fb 04	cmpl	$0x4, %ebx
+100000617:	0f 92 c0	setb	%al
+10000061a:	41 83 fe 23	cmpl	$0x23, %r14d
+10000061e:	8d 4c 00 28	leal	0x28(%rax,%rax), %ecx
+100000622:	b8 01 00 00 00	movl	$0x1, %eax
+100000627:	0f 44 c1	cmovel	%ecx, %eax
+10000062a:	eb 75	jmp	0x1000006a1
+10000062c:	48 8d 15 cd 00 00 00	leaq	_crash(%rip), %rdx
+100000633:	48 8d bd a0 f9 ff ff	leaq	-0x660(%rbp), %rdi
+10000063a:	31 f6	xorl	%esi, %esi
+10000063c:	31 c9	xorl	%ecx, %ecx
+10000063e:	e8 e3 00 00 00	callq	0x100000726 ## symbol stub for: _pthread_create
+100000643:	48 8b bd a0 f9 ff ff	movq	-0x660(%rbp), %rdi
+10000064a:	31 f6	xorl	%esi, %esi
+10000064c:	e8 db 00 00 00	callq	0x10000072c ## symbol stub for: _pthread_join
+100000651:	b8 62 00 00 00	movl	$0x62, %eax
+100000656:	eb 49	jmp	0x1000006a1
+100000658:	48 8d 1d 51 00 00 00	leaq	_sleeper(%rip), %rbx
+10000065f:	48 8d bd a0 f9 ff ff	leaq	-0x660(%rbp), %rdi
+100000666:	31 f6	xorl	%esi, %esi
+100000668:	48 89 da	movq	%rbx, %rdx
+10000066b:	31 c9	xorl	%ecx, %ecx
+10000066d:	e8 b4 00 00 00	callq	0x100000726 ## symbol stub for: _pthread_create
+100000672:	48 8d 7d e0	leaq	-0x20(%rbp), %rdi
+100000676:	31 f6	xorl	%esi, %esi
+100000678:	48 89 da	movq	%rbx, %rdx
+10000067b:	31 c9	xorl	%ecx, %ecx
+10000067d:	e8 a4 00 00 00	callq	0x100000726 ## symbol stub for: _pthread_create
+100000682:	e8 99 00 00 00	callq	0x100000720 ## symbol stub for: _sched_yield
+100000687:	48 8b 7d e0	movq	-0x20(%rbp), %rdi
+10000068b:	e8 8a 00 00 00	callq	0x10000071a ## symbol stub for: _pthread_detach
+100000690:	48 8d 3d 20 01 00 00	leaq	0x120(%rip), %rdi ## literal pool for: "main returns"
+100000697:	e8 78 00 00 00	callq	0x100000714 ## symbol stub for: _puts
+10000069c:	b8 05 00 00 00	movl	$0x5, %eax
+1000006a1:	48 81 c4 48 06 00 00	addq	$0x648, %rsp
+1000006a8:	5b	popq	%rbx
+1000006a9:	41 5e	popq	%r14
+1000006ab:	41 5f	popq	%r15
+1000006ad:	5d	popq	%rbp
+1000006ae:	c3	retq
+1000006af:	90	nop
+_sleeper:
+1000006b0:	55	pushq	%rbp
+1000006b1:	48 89 e5	movq	%rsp, %rbp
+1000006b4:	66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+1000006c0:	bf e8 03 00 00	movl	$0x3e8, %edi
+1000006c5:	e8 6e 00 00 00	callq	0x100000738 ## symbol stub for: _usleep
+1000006ca:	eb f4	jmp	0x1000006c0
+1000006cc:	0f 1f 40 00	nopl	(%rax)
+_quitter:
+1000006d0:	55	pushq	%rbp
+1000006d1:	48 89 e5	movq	%rsp, %rbp
+1000006d4:	bf 88 13 00 00	movl	$0x1388, %edi
+1000006d9:	e8 5a 00 00 00	callq	0x100000738 ## symbol stub for: _usleep
+1000006de:	48 8d 3d df 00 00 00	leaq	0xdf(%rip), %rdi ## literal pool for: "thread calls exit(7)"
+1000006e5:	e8 2a 00 00 00	callq	0x100000714 ## symbol stub for: _puts
+1000006ea:	bf 07 00 00 00	movl	$0x7, %edi
+1000006ef:	e8 4a 00 00 00	callq	0x10000073e ## symbol stub for: _exit
+1000006f4:	66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_crash:
+100000700:	55	pushq	%rbp
+100000701:	48 89 e5	movq	%rsp, %rbp
+100000704:	c7 04 25 00 00 00 00 01 00 00 00	movl	$0x1, 0x0
+10000070f:	31 c0	xorl	%eax, %eax
+100000711:	5d	popq	%rbp
+100000712:	c3	retq

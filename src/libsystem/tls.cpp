@@ -10,6 +10,7 @@
 // written or replaced. There is exactly one guest thread, so "per thread" and "per process" coincide.
 #include <cstring>
 
+#include "cider/guest_threads.hpp"
 #include "cider/libsystem.hpp"
 #include "internal.hpp"
 
@@ -20,23 +21,31 @@ void* w_tlv_get_addr(const uint64_t* descriptor) {
     RuntimeContext* c = context();
     const uint64_t d = reinterpret_cast<uint64_t>(descriptor);
     if (c) {
-        for (auto& t : c->tls_images) {
+        for (size_t image = 0; image < c->tls_images.size(); ++image) {
+            TlsImage& t = c->tls_images[image];
             if (d < t.lo || d >= t.hi) continue;
             const uint64_t offset = descriptor[2];
             if (offset >= t.tmpl_size) {
                 detail::trap("tlv_get_addr: descriptor offset is outside the thread-local template");
                 return nullptr;
             }
-            if (!t.block) {
+            // One block per image PER GUEST THREAD: each thread starts from the template (see guest_threads.hpp).
+            ThreadState* me = GuestThreads::current();
+            uint8_t** slot = &t.block;
+            if (me) {
+                if (me->tls_blocks.size() <= image) me->tls_blocks.resize(c->tls_images.size(), nullptr);
+                slot = &me->tls_blocks[image];
+            }
+            if (!*slot) {
                 const uint64_t align = t.align < 16 ? 16 : t.align;
                 uint8_t* raw = static_cast<uint8_t*>(detail::guest_malloc(t.tmpl_size + align));
                 if (!raw) { detail::trap("tlv_get_addr: out of memory for thread-local storage"); return nullptr; }
                 uint8_t* aligned = reinterpret_cast<uint8_t*>((reinterpret_cast<uint64_t>(raw) + align - 1) & ~(align - 1));
                 std::memset(aligned, 0, t.tmpl_size);
                 std::memcpy(aligned, reinterpret_cast<const void*>(t.tmpl), t.init_size);   // __thread_data; the rest (__thread_bss) stays zero
-                t.block = aligned;
+                *slot = aligned;
             }
-            return t.block + offset;
+            return *slot + offset;
         }
     }
     detail::trap("tlv_get_addr: descriptor does not belong to a loaded image with thread-local storage");

@@ -2,6 +2,7 @@
 
 #include "cider/abi.hpp"
 #include "cider/guest.hpp"
+#include "cider/guest_threads.hpp"
 #include "cider/libsystem.hpp"
 #include "cider/linker.hpp"
 #include "cider/log.hpp"
@@ -102,6 +103,8 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
         ctx.tls_images.push_back(t);
     }
     libsystem::set_context(&ctx);
+    ctx.threads = std::make_unique<libsystem::GuestThreads>(ctx);
+    ctx.threads->attach_main();                      // this OS thread is guest thread 1 and owns the guest lock
 
     // ---- Mach-O initializers (never Windows constructors): dependencies first, each exactly once ----------
     // dyld calls them as init(argc, argv, envp, apple).
@@ -144,6 +147,8 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
         abi::CallOutcome h = abi::call_guest(fn, stack.value(), g.initial_sp);
         if (h.exited) { final_code = h.value; break; }
     }
+    // The process ends here: other guest threads (if any) are told to unwind and joined.
+    if (!ctx.threads->shutdown()) log::warn(log::Category::Execution, "some guest threads did not stop; the worker exit will end them");
     libsystem::set_context(nullptr);
 
     if (!ctx.fault.empty()) {

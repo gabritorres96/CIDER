@@ -1,0 +1,33 @@
+thread_sync:
+
+SYMBOL TABLE:
+0000000100000830 l     F __TEXT,__text _consumer
+0000000100002078 l     O __DATA,__data _m
+0000000100002100 l     O __DATA,__bss _produced
+0000000100002104 l     O __DATA,__bss _ready
+00000001000020b8 l     O __DATA,__data _cv
+0000000100002108 l     O __DATA,__bss _consumed
+00000001000008a0 l     F __TEXT,__text _once_worker
+00000001000020e8 l     O __DATA,__data _once
+00000001000008c0 l     F __TEXT,__text _init_once
+000000010000210c l     O __DATA,__bss _once_count
+00000001000008d0 l     F __TEXT,__text _errno_worker
+00000001000020f8 l     O __DATA,__data __dyld_private
+0000000100000590 g     F __TEXT,__text _main
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* ___error
+0000000000000000         *UND* _open
+0000000000000000         *UND* _pthread_cond_signal
+0000000000000000         *UND* _pthread_cond_wait
+0000000000000000         *UND* _pthread_create
+0000000000000000         *UND* _pthread_join
+0000000000000000         *UND* _pthread_mutex_destroy
+0000000000000000         *UND* _pthread_mutex_init
+0000000000000000         *UND* _pthread_mutex_lock
+0000000000000000         *UND* _pthread_mutex_trylock
+0000000000000000         *UND* _pthread_mutex_unlock
+0000000000000000         *UND* _pthread_mutexattr_init
+0000000000000000         *UND* _pthread_mutexattr_settype
+0000000000000000         *UND* _pthread_once
+0000000000000000         *UND* _sched_yield
+0000000000000000         *UND* dyld_stub_binder

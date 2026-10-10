@@ -36,6 +36,8 @@ struct GuestFd {
     bool readable = false, writable = false, append = false;
 };
 
+class GuestThreads;
+
 // Thread-local storage of one image (Mach-O TLV protocol, see src/libsystem/tls.cpp).
 struct TlsImage {
     uint64_t lo = 0, hi = 0;             // the image's mapped range: its TLV descriptors live inside
@@ -78,6 +80,7 @@ struct RuntimeContext {
     std::filesystem::path root;             // host directory the guest's "/" maps to; empty: file access is refused (EACCES)
     std::vector<GuestFd> fds;               // index = guest descriptor
     uint64_t file_stdin = 0, file_stdout = 0, file_stderr = 0;   // guest addresses of the three FILE objects
+    std::unique_ptr<GuestThreads> threads;  // guest threads (pthreads) and the cooperative guest lock; created by the runner
     std::vector<Stream> streams;            // FILE slots (kMaxStreams); the guest FILE* of slot i is stream_base + i * kFileObjectSize
     uint64_t stream_base = 0;
     std::vector<TlsImage> tls_images;       // images with thread-local storage (filled by the dynamic linker)

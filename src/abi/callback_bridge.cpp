@@ -67,6 +67,12 @@ GuestCallArgs& GuestCallArgs::push_float(float f) {
 }
 
 void set_callback_validator(CallbackValidator v) { g_validator = v; }
+AbiThreadState save_thread_state() { return {cider_current_call, g_depth, g_stack_lo}; }
+void restore_thread_state(const AbiThreadState& s) {
+    cider_current_call = s.current;
+    g_depth = s.depth;
+    g_stack_lo = s.stack_lo;
+}
 unsigned callback_depth() { return g_depth; }
 
 CallOutcome call_guest_args(uint64_t fn, const GuestStack& stack, uint64_t initial_sp, const GuestCallArgs& args) {

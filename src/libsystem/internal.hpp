@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "cider/guest_threads.hpp"
 #include "cider/libsystem.hpp"
 
 namespace cider::libsystem::detail {
@@ -11,6 +12,7 @@ void add_stdio_symbols(std::vector<HostSymbol>& out);   // stdio.cpp : printf fa
 void add_posix_symbols(std::vector<HostSymbol>& out);   // posix.cpp : files, time, process ids, errno
 void add_misc_symbols(std::vector<HostSymbol>& out);    // misc.cpp  : more string and math functions, div/ldiv
 void add_stream_symbols(std::vector<HostSymbol>& out);   // stdio_streams.cpp: fopen, fclose, fread, fseek, ...
+void add_pthread_symbols(std::vector<HostSymbol>& out);  // pthread_bridge.cpp
 void add_callback_symbols(std::vector<HostSymbol>& out); // callbacks.cpp: qsort, bsearch, atexit
 void add_tls_symbols(std::vector<HostSymbol>& out);     // tls.cpp   : __tlv_bootstrap / tlv_get_addr
 
@@ -22,8 +24,14 @@ enum DarwinErrno : int {
 };
 
 // Records `e` in the guest's errno and returns -1 (the POSIX failure value).
+inline int& errno_ref() {                       // errno is per guest thread on Darwin
+    static int detached = 0;
+    if (ThreadState* t = GuestThreads::current()) return t->errno_value;
+    RuntimeContext* c = context();
+    return c ? c->errno_value : detached;
+}
 inline int64_t fail_errno(int e) {
-    if (RuntimeContext* c = context()) c->errno_value = e;
+    errno_ref() = e;
     return -1;
 }
 

@@ -207,6 +207,16 @@ using CallbackValidator = bool (*)(uint64_t fn);
 void set_callback_validator(CallbackValidator v);
 unsigned callback_depth();
 
+// Per-guest-thread bridge state (the globals behind callbacks). The guest-thread scheduler saves it when a thread gives up the
+// guest lock and restores it when the thread gets the lock back; a new thread starts with a default-constructed state.
+struct AbiThreadState {
+    GuestCall* current = nullptr;
+    unsigned depth = 0;
+    uint64_t stack_lo = 0;
+};
+AbiThreadState save_thread_state();
+void restore_thread_state(const AbiThreadState& s);
+
 // Called by exit(): marks the active call as exited with `code`; the thunk then unwinds to the host.
 void request_guest_exit(uint64_t code);
 

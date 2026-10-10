@@ -59,12 +59,14 @@ CIDER_TEST(registry_lists_exactly_the_documented_symbols) {
         "_qsort", "_bsearch", "_atexit",
         // 0.4.1 FILE streams
         "_fopen", "_fclose", "_fread", "_fgetc", "_getc", "_ungetc", "_fgets", "_feof", "_ferror", "_clearerr", "_ftell", "_ftello", "_fseek",
-        "_fseeko", "_rewind", "_fileno", "_setvbuf"};
+        "_fseeko", "_rewind", "_fileno", "_setvbuf",
+        // 0.4.2 pthreads
+        "_pthread_create", "_pthread_join", "_pthread_detach", "_pthread_self", "_pthread_equal", "_pthread_exit", "_sched_yield", "_pthread_attr_init", "_pthread_attr_destroy", "_pthread_attr_setstacksize", "_pthread_attr_getstacksize", "_pthread_attr_setdetachstate", "_pthread_mutexattr_init", "_pthread_mutexattr_destroy", "_pthread_mutexattr_settype", "_pthread_mutexattr_gettype", "_pthread_mutex_init", "_pthread_mutex_destroy", "_pthread_mutex_lock", "_pthread_mutex_trylock", "_pthread_mutex_unlock", "_pthread_cond_init", "_pthread_cond_destroy", "_pthread_cond_wait", "_pthread_cond_timedwait", "_pthread_cond_signal", "_pthread_cond_broadcast", "_pthread_once", "_pthread_key_create", "_pthread_key_delete", "_pthread_getspecific", "_pthread_setspecific"};
     CHECK(names == expected);
     for (const auto& n : expected) CHECK(is_implemented(n));
     for (const char* n : {"___stdinp", "___stdoutp", "___stderrp"}) CHECK(is_implemented(n));
     // honest negatives: NOT implemented, so binaries importing them are rejected at load time
-    for (const char* n : {"_fork", "_execve", "_signal", "_pthread_create", "_mmap", "_dlopen", "_sysctl", "_sscanf", "_scanf"})
+    for (const char* n : {"_fork", "_execve", "_signal", "_mmap", "_dlopen", "_sysctl", "_sscanf", "_scanf"})
         CHECK(!is_implemented(n));
 }
 

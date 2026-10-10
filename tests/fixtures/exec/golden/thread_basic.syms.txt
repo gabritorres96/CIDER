@@ -1,0 +1,19 @@
+thread_basic:
+
+SYMBOL TABLE:
+00000001000007a0 l     F __TEXT,__text _times_two
+0000000100002048 l     O __DATA,__bss _seen_self
+00000001000007d0 l     F __TEXT,__text _exiter
+00000001000007e0 l     F __TEXT,__text _deep_exit
+0000000100002040 l     O __DATA,__data __dyld_private
+0000000100000540 g     F __TEXT,__text _main
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _pthread_attr_destroy
+0000000000000000         *UND* _pthread_attr_init
+0000000000000000         *UND* _pthread_attr_setstacksize
+0000000000000000         *UND* _pthread_create
+0000000000000000         *UND* _pthread_equal
+0000000000000000         *UND* _pthread_exit
+0000000000000000         *UND* _pthread_join
+0000000000000000         *UND* _pthread_self
+0000000000000000         *UND* dyld_stub_binder

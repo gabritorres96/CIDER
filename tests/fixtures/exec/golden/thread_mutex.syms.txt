@@ -1,0 +1,18 @@
+thread_mutex:
+
+SYMBOL TABLE:
+0000000100000670 l     F __TEXT,__text _worker
+0000000100002078 l     O __DATA,__bss _counter
+0000000100002080 l     O __DATA,__bss _max_inside
+0000000100002030 l     O __DATA,__data _lock
+0000000100002084 l     O __DATA,__bss _inside
+0000000100002070 l     O __DATA,__data __dyld_private
+0000000100000590 g     F __TEXT,__text _main
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _printf
+0000000000000000         *UND* _pthread_create
+0000000000000000         *UND* _pthread_join
+0000000000000000         *UND* _pthread_mutex_lock
+0000000000000000         *UND* _pthread_mutex_unlock
+0000000000000000         *UND* _sched_yield
+0000000000000000         *UND* dyld_stub_binder
