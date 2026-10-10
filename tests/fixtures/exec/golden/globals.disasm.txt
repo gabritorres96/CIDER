@@ -1,0 +1,17 @@
+globals:
+(__TEXT,__text) section
+_main:
+1000003b0:	55	pushq	%rbp
+1000003b1:	48 89 e5	movq	%rsp, %rbp
+1000003b4:	8b 05 56 0c 00 00	movl	_g_counter(%rip), %eax
+1000003ba:	03 05 48 0c 00 00	addl	0xc48(%rip), %eax
+1000003c0:	89 05 4a 0c 00 00	movl	%eax, _g_counter(%rip)
+1000003c6:	48 8b 0d 4b 0c 00 00	movq	_g_ptr(%rip), %rcx
+1000003cd:	8b 09	movl	(%rcx), %ecx
+1000003cf:	8d 14 01	leal	(%rcx,%rax), %edx
+1000003d2:	ff c2	incl	%edx
+1000003d4:	89 15 36 0c 00 00	movl	%edx, _g_counter(%rip)
+1000003da:	01 c8	addl	%ecx, %eax
+1000003dc:	83 c0 04	addl	$0x4, %eax
+1000003df:	5d	popq	%rbp
+1000003e0:	c3	retq

@@ -1,5 +1,3 @@
 # memory
 
-NOT IMPLEMENTED. Reserved for CIDER 0.2 (see docs/ROADMAP.md).
-
-No code lives here yet on purpose: interfaces are only declared once a test program needs them.
+VirtualAlloc/VirtualProtect/VirtualFree/VirtualQuery wrappers: RAII `Region`, Mach-O protection mapping with the W^X policy. See include/cider/memory.hpp.

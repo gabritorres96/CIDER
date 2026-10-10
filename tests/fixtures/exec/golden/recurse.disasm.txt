@@ -1,0 +1,21 @@
+recurse:
+(__TEXT,__text) section
+_main:
+1000002d0:	55	pushq	%rbp
+1000002d1:	48 89 e5	movq	%rsp, %rbp
+1000002d4:	31 ff	xorl	%edi, %edi
+1000002d6:	5d	popq	%rbp
+1000002d7:	e9 04 00 00 00	jmp	_f
+1000002dc:	0f 1f 40 00	nopl	(%rax)
+_f:
+1000002e0:	55	pushq	%rbp
+1000002e1:	48 89 e5	movq	%rsp, %rbp
+1000002e4:	48 83 ec 10	subq	$0x10, %rsp
+1000002e8:	40 88 7d f0	movb	%dil, -0x10(%rbp)
+1000002ec:	ff c7	incl	%edi
+1000002ee:	e8 ed ff ff ff	callq	_f
+1000002f3:	0f be 4d f0	movsbl	-0x10(%rbp), %ecx
+1000002f7:	01 c8	addl	%ecx, %eax
+1000002f9:	48 83 c4 10	addq	$0x10, %rsp
+1000002fd:	5d	popq	%rbp
+1000002fe:	c3	retq

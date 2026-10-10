@@ -1,0 +1,10 @@
+globals:
+
+SYMBOL TABLE:
+00000001000003b0 g     F __TEXT,__text _main
+0000000100001000 g     O __DATA,__data _g_table
+0000000100001010 g     O __DATA,__data _g_counter
+0000000100001018 g     O __DATA,__data _g_ptr
+00000001000003e4 g     O __TEXT,__const _g_const
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* dyld_stub_binder

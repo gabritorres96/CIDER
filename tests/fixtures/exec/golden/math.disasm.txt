@@ -1,0 +1,38 @@
+math:
+(__TEXT,__text) section
+_main:
+100000360:	55	pushq	%rbp
+100000361:	48 89 e5	movq	%rsp, %rbp
+100000364:	48 8b 0d 95 0c 00 00	movq	_g_a(%rip), %rcx
+10000036b:	48 0f af 0d 95 0c 00 00	imulq	_g_b(%rip), %rcx
+100000373:	48 03 0d 96 0c 00 00	addq	_g_c(%rip), %rcx
+10000037a:	48 ba 29 08 68 ae ef 2f a3 20	movabsq	$0x20a32fefae680829, %rdx
+100000384:	48 89 c8	movq	%rcx, %rax
+100000387:	48 f7 ea	imulq	%rdx
+10000038a:	48 89 d0	movq	%rdx, %rax
+10000038d:	48 c1 e8 3f	shrq	$0x3f, %rax
+100000391:	48 c1 ea 05	shrq	$0x5, %rdx
+100000395:	01 c2	addl	%eax, %edx
+100000397:	69 c2 fb 00 00 00	imull	$0xfb, %edx, %eax
+10000039d:	29 c1	subl	%eax, %ecx
+10000039f:	48 8b 05 5a 0c 00 00	movq	_g_a(%rip), %rax
+1000003a6:	48 8b 3d 5b 0c 00 00	movq	_g_b(%rip), %rdi
+1000003ad:	31 c7	xorl	%eax, %edi
+1000003af:	48 8b 05 4a 0c 00 00	movq	_g_a(%rip), %rax
+1000003b6:	31 d2	xorl	%edx, %edx
+1000003b8:	48 f7 35 51 0c 00 00	divq	_g_c(%rip)
+1000003bf:	48 89 c6	movq	%rax, %rsi
+1000003c2:	48 ba d1 51 81 2f ae 7e d0 51	movabsq	$0x51d07eae2f8151d1, %rdx
+1000003cc:	48 f7 e2	mulq	%rdx
+1000003cf:	01 cf	addl	%ecx, %edi
+1000003d1:	48 89 f0	movq	%rsi, %rax
+1000003d4:	48 29 d0	subq	%rdx, %rax
+1000003d7:	48 d1 e8	shrq	%rax
+1000003da:	01 c2	addl	%eax, %edx
+1000003dc:	c1 ea 06	shrl	$0x6, %edx
+1000003df:	6b c2 61	imull	$0x61, %edx, %eax
+1000003e2:	29 c6	subl	%eax, %esi
+1000003e4:	01 fe	addl	%edi, %esi
+1000003e6:	40 0f b6 c6	movzbl	%sil, %eax
+1000003ea:	5d	popq	%rbp
+1000003eb:	c3	retq

@@ -1,5 +1,3 @@
 # security
 
-NOT IMPLEMENTED. Reserved for CIDER 0.2 (see docs/ROADMAP.md).
-
-No code lives here yet on purpose: interfaces are only declared once a test program needs them.
+Pre-execution validator (`execution_validator.cpp`): decides from the parsed image whether the runtime may map and run it. W^X and geometry checks live in loader/image_layout.cpp.

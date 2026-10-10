@@ -1,0 +1,7 @@
+missing:
+(__TEXT,__text) section
+_main:
+1000004f0:	55	pushq	%rbp
+1000004f1:	48 89 e5	movq	%rsp, %rbp
+1000004f4:	5d	popq	%rbp
+1000004f5:	e9 02 00 00 00	jmp	0x1000004fc ## symbol stub for: _fork

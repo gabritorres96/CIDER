@@ -1,0 +1,11 @@
+calls:
+
+Rebase table:
+segment  section            address     type
+__DATA   __data             0x100001000  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+
+Lazy bind table:
+segment  section            address     dylib            symbol

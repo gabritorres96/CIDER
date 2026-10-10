@@ -1,0 +1,34 @@
+bss:
+(__TEXT,__text) section
+_main:
+1000003b0:	31 d2	xorl	%edx, %edx
+1000003b2:	48 8d 0d 47 0c 00 00	leaq	_g_zero(%rip), %rcx
+1000003b9:	31 c0	xorl	%eax, %eax
+1000003bb:	0f 1f 44 00 00	nopl	(%rax,%rax)
+1000003c0:	03 14 08	addl	(%rax,%rcx), %edx
+1000003c3:	48 83 c0 04	addq	$0x4, %rax
+1000003c7:	48 3d 00 10 00 00	cmpq	$0x1000, %rax
+1000003cd:	75 f1	jne	0x1000003c0
+1000003cf:	31 c0	xorl	%eax, %eax
+1000003d1:	48 8d 35 28 1c 00 00	leaq	_g_common_zero(%rip), %rsi
+1000003d8:	0f 1f 84 00 00 00 00 00	nopl	(%rax,%rax)
+1000003e0:	03 14 30	addl	(%rax,%rsi), %edx
+1000003e3:	48 83 c0 04	addq	$0x4, %rax
+1000003e7:	48 3d 00 01 00 00	cmpq	$0x100, %rax
+1000003ed:	75 f1	jne	0x1000003e0
+1000003ef:	b8 64 00 00 00	movl	$0x64, %eax
+1000003f4:	85 d2	testl	%edx, %edx
+1000003f6:	74 01	je	0x1000003f9
+1000003f8:	c3	retq
+1000003f9:	55	pushq	%rbp
+1000003fa:	48 89 e5	movq	%rsp, %rbp
+1000003fd:	31 c0	xorl	%eax, %eax
+1000003ff:	90	nop
+100000400:	89 01	movl	%eax, (%rcx)
+100000402:	48 ff c0	incq	%rax
+100000405:	48 83 c1 04	addq	$0x4, %rcx
+100000409:	48 3d 00 04 00 00	cmpq	$0x400, %rax
+10000040f:	75 ef	jne	0x100000400
+100000411:	0f b6 05 88 1b 00 00	movzbl	0x1b88(%rip), %eax
+100000418:	5d	popq	%rbp
+100000419:	c3	retq

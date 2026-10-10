@@ -504,10 +504,6 @@ int cmd_compatibility(const Options& o) {
     return c.status == analysis::CompatStatus::NotCompatible ? 1 : 0;
 }
 
-int cmd_run(const Options& o) {
-    return fail(o, "'run' is not available: CIDER 0.1 is a static inspector. The loader and runtime arrive in CIDER 0.2 (see docs/ROADMAP.md).", 2);
-}
-
 int cmd_logs(const Options& o) {
     const char* env = std::getenv("CIDER_LOG_FILE");
     std::string path = !o.positional.empty() ? o.positional[0] : (env ? env : "");

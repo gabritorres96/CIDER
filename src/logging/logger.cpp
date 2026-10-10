@@ -54,6 +54,37 @@ void close_file() {
     if (g_file.is_open()) g_file.close();
 }
 
+const char* category_name(Category c) noexcept {
+    switch (c) {
+        case Category::None: return "";
+        case Category::Loader: return "LOADER";
+        case Category::Memory: return "MEMORY";
+        case Category::Abi: return "ABI";
+        case Category::Dyld: return "DYLD";
+        case Category::Symbols: return "SYMBOLS";
+        case Category::LibSystem: return "LIBSYSTEM";
+        case Category::Execution: return "EXECUTION";
+        case Category::Process: return "PROCESS";
+    }
+    return "";
+}
+
+void write(Category c, Level l, std::string_view message) {
+    if (c == Category::None) { write(l, message); return; }
+    if (l == Level::Off) return;
+    std::string line = l == Level::Info ? std::format("[CIDER][{}] {}", category_name(c), sanitize_utf8(message))
+                                        : std::format("[CIDER][{}][{}] {}", category_name(c), level_name(l), sanitize_utf8(message));
+    std::lock_guard<std::mutex> lock(g_mutex);
+    if (g_stderr.load()) {
+        std::fwrite(line.data(), 1, line.size(), stderr);
+        std::fputc('\n', stderr);
+    }
+    if (g_file.is_open()) {
+        g_file << line << '\n';
+        g_file.flush();
+    }
+}
+
 void write(Level l, std::string_view message) {
     if (l == Level::Off) return;
     std::string line = std::format("[CIDER][{}] {}", level_name(l), sanitize_utf8(message));

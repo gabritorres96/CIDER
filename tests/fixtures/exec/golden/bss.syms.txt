@@ -1,0 +1,8 @@
+bss:
+
+SYMBOL TABLE:
+0000000100001000 l     O __DATA,__bss _g_zero
+00000001000003b0 g     F __TEXT,__text _main
+0000000100002000 g     O __DATA,__common _g_common_zero
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* dyld_stub_binder

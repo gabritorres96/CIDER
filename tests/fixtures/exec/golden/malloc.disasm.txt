@@ -1,0 +1,56 @@
+malloc:
+(__TEXT,__text) section
+_main:
+1000004f0:	55	pushq	%rbp
+1000004f1:	48 89 e5	movq	%rsp, %rbp
+1000004f4:	41 57	pushq	%r15
+1000004f6:	41 56	pushq	%r14
+1000004f8:	53	pushq	%rbx
+1000004f9:	50	pushq	%rax
+1000004fa:	bf 64 00 00 00	movl	$0x64, %edi
+1000004ff:	e8 b6 00 00 00	callq	0x1000005ba ## symbol stub for: _malloc
+100000504:	31 c9	xorl	%ecx, %ecx
+100000506:	66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+100000510:	88 0c 08	movb	%cl, (%rax,%rcx)
+100000513:	48 ff c1	incq	%rcx
+100000516:	48 83 f9 64	cmpq	$0x64, %rcx
+10000051a:	75 f4	jne	0x100000510
+10000051c:	be e8 03 00 00	movl	$0x3e8, %esi
+100000521:	48 89 c7	movq	%rax, %rdi
+100000524:	e8 8b 00 00 00	callq	0x1000005b4 ## symbol stub for: _realloc
+100000529:	49 89 c6	movq	%rax, %r14
+10000052c:	31 db	xorl	%ebx, %ebx
+10000052e:	31 c0	xorl	%eax, %eax
+100000530:	41 0f b6 0c 06	movzbl	(%r14,%rax), %ecx
+100000535:	01 cb	addl	%ecx, %ebx
+100000537:	48 ff c0	incq	%rax
+10000053a:	48 83 f8 64	cmpq	$0x64, %rax
+10000053e:	75 f0	jne	0x100000530
+100000540:	bf 32 00 00 00	movl	$0x32, %edi
+100000545:	be 04 00 00 00	movl	$0x4, %esi
+10000054a:	e8 5f 00 00 00	callq	0x1000005ae ## symbol stub for: _calloc
+10000054f:	49 89 c7	movq	%rax, %r15
+100000552:	31 c0	xorl	%eax, %eax
+100000554:	66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+100000560:	41 0f b6 0c 07	movzbl	(%r15,%rax), %ecx
+100000565:	01 cb	addl	%ecx, %ebx
+100000567:	48 ff c0	incq	%rax
+10000056a:	48 3d c8 00 00 00	cmpq	$0xc8, %rax
+100000570:	75 ee	jne	0x100000560
+100000572:	4c 89 f7	movq	%r14, %rdi
+100000575:	e8 2e 00 00 00	callq	0x1000005a8 ## symbol stub for: _free
+10000057a:	4c 89 ff	movq	%r15, %rdi
+10000057d:	e8 26 00 00 00	callq	0x1000005a8 ## symbol stub for: _free
+100000582:	89 d8	movl	%ebx, %eax
+100000584:	b9 bf bf 8c 82	movl	$0x828cbfbf, %ecx
+100000589:	48 0f af c8	imulq	%rax, %rcx
+10000058d:	48 c1 e9 27	shrq	$0x27, %rcx
+100000591:	69 c1 fb 00 00 00	imull	$0xfb, %ecx, %eax
+100000597:	29 c3	subl	%eax, %ebx
+100000599:	89 d8	movl	%ebx, %eax
+10000059b:	48 83 c4 08	addq	$0x8, %rsp
+10000059f:	5b	popq	%rbx
+1000005a0:	41 5e	popq	%r14
+1000005a2:	41 5f	popq	%r15
+1000005a4:	5d	popq	%rbp
+1000005a5:	c3	retq

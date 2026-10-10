@@ -1,0 +1,9 @@
+calls:
+
+SYMBOL TABLE:
+0000000100000380 g     F __TEXT,__text _main
+0000000100000360 g     F __TEXT,__text _add3
+0000000100000370 g     F __TEXT,__text _twice
+0000000100001000 g     O __DATA,__data _g_fn
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* dyld_stub_binder

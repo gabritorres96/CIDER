@@ -1,0 +1,7 @@
+spin:
+(__TEXT,__text) section
+_main:
+1000002d0:	55	pushq	%rbp
+1000002d1:	48 89 e5	movq	%rsp, %rbp
+1000002d4:	66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+1000002e0:	eb fe	jmp	0x1000002e0

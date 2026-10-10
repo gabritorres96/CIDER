@@ -1,0 +1,6 @@
+crash:
+
+SYMBOL TABLE:
+00000001000002d0 g     F __TEXT,__text _main
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* dyld_stub_binder

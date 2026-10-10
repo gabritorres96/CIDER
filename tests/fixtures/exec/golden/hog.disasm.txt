@@ -1,0 +1,21 @@
+hog:
+(__TEXT,__text) section
+_main:
+1000004f0:	55	pushq	%rbp
+1000004f1:	48 89 e5	movq	%rsp, %rbp
+1000004f4:	bf 00 00 00 60	movl	$0x60000000, %edi
+1000004f9:	e8 3a 00 00 00	callq	0x100000538 ## symbol stub for: _malloc
+1000004fe:	48 85 c0	testq	%rax, %rax
+100000501:	74 2c	je	0x10000052f
+100000503:	48 c7 c1 00 f0 ff ff	movq	$-0x1000, %rcx
+10000050a:	66 0f 1f 44 00 00	nopw	(%rax,%rax)
+100000510:	c6 84 08 00 10 00 00 01	movb	$0x1, 0x1000(%rax,%rcx)
+100000518:	48 81 c1 00 10 00 00	addq	$0x1000, %rcx
+10000051f:	48 81 f9 00 f0 ff 5f	cmpq	$0x5ffff000, %rcx
+100000526:	72 e8	jb	0x100000510
+100000528:	b8 04 00 00 00	movl	$0x4, %eax
+10000052d:	5d	popq	%rbp
+10000052e:	c3	retq
+10000052f:	b8 03 00 00 00	movl	$0x3, %eax
+100000534:	5d	popq	%rbp
+100000535:	c3	retq

@@ -1,5 +1,3 @@
 # process
 
-NOT IMPLEMENTED. Reserved for CIDER 0.3 (see docs/ROADMAP.md).
-
-No code lives here yet on purpose: interfaces are only declared once a test program needs them.
+Guest process management: in-process execution (`guest_process.cpp`), worker result protocol (`exit_handler.cpp`), the worker (`worker.cpp`) and the job-restricted supervisor (`supervisor.cpp`). The worker is NOT a sandbox.

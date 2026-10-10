@@ -1,5 +1,3 @@
 # loader
 
-NOT IMPLEMENTED. Reserved for CIDER 0.2 (see docs/ROADMAP.md).
-
-No code lives here yet on purpose: interfaces are only declared once a test program needs them.
+CIDER 0.2 Mach-O image loader: layout planning (`image_layout.cpp`), segment mapping and final W^X protections (`segment_mapper.cpp`), the whole load pipeline (`macho_loader.cpp`). See docs/LOADER.md and docs/EXECUTION.md.

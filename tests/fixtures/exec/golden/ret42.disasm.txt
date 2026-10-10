@@ -1,0 +1,8 @@
+ret42:
+(__TEXT,__text) section
+_main:
+1000002d0:	55	pushq	%rbp
+1000002d1:	48 89 e5	movq	%rsp, %rbp
+1000002d4:	b8 2a 00 00 00	movl	$0x2a, %eax
+1000002d9:	5d	popq	%rbp
+1000002da:	c3	retq

@@ -1,0 +1,9 @@
+crash:
+(__TEXT,__text) section
+_main:
+1000002d0:	55	pushq	%rbp
+1000002d1:	48 89 e5	movq	%rsp, %rbp
+1000002d4:	c7 04 25 00 00 00 00 01 00 00 00	movl	$0x1, 0x0
+1000002df:	31 c0	xorl	%eax, %eax
+1000002e1:	5d	popq	%rbp
+1000002e2:	c3	retq

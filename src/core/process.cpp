@@ -38,18 +38,64 @@ std::wstring widen(const std::string& s) {
 struct Handle {
     HANDLE h = nullptr;
     ~Handle() { if (h && h != INVALID_HANDLE_VALUE) CloseHandle(h); }
+    void close() { if (h && h != INVALID_HANDLE_VALUE) CloseHandle(h); h = nullptr; }
 };
+
+// Drains whatever is available on `pipe` into `out`. Returns false when the pipe is closed and empty.
+bool drain(HANDLE pipe, std::string& out, size_t cap, bool& overflow) {
+    char buf[8192];
+    for (;;) {
+        DWORD avail = 0;
+        if (!PeekNamedPipe(pipe, nullptr, 0, nullptr, &avail, nullptr)) return false;  // broken pipe: writer gone
+        if (avail == 0) return true;
+        DWORD got = 0;
+        if (!ReadFile(pipe, buf, static_cast<DWORD>(sizeof buf), &got, nullptr) || got == 0) return false;
+        if (out.size() + got > cap) { overflow = true; return true; }
+        out.append(buf, got);
+    }
+}
+
+void inheritable(HANDLE h) {
+    if (h && h != INVALID_HANDLE_VALUE) SetHandleInformation(h, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
+}
 }  // namespace
 
-Result<ProcessResult> run_process(const std::filesystem::path& exe, const std::vector<std::string>& args,
-                                  std::chrono::milliseconds timeout, size_t max_output) {
+std::filesystem::path current_executable() {
+    std::wstring buf(32768, L'\0');
+    DWORD n = GetModuleFileNameW(nullptr, buf.data(), static_cast<DWORD>(buf.size()));
+    if (n == 0 || n >= buf.size()) return {};
+    buf.resize(n);
+    return std::filesystem::path(buf);
+}
+
+Result<ProcessResult> run_process_ex(const std::filesystem::path& exe, const std::vector<std::string>& args,
+                                     std::chrono::milliseconds timeout, const ProcessOptions& opts) {
     if (!exe.is_absolute()) return Error{ErrorCode::InvalidArgument, "process path must be absolute: " + path_to_utf8(exe)};
 
     SECURITY_ATTRIBUTES sa{sizeof sa, nullptr, TRUE};
-    Handle read_end, write_end, nul_in;
-    if (!CreatePipe(&read_end.h, &write_end.h, &sa, 0)) return Error{ErrorCode::Io, "CreatePipe failed"};
-    SetHandleInformation(read_end.h, HANDLE_FLAG_INHERIT, 0);
+    Handle out_r, out_w, err_r, err_w, nul_in;
     nul_in.h = CreateFileW(L"NUL", GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, &sa, OPEN_EXISTING, 0, nullptr);
+    STARTUPINFOW si{};
+    si.cb = sizeof si;
+    si.dwFlags = STARTF_USESTDHANDLES;
+    si.hStdInput = nul_in.h;
+    if (opts.inherit_stdio) {
+        HANDLE so = GetStdHandle(STD_OUTPUT_HANDLE), se = GetStdHandle(STD_ERROR_HANDLE);
+        inheritable(so);
+        inheritable(se);
+        si.hStdOutput = so;
+        si.hStdError = se;
+    } else {
+        if (!CreatePipe(&out_r.h, &out_w.h, &sa, 0)) return Error{ErrorCode::Io, "CreatePipe failed"};
+        SetHandleInformation(out_r.h, HANDLE_FLAG_INHERIT, 0);
+        si.hStdOutput = out_w.h;
+        si.hStdError = out_w.h;
+        if (opts.separate_stderr) {
+            if (!CreatePipe(&err_r.h, &err_w.h, &sa, 0)) return Error{ErrorCode::Io, "CreatePipe failed"};
+            SetHandleInformation(err_r.h, HANDLE_FLAG_INHERIT, 0);
+            si.hStdError = err_w.h;
+        }
+    }
 
     // Native separators: cmd.exe mis-parses a forward-slash program name as a switch.
     std::filesystem::path native = exe;
@@ -59,18 +105,24 @@ Result<ProcessResult> run_process(const std::filesystem::path& exe, const std::v
     for (auto& a : args) cmd += " " + quote_windows_arg(a);
     std::wstring wcmd = widen(cmd);
 
-    STARTUPINFOW si{};
-    si.cb = sizeof si;
-    si.dwFlags = STARTF_USESTDHANDLES;
-    si.hStdInput = nul_in.h;
-    si.hStdOutput = write_end.h;
-    si.hStdError = write_end.h;
-
     Handle job;
     job.h = CreateJobObjectW(nullptr, nullptr);
     if (job.h) {
         JOBOBJECT_EXTENDED_LIMIT_INFORMATION li{};
         li.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        if (opts.restrict_job) {
+            li.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_ACTIVE_PROCESS | JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION;
+            li.BasicLimitInformation.ActiveProcessLimit = 1;  // the worker itself; it cannot spawn children
+            if (opts.job_memory_limit) {
+                li.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_PROCESS_MEMORY;
+                li.ProcessMemoryLimit = static_cast<SIZE_T>(opts.job_memory_limit);
+            }
+            JOBOBJECT_BASIC_UI_RESTRICTIONS ui{};
+            ui.UIRestrictionsClass = JOB_OBJECT_UILIMIT_DESKTOP | JOB_OBJECT_UILIMIT_DISPLAYSETTINGS | JOB_OBJECT_UILIMIT_EXITWINDOWS |
+                                     JOB_OBJECT_UILIMIT_GLOBALATOMS | JOB_OBJECT_UILIMIT_HANDLES | JOB_OBJECT_UILIMIT_READCLIPBOARD |
+                                     JOB_OBJECT_UILIMIT_SYSTEMPARAMETERS | JOB_OBJECT_UILIMIT_WRITECLIPBOARD;
+            SetInformationJobObject(job.h, JobObjectBasicUIRestrictions, &ui, sizeof ui);
+        }
         SetInformationJobObject(job.h, JobObjectExtendedLimitInformation, &li, sizeof li);
     }
 
@@ -82,34 +134,30 @@ Result<ProcessResult> run_process(const std::filesystem::path& exe, const std::v
     Handle process, thread;
     process.h = pi.hProcess;
     thread.h = pi.hThread;
-    if (job.h) AssignProcessToJobObject(job.h, pi.hProcess);
+    if (job.h && !AssignProcessToJobObject(job.h, pi.hProcess) && opts.restrict_job) {
+        TerminateProcess(pi.hProcess, 1);
+        return Error{ErrorCode::Io, std::format("cannot assign the process to its job object (error {})", GetLastError())};
+    }
     ResumeThread(pi.hThread);
-    write_end.h = (CloseHandle(write_end.h), nullptr);  // child owns the only write end now
+    out_w.close();  // the child owns the only write ends now
+    err_w.close();
 
     ProcessResult res;
     const auto deadline = std::chrono::steady_clock::now() + timeout;
-    char buf[8192];
-    bool overflow = false;
+    bool overflow = false, out_open = out_r.h != nullptr, err_open = err_r.h != nullptr;
     for (;;) {
-        DWORD avail = 0;
-        bool pipe_open = PeekNamedPipe(read_end.h, nullptr, 0, nullptr, &avail, nullptr) != 0;
-        if (pipe_open && avail) {
-            DWORD got = 0;
-            if (ReadFile(read_end.h, buf, static_cast<DWORD>(sizeof buf), &got, nullptr) && got) {
-                if (res.output.size() + got > max_output) { overflow = true; break; }
-                res.output.append(buf, got);
-            }
-            continue;
-        }
-        if (!pipe_open) break;  // writer closed and drained
-        if (WaitForSingleObject(process.h, 0) == WAIT_OBJECT_0) {
-            // process exited: drain whatever is left, then stop
-            DWORD left = 0;
-            if (PeekNamedPipe(read_end.h, nullptr, 0, nullptr, &left, nullptr) && left) continue;
+        if (out_open) out_open = drain(out_r.h, res.output, opts.max_output_bytes, overflow);
+        if (err_open) err_open = drain(err_r.h, opts.separate_stderr ? res.errput : res.output, opts.max_output_bytes, overflow);
+        if (overflow) break;
+        const bool exited = WaitForSingleObject(process.h, 0) == WAIT_OBJECT_0;
+        if (exited && !(out_open || err_open)) break;
+        if (exited) {  // process gone: one more drain pass, then stop even if a grandchild keeps the pipe open
+            if (out_open) out_open = drain(out_r.h, res.output, opts.max_output_bytes, overflow);
+            if (err_open) err_open = drain(err_r.h, opts.separate_stderr ? res.errput : res.output, opts.max_output_bytes, overflow);
             break;
         }
         if (std::chrono::steady_clock::now() >= deadline) { res.timed_out = true; break; }
-        Sleep(10);
+        Sleep(5);
     }
     if (res.timed_out || overflow) {
         TerminateProcess(process.h, 1);
@@ -119,13 +167,22 @@ Result<ProcessResult> run_process(const std::filesystem::path& exe, const std::v
     DWORD code = 0;
     GetExitCodeProcess(process.h, &code);
     res.exit_code = static_cast<int>(code);
+    res.exit_code_u = code;
     if (overflow) return Error{ErrorCode::LimitExceeded, "process output exceeded the capture limit"};
     return res;
 }
 #else
-Result<ProcessResult> run_process(const std::filesystem::path&, const std::vector<std::string>&, std::chrono::milliseconds, size_t) {
+std::filesystem::path current_executable() { return {}; }
+Result<ProcessResult> run_process_ex(const std::filesystem::path&, const std::vector<std::string>&, std::chrono::milliseconds, const ProcessOptions&) {
     return Error{ErrorCode::Unsupported, "external process execution is only implemented on Windows"};
 }
 #endif
+
+Result<ProcessResult> run_process(const std::filesystem::path& exe, const std::vector<std::string>& args,
+                                  std::chrono::milliseconds timeout, size_t max_output) {
+    ProcessOptions o;
+    o.max_output_bytes = max_output;
+    return run_process_ex(exe, args, timeout, o);
+}
 
 }  // namespace cider

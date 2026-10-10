@@ -1,0 +1,37 @@
+libcall:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	41 57	pushq	%r15
+100000546:	41 56	pushq	%r14
+100000548:	53	pushq	%rbx
+100000549:	48 83 ec 28	subq	$0x28, %rsp
+10000054d:	48 8d 5d d0	leaq	-0x30(%rbp), %rbx
+100000551:	ba 0f 00 00 00	movl	$0xf, %edx
+100000556:	48 89 df	movq	%rbx, %rdi
+100000559:	be 41 00 00 00	movl	$0x41, %esi
+10000055e:	e8 63 00 00 00	callq	0x1000005c6 ## symbol stub for: _memset
+100000563:	c6 45 df 00	movb	$0x0, -0x21(%rbp)
+100000567:	4c 8d 75 c0	leaq	-0x40(%rbp), %r14
+10000056b:	ba 10 00 00 00	movl	$0x10, %edx
+100000570:	4c 89 f7	movq	%r14, %rdi
+100000573:	48 89 de	movq	%rbx, %rsi
+100000576:	e8 45 00 00 00	callq	0x1000005c0 ## symbol stub for: _memcpy
+10000057b:	48 8d 3d 82 00 00 00	leaq	0x82(%rip), %rdi ## literal pool for: "CIDER runtime"
+100000582:	e8 2d 00 00 00	callq	0x1000005b4 ## symbol stub for: _strlen
+100000587:	48 89 c3	movq	%rax, %rbx
+10000058a:	bf e2 ff ff ff	movl	$0xffffffe2, %edi
+10000058f:	e8 26 00 00 00	callq	0x1000005ba ## symbol stub for: _abs
+100000594:	41 89 c7	movl	%eax, %r15d
+100000597:	4c 89 f7	movq	%r14, %rdi
+10000059a:	e8 15 00 00 00	callq	0x1000005b4 ## symbol stub for: _strlen
+10000059f:	41 01 df	addl	%ebx, %r15d
+1000005a2:	44 01 f8	addl	%r15d, %eax
+1000005a5:	83 c0 f1	addl	$-0xf, %eax
+1000005a8:	48 83 c4 28	addq	$0x28, %rsp
+1000005ac:	5b	popq	%rbx
+1000005ad:	41 5e	popq	%r14
+1000005af:	41 5f	popq	%r15
+1000005b1:	5d	popq	%rbp
+1000005b2:	c3	retq

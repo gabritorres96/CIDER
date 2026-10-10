@@ -1,0 +1,16 @@
+pid:
+(__TEXT,__text) section
+_main:
+1000004f0:	55	pushq	%rbp
+1000004f1:	48 89 e5	movq	%rsp, %rbp
+1000004f4:	48 83 ec 10	subq	$0x10, %rsp
+1000004f8:	e8 25 00 00 00	callq	0x100000522 ## symbol stub for: _getpid
+1000004fd:	89 45 fc	movl	%eax, -0x4(%rbp)
+100000500:	48 8d 75 fc	leaq	-0x4(%rbp), %rsi
+100000504:	ba 04 00 00 00	movl	$0x4, %edx
+100000509:	bf 01 00 00 00	movl	$0x1, %edi
+10000050e:	e8 09 00 00 00	callq	0x10000051c ## symbol stub for: _write
+100000513:	31 c0	xorl	%eax, %eax
+100000515:	48 83 c4 10	addq	$0x10, %rsp
+100000519:	5d	popq	%rbp
+10000051a:	c3	retq

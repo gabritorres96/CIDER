@@ -1,0 +1,37 @@
+args:
+(__TEXT,__text) section
+_main:
+1000004f0:	55	pushq	%rbp
+1000004f1:	48 89 e5	movq	%rsp, %rbp
+1000004f4:	41 57	pushq	%r15
+1000004f6:	41 56	pushq	%r14
+1000004f8:	41 54	pushq	%r12
+1000004fa:	53	pushq	%rbx
+1000004fb:	49 89 ce	movq	%rcx, %r14
+1000004fe:	49 89 d4	movq	%rdx, %r12
+100000501:	49 89 f7	movq	%rsi, %r15
+100000504:	89 fb	movl	%edi, %ebx
+100000506:	83 ff 02	cmpl	$0x2, %edi
+100000509:	7c 09	jl	0x100000514
+10000050b:	49 8b 7f 08	movq	0x8(%r15), %rdi
+10000050f:	e8 30 00 00 00	callq	0x100000544 ## symbol stub for: _puts
+100000514:	31 c9	xorl	%ecx, %ecx
+100000516:	49 83 3f 00	cmpq	$0x0, (%r15)
+10000051a:	74 17	je	0x100000533
+10000051c:	4d 85 e4	testq	%r12, %r12
+10000051f:	74 12	je	0x100000533
+100000521:	48 63 c3	movslq	%ebx, %rax
+100000524:	49 83 3c c7 00	cmpq	$0x0, (%r15,%rax,8)
+100000529:	75 08	jne	0x100000533
+10000052b:	31 c9	xorl	%ecx, %ecx
+10000052d:	4d 85 f6	testq	%r14, %r14
+100000530:	0f 95 c1	setne	%cl
+100000533:	01 db	addl	%ebx, %ebx
+100000535:	8d 04 9b	leal	(%rbx,%rbx,4), %eax
+100000538:	09 c8	orl	%ecx, %eax
+10000053a:	5b	popq	%rbx
+10000053b:	41 5c	popq	%r12
+10000053d:	41 5e	popq	%r14
+10000053f:	41 5f	popq	%r15
+100000541:	5d	popq	%rbp
+100000542:	c3	retq

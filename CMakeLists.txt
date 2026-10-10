@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.21)
-project(CIDER VERSION 0.1.1 LANGUAGES CXX)
+project(CIDER VERSION 0.2.0 LANGUAGES CXX)
+
+if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+  enable_language(ASM_MASM)   # entry_trampoline.asm (System V <-> Windows x64 bridge)
+  set(CIDER_HAS_RUNTIME ON)
+endif()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

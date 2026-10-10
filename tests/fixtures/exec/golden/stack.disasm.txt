@@ -1,0 +1,65 @@
+stack:
+(__TEXT,__text) section
+_main:
+1000002d0:	55	pushq	%rbp
+1000002d1:	48 89 e5	movq	%rsp, %rbp
+1000002d4:	53	pushq	%rbx
+1000002d5:	48 81 ec c8 00 00 00	subq	$0xc8, %rsp
+1000002dc:	48 8d 85 30 ff ff ff	leaq	-0xd0(%rbp), %rax
+1000002e3:	31 c9	xorl	%ecx, %ecx
+1000002e5:	66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+1000002f0:	88 08	movb	%cl, (%rax)
+1000002f2:	48 83 c1 07	addq	$0x7, %rcx
+1000002f6:	48 ff c0	incq	%rax
+1000002f9:	48 81 f9 78 05 00 00	cmpq	$0x578, %rcx
+100000300:	75 ee	jne	0x1000002f0
+100000302:	31 db	xorl	%ebx, %ebx
+100000304:	31 c0	xorl	%eax, %eax
+100000306:	66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+100000310:	0f b6 8c 05 30 ff ff ff	movzbl	-0xd0(%rbp,%rax), %ecx
+100000318:	01 cb	addl	%ecx, %ebx
+10000031a:	48 ff c0	incq	%rax
+10000031d:	48 3d c8 00 00 00	cmpq	$0xc8, %rax
+100000323:	75 eb	jne	0x100000310
+100000325:	bf 0a 00 00 00	movl	$0xa, %edi
+10000032a:	e8 21 00 00 00	callq	_fib
+10000032f:	83 e3 3f	andl	$0x3f, %ebx
+100000332:	01 c3	addl	%eax, %ebx
+100000334:	0f b6 c3	movzbl	%bl, %eax
+100000337:	48 81 c4 c8 00 00 00	addq	$0xc8, %rsp
+10000033e:	5b	popq	%rbx
+10000033f:	5d	popq	%rbp
+100000340:	c3	retq
+100000341:	66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_fib:
+100000350:	55	pushq	%rbp
+100000351:	48 89 e5	movq	%rsp, %rbp
+100000354:	41 56	pushq	%r14
+100000356:	53	pushq	%rbx
+100000357:	48 83 ec 40	subq	$0x40, %rsp
+10000035b:	89 f8	movl	%edi, %eax
+10000035d:	31 c9	xorl	%ecx, %ecx
+10000035f:	90	nop
+100000360:	8d 14 08	leal	(%rax,%rcx), %edx
+100000363:	89 54 8d b0	movl	%edx, -0x50(%rbp,%rcx,4)
+100000367:	48 ff c1	incq	%rcx
+10000036a:	48 83 f9 10	cmpq	$0x10, %rcx
+10000036e:	75 f0	jne	0x100000360
+100000370:	83 ff 01	cmpl	$0x1, %edi
+100000373:	76 23	jbe	0x100000398
+100000375:	8d 47 ff	leal	-0x1(%rdi), %eax
+100000378:	48 89 fb	movq	%rdi, %rbx
+10000037b:	89 c7	movl	%eax, %edi
+10000037d:	e8 ce ff ff ff	callq	_fib
+100000382:	41 89 c6	movl	%eax, %r14d
+100000385:	83 c3 fe	addl	$-0x2, %ebx
+100000388:	89 df	movl	%ebx, %edi
+10000038a:	e8 c1 ff ff ff	callq	_fib
+10000038f:	44 01 f0	addl	%r14d, %eax
+100000392:	03 45 bc	addl	-0x44(%rbp), %eax
+100000395:	2b 45 bc	subl	-0x44(%rbp), %eax
+100000398:	48 83 c4 40	addq	$0x40, %rsp
+10000039c:	5b	popq	%rbx
+10000039d:	41 5e	popq	%r14
+10000039f:	5d	popq	%rbp
+1000003a0:	c3	retq

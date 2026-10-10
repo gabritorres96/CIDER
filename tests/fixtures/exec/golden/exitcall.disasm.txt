@@ -1,0 +1,24 @@
+exitcall:
+(__TEXT,__text) section
+_leave:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	53	pushq	%rbx
+100000545:	50	pushq	%rax
+100000546:	89 fb	movl	%edi, %ebx
+100000548:	48 8d 3d 69 00 00 00	leaq	0x69(%rip), %rdi ## literal pool for: "leaving"
+10000054f:	e8 3a 00 00 00	callq	0x10000058e ## symbol stub for: _puts
+100000554:	89 df	movl	%ebx, %edi
+100000556:	48 83 c4 08	addq	$0x8, %rsp
+10000055a:	5b	popq	%rbx
+10000055b:	5d	popq	%rbp
+10000055c:	e9 27 00 00 00	jmp	0x100000588 ## symbol stub for: _exit
+100000561:	66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_main:
+100000570:	55	pushq	%rbp
+100000571:	48 89 e5	movq	%rsp, %rbp
+100000574:	bf 25 00 00 00	movl	$0x25, %edi
+100000579:	e8 c2 ff ff ff	callq	_leave
+10000057e:	b8 01 00 00 00	movl	$0x1, %eax
+100000583:	5d	popq	%rbp
+100000584:	c3	retq

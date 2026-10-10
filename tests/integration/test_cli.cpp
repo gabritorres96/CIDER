@@ -113,7 +113,7 @@ std::vector<uint8_t> iso() { return build_iso(example_app_tree()); }
 CIDER_TEST(version_and_help) {
     auto v = cider_run({"--version"});
     CHECK_EQ(v.code, 0);
-    CHECK(has(v, "cider 0.1.1"));
+    CHECK(has(v, "cider 0.2.0"));
     auto h = cider_run({"--help"});
     CHECK_EQ(h.code, 0);
     for (const char* cmd : {"inspect", "dmg-info", "extract", "dependencies", "compatibility", "run", "logs", "doctor"}) CHECK(has(h, cmd));
@@ -203,14 +203,6 @@ CIDER_TEST(invalid_inputs_fail_with_exit_1) {
     CHECK(has(rj, "\"ok\": false"));
     t.write("Empty.app/Contents/placeholder", std::string("x"));
     CHECK_EQ(cider_run({"inspect", path_to_utf8(t.path() / "Empty.app")}).code, 1);
-}
-
-CIDER_TEST(run_is_honestly_unavailable) {
-    TempDir t;
-    auto p = t.write("prog", build_macho({}).bytes);
-    auto r = cider_run({"run", path_to_utf8(p)});
-    CHECK_EQ(r.code, 2);
-    CHECK(has(r, "not available"));
 }
 
 CIDER_TEST(doctor_and_logs) {
@@ -369,4 +361,132 @@ CIDER_TEST(inspect_dmg_with_hdiutil_like_layout_has_no_noise) {
     CHECK(has(r, "Partitions: 5"));
     CHECK(has(r, "Applications found: 1"));
     CHECK(!has(r, "Warning:"));
+}
+
+// ---- cider run (CIDER 0.2): real execution of Mach-O x86_64 programs ------------------------------------------------------
+namespace {
+fs::path exec_bin(const char* n) { return fs::path(CIDER_EXEC_FIXTURES_DIR) / "bin" / n; }
+}
+
+CIDER_TEST(run_executes_a_real_macho_and_reports_the_guest_exit_code) {
+    auto r = cider_run({"run", path_to_utf8(exec_bin("ret42"))});
+    CHECK_EQ(r.code, 0);                                        // CIDER's own status: the guest ran to completion
+    CHECK(has(r, "Guest exit code: 42"));
+    CHECK(has(r, "[CIDER][LOADER] Mach-O x86_64 detected"));
+    CHECK(has(r, "[CIDER][MEMORY] mapping __TEXT"));
+    CHECK(has(r, "[CIDER][ABI] preparing the guest execution environment"));
+    CHECK(has(r, "[CIDER][EXECUTION] entering guest code"));
+    CHECK(has(r, "[CIDER][EXECUTION] guest returned 42"));
+    CHECK(has(r, "[CIDER][PROCESS] cleanup completed"));
+    CHECK(has(cider_run({"run", path_to_utf8(exec_bin("ret7"))}), "Guest exit code: 7"));
+    CHECK(has(cider_run({"run", path_to_utf8(exec_bin("ret99"))}), "Guest exit code: 99"));
+}
+
+CIDER_TEST(run_does_not_depend_on_the_file_name) {
+    TempDir t;
+    auto copy = t.write("ret99", std::vector<uint8_t>(read_file(exec_bin("ret42"), 1 << 20).value()));   // ret42's bytes under ret99's name
+    auto r = cider_run({"run", path_to_utf8(copy), "--log-level", "off"});
+    CHECK(has(r, "Guest exit code: 42"));
+}
+
+CIDER_TEST(run_shows_real_guest_output_and_passes_arguments) {
+    auto h = cider_run({"run", path_to_utf8(exec_bin("hello")), "--log-level", "warn"});
+    CHECK_EQ(h.code, 0);
+    CHECK(has(h, "Hello from macOS!"));
+    CHECK(has(h, "second line via write"));
+    CHECK(has(h, "Guest exit code: 0"));
+    auto a = cider_run({"run", path_to_utf8(exec_bin("args")), "--log-level", "warn", "--", "first arg", "second"});
+    CHECK(has(a, "first arg"));
+    CHECK(has(a, "Guest exit code: 31"));
+}
+
+CIDER_TEST(run_log_level_controls_the_runtime_messages) {
+    auto quiet = cider_run({"run", path_to_utf8(exec_bin("ret42")), "--log-level", "warn"});
+    CHECK(!has(quiet, "[CIDER][LOADER]"));
+    CHECK(has(quiet, "Guest exit code: 42"));
+    auto verbose = cider_run({"run", path_to_utf8(exec_bin("calls")), "--verbose"});
+    CHECK(has(verbose, "[CIDER][LOADER][DEBUG]") || has(verbose, "[CIDER][DYLD]"));
+    CHECK(has(verbose, "[CIDER][ABI][DEBUG] entering guest function"));
+    CHECK(has(verbose, "Guest exit code: 67"));
+}
+
+CIDER_TEST(run_json_separates_runtime_status_from_the_guest_result) {
+    auto r = cider_run({"run", path_to_utf8(exec_bin("hello")), "--json"});
+    CHECK_EQ(r.code, 0);
+    CHECK(JsonCheck(json_part(r.out)).valid());
+    CHECK(has(r, "\"command\": \"run\""));
+    CHECK(has(r, "\"status\": \"completed\""));
+    CHECK(has(r, "\"state\": \"exited\""));
+    CHECK(has(r, "\"exit_code\": 0"));
+    CHECK(has(r, "\"stdout\": \"Hello from macOS!\\nsecond line via write\\n\""));
+    CHECK(has(r, "\"cider_exit_code\": 0"));
+    CHECK(has(r, "\"required_libraries\""));
+    CHECK(has(r, "[CIDER][LOADER] Mach-O x86_64 detected"));     // runtime log lines are inside the "log" array
+
+    auto m = cider_run({"run", path_to_utf8(exec_bin("ret42")), "--json"});
+    CHECK(has(m, "\"exit_code\": 42"));
+    CHECK(has(m, "\"exit_status\": 42"));
+    CHECK(has(m, "\"returned_from_main\": true"));
+}
+
+CIDER_TEST(run_unresolved_symbol_exit_code_and_diagnostics) {
+    auto r = cider_run({"run", path_to_utf8(exec_bin("missing"))});
+    CHECK_EQ(r.code, 12);
+    CHECK(has(r, "[CIDER][ERROR] Unresolved symbol: _fork"));
+    CHECK(has(r, "[CIDER][ERROR] Required library: /usr/lib/libSystem.B.dylib"));
+    CHECK(has(r, "[CIDER][ERROR] Execution aborted"));
+    CHECK(!has(r, "Guest exit code"));
+    auto j = cider_run({"run", path_to_utf8(exec_bin("missing")), "--json"});
+    CHECK_EQ(j.code, 12);
+    CHECK(JsonCheck(json_part(j.out)).valid());
+    CHECK(has(j, "\"status\": \"load-failed\""));
+    CHECK(has(j, "\"load_failure\": \"unresolved-symbol\""));
+    CHECK(has(j, "\"symbol\": \"_fork\""));
+    CHECK(has(j, "\"state\": \"load-failed\""));
+}
+
+CIDER_TEST(run_incompatible_files_have_their_own_exit_code) {
+    TempDir t;
+    MachoSpec dyl;
+    dyl.dylibs = {"/usr/lib/libSystem.B.dylib", "@rpath/libfoo.dylib"};
+    auto dep = t.write("dep", build_macho(dyl).bytes);
+    auto rd = cider_run({"run", path_to_utf8(dep), "--log-level", "off"});
+    CHECK_EQ(rd.code, 12);                                       // dependency not available
+    auto arm = cider_run({"run", path_to_utf8(fs::path(CIDER_REAL_FIXTURES_DIR) / "bin" / "hello_arm64")});
+    CHECK_EQ(arm.code, 11);
+    CHECK(has(arm, "no usable x86_64 slice"));
+    CHECK_EQ(cider_run({"run", path_to_utf8(fs::path(CIDER_REAL_FIXTURES_DIR) / "bin" / "libfoo.dylib")}).code, 11);
+    CHECK_EQ(cider_run({"run", path_to_utf8(fs::path(CIDER_REAL_FIXTURES_DIR) / "bin" / "hello_chained_x86_64")}).code, 11);
+    auto junk = t.write("junk", std::vector<uint8_t>(300, 0x41));
+    CHECK_EQ(cider_run({"run", path_to_utf8(junk)}).code, 11);
+    CHECK_EQ(cider_run({"run", path_to_utf8(t.path() / "missing")}).code, 11);
+    CHECK_EQ(cider_run({"run"}).code, 2);                        // usage error keeps its old code
+    CHECK_EQ(cider_run({"run", path_to_utf8(exec_bin("ret42")), "--timeout", "0"}).code, 2);
+}
+
+CIDER_TEST(run_guest_crash_is_exit_14_and_cider_survives) {
+    auto r = cider_run({"run", path_to_utf8(exec_bin("crash")), "--log-level", "warn"});
+    CHECK_EQ(r.code, 14);
+    CHECK(has(r, "access violation"));
+    CHECK(has(r, "Execution aborted"));
+    auto j = cider_run({"run", path_to_utf8(exec_bin("crash")), "--json"});
+    CHECK_EQ(j.code, 14);
+    CHECK(JsonCheck(json_part(j.out)).valid());
+    CHECK(has(j, "\"status\": \"guest-crashed\""));
+    CHECK(has(j, "\"worker_exit_code\": 3221225477"));          // 0xC0000005
+    CHECK(has(j, "\"exit_code\": null"));                         // there is no guest exit code
+}
+
+CIDER_TEST(run_timeout_kills_the_guest) {
+    auto r = cider_run({"run", path_to_utf8(exec_bin("spin")), "--timeout", "2", "--log-level", "warn"});
+    CHECK_EQ(r.code, 14);
+    CHECK(has(r, "did not finish within 2 s"));
+}
+
+CIDER_TEST(run_an_application_bundle) {
+    TempDir t;
+    auto app = make_app(t, "Hello.app", build_macho({}).bytes, "Example");     // synthetic loadable Mach-O returning 42
+    auto r = cider_run({"run", path_to_utf8(app), "--log-level", "warn"});
+    CHECK_EQ(r.code, 0);
+    CHECK(has(r, "Guest exit code: 42"));
 }

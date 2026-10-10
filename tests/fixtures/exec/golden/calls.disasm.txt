@@ -1,0 +1,34 @@
+calls:
+(__TEXT,__text) section
+_add3:
+100000360:	55	pushq	%rbp
+100000361:	48 89 e5	movq	%rsp, %rbp
+100000364:	8d 04 37	leal	(%rdi,%rsi), %eax
+100000367:	01 d0	addl	%edx, %eax
+100000369:	5d	popq	%rbp
+10000036a:	c3	retq
+10000036b:	0f 1f 44 00 00	nopl	(%rax,%rax)
+_twice:
+100000370:	55	pushq	%rbp
+100000371:	48 89 e5	movq	%rsp, %rbp
+100000374:	8d 04 3f	leal	(%rdi,%rdi), %eax
+100000377:	5d	popq	%rbp
+100000378:	c3	retq
+100000379:	0f 1f 80 00 00 00 00	nopl	(%rax)
+_main:
+100000380:	55	pushq	%rbp
+100000381:	48 89 e5	movq	%rsp, %rbp
+100000384:	53	pushq	%rbx
+100000385:	50	pushq	%rax
+100000386:	48 8b 1d 73 0c 00 00	movq	_g_fn(%rip), %rbx
+10000038d:	bf 0a 00 00 00	movl	$0xa, %edi
+100000392:	be 14 00 00 00	movl	$0x14, %esi
+100000397:	ba 03 00 00 00	movl	$0x3, %edx
+10000039c:	e8 bf ff ff ff	callq	_add3
+1000003a1:	89 c7	movl	%eax, %edi
+1000003a3:	ff d3	callq	*%rbx
+1000003a5:	ff c0	incl	%eax
+1000003a7:	48 83 c4 08	addq	$0x8, %rsp
+1000003ab:	5b	popq	%rbx
+1000003ac:	5d	popq	%rbp
+1000003ad:	c3	retq

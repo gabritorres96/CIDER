@@ -1,0 +1,15 @@
+--- !tapi-tbd
+tbd-version:     4
+targets:         [ x86_64-macos ]
+uuids:
+  - target:          x86_64-macos
+    value:           00000000-0000-0000-0000-000000000011
+install-name:    '/usr/lib/libSystem.B.dylib'
+current-version: 1311
+compatibility-version: 1
+exports:
+  - targets:         [ x86_64-macos ]
+    symbols:         [ _puts, _putchar, _write, _exit, _getpid, _getenv, _strlen, _strcmp, _strncmp, _memcpy,
+                       _memmove, _memset, _memcmp, _abs, _labs, _malloc, _calloc, _realloc, _free, _sqrt,
+                       _fabs, _floor, _ceil, _pow, _fork, _execve, _printf, _fopen, _signal, dyld_stub_binder ]
+...

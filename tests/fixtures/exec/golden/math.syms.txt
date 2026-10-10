@@ -1,0 +1,9 @@
+math:
+
+SYMBOL TABLE:
+0000000100000360 g     F __TEXT,__text _main
+0000000100001000 g     O __DATA,__data _g_a
+0000000100001008 g     O __DATA,__data _g_b
+0000000100001010 g     O __DATA,__data _g_c
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* dyld_stub_binder

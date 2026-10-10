@@ -16,7 +16,7 @@
 namespace {
 
 const char* kUsage =
-    "CIDER - Darwin Executable Runtime " "0.1.1\n"
+    "CIDER - Darwin Executable Runtime " "0.2.0\n"
     "\n"
     "Usage: cider <command> [options]\n"
     "\n"
@@ -33,6 +33,7 @@ const char* kUsage =
     "Options:\n"
     "  --json                 Machine-readable output\n"
     "  --symbols              Include the symbol table (inspect)\n"
+    "  --timeout <seconds>    run: kill the guest after this many seconds (default 60)\n"
     "  -o, --output <dir>     Output directory (extract; must not exist or be empty)\n"
     "  --7z <path>            Absolute path of 7z.exe (default: $CIDER_7Z, PATH, Program Files)\n"
     "  --max-size <MiB>       Maximum unpacked size accepted when extracting (default 8192)\n"
@@ -72,21 +73,34 @@ int main(int argc, char** argv) {
     std::string command;
     std::string log_file;
     cider::log::Level level = cider::log::Level::Warn;
+    bool level_set = false;
 
     for (size_t i = 1; i < args.size(); ++i) {
         const std::string& a = args[i];
+        if (a == "--") {  // everything after is passed to the guest program (cider run <program> -- args...)
+            opt.guest_args.assign(args.begin() + static_cast<std::ptrdiff_t>(i) + 1, args.end());
+            break;
+        }
         if (a == "--version" || a == "-V") { std::printf("cider %s\n", cider::kVersion); return 0; }
         if (a == "--help" || a == "-h") { std::fputs(kUsage, stdout); return 0; }
         if (a == "--json") opt.json = true;
         else if (a == "--symbols") opt.symbols = true;
-        else if (a == "--verbose" || a == "-v") level = cider::log::Level::Debug;
-        else if (a == "--output" || a == "-o" || a == "--7z" || a == "--temp-dir" || a == "--max-size") {
+        else if (a == "--verbose" || a == "-v") { level = cider::log::Level::Debug; level_set = true; }
+        else if (a == "--output" || a == "-o" || a == "--7z" || a == "--temp-dir" || a == "--max-size" || a == "--timeout" || a == "--result-file") {
             if (i + 1 >= args.size()) { std::fprintf(stderr, "error: %s needs a value\n", a.c_str()); return 2; }
             const std::string& v = args[++i];
             if (a == "--output" || a == "-o") opt.output = v;
             else if (a == "--7z") opt.seven_zip = v;
             else if (a == "--temp-dir") opt.temp_dir = v;
-            else {
+            else if (a == "--result-file") opt.result_file = v;
+            else if (a == "--timeout") {
+                char* end = nullptr;
+                opt.timeout_s = std::strtoull(v.c_str(), &end, 10);
+                if (v.empty() || *end != '\0' || opt.timeout_s == 0) {
+                    std::fprintf(stderr, "error: --timeout expects a positive number of seconds\n");
+                    return 2;
+                }
+            } else {
                 char* end = nullptr;
                 opt.max_size_mib = std::strtoull(v.c_str(), &end, 10);
                 if (v.empty() || *end != '\0' || opt.max_size_mib == 0) {
@@ -100,6 +114,7 @@ int main(int argc, char** argv) {
             const std::string& v = args[++i];
             if (a == "--log-file") log_file = v;
             else if (!cider::log::parse_level(v, level)) { std::fprintf(stderr, "error: unknown log level '%s'\n", v.c_str()); return 2; }
+            else level_set = true;
         } else if (a.size() > 1 && a[0] == '-' && a != "-") {
             std::fprintf(stderr, "error: unknown option '%s' (try --help)\n", a.c_str());
             return 2;
@@ -107,10 +122,13 @@ int main(int argc, char** argv) {
         else opt.positional.push_back(a);
     }
 
+    if (command == "run" && !level_set && !opt.json) level = cider::log::Level::Info;  // run shows what the runtime does
     cider::log::set_level(level);
     if (log_file.empty()) if (const char* e = std::getenv("CIDER_LOG_FILE")) log_file = e;
     if (!log_file.empty() && command != "logs" && !cider::log::set_file(log_file))
         std::fprintf(stderr, "warning: cannot open log file '%s'\n", log_file.c_str());
+    // The worker's stderr belongs to the guest: runtime log lines go to the log file only.
+    if (command == "__worker" && !log_file.empty()) cider::log::set_stderr_enabled(false);
 
     if (command.empty()) { std::fputs(kUsage, stderr); return 2; }
     int rc;
@@ -120,6 +138,7 @@ int main(int argc, char** argv) {
     else if (command == "dependencies") rc = cider::cli::cmd_dependencies(opt);
     else if (command == "compatibility") rc = cider::cli::cmd_compatibility(opt);
     else if (command == "run") rc = cider::cli::cmd_run(opt);
+    else if (command == "__worker") rc = cider::cli::cmd_worker(opt);  // internal: started by `cider run`
     else if (command == "logs") rc = cider::cli::cmd_logs(opt);
     else if (command == "doctor") rc = cider::cli::cmd_doctor(opt);
     else { std::fprintf(stderr, "error: unknown command '%s' (try --help)\n", command.c_str()); rc = 2; }

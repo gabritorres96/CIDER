@@ -1,0 +1,21 @@
+fmath:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	48 83 ec 10	subq	$0x10, %rsp
+100000548:	f2 0f 10 05 c8 1a 00 00	movsd	_g_x(%rip), %xmm0
+100000550:	e8 4f 00 00 00	callq	0x1000005a4 ## symbol stub for: _sqrt
+100000555:	f2 0f 11 45 f8	movsd	%xmm0, -0x8(%rbp)
+10000055a:	f2 0f 10 05 7e 00 00 00	movsd	0x7e(%rip), %xmm0
+100000562:	f2 0f 10 0d 7e 00 00 00	movsd	0x7e(%rip), %xmm1
+10000056a:	e8 2f 00 00 00	callq	0x10000059e ## symbol stub for: _pow
+10000056f:	f2 0f 58 45 f8	addsd	-0x8(%rbp), %xmm0
+100000574:	f2 0f 11 45 f8	movsd	%xmm0, -0x8(%rbp)
+100000579:	f2 0f 10 05 6f 00 00 00	movsd	0x6f(%rip), %xmm0
+100000581:	e8 12 00 00 00	callq	0x100000598 ## symbol stub for: _floor
+100000586:	f2 0f 58 45 f8	addsd	-0x8(%rbp), %xmm0
+10000058b:	f2 0f 2c c0	cvttsd2si	%xmm0, %eax
+10000058f:	48 83 c4 10	addq	$0x10, %rsp
+100000593:	5d	popq	%rbp
+100000594:	c3	retq

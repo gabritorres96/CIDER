@@ -1,0 +1,14 @@
+hello:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	48 8d 3d 51 00 00 00	leaq	0x51(%rip), %rdi ## literal pool for: "Hello from macOS!"
+10000054b:	e8 22 00 00 00	callq	0x100000572 ## symbol stub for: _puts
+100000550:	48 8d 35 57 00 00 00	leaq	0x57(%rip), %rsi ## literal pool for: "second line via write\n"
+100000557:	ba 16 00 00 00	movl	$0x16, %edx
+10000055c:	bf 01 00 00 00	movl	$0x1, %edi
+100000561:	e8 06 00 00 00	callq	0x10000056c ## symbol stub for: _write
+100000566:	31 c0	xorl	%eax, %eax
+100000568:	5d	popq	%rbp
+100000569:	c3	retq
