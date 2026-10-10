@@ -21,6 +21,17 @@ struct GuestConfig {
     std::vector<std::string> args;   // argv[0..]; args[0] is the program path as the user gave it
     std::vector<std::string> env;    // "NAME=value"
     std::function<void(int fd, const char* data, size_t size)> sink;  // default: real stdout/stderr
+    std::filesystem::path image_path;   // where the executable lives: base of @executable_path and @rpath searches
+    bool reject_cycles = false;         // refuse dependency cycles instead of tolerating them (dyld tolerates them)
+};
+
+// One image the dynamic linker loaded (reported in the outcome and in `cider run --json`).
+struct LoadedImageInfo {
+    std::string name;                 // install name, or the executable's file name
+    std::string path;
+    uint64_t base = 0;                // address of the Mach-O header
+    uint64_t initializers = 0;        // Mach-O initializers it contributed
+    bool main = false;
 };
 
 enum class State {
@@ -41,6 +52,9 @@ struct Outcome {
     uint64_t entry_address = 0;            // where control was transferred (diagnostics)
     uint64_t image_base = 0;
     bool returned_from_main = false;       // false: exit() was called explicitly
+    std::vector<LoadedImageInfo> images;   // main executable first, then libraries in load order
+    std::string missing_library;           // LoadFailed / MissingDependency: the install name that was not found
+    uint64_t initializers_run = 0;
 };
 
 // Loads and runs `file` in THIS process, then releases everything (image, stack, thunks).

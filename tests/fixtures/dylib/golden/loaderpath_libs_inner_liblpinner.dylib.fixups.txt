@@ -1,0 +1,10 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\loaderpath\libs\inner\liblpinner.dylib:
+
+Rebase table:
+segment  section            address     type
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+
+Lazy bind table:
+segment  section            address     dylib            symbol

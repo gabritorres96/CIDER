@@ -1,0 +1,4 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\cycle\libcycb.dylib:
+
+Exports trie:
+0x000004D0  _cyc_b_double

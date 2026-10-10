@@ -1,0 +1,4 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\loaderpath\libs\liblpouter.dylib:
+
+Exports trie:
+0x000004F0  _lp_outer

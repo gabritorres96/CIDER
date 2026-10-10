@@ -1,0 +1,5 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\cycle\libcyca.dylib:
+
+Exports trie:
+0x000004D0  _cyc_a_leaf
+0x000004E0  _cyc_a_entry

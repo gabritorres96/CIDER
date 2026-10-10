@@ -1,0 +1,11 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\init\init:
+
+SYMBOL TABLE:
+0000000100000440 l     F __TEXT,__text _exe_init
+0000000100000470 g     F __TEXT,__text _main
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _cider_base_ready
+0000000000000000         *UND* _cider_order
+0000000000000000         *UND* _cider_order_n
+0000000000000000         *UND* _cider_top_saw
+0000000000000000         *UND* dyld_stub_binder

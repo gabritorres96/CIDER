@@ -1,0 +1,7 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\trans\libtransa.dylib:
+
+SYMBOL TABLE:
+0000000000002008 l     O __DATA,__data __dyld_private
+00000000000004d0 g     F __TEXT,__text _trans_a_value
+0000000000000000         *UND* _trans_b_value
+0000000000000000         *UND* dyld_stub_binder

@@ -9,7 +9,7 @@ cider_lib(cider_plist corefoundation/plist.cpp)
 target_link_libraries(cider_plist PUBLIC cider_core)
 cider_lib(cider_macho macho/macho.cpp macho/names.cpp macho/codesign.cpp)
 target_link_libraries(cider_macho PUBLIC cider_core)
-cider_lib(cider_dyld dyld/install_name.cpp dyld/relocation_engine.cpp dyld/symbol_resolver.cpp)
+cider_lib(cider_dyld dyld/install_name.cpp dyld/relocation_engine.cpp dyld/symbol_resolver.cpp dyld/export_trie.cpp)
 
 target_link_libraries(cider_dyld PUBLIC cider_core cider_macho)
 cider_lib(cider_bundle bundle/bundle.cpp)
@@ -26,6 +26,7 @@ if(CIDER_HAS_RUNTIME)
     memory/virtual_memory.cpp memory/memory_protection.cpp
     security/execution_validator.cpp
     loader/image_layout.cpp loader/segment_mapper.cpp loader/macho_loader.cpp
+    linker/linker.cpp
     abi/sysv_bridge.cpp abi/stack_builder.cpp abi/entry_trampoline.asm
     libsystem/libc_bridge.cpp libsystem/process_runtime.cpp
     process/guest_process.cpp process/exit_handler.cpp process/supervisor.cpp process/worker.cpp)

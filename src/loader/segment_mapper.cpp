@@ -51,9 +51,11 @@ Status finalize_protections(LoadedImage& image) {
     return {};
 }
 
-Status apply_fixups(LoadedImage& image, const macho::Image& img, const std::vector<dyld::Fixup>& fixups,
-                    const std::map<std::string, uint64_t>& symbols) {
-    for (const auto& f : fixups) {
+namespace {
+template <class BindValue>
+Status apply_impl(LoadedImage& image, const macho::Image& img, const std::vector<dyld::Fixup>& fixups, BindValue&& bind_value) {
+    for (size_t i = 0; i < fixups.size(); ++i) {
+        const auto& f = fixups[i];
         if (f.segment >= img.segments.size()) return Error{ErrorCode::Malformed, "fixup refers to a missing segment"};
         const auto& seg = img.segments[f.segment];
         uint8_t* seg_host = image.host_address(seg.vmaddr);
@@ -65,13 +67,29 @@ Status apply_fixups(LoadedImage& image, const macho::Image& img, const std::vect
         if (f.kind == dyld::Fixup::Kind::Rebase) {
             value = static_cast<uint64_t>(static_cast<int64_t>(value) + image.slide);
         } else {
-            auto it = symbols.find(f.symbol);
-            if (it == symbols.end()) return Error{ErrorCode::NotFound, "no address for symbol " + f.symbol};
-            value = it->second + static_cast<uint64_t>(f.addend);
+            auto v = bind_value(i, f);
+            if (!v.ok()) return v.error();
+            value = v.value() + static_cast<uint64_t>(f.addend);
         }
         std::memcpy(slot, &value, 8);
     }
     return {};
+}
+}  // namespace
+
+Status apply_fixups(LoadedImage& image, const macho::Image& img, const std::vector<dyld::Fixup>& fixups,
+                    const std::map<std::string, uint64_t>& symbols) {
+    return apply_impl(image, img, fixups, [&](size_t, const dyld::Fixup& f) -> Result<uint64_t> {
+        auto it = symbols.find(f.symbol);
+        if (it == symbols.end()) return Error{ErrorCode::NotFound, "no address for symbol " + f.symbol};
+        return it->second;
+    });
+}
+
+Status apply_fixups_resolved(LoadedImage& image, const macho::Image& img, const std::vector<dyld::Fixup>& fixups,
+                             const std::vector<uint64_t>& bind_values) {
+    if (bind_values.size() != fixups.size()) return Error{ErrorCode::InvalidArgument, "one resolved value per fixup is required"};
+    return apply_impl(image, img, fixups, [&](size_t i, const dyld::Fixup&) -> Result<uint64_t> { return bind_values[i]; });
 }
 
 }  // namespace cider::loader

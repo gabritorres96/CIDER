@@ -4,3 +4,6 @@ tests/fixtures/real/golden/** text eol=lf
 *.cmd text eol=crlf
 tests/fixtures/exec/bin/** binary
 tests/fixtures/exec/golden/** text eol=lf
+tests/fixtures/dylib/bin/** binary
+tests/fixtures/dylib/golden/** text eol=lf
+tests/fixtures/dylib/tbd/** text eol=lf

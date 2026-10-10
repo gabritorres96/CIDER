@@ -54,4 +54,15 @@ std::vector<std::filesystem::path> candidates(std::string_view n, const PathCont
     return out;
 }
 
+std::vector<std::filesystem::path> search_candidates(std::string_view n, const std::filesystem::path& executable_dir,
+                                                     const std::filesystem::path& loader_dir, const std::vector<RpathEntry>& rpaths) {
+    if (anchor_of(n) != Anchor::Rpath) return candidates(n, PathContext{executable_dir, loader_dir, {}});
+    std::vector<std::filesystem::path> out;
+    for (const auto& r : rpaths) {
+        PathContext ctx{executable_dir, r.owner_dir, {}};
+        if (auto base = expand_rpath_entry(r.path, ctx)) out.push_back(tail_join(*base, n.substr(kRpath.size())));
+    }
+    return out;
+}
+
 }  // namespace cider::dyld

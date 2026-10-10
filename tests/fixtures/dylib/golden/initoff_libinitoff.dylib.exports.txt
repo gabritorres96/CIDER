@@ -1,0 +1,4 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\initoff\libinitoff.dylib:
+
+Exports trie:
+0x00001000  _cider_off_ready

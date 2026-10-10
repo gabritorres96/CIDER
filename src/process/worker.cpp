@@ -26,6 +26,7 @@ int worker_main(const std::filesystem::path& image, const std::vector<std::strin
         cfg.args.push_back(path_to_utf8(image));
         cfg.args.insert(cfg.args.end(), guest_args.begin(), guest_args.end());
         cfg.env = {"CIDER_RUNTIME=1"};
+        cfg.image_path = image;
         out = run_in_process(ByteView(bytes.value()), cfg);
     }
     if (result_file.empty()) return 0;

@@ -1,0 +1,4 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\rpath\lib\librp.dylib:
+
+Exports trie:
+0x00000280  _rp_value

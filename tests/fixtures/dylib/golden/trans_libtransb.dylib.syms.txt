@@ -1,0 +1,5 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\trans\libtransb.dylib:
+
+SYMBOL TABLE:
+0000000000000280 g     F __TEXT,__text _trans_b_value
+0000000000000000         *UND* dyld_stub_binder

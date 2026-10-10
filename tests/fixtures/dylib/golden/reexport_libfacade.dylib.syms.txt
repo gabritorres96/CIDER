@@ -1,0 +1,5 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\reexport\libfacade.dylib:
+
+SYMBOL TABLE:
+00000000000002b0 g     F __TEXT,__text _facade_unused
+0000000000000000         *UND* dyld_stub_binder

@@ -35,7 +35,8 @@ set_tests_properties(test_cli PROPERTIES ENVIRONMENT "CIDER_EXE=$<TARGET_FILE:ci
 cider_test(test_real_macho regression/test_real_macho.cpp)
 target_compile_definitions(test_real_macho PRIVATE CIDER_REAL_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/real")
 target_compile_definitions(test_cli PRIVATE CIDER_REAL_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/real"
-  CIDER_EXEC_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/exec")
+  CIDER_EXEC_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/exec"
+  CIDER_DYLIB_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/dylib")
 
 # ---- CIDER 0.2 runtime: real Mach-O execution (Windows x64 only) ---------------------------------------------------------
 if(CIDER_HAS_RUNTIME)
@@ -43,12 +44,14 @@ if(CIDER_HAS_RUNTIME)
     cider_test(${name} ${ARGN})
     target_compile_definitions(${name} PRIVATE
       CIDER_EXEC_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/exec"
+      CIDER_DYLIB_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/dylib"
       CIDER_REAL_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/real")
   endfunction()
   cider_runtime_test(test_memory runtime/test_memory.cpp)
   cider_runtime_test(test_abi runtime/test_abi.cpp runtime/abi_selftest.asm)
   cider_runtime_test(test_loader runtime/test_loader.cpp)
   cider_runtime_test(test_entry runtime/test_entry.cpp)
+  cider_runtime_test(test_linker runtime/test_linker.cpp)
   cider_runtime_test(test_symbols runtime/test_symbols.cpp)
   cider_runtime_test(test_runtime runtime/test_runtime.cpp)
   cider_runtime_test(test_execution runtime/test_execution.cpp)

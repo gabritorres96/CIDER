@@ -31,6 +31,11 @@ struct ValidatorOptions {
     std::vector<std::string> provided_libraries = {"/usr/lib/libSystem.B.dylib"};
     uint64_t max_image_span = 1ull << 30;     // 1 GiB of address space for the image
     uint64_t max_stack_size = 64ull << 20;
+    // Dynamic-linking mode (CIDER 0.3). In the single-image mode of 0.2 (all false) any dependency other than
+    // `provided_libraries` is a missing dependency and Mach-O initializers are rejected.
+    bool linker_resolves_dependencies = false;  // dependencies are searched, loaded and checked by the dynamic linker
+    bool allow_initializers = false;            // __mod_init_func / __init_offsets are run by the dynamic linker
+    bool as_dependency = false;                 // the image is a dylib loaded for another image (MH_DYLIB, no LC_MAIN)
 };
 
 // Checks everything that can be decided from the parsed image alone. Never touches memory.
@@ -78,6 +83,11 @@ struct LoadedImage {
 // Reserves the image span (preferred base first, then relocated), commits every mapped segment as
 // ReadWrite, copies the file contents and zero-fills the rest. Nothing is executable yet.
 Result<LoadedImage> map_segments(const ImageLayout& layout, ByteView slice);
+
+// Same, for images whose binds are resolved per fixup (several libraries may export the same name):
+// bind_values[i] is the value for fixups[i] when it is a Bind (entries of Rebase fixups are ignored).
+Status apply_fixups_resolved(LoadedImage& image, const macho::Image& img, const std::vector<dyld::Fixup>& fixups,
+                             const std::vector<uint64_t>& bind_values);
 
 // Applies rebases (adding the slide) and binds (writing resolved addresses). `symbols` maps symbol
 // name -> final host address.

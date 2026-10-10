@@ -1,0 +1,4 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\trans\libtransb.dylib:
+
+Exports trie:
+0x00000280  _trans_b_value

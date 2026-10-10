@@ -1,0 +1,5 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\init\init:
+
+Exports trie:
+0x100000470  _main
+0x100000000  __mh_execute_header

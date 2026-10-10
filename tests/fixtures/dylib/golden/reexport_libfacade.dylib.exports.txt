@@ -1,0 +1,4 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\reexport\libfacade.dylib:
+
+Exports trie:
+0x000002B0  _facade_unused

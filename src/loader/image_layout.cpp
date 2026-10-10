@@ -12,7 +12,8 @@ Error bad(ErrorCode c, std::string m) { return Error{c, std::move(m)}; }
 
 Result<ImageLayout> plan_layout(const macho::Image& img, const ValidatorOptions& opts) {
     ImageLayout lay;
-    if (!img.entry || img.entry->kind != macho::EntryPoint::Kind::Main)
+    const bool is_dylib = img.filetype == macho::kFileDylib;
+    if (!is_dylib && (!img.entry || img.entry->kind != macho::EntryPoint::Kind::Main))
         return bad(ErrorCode::Unsupported, "image has no LC_MAIN entry point");
 
     for (size_t i = 0; i < img.segments.size(); ++i) {
@@ -64,16 +65,18 @@ Result<ImageLayout> plan_layout(const macho::Image& img, const ValidatorOptions&
     if (!memory::is_aligned(lay.preferred_base, 65536))
         return bad(ErrorCode::Unsupported, std::format("lowest segment address {:#x} is not 64 KiB aligned (Windows reservation granularity)", lay.preferred_base));
 
-    // The entry point must be inside an executable mapped segment.
-    lay.entry_vmaddr = img.entry->vmaddr;
-    const SegmentPlan* holder = nullptr;
-    for (auto& s : lay.segments)
-        if (lay.entry_vmaddr >= s.vmaddr && lay.entry_vmaddr - s.vmaddr < s.vmsize) holder = &s;
-    if (!holder) return bad(ErrorCode::Malformed, std::format("entry point {:#x} is outside every mapped segment", lay.entry_vmaddr));
-    if (holder->final_prot != memory::Prot::ReadExecute)
-        return bad(ErrorCode::Malformed, std::format("entry point {:#x} lies in non-executable segment {}", lay.entry_vmaddr, holder->name));
+    // The entry point must be inside an executable mapped segment (dylibs have none: their code is reached through exports).
+    if (!is_dylib) {
+        lay.entry_vmaddr = img.entry->vmaddr;
+        const SegmentPlan* holder = nullptr;
+        for (auto& s : lay.segments)
+            if (lay.entry_vmaddr >= s.vmaddr && lay.entry_vmaddr - s.vmaddr < s.vmsize) holder = &s;
+        if (!holder) return bad(ErrorCode::Malformed, std::format("entry point {:#x} is outside every mapped segment", lay.entry_vmaddr));
+        if (holder->final_prot != memory::Prot::ReadExecute)
+            return bad(ErrorCode::Malformed, std::format("entry point {:#x} lies in non-executable segment {}", lay.entry_vmaddr, holder->name));
+    }
 
-    lay.stack_size = img.entry->stack_size ? img.entry->stack_size : kDefaultStackSize;
+    lay.stack_size = (!is_dylib && img.entry->stack_size) ? img.entry->stack_size : kDefaultStackSize;
     if (lay.stack_size > opts.max_stack_size)
         return bad(ErrorCode::LimitExceeded, std::format("requested stack size {:#x} exceeds the limit {:#x}", lay.stack_size, opts.max_stack_size));
     lay.stack_size = std::max<uint64_t>(lay.stack_size, 64 * 1024);

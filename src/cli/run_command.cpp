@@ -83,6 +83,20 @@ void print_json(const Options& o, const RunReport& r) {
     w.begin_array();
     for (auto& l : r.guest.required_libs) w.value(l);
     w.end_array();
+    w.field("missing_library", r.guest.missing_library);
+    w.field("initializers_run", r.guest.initializers_run);
+    w.key("images");
+    w.begin_array();
+    for (auto& i : r.guest.images) {
+        w.begin_object();
+        w.field("name", i.name);
+        w.field("path", i.path);
+        w.field("main", i.main);
+        w.field("base", i.base);
+        w.field("initializers", i.initializers);
+        w.end_object();
+    }
+    w.end_array();
     w.key("unresolved_symbols");
     w.begin_array();
     for (auto& u : r.guest.unresolved) {
@@ -164,7 +178,10 @@ int cmd_run(const Options& o) {
         for (auto& s : parsed.value().slices) have += (have.empty() ? "" : ", ") + macho::cpu_name(s.cputype, s.cpusubtype);
         return finish(o, failed(kIncompatible, "incompatible", "no usable x86_64 slice (found: " + have + "); CIDER 0.2 executes x86_64 only"));
     }
-    loader::ValidationReport vr = loader::validate_for_execution(*sl->image);
+    loader::ValidatorOptions vopts;
+    vopts.linker_resolves_dependencies = true;   // the worker's dynamic linker searches, loads and checks the dylibs
+    vopts.allow_initializers = true;
+    loader::ValidationReport vr = loader::validate_for_execution(*sl->image, vopts);
     if (!vr.ok()) {
         bool missing = false;
         std::string msg;

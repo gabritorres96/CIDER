@@ -1,0 +1,4 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\loaderpath\libs\inner\liblpinner.dylib:
+
+Exports trie:
+0x00000290  _lp_inner

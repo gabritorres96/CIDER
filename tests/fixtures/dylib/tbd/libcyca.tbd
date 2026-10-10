@@ -1,0 +1,13 @@
+--- !tapi-tbd
+tbd-version:     4
+targets:         [ x86_64-macos ]
+uuids:
+  - target:          x86_64-macos
+    value:           00000000-0000-0000-0000-0000000000a1
+install-name:    '@rpath/libcyca.dylib'
+current-version: 1
+compatibility-version: 1
+exports:
+  - targets:         [ x86_64-macos ]
+    symbols:         [ _cyc_a_leaf, _cyc_a_entry ]
+...

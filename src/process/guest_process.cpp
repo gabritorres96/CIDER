@@ -3,7 +3,9 @@
 #include "cider/abi.hpp"
 #include "cider/guest.hpp"
 #include "cider/libsystem.hpp"
+#include "cider/linker.hpp"
 #include "cider/log.hpp"
+#include "cider/util.hpp"
 
 namespace cider::guest {
 
@@ -18,13 +20,22 @@ const char* to_string(State s) noexcept {
 }
 
 namespace {
-Outcome load_failed(const loader::LoadError& e) {
+Outcome load_failed(const linker::LinkError& e) {
     Outcome o;
     o.state = State::LoadFailed;
     o.load_failure = e.kind;
     o.message = e.message;
-    o.required_libs = e.report.required_libs;
-    o.unresolved = e.report.unresolved;
+    o.required_libs = e.required_libs;
+    o.unresolved = e.unresolved;
+    o.missing_library = e.missing_library;
+    return o;
+}
+
+Outcome internal_failure(std::string message) {
+    Outcome o;
+    o.state = State::LoadFailed;
+    o.load_failure = loader::LoadFailure::Internal;
+    o.message = std::move(message);
     return o;
 }
 }  // namespace
@@ -32,54 +43,75 @@ Outcome load_failed(const loader::LoadError& e) {
 Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::ValidatorOptions& vopts) {
     Outcome out;
     auto provider = libsystem::LibSystemProvider::create();
-    if (!provider.ok()) {
-        out.state = State::LoadFailed;
-        out.load_failure = loader::LoadFailure::Internal;
-        out.message = "cannot initialise libSystem: " + provider.error().message;
-        return out;
-    }
+    if (!provider.ok()) return internal_failure("cannot initialise libSystem: " + provider.error().message);
 
-    // ---- loading: validation, mapping, symbols, fixups, protections (no guest instruction runs) ----
-    loader::LoadResult lr = loader::load_macho(file, *provider.value(), vopts);
-    if (!lr.ok()) {
-        out = load_failed(*lr.error);
-        return out;  // the supervisor reports the diagnostics (unresolved symbols, library, reason)
+    // ---- loading: the dynamic linker maps the executable and every dylib, resolves symbols between them,
+    // applies fixups and the final W^X protections. No guest instruction runs yet. -------------------------
+    linker::LinkOptions lo;
+    lo.executable_path = cfg.image_path;
+    lo.validator = vopts;
+    lo.reject_cycles = cfg.reject_cycles;
+    linker::LinkError le;
+    std::unique_ptr<linker::Program> program = linker::Program::link(file, lo, *provider.value(), le);
+    if (!program) return load_failed(le);   // the supervisor reports the diagnostics (unresolved symbols, library, reason)
+
+    out.required_libs = program->required_libs();
+    out.entry_address = program->entry_address();
+    out.image_base = program->main().mapped.actual_base();
+    for (const auto& r : program->images()) {
+        LoadedImageInfo li;
+        li.name = r->name;
+        li.path = r->path.empty() ? std::string() : path_to_utf8(r->path);
+        li.base = r->header;
+        li.initializers = r->initializers.size();
+        li.main = r->is_main;
+        out.images.push_back(std::move(li));
     }
-    loader::LoadedImage& image = *lr.image;
-    out.required_libs = lr.report.required_libs;
-    out.entry_address = image.entry_address();
-    out.image_base = image.actual_base();
 
     // ---- execution environment: stack, argv/envp/apple -------------------------------------------
     log::info(log::Category::Abi, "preparing the guest execution environment");
-    auto stack = abi::GuestStack::create(static_cast<size_t>(image.layout.stack_size));
-    if (!stack.ok()) {
-        out.state = State::LoadFailed;
-        out.load_failure = loader::LoadFailure::Internal;
-        out.message = "cannot create the guest stack: " + stack.error().message;
-        return out;
-    }
+    auto stack = abi::GuestStack::create(static_cast<size_t>(program->main().mapped.layout.stack_size));
+    if (!stack.ok()) return internal_failure("cannot create the guest stack: " + stack.error().message);
     std::vector<std::string> argv = cfg.args.empty() ? std::vector<std::string>{"guest"} : cfg.args;
     std::vector<std::string> apple = {"executable_path=" + argv[0]};
     auto ga = abi::build_guest_args(stack.value(), argv, cfg.env, apple);
-    if (!ga.ok()) {
-        out.state = State::LoadFailed;
-        out.load_failure = loader::LoadFailure::Internal;
-        out.message = "cannot build the guest arguments: " + ga.error().message;
-        return out;
-    }
+    if (!ga.ok()) return internal_failure("cannot build the guest arguments: " + ga.error().message);
 
     libsystem::RuntimeContext ctx;
     ctx.env = cfg.env;
     ctx.sink = cfg.sink;
     libsystem::set_context(&ctx);
 
+    // ---- Mach-O initializers (never Windows constructors): dependencies first, each exactly once ----------
+    // dyld calls them as init(argc, argv, envp, apple).
+    const abi::GuestArgs& g = ga.value();
+    linker::InitResult ir = program->run_initializers([&](uint64_t fn, const linker::ImageRecord&) {
+        abi::CallOutcome c = abi::call_guest(fn, stack.value(), g.initial_sp, g.argc, g.argv, g.envp, g.apple);
+        return linker::InitCall{c.exited, c.value};
+    });
+    out.initializers_run = ir.calls;
+    if (ir.status == linker::InitResult::Status::Exited || !ctx.fault.empty()) {
+        libsystem::set_context(nullptr);
+        if (!ctx.fault.empty()) {
+            out.state = State::Faulted;
+            out.message = ctx.fault;
+            log::error("guest faulted: {}", ctx.fault);
+        } else {
+            out.state = State::Exited;
+            out.exit_code = static_cast<int32_t>(static_cast<uint32_t>(ir.exit_code));
+            out.returned_from_main = false;
+            out.message = ir.message;
+            log::info(log::Category::Execution, "guest called exit with {} during initialization; main was not run", out.exit_code);
+        }
+        return out;
+    }
+
     // ---- transfer of control -----------------------------------------------------------------------
     // LC_MAIN protocol: dyld calls main(argc, argv, envp, apple) on the process stack and passes the
     // return value to exit(). We do exactly that: main is the System V function at the entry point.
-    log::info(log::Category::Execution, "entering guest code at {:#x}", image.entry_address());
-    abi::CallOutcome r = abi::call_guest(image.entry_address(), stack.value(), ga.value().initial_sp, ga.value().argc, ga.value().argv,
-                                         ga.value().envp, ga.value().apple);
+    log::info(log::Category::Execution, "entering guest code at {:#x}", program->entry_address());
+    log::info(log::Category::Execution, "Guest started");
+    abi::CallOutcome r = abi::call_guest(program->entry_address(), stack.value(), g.initial_sp, g.argc, g.argv, g.envp, g.apple);
     libsystem::set_context(nullptr);
 
     if (!ctx.fault.empty()) {
@@ -92,7 +124,7 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
         out.returned_from_main = !r.exited;
         log::info(log::Category::Execution, "guest {} {}", r.exited ? "called exit with" : "returned", out.exit_code);
     }
-    // image, stack and thunk pages are released by their destructors when this function returns
+    // images, stack and thunk pages are released by their destructors when this function returns
     return out;
 }
 

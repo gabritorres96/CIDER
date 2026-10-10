@@ -1,0 +1,6 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\glob\libglob.dylib:
+
+SYMBOL TABLE:
+0000000000000310 g     F __TEXT,__text _cider_read_global
+0000000000001000 g     O __DATA,__data _cider_global_value
+0000000000000000         *UND* dyld_stub_binder

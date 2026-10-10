@@ -1,0 +1,5 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\glob\libglob.dylib:
+
+Exports trie:
+0x00000310  _cider_read_global
+0x00001000  _cider_global_value

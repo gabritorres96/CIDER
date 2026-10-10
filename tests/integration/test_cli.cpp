@@ -571,3 +571,65 @@ CIDER_TEST(run_guest_output_reaches_a_real_console) {
     CHECK(out->find("Guest exit code: 0") != std::string::npos);
 }
 #endif
+
+// ---- cider run (CIDER 0.3): dynamic libraries ----------------------------------------------------------------------------
+namespace {
+fs::path dylib_bin(const char* scenario) { return fs::path(CIDER_DYLIB_FIXTURES_DIR) / "bin" / scenario / scenario; }
+}
+
+CIDER_TEST(run_executable_with_a_dylib_logs_the_dynamic_linking_steps) {
+    auto r = cider_run({"run", path_to_utf8(dylib_bin("one")), "--verbose"});
+    CHECK_EQ(r.code, 0);
+    CHECK(has(r, "[CIDER][DYLD] Loading main executable"));
+    CHECK(has(r, "[CIDER][DYLD] Loading libmath.dylib"));
+    CHECK(has(r, "[CIDER][DYLD] Dependencies resolved"));
+    CHECK(has(r, "Resolving _cider_add"));
+    CHECK(has(r, "Binding _cider_add"));
+    CHECK(has(r, "[CIDER][DYLD] Running initializers"));
+    CHECK(has(r, "[CIDER][EXECUTION] Guest started"));
+    CHECK(has(r, "[CIDER][EXECUTION] guest returned 42"));
+    CHECK(has(r, "Guest exit code: 42"));
+    // the log lines appear in the order the linker really did the work
+    CHECK(r.out.find("Loading libmath.dylib") < r.out.find("Binding _cider_add"));
+    CHECK(r.out.find("Binding _cider_add") < r.out.find("Running initializers"));
+    CHECK(r.out.find("Running initializers") < r.out.find("Guest started"));
+}
+
+CIDER_TEST(run_json_lists_the_loaded_images) {
+    auto r = cider_run({"run", path_to_utf8(dylib_bin("trans")), "--json"});
+    CHECK_EQ(r.code, 0);
+    std::string json = r.out.substr(r.out.find('{'));
+    CHECK(JsonCheck(json).valid());
+    CHECK(has(r, "\"exit_code\": 42"));
+    CHECK(has(r, "\"name\": \"@rpath/libtransa.dylib\""));
+    CHECK(has(r, "\"name\": \"@rpath/libtransb.dylib\""));
+    CHECK(has(r, "\"initializers_run\": 0"));
+}
+
+CIDER_TEST(run_missing_library_exit_12_names_the_library) {
+    auto r = cider_run({"run", path_to_utf8(dylib_bin("missing")), "--log-level", "warn"});
+    CHECK_EQ(r.code, 12);
+    CHECK(has(r, "Missing library: @rpath/libgone.dylib"));
+    CHECK(!has(r, "Guest exit code"));
+    auto j = cider_run({"run", path_to_utf8(dylib_bin("missing")), "--json"});
+    CHECK_EQ(j.code, 12);
+    CHECK(JsonCheck(j.out.substr(j.out.find('{'))).valid());
+    CHECK(has(j, "\"load_failure\": \"missing-dependency\""));
+    CHECK(has(j, "\"missing_library\": \"@rpath/libgone.dylib\""));
+}
+
+CIDER_TEST(run_initializer_that_exits_and_initializer_that_crashes) {
+    auto e = cider_run({"run", path_to_utf8(dylib_bin("initexit")), "--log-level", "warn"});
+    CHECK_EQ(e.code, 0);
+    CHECK(has(e, "Guest exit code: 7"));                         // the initializer's exit(7); main (42) never ran
+    auto c = cider_run({"run", path_to_utf8(dylib_bin("initcrash")), "--log-level", "warn"});
+    CHECK_EQ(c.code, 14);                                        // the worker died, CIDER survived
+    CHECK(has(c, "0xc0000005"));
+}
+
+CIDER_TEST(run_cycles_are_tolerated_and_reported) {
+    auto r = cider_run({"run", path_to_utf8(dylib_bin("cycle")), "--log-level", "warn"});
+    CHECK_EQ(r.code, 0);
+    CHECK(has(r, "dependency cycle"));
+    CHECK(has(r, "Guest exit code: 42"));
+}

@@ -1,0 +1,7 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\loaderpath\libs\liblpouter.dylib:
+
+SYMBOL TABLE:
+0000000000002008 l     O __DATA,__data __dyld_private
+00000000000004f0 g     F __TEXT,__text _lp_outer
+0000000000000000         *UND* _lp_inner
+0000000000000000         *UND* dyld_stub_binder

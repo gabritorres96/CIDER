@@ -1,0 +1,11 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\init\libinitbase.dylib:
+
+Rebase table:
+segment  section            address     type
+__DATA_CONST __mod_init_func    0x00001000  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+
+Lazy bind table:
+segment  section            address     dylib            symbol

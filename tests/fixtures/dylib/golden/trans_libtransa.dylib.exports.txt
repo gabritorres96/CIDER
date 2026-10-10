@@ -1,0 +1,4 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\trans\libtransa.dylib:
+
+Exports trie:
+0x000004D0  _trans_a_value

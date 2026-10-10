@@ -1,0 +1,6 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\initoff\libinitoff.dylib:
+
+SYMBOL TABLE:
+0000000000000360 l     F __TEXT,__text _off_init
+0000000000001000 g     O __DATA,__common _cider_off_ready
+0000000000000000         *UND* dyld_stub_binder

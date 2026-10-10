@@ -62,6 +62,9 @@ std::string serialize_result(const Outcome& r) {
     o << "message=" << esc(r.message) << "\n";
     o << "entry=" << r.entry_address << "\n";
     o << "base=" << r.image_base << "\n";
+    o << "missing_library=" << esc(r.missing_library) << "\n";
+    o << "initializers_run=" << r.initializers_run << "\n";
+    for (auto& i : r.images) o << "image=" << esc(i.name) << "|" << esc(i.path) << "|" << i.base << "|" << i.initializers << "|" << (i.main ? 1 : 0) << "\n";
     for (auto& l : r.required_libs) o << "lib=" << esc(l) << "\n";
     for (auto& u : r.unresolved) o << "unresolved=" << esc(u.symbol) << "|" << esc(u.library) << "|" << esc(u.reason) << "|" << (u.weak ? 1 : 0) << "\n";
     o << "end\n";
@@ -94,6 +97,20 @@ std::optional<Outcome> parse_result(const std::string& text) {
             else if (k == "entry") r.entry_address = std::stoull(v);
             else if (k == "base") r.image_base = std::stoull(v);
             else if (k == "lib") r.required_libs.push_back(unesc(v));
+            else if (k == "missing_library") r.missing_library = unesc(v);
+            else if (k == "initializers_run") r.initializers_run = std::stoull(v);
+            else if (k == "image") {
+                std::vector<std::string> parts;
+                size_t st = 0;
+                for (;;) {
+                    size_t b = v.find('|', st);
+                    parts.push_back(v.substr(st, b == std::string::npos ? std::string::npos : b - st));
+                    if (b == std::string::npos) break;
+                    st = b + 1;
+                }
+                if (parts.size() != 5) return std::nullopt;
+                r.images.push_back({unesc(parts[0]), unesc(parts[1]), std::stoull(parts[2]), std::stoull(parts[3]), parts[4] == "1"});
+            }
             else if (k == "unresolved") {
                 std::vector<std::string> parts;
                 size_t st = 0;

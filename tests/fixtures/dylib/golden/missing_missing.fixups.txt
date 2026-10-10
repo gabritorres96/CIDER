@@ -1,0 +1,13 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\missing\missing:
+
+Rebase table:
+segment  section            address     type
+__DATA   __la_symbol_ptr    0x100002000  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100001000 pointer         0 libSystem        dyld_stub_binder
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100002000 libgone          _cider_gone
