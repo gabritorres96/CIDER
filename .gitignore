@@ -1,0 +1,10 @@
+build/
+out/
+.vs/
+*.user
+*.log
+CMakeUserPresets.json
+build-*/
+.toolchain/
+.validation/
+tests/fixtures/real/obj/

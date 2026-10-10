@@ -1,0 +1,13 @@
+hello_arm64:
+
+SYMBOL TABLE:
+0000000100008018 l     O __DATA,__data __dyld_private
+00000001000005a4 g     F __TEXT,__text _main
+0000000100000598 g     F __TEXT,__text _cider_add
+0000000100000638 g     O __TEXT,__const _kGreeting
+0000000100008010 g     O __DATA,__data _g_initialized
+0000000100008020 g     O __DATA,__common _g_zero
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _exit
+0000000000000000         *UND* _puts
+0000000000000000         *UND* dyld_stub_binder

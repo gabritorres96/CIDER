@@ -1,0 +1,17 @@
+Fat headers
+fat_magic FAT_MAGIC
+nfat_arch 2
+architecture x86_64
+    cputype CPU_TYPE_X86_64
+    cpusubtype CPU_SUBTYPE_X86_64_ALL
+    capabilities CPU_SUBTYPE_LIB64
+    offset 4096
+    size 12768
+    align 2^12 (4096)
+architecture arm64
+    cputype CPU_TYPE_ARM64
+    cpusubtype CPU_SUBTYPE_ARM64_ALL
+    capabilities 0x0
+    offset 32768
+    size 50176
+    align 2^14 (16384)

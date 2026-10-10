@@ -1,0 +1,128 @@
+#include <cstdio>
+#include <cstdlib>
+#include <string>
+#include <vector>
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <shellapi.h>
+#endif
+
+#include "cider/log.hpp"
+#include "cider/util.hpp"
+#include "commands.hpp"
+
+namespace {
+
+const char* kUsage =
+    "CIDER - Darwin Executable Runtime " "0.1.1\n"
+    "\n"
+    "Usage: cider <command> [options]\n"
+    "\n"
+    "Commands:\n"
+    "  inspect <program|App.app|x.dmg>  Static Mach-O / bundle / disk image inspection (auto-detected)\n"
+    "  dmg-info <image.dmg>             Disk image structure, compression, filesystem, 7-Zip status\n"
+    "  extract <image.dmg> -o <dir>     Extract a disk image with 7-Zip and locate .app bundles\n"
+    "  dependencies <program|App.app>   Dynamic library dependencies and their resolution\n"
+    "  compatibility <program|App.app>  Static compatibility assessment\n"
+    "  run <program|App.app>            Not available in 0.1 (no runtime yet)\n"
+    "  logs [file]                      Show the tail of a CIDER log file\n"
+    "  doctor                           Check the environment\n"
+    "\n"
+    "Options:\n"
+    "  --json                 Machine-readable output\n"
+    "  --symbols              Include the symbol table (inspect)\n"
+    "  -o, --output <dir>     Output directory (extract; must not exist or be empty)\n"
+    "  --7z <path>            Absolute path of 7z.exe (default: $CIDER_7Z, PATH, Program Files)\n"
+    "  --max-size <MiB>       Maximum unpacked size accepted when extracting (default 8192)\n"
+    "  --temp-dir <dir>       Where private temporary work directories are created\n"
+    "  --log-level <level>    trace|debug|info|warn|error|fatal|off (default: warn)\n"
+    "  --log-file <path>      Also append log lines to this file\n"
+    "  --version              Print the version\n"
+    "  --help                 Print this help\n";
+
+std::vector<std::string> utf8_args(int argc, char** argv) {
+#ifdef _WIN32
+    (void)argc; (void)argv;
+    int n = 0;
+    LPWSTR* w = CommandLineToArgvW(GetCommandLineW(), &n);
+    std::vector<std::string> out;
+    for (int i = 0; w && i < n; ++i) {
+        int len = WideCharToMultiByte(CP_UTF8, 0, w[i], -1, nullptr, 0, nullptr, nullptr);
+        std::string s(len > 0 ? static_cast<size_t>(len - 1) : 0, '\0');
+        if (len > 1) WideCharToMultiByte(CP_UTF8, 0, w[i], -1, s.data(), len, nullptr, nullptr);
+        out.push_back(std::move(s));
+    }
+    if (w) LocalFree(w);
+    return out;
+#else
+    return std::vector<std::string>(argv, argv + argc);
+#endif
+}
+
+}  // namespace
+
+int main(int argc, char** argv) {
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+    auto args = utf8_args(argc, argv);
+    cider::cli::Options opt;
+    std::string command;
+    std::string log_file;
+    cider::log::Level level = cider::log::Level::Warn;
+
+    for (size_t i = 1; i < args.size(); ++i) {
+        const std::string& a = args[i];
+        if (a == "--version" || a == "-V") { std::printf("cider %s\n", cider::kVersion); return 0; }
+        if (a == "--help" || a == "-h") { std::fputs(kUsage, stdout); return 0; }
+        if (a == "--json") opt.json = true;
+        else if (a == "--symbols") opt.symbols = true;
+        else if (a == "--verbose" || a == "-v") level = cider::log::Level::Debug;
+        else if (a == "--output" || a == "-o" || a == "--7z" || a == "--temp-dir" || a == "--max-size") {
+            if (i + 1 >= args.size()) { std::fprintf(stderr, "error: %s needs a value\n", a.c_str()); return 2; }
+            const std::string& v = args[++i];
+            if (a == "--output" || a == "-o") opt.output = v;
+            else if (a == "--7z") opt.seven_zip = v;
+            else if (a == "--temp-dir") opt.temp_dir = v;
+            else {
+                char* end = nullptr;
+                opt.max_size_mib = std::strtoull(v.c_str(), &end, 10);
+                if (v.empty() || *end != '\0' || opt.max_size_mib == 0) {
+                    std::fprintf(stderr, "error: --max-size expects a positive number of MiB\n");
+                    return 2;
+                }
+            }
+        }
+        else if (a == "--log-level" || a == "--log-file") {
+            if (i + 1 >= args.size()) { std::fprintf(stderr, "error: %s needs a value\n", a.c_str()); return 2; }
+            const std::string& v = args[++i];
+            if (a == "--log-file") log_file = v;
+            else if (!cider::log::parse_level(v, level)) { std::fprintf(stderr, "error: unknown log level '%s'\n", v.c_str()); return 2; }
+        } else if (a.size() > 1 && a[0] == '-' && a != "-") {
+            std::fprintf(stderr, "error: unknown option '%s' (try --help)\n", a.c_str());
+            return 2;
+        } else if (command.empty()) command = a;
+        else opt.positional.push_back(a);
+    }
+
+    cider::log::set_level(level);
+    if (log_file.empty()) if (const char* e = std::getenv("CIDER_LOG_FILE")) log_file = e;
+    if (!log_file.empty() && command != "logs" && !cider::log::set_file(log_file))
+        std::fprintf(stderr, "warning: cannot open log file '%s'\n", log_file.c_str());
+
+    if (command.empty()) { std::fputs(kUsage, stderr); return 2; }
+    int rc;
+    if (command == "inspect") rc = cider::cli::cmd_inspect(opt);
+    else if (command == "dmg-info") rc = cider::cli::cmd_dmg_info(opt);
+    else if (command == "extract") rc = cider::cli::cmd_extract(opt);
+    else if (command == "dependencies") rc = cider::cli::cmd_dependencies(opt);
+    else if (command == "compatibility") rc = cider::cli::cmd_compatibility(opt);
+    else if (command == "run") rc = cider::cli::cmd_run(opt);
+    else if (command == "logs") rc = cider::cli::cmd_logs(opt);
+    else if (command == "doctor") rc = cider::cli::cmd_doctor(opt);
+    else { std::fprintf(stderr, "error: unknown command '%s' (try --help)\n", command.c_str()); rc = 2; }
+    cider::log::close_file();
+    return rc;
+}

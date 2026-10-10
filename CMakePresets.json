@@ -1,0 +1,34 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 21, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Default (Windows, tests on)",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": { "CIDER_BUILD_TESTS": "ON" }
+    },
+    {
+      "name": "asan",
+      "displayName": "AddressSanitizer (needs the MSVC ASan component or clang)",
+      "inherits": "default",
+      "binaryDir": "${sourceDir}/build-asan",
+      "cacheVariables": { "CIDER_SANITIZE": "ON" }
+    },
+    {
+      "name": "fuzz",
+      "displayName": "libFuzzer harnesses",
+      "inherits": "asan",
+      "binaryDir": "${sourceDir}/build-fuzz",
+      "cacheVariables": { "CIDER_BUILD_FUZZERS": "ON" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "debug", "configurePreset": "default", "configuration": "Debug" },
+    { "name": "release", "configurePreset": "default", "configuration": "Release" }
+  ],
+  "testPresets": [
+    { "name": "debug", "configurePreset": "default", "configuration": "Debug", "output": { "outputOnFailure": true } },
+    { "name": "release", "configurePreset": "default", "configuration": "Release", "output": { "outputOnFailure": true } }
+  ]
+}

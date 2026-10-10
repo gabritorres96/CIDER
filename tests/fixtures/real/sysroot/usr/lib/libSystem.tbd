@@ -1,0 +1,15 @@
+--- !tapi-tbd
+tbd-version:     4
+targets:         [ x86_64-macos, arm64-macos ]
+uuids:
+  - target:          x86_64-macos
+    value:           00000000-0000-0000-0000-000000000001
+  - target:          arm64-macos
+    value:           00000000-0000-0000-0000-000000000002
+install-name:    '/usr/lib/libSystem.B.dylib'
+current-version: 1311
+compatibility-version: 1
+exports:
+  - targets:         [ x86_64-macos, arm64-macos ]
+    symbols:         [ _puts, _exit, _write, _getpid, dyld_stub_binder ]
+...

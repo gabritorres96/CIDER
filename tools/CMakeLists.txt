@@ -1,0 +1,3 @@
+add_executable(make_dmg_fixture make_dmg_fixture.cpp)
+target_include_directories(make_dmg_fixture PRIVATE ${PROJECT_SOURCE_DIR}/tests/fixtures)
+cider_target_options(make_dmg_fixture)

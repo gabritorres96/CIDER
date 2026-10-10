@@ -1,0 +1,7 @@
+libfoo.dylib:
+
+SYMBOL TABLE:
+0000000000002008 l     O __DATA,__data __dyld_private
+00000000000004a0 g     F __TEXT,__text _foo_value
+0000000000000000         *UND* _getpid
+0000000000000000         *UND* dyld_stub_binder

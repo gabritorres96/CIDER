@@ -1,0 +1,4 @@
+tests/fixtures/real/bin/** binary
+tests/fixtures/regression/** binary
+tests/fixtures/real/golden/** text eol=lf
+*.cmd text eol=crlf
