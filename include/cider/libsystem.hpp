@@ -30,7 +30,7 @@ inline constexpr const char* kObjcInstallName = "/usr/lib/libobjc.A.dylib";
 inline constexpr const char* kFoundationInstallName = "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation";
 inline constexpr const char* kCoreFoundationInstallName = "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation";
 // Which provided library a symbol belongs to. CoreFoundation and Foundation are one group: CIDER's Foundation subset serves both.
-enum class Lib : uint8_t { System = 0, Objc = 1, Foundation = 2 };
+enum class Lib : uint8_t { System = 0, Objc = 1, Foundation = 2, CoreFoundation = 3, CoreGraphics = 4, AppKit = 5 };
 
 // A file descriptor of the guest. These are NOT Windows handles and NOT the host's CRT descriptors: the guest sees a
 // small integer table starting at 0 (stdin), 1 (stdout), 2 (stderr), like a Darwin process.

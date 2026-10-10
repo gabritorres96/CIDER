@@ -136,6 +136,8 @@ public:
     Class* declare_native_class(const std::string& name, const std::string& super, uint32_t instance_size);
     void add_native_methods(Class* cls, bool class_methods, const std::vector<NativeMethod>& methods);
     bool build_native_thunks(std::string& error);   // after all declarations: creates the host->guest thunks and fills the IMPs
+    std::vector<std::string> native_class_names(const std::string& owner = {}) const;   // owner: framework that declared them ("Foundation"...)
+    void set_native_owner(std::string owner) { native_owner_ = std::move(owner); }      // applies to the classes declared next
     std::pair<Addr, Addr> thunk_range() const;
 
     // ---- objects ------------------------------------------------------------------------------------------------------------------------
@@ -216,6 +218,8 @@ private:
     // native thunks
     struct NativeEntry { Class* cls; bool class_method; size_t index; };
     std::vector<std::pair<NativeEntry, NativeMethod>> native_;
+    std::string native_owner_;
+    std::unordered_map<std::string, std::string> native_owner_of_;
     abi::ThunkTable native_table_;
     Addr forward_imp_ = 0, nil_imp_ = 0, lookup_thunk_ = 0, lookup_super_thunk_ = 0;
     abi::ThunkTable core_table_;

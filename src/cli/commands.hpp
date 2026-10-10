@@ -29,5 +29,6 @@ int cmd_run(const Options& o);
 int cmd_worker(const Options& o);
 int cmd_logs(const Options& o);
 int cmd_doctor(const Options& o);
+int cmd_sdk_scan(const Options& o);
 
 }  // namespace cider::cli

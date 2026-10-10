@@ -143,6 +143,7 @@ int main(int argc, char** argv) {
     else if (command == "__worker") rc = cider::cli::cmd_worker(opt);  // internal: started by `cider run`
     else if (command == "logs") rc = cider::cli::cmd_logs(opt);
     else if (command == "doctor") rc = cider::cli::cmd_doctor(opt);
+    else if (command == "sdk-scan") rc = cider::cli::cmd_sdk_scan(opt);
     else { std::fprintf(stderr, "error: unknown command '%s' (try --help)\n", command.c_str()); rc = 2; }
     cider::log::close_file();
     return rc;

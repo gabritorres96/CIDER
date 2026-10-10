@@ -345,6 +345,7 @@ Class* Runtime::declare_native_class(const std::string& name, const std::string&
     if (!cls) { failed_ = true; return nullptr; }
     cls->instance_size = instance_size;
     cls->native = cls->meta->native = true;
+    native_owner_of_[name] = native_owner_;
     register_class_pair(cls);
     return cls;
 }
@@ -462,4 +463,16 @@ uint64_t host_forward_trap(uint64_t self, uint64_t sel) {
 }
 }  // namespace
 
+}  // namespace cider::objc
+
+namespace cider::objc {
+std::vector<std::string> Runtime::native_class_names(const std::string& owner) const {
+    std::vector<std::string> out;
+    for (const auto& c : classes_) {
+        if (!c->native || c->is_meta) continue;
+        auto it = native_owner_of_.find(c->name);
+        if (owner.empty() || (it != native_owner_of_.end() && it->second == owner)) out.push_back(c->name);
+    }
+    return out;
+}
 }  // namespace cider::objc

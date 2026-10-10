@@ -272,7 +272,9 @@ void install_foundation(Runtime& rt) {
         made[std::string(name)] = var;
         return var;
     };
+    rt.set_native_owner("libobjc");               // Apple exports NSObject from libobjc
     foundation::install_nsobject(rt);
+    rt.set_native_owner("Foundation");
     foundation::install_nsstring(rt);
     foundation::install_nsnumber(rt);
     foundation::install_nsarray(rt);
