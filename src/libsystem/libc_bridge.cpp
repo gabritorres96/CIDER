@@ -157,6 +157,7 @@ void console_write(int fd, const char* data, size_t n) {
 namespace detail {
 void* guest_malloc(uint64_t n) { return w_malloc(n); }
 void guest_free(void* p) { w_free(p); }
+void guest_exit(int code) { w_exit(code); }
 void trap(const std::string& what) {
     if (RuntimeContext* c = context()) c->fault = what;
     log::error("guest trapped: {}", what);

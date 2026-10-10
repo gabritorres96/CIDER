@@ -90,7 +90,9 @@ void install_nsnumber(Runtime& rt);
 void install_nsarray(Runtime& rt);
 void install_nsdictionary(Runtime& rt);
 void install_misc(Runtime& rt);
-void install_nsextras(Runtime& rt);       // NSMutableString, NSData, NSMutableData, NSDate, NSURL, NSError, NSFileManager
+void install_nsextras(Runtime& rt);
+void install_nsnotification(Runtime& rt);       // NSNotification, NSNotificationCenter
+void post_notification(const std::string& name, Addr object, Addr userinfo);   // synchronous delivery through the default center       // NSMutableString, NSData, NSMutableData, NSDate, NSURL, NSError, NSFileManager
 
 bool format_with_objects(const std::string& format, abi::ArgReader& args, std::string& out);   // printf with %@ (NSLog, stringWithFormat:)
 Addr immortal_string(const std::string& utf8);   // NSString in the runtime arena that is never released (framework constants)

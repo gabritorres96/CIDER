@@ -24,6 +24,8 @@ struct GuestConfig {
     std::filesystem::path image_path;   // where the executable lives: base of @executable_path and @rpath searches
     std::filesystem::path root;         // host directory that the guest sees as "/" (empty: the guest cannot open files)
     bool reject_cycles = false;         // refuse dependency cycles instead of tolerating them (dyld tolerates them)
+    std::string gui_backend = "win32";  // "win32" or "offscreen" (tests): see src/graphics/gui_backend.hpp
+    std::vector<std::string> gui_script;   // scripted input of the offscreen backend
 };
 
 // One image the dynamic linker loaded (reported in the outcome and in `cider run --json`).
@@ -57,6 +59,8 @@ struct Outcome {
     std::string missing_library;           // LoadFailed / MissingDependency: the install name that was not found
     uint64_t initializers_run = 0;
     uint64_t objc_live_objects = 0;        // Objective-C objects still alive when the guest ended (leak check; in-process only)
+    uint64_t gui_open_windows_at_exit = 0; // windows the guest never closed (the runtime destroys them)
+    uint64_t gui_native_objects_after = 0; // native windows/controls still alive after the runtime shut the GUI down (must be 0)
 };
 
 // Loads and runs `file` in THIS process, then releases everything (image, stack, thunks).

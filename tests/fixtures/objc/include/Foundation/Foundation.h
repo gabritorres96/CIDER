@@ -288,6 +288,23 @@ extern NSString *const NSPOSIXErrorDomain;
 - (NSString *)currentDirectoryPath;
 @end
 
+@interface NSNotification : NSObject
++ (instancetype)notificationWithName:(NSString *)name object:(id)object;
++ (instancetype)notificationWithName:(NSString *)name object:(id)object userInfo:(NSDictionary *)userInfo;
+- (NSString *)name;
+- (id)object;
+- (NSDictionary *)userInfo;
+@end
+@interface NSNotificationCenter : NSObject
++ (NSNotificationCenter *)defaultCenter;
+- (void)addObserver:(id)observer selector:(SEL)selector name:(NSString *)name object:(id)object;
+- (id)addObserverForName:(NSString *)name object:(id)object queue:(id)queue usingBlock:(void (^)(NSNotification *note))block;
+- (void)removeObserver:(id)observer;
+- (void)postNotification:(NSNotification *)notification;
+- (void)postNotificationName:(NSString *)name object:(id)object;
+- (void)postNotificationName:(NSString *)name object:(id)object userInfo:(NSDictionary *)userInfo;
+@end
+
 @interface NSAutoreleasePool : NSObject
 - (void)drain;
 @end

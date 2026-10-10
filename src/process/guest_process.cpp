@@ -1,6 +1,7 @@
 #include <format>
 
 #include "cider/abi.hpp"
+#include "cider/appkit.hpp"
 #include "cider/dispatch.hpp"
 #include "cider/runloop.hpp"
 #include "cider/guest.hpp"
@@ -53,6 +54,8 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     ctx.env = cfg.env;
     ctx.sink = cfg.sink;
     ctx.root = cfg.root;
+    ctx.gui_backend = cfg.gui_backend;
+    ctx.gui_script = cfg.gui_script;
     provider.value()->install_stdio(ctx);
 
     // ---- Objective-C runtime and the host-implemented classes (created before linking: binds to _OBJC_CLASS_$_NSObject and
@@ -185,6 +188,8 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     }
     // The process ends here: other guest threads (if any) are told to unwind and joined.
     if (!ctx.threads->shutdown()) log::warn(log::Category::Execution, "some guest threads did not stop; the worker exit will end them");
+    out.gui_open_windows_at_exit = 0;
+    out.gui_native_objects_after = appkit::shutdown(out.gui_open_windows_at_exit);      // destroys every window the guest left open
     dispatch::shutdown();
     runloop::shutdown();                            // drops queued work and the references dispatch workers held
     out.objc_live_objects = objc_rt->live_object_count();

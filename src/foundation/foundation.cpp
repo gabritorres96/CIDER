@@ -3,6 +3,7 @@
 #include <format>
 #include <unordered_map>
 
+#include "cider/appkit.hpp"
 #include "cider/dispatch.hpp"
 #include "../graphics/cg_bridge.hpp"
 #include "../corefoundation/cf_bridge.hpp"
@@ -310,8 +311,10 @@ void install_foundation(Runtime& rt) {
     foundation::install_nsdictionary(rt);
     foundation::install_misc(rt);
     foundation::install_nsextras(rt);
+    foundation::install_nsnotification(rt);
     graphics::install_cg(rt);
     corefoundation::install(rt);
     runloop::install(rt);
+    appkit::install(rt);
 }
 }  // namespace cider::objc

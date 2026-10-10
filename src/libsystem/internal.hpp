@@ -61,6 +61,9 @@ int64_t stream_write(int slot, const void* data, size_t n);  // bytes written, -
 void* guest_malloc(uint64_t n);
 void guest_free(void* p);
 
+// exit(code) from host code that runs inside a guest call: every other guest thread unwinds, then this call chain does.
+void guest_exit(int code);
+
 // A runtime trap: the guest asked for something CIDER refuses to emulate. Marks the run as faulted and ends it.
 void trap(const std::string& what);
 

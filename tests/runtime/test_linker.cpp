@@ -422,7 +422,7 @@ CIDER_TEST(incompatible_library_version_is_refused) {
 CIDER_TEST(system_libraries_are_never_loaded_or_substituted) {
     // The executable asks for libz; CIDER must not look for it anywhere, least of all among Windows DLLs.
     MachoSpec s;
-    s.dylibs = {"/usr/lib/libSystem.B.dylib", "/usr/lib/libz.1.dylib", "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit"};
+    s.dylibs = {"/usr/lib/libSystem.B.dylib", "/usr/lib/libz.1.dylib", "/System/Library/Frameworks/SceneKit.framework/Versions/A/SceneKit"};
     auto b = build_macho(s).bytes;
     auto prov = take(libsystem::LibSystemProvider::create());
     linker::LinkError err;
@@ -430,7 +430,7 @@ CIDER_TEST(system_libraries_are_never_loaded_or_substituted) {
     CHECK(p == nullptr);
     CHECK(err.kind == loader::LoadFailure::MissingDependency);
     CHECK(err.message.find("libz.1.dylib") != std::string::npos);
-    CHECK(err.message.find("AppKit") != std::string::npos);
+    CHECK(err.message.find("SceneKit") != std::string::npos);
     CHECK(err.message.find("does not load system libraries") != std::string::npos);
     CHECK_EQ(err.required_libs.size(), size_t{3});
 }

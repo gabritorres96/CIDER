@@ -209,7 +209,12 @@ int cmd_run(const Options& o) {
         if (rec || !fs::is_directory(root, rec)) return finish(o, failed(kIncompatible, "file-error", "--root is not an existing directory: " + (o.root.empty() ? std::string(".") : o.root)));
         so.root = root;
     }
-    so.timeout = std::chrono::seconds(o.timeout_s ? o.timeout_s : 60);
+    // A program that links AppKit is interactive: the default 60 s limit would kill it while the user works with its windows. The limit is lifted
+    // (24 h) unless --timeout was given; the worker is still supervised and the job limits (memory, processes) still apply.
+    bool interactive = false;
+    for (const auto& d : sl->image->dylibs) interactive |= d.path.find("/AppKit.framework/") != std::string::npos;
+    so.timeout = std::chrono::seconds(o.timeout_s ? o.timeout_s : (interactive ? 24 * 3600 : 60));
+    if (interactive && !o.timeout_s) log::info(log::Category::Process, "GUI program (AppKit): the default timeout is disabled, use --timeout <seconds> to set one");
     so.capture_output = o.json;
     // JSON mode always collects at least INFO-level runtime messages into the "log" array.
     so.log_level = log::level_name(o.json && log::level() > log::Level::Info ? log::Level::Info : log::level());

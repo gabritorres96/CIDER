@@ -15,6 +15,7 @@
 #include "cider/objc.hpp"
 #include "../foundation/foundation_internal.hpp"
 #include "cg_bridge.hpp"
+#include "sysv_args.hpp"
 #include "../libsystem/internal.hpp"
 
 namespace cider::graphics {
@@ -25,35 +26,9 @@ using geometry::Point;
 using geometry::Rect;
 using geometry::Size;
 
-double as_double(uint64_t bits) { double d; std::memcpy(&d, &bits, 8); return d; }
-uint64_t as_bits(double d) { uint64_t b; std::memcpy(&b, &d, 8); return b; }
-
-// Walks the arguments of one call.
-class Args {
-public:
-    explicit Args(GuestRegs* r) : r_(r) {}
-    uint64_t next_int() { return gp_ < 6 ? r_->gp[gp_++] : stack_slot(); }
-    double next_double() { return as_double(xmm_ < 8 ? r_->xmm[xmm_++] : stack_slot()); }
-    Point next_point() { Point p; p.x = next_double(); p.y = next_double(); return p; }       // SSE-class struct: consecutive registers
-    Size next_size() { Size s; s.width = next_double(); s.height = next_double(); return s; }
-    Rect next_rect() {                                                                          // MEMORY-class struct: 32 bytes on the stack
-        Rect r;
-        r.origin.x = as_double(stack_slot());
-        r.origin.y = as_double(stack_slot());
-        r.size.width = as_double(stack_slot());
-        r.size.height = as_double(stack_slot());
-        return r;
-    }
-
-private:
-    uint64_t stack_slot() {
-        const auto* base = reinterpret_cast<const uint64_t*>(r_->stack_args);
-        return base[stack_++];
-    }
-    GuestRegs* r_;
-    unsigned gp_ = 0, xmm_ = 0;
-    uint64_t stack_ = 0;
-};
+using sysv::Args;
+using sysv::as_double;
+using sysv::as_bits;
 
 void put_rect(GuestRegs* r, uint64_t out_ptr, const Rect& v) {
     double* d = reinterpret_cast<double*>(out_ptr);

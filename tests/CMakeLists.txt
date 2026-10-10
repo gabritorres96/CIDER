@@ -32,6 +32,15 @@ target_link_libraries(test_cli PRIVATE cider_test_main)
 cider_target_options(test_cli)
 add_dependencies(test_cli cider)
 add_test(NAME test_cli COMMAND test_cli)
+
+# Interactive GUI tests: the real cider.exe opens a real window, this process drives it with window messages. Skipped without an interactive desktop.
+add_executable(test_gui_win32 integration/test_gui_win32.cpp)
+target_link_libraries(test_gui_win32 PRIVATE cider_test_main)
+cider_target_options(test_gui_win32)
+target_compile_definitions(test_gui_win32 PRIVATE CIDER_APPKIT_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/appkit")
+add_dependencies(test_gui_win32 cider)
+add_test(NAME test_gui_win32 COMMAND test_gui_win32)
+set_tests_properties(test_gui_win32 PROPERTIES ENVIRONMENT "CIDER_EXE=$<TARGET_FILE:cider>" LABELS gui)
 set_tests_properties(test_cli PROPERTIES ENVIRONMENT "CIDER_EXE=$<TARGET_FILE:cider>")
 
 # Real LLVM-built Mach-O fixtures compared against llvm-objdump snapshots (tests/fixtures/real).
@@ -40,7 +49,8 @@ target_compile_definitions(test_real_macho PRIVATE CIDER_REAL_FIXTURES_DIR="${CM
 target_compile_definitions(test_cli PRIVATE CIDER_REAL_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/real"
   CIDER_EXEC_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/exec"
   CIDER_DYLIB_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/dylib"
-  CIDER_OBJC_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/objc")
+  CIDER_OBJC_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/objc"
+  CIDER_APPKIT_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/appkit")
 
 # ---- CIDER 0.2 runtime: real Mach-O execution (Windows x64 only) ---------------------------------------------------------
 if(CIDER_HAS_RUNTIME)
@@ -50,6 +60,7 @@ if(CIDER_HAS_RUNTIME)
       CIDER_EXEC_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/exec"
       CIDER_DYLIB_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/dylib"
       CIDER_OBJC_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/objc"
+      CIDER_APPKIT_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/appkit"
       CIDER_REAL_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/real")
   endfunction()
   cider_runtime_test(test_memory runtime/test_memory.cpp)
@@ -69,6 +80,7 @@ if(CIDER_HAS_RUNTIME)
   cider_runtime_test(test_dispatch runtime/test_dispatch.cpp)
   cider_runtime_test(test_foundation_extra runtime/test_foundation_extra.cpp)
   cider_runtime_test(test_corefoundation runtime/test_corefoundation.cpp)
+  cider_runtime_test(test_appkit runtime/test_appkit.cpp)
   add_dependencies(test_threads cider)
   set_tests_properties(test_threads PROPERTIES ENVIRONMENT "CIDER_EXE=$<TARGET_FILE:cider>")
   cider_runtime_test(test_symbols runtime/test_symbols.cpp)

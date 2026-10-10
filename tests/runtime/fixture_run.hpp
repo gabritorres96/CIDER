@@ -13,22 +13,42 @@ struct FixtureRun {
     std::string out, err;
 };
 
+inline std::filesystem::path appkit_fixture(const std::string& scenario) {
+    return std::filesystem::path(CIDER_APPKIT_FIXTURES_DIR) / "bin" / scenario / scenario;
+}
 inline std::filesystem::path objc_fixture(const std::string& scenario) {
     return std::filesystem::path(CIDER_OBJC_FIXTURES_DIR) / "bin" / scenario / scenario;
 }
 
-inline FixtureRun run_fixture_file(const std::filesystem::path& exe, std::vector<std::string> args = {}, const std::filesystem::path& root = {}) {
+struct FixtureOptions {
+    std::vector<std::string> args;
+    std::filesystem::path root;
+    std::string gui_backend;                  // "" = default (win32); tests use "offscreen"
+    std::vector<std::string> gui_script;
+};
+
+inline FixtureRun run_fixture_file(const std::filesystem::path& exe, const FixtureOptions& opt) {
     FixtureRun run;
     guest::GuestConfig cfg;
+    if (!opt.gui_backend.empty()) cfg.gui_backend = opt.gui_backend;
+    cfg.gui_script = opt.gui_script;
+    cfg.root = opt.root;
+    std::vector<std::string> args = opt.args;
     cfg.args = {cider::path_to_utf8(exe)};
     cfg.args.insert(cfg.args.end(), args.begin(), args.end());
     cfg.image_path = exe;
     cfg.sink = [&](int fd, const char* d, size_t n) { (fd == 2 ? run.err : run.out).append(d, n); };
-    cfg.root = root;
     auto b = cider::read_file(exe, 64u << 20);
     if (!b.ok()) { report_failure(__FILE__, __LINE__, "fixture missing: " + cider::path_to_utf8(exe)); throw AbortTest{}; }
     run.r = guest::run_in_process(ByteView(b.value()), cfg);
     return run;
+}
+
+inline FixtureRun run_fixture_file(const std::filesystem::path& exe, std::vector<std::string> args = {}, const std::filesystem::path& root = {}) {
+    FixtureOptions o;
+    o.args = std::move(args);
+    o.root = root;
+    return run_fixture_file(exe, o);
 }
 
 inline void expect_exit_code(const FixtureRun& r, int code, const char* what) {

@@ -16,5 +16,6 @@ exports:
                        _NSUnionRect, _NSInsetRect, _NSOffsetRect, _NSIntegralRect, _NSStringFromRect, _NSStringFromPoint, _NSStringFromSize,
                        _NSZeroPoint, _NSZeroSize, _NSZeroRect, _NSDefaultRunLoopMode, _NSRunLoopCommonModes ]
     objc-classes:    [ NSString, NSConstantString, NSNumber, NSArray, NSMutableArray, NSDictionary, NSMutableDictionary,
-                       NSAutoreleasePool, NSMutableString, NSData, NSMutableData, NSDate, NSURL, NSError, NSFileManager ]
+                       NSAutoreleasePool, NSMutableString, NSData, NSMutableData, NSDate, NSURL, NSError, NSFileManager,
+                       NSNotification, NSNotificationCenter ]
 ...

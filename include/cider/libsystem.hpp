@@ -101,6 +101,10 @@ struct RuntimeContext {
     std::vector<std::pair<uint64_t, uint64_t>> code_ranges;   // [lo, hi) executable guest code a callback may target (+ libSystem thunks)
     std::vector<uint64_t> atexit_handlers;  // guest functions registered with atexit(), run in reverse order
     bool skip_atexit = false;               // _exit(): handlers do not run
+    // ---- GUI (0.5) --------------------------------------------------------------------------------------------
+    std::string gui_backend = "win32";      // "win32" (real windows) or "offscreen" (in-memory windows with scripted input, for tests)
+    std::vector<std::string> gui_script;    // offscreen input, see src/graphics/gui_backend.hpp
+    uint64_t gui_open_windows_at_exit = 0;  // windows the guest left open when the process ended (they are destroyed by the runtime)
 };
 
 void set_context(RuntimeContext* ctx);

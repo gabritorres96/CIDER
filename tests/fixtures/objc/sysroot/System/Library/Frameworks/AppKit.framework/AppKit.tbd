@@ -1,0 +1,16 @@
+--- !tapi-tbd
+tbd-version:     4
+targets:         [ x86_64-macos ]
+uuids:
+  - target:          x86_64-macos
+    value:           00000000-0000-0000-0000-0000000000a1
+install-name:    '/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit'
+current-version: 2500
+compatibility-version: 45
+exports:
+  - targets:         [ x86_64-macos ]
+    symbols:         [ _NSApp, _NSApplicationDidFinishLaunchingNotification, _NSApplicationWillTerminateNotification,
+                       _NSApplicationDidBecomeActiveNotification, _NSWindowWillCloseNotification, _NSWindowDidResizeNotification,
+                       _NSWindowDidMoveNotification, _NSWindowDidBecomeKeyNotification, _NSWindowDidResignKeyNotification ]
+    objc-classes:    [ NSResponder, NSApplication, NSWindow, NSView, NSControl, NSButton, NSTextField, NSEvent, NSScreen ]
+...
