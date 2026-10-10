@@ -1,79 +1,79 @@
 C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\foundation_subclass\foundation_subclass:
 Contents of (__DATA_CONST,__objc_classlist) section
-00000001000031a0 0x100004038 _OBJC_CLASS_$_Point
-           isa 0x100004060 _OBJC_METACLASS_$_Point
+00000001000021a0 0x100003038 _OBJC_CLASS_$_Point
+           isa 0x100003060 _OBJC_METACLASS_$_Point
     superclass 0x0 _OBJC_CLASS_$_NSObject
          cache 0x0
         vtable 0x0
-          data 0x100004418 (struct class_ro_t *)
+          data 0x100003418 (struct class_ro_t *)
                     flags 0x0
             instanceStart 8
              instanceSize 24
                  reserved 0x0
                ivarLayout 0x0
-                     name 0x100001b4b Point
-              baseMethods 0x1000042d0 (struct method_list_t *)
+                     name 0x100001aab Point
+              baseMethods 0x1000032d0 (struct method_list_t *)
 		   entsize 24
 		     count 9
-		      name 0x100001556 initWithX:y:
-		     types 0x100001b63 @24@0:8i16i20
+		      name 0x1000014b6 initWithX:y:
+		     types 0x100001ac3 @24@0:8i16i20
 		       imp -[Point initWithX:y:]
-		      name 0x100001568 dealloc
-		     types 0x100001b86 v16@0:8
+		      name 0x1000014c8 dealloc
+		     types 0x100001ae6 v16@0:8
 		       imp -[Point dealloc]
-		      name 0x10000158a x
-		     types 0x100001b8e i16@0:8
+		      name 0x1000014ea x
+		     types 0x100001aee i16@0:8
 		       imp -[Point x]
-		      name 0x10000158c y
-		     types 0x100001b8e i16@0:8
+		      name 0x1000014ec y
+		     types 0x100001aee i16@0:8
 		       imp -[Point y]
-		      name 0x1000015bc setLabel:
-		     types 0x100001b96 v24@0:8@16
+		      name 0x10000151c setLabel:
+		     types 0x100001af6 v24@0:8@16
 		       imp -[Point setLabel:]
-		      name 0x1000015c6 hash
-		     types 0x100001ba1 Q16@0:8
+		      name 0x100001526 hash
+		     types 0x100001b01 Q16@0:8
 		       imp -[Point hash]
-		      name 0x1000015cb isEqual:
-		     types 0x100001ba9 c24@0:8@16
+		      name 0x10000152b isEqual:
+		     types 0x100001b09 c24@0:8@16
 		       imp -[Point isEqual:]
-		      name 0x1000015d4 description
-		     types 0x100001bb4 @16@0:8
+		      name 0x100001534 description
+		     types 0x100001b14 @16@0:8
 		       imp -[Point description]
-		      name 0x1000015ae copyWithZone:
-		     types 0x100001b71 @24@0:8^{_NSZone=}16
+		      name 0x10000150e copyWithZone:
+		     types 0x100001ad1 @24@0:8^{_NSZone=}16
 		       imp -[Point copyWithZone:]
-            baseProtocols 0x100004270
+            baseProtocols 0x100003270
                       count 1
-		      list[0] 0x100004510 (struct protocol_t *)
+		      list[0] 0x100003510 (struct protocol_t *)
 			      isa 0x0
-			     name 0x100001b51 NSCopying
+			     name 0x100001ab1 NSCopying
 			protocols 0x0
-		  instanceMethods 0x100004248 (struct method_list_t *)
+		  instanceMethods 0x100003248 (struct method_list_t *)
 			   entsize 24
 			     count 1
-			      name 0x1000015ae copyWithZone:
-			     types 0x100001b71 @24@0:8^{_NSZone=}16
+			      name 0x10000150e copyWithZone:
+			     types 0x100001ad1 @24@0:8^{_NSZone=}16
 			       imp 0x0 
 		     classMethods 0x0 (struct method_list_t *)
 	  optionalInstanceMethods 0x0
 	     optionalClassMethods 0x0
 	       instanceProperties 0x0
-                    ivars 0x1000043b0
+                    ivars 0x1000033b0
                     entsize 32
                       count 3
-			   offset 0x100004578 8
-			     name 0x10000158a x
-			     type 0x100001bbc i
+			   offset 0x100003578 8
+			     name 0x1000014ea x
+			     type 0x100001b1c i
 			alignment 2
 			     size 4
-			   offset 0x100004580 12
-			     name 0x10000158c y
-			     type 0x100001bbc i
+			   offset 0x100003580 12
+			     name 0x1000014ec y
+			     type 0x100001b1c i
 			alignment 2
 			     size 4
-			   offset 0x100004588 16
-			     name 0x1000015e0 label
-			     type 0x100001bbe @"NSString"
+			   offset 0x100003588 16
+			     name 0x100001540 label
+			     type 0x100001b1e @"NSString"
 			alignment 3
 			     size 8
            weakIvarLayout 0x0
@@ -83,30 +83,30 @@ Meta Class
     superclass 0x0 _OBJC_METACLASS_$_NSObject
          cache 0x0
         vtable 0x0
-          data 0x100004288 (struct class_ro_t *)
+          data 0x100003288 (struct class_ro_t *)
                     flags 0x1 RO_META
             instanceStart 40
              instanceSize 40
                  reserved 0x0
                ivarLayout 0x0
-                     name 0x100001b4b Point
-              baseMethods 0x100004228 (struct method_list_t *)
+                     name 0x100001aab Point
+              baseMethods 0x100003228 (struct method_list_t *)
 		   entsize 24
 		     count 1
-		      name 0x1000015a0 pointWithX:y:
-		     types 0x100001b63 @24@0:8i16i20
+		      name 0x100001500 pointWithX:y:
+		     types 0x100001ac3 @24@0:8i16i20
 		       imp +[Point pointWithX:y:]
-            baseProtocols 0x100004270
+            baseProtocols 0x100003270
                       count 1
-		      list[0] 0x100004510 (struct protocol_t *)
+		      list[0] 0x100003510 (struct protocol_t *)
 			      isa 0x0
-			     name 0x100001b51 NSCopying
+			     name 0x100001ab1 NSCopying
 			protocols 0x0
-		  instanceMethods 0x100004248 (struct method_list_t *)
+		  instanceMethods 0x100003248 (struct method_list_t *)
 			   entsize 24
 			     count 1
-			      name 0x1000015ae copyWithZone:
-			     types 0x100001b71 @24@0:8^{_NSZone=}16
+			      name 0x10000150e copyWithZone:
+			     types 0x100001ad1 @24@0:8^{_NSZone=}16
 			       imp 0x0 
 		     classMethods 0x0 (struct method_list_t *)
 	  optionalInstanceMethods 0x0
@@ -115,23 +115,23 @@ Meta Class
                     ivars 0x0
            weakIvarLayout 0x0
            baseProperties 0x0
-00000001000031a8 0x100004088 _OBJC_CLASS_$_Derived
-           isa 0x1000040b0 _OBJC_METACLASS_$_Derived
-    superclass 0x100004038 _OBJC_CLASS_$_Point
+00000001000021a8 0x100003088 _OBJC_CLASS_$_Derived
+           isa 0x1000030b0 _OBJC_METACLASS_$_Derived
+    superclass 0x100003038 _OBJC_CLASS_$_Point
          cache 0x0
         vtable 0x0
-          data 0x1000044c8 (struct class_ro_t *)
+          data 0x1000034c8 (struct class_ro_t *)
                     flags 0x0
             instanceStart 24
              instanceSize 24
                  reserved 0x0
                ivarLayout 0x0
-                     name 0x100001b5b Derived
-              baseMethods 0x1000044a8 (struct method_list_t *)
+                     name 0x100001abb Derived
+              baseMethods 0x1000034a8 (struct method_list_t *)
 		   entsize 24
 		     count 1
-		      name 0x1000015d4 description
-		     types 0x100001bb4 @16@0:8
+		      name 0x100001534 description
+		     types 0x100001b14 @16@0:8
 		       imp -[Derived description]
             baseProtocols 0x0
                     ivars 0x0
@@ -139,34 +139,34 @@ Meta Class
            baseProperties 0x0
 Meta Class
            isa 0x0
-    superclass 0x100004060 _OBJC_METACLASS_$_Point
+    superclass 0x100003060 _OBJC_METACLASS_$_Point
          cache 0x0
         vtable 0x0
-          data 0x100004460 (struct class_ro_t *)
+          data 0x100003460 (struct class_ro_t *)
                     flags 0x1 RO_META
             instanceStart 40
              instanceSize 40
                  reserved 0x0
                ivarLayout 0x0
-                     name 0x100001b5b Derived
+                     name 0x100001abb Derived
               baseMethods 0x0 (struct method_list_t *)
             baseProtocols 0x0
                     ivars 0x0
            weakIvarLayout 0x0
            baseProperties 0x0
 Contents of (__DATA,__objc_classrefs) section
-00000001000040d8 0x100004038 _OBJC_CLASS_$_Point
-00000001000040e0 0x0 _OBJC_CLASS_$_NSString
-00000001000040e8 0x0 _OBJC_CLASS_$_NSObject
-00000001000040f0 0x0 _OBJC_CLASS_$_NSMutableArray
-00000001000040f8 0x0 _OBJC_CLASS_$_NSMutableDictionary
-0000000100004100 0x100004088 _OBJC_CLASS_$_Derived
-0000000100004108 0x0 _OBJC_CLASS_$_NSAutoreleasePool
+00000001000030d8 0x100003038 _OBJC_CLASS_$_Point
+00000001000030e0 0x0 _OBJC_CLASS_$_NSString
+00000001000030e8 0x0 _OBJC_CLASS_$_NSObject
+00000001000030f0 0x0 _OBJC_CLASS_$_NSMutableArray
+00000001000030f8 0x0 _OBJC_CLASS_$_NSMutableDictionary
+0000000100003100 0x100003088 _OBJC_CLASS_$_Derived
+0000000100003108 0x0 _OBJC_CLASS_$_NSAutoreleasePool
 Contents of (__DATA,__objc_superrefs) section
-0000000100004218 0x100004038 _OBJC_CLASS_$_Point
-0000000100004220 0x100004088 _OBJC_CLASS_$_Derived
+0000000100003218 0x100003038 _OBJC_CLASS_$_Point
+0000000100003220 0x100003088 _OBJC_CLASS_$_Derived
 Contents of (__DATA_CONST,__objc_protolist) section
-0000000100003198 0x100004510 __OBJC_PROTOCOL_$_NSCopying
+0000000100002198 0x100003510 __OBJC_PROTOCOL_$_NSCopying
 Contents of (__DATA_CONST,__objc_imageinfo) section
   version 0
     flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

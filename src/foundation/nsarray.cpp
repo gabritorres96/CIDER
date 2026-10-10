@@ -202,6 +202,42 @@ void i_countByEnumerating(GuestRegs* r) {
     r->ret_rax = n;
 }
 
+// -enumerateObjectsUsingBlock: void (^)(id obj, NSUInteger idx, BOOL *stop). The runtime enters the block's invoke function through a
+// nested callback; the block object is guest memory the caller keeps alive for the duration of the call.
+uint64_t block_invoke_of(Addr block) {
+    if (!block || !rt().readable(block, 24)) { raise("NSInvalidArgumentException", "enumerateObjectsUsingBlock: the block is nil or unreadable"); return 0; }
+    const uint64_t fn = *reinterpret_cast<const uint64_t*>(block + 16);
+    if (!libsystem::is_valid_callback(fn)) { raise("NSInvalidArgumentException", "block invoke function is not executable guest code"); return 0; }
+    return fn;
+}
+Addr i_enumerateObjects(Addr self, Addr, Addr block) {
+    auto* p = arr(self);
+    if (!p) return 0;
+    const uint64_t fn = block_invoke_of(block);
+    if (!fn) return 0;
+    const std::vector<Addr> snapshot = p->items;                  // enumeration is over the array as it was when the call began
+    for (Addr o : snapshot) rt().retain(o);
+    uint8_t stop = 0;
+    for (size_t i = 0; i < snapshot.size() && !stop && !rt().failed(); ++i)
+        rt().call_imp(fn, {block, snapshot[i], i, reinterpret_cast<uint64_t>(&stop)});
+    for (Addr o : snapshot) rt().release(o);
+    return 0;
+}
+Addr i_indexOfObjectPassingTest(Addr self, Addr, Addr block) {
+    auto* p = arr(self);
+    if (!p) return kNotFound;
+    const uint64_t fn = block_invoke_of(block);
+    if (!fn) return kNotFound;
+    const std::vector<Addr> snapshot = p->items;
+    for (Addr o : snapshot) rt().retain(o);
+    uint64_t found = kNotFound;
+    uint8_t stop = 0;
+    for (size_t i = 0; i < snapshot.size() && !stop && !rt().failed(); ++i)
+        if (rt().call_imp(fn, {block, snapshot[i], i, reinterpret_cast<uint64_t>(&stop)}) & 0xff) { found = i; break; }
+    for (Addr o : snapshot) rt().release(o);
+    return found;
+}
+
 // ---- mutable copies --------------------------------------------------------------------------------------------------------------------------
 Addr i_copyWithZone(Addr self, Addr, Addr) {
     if (!is_mutable(self)) return rt().retain(self);
@@ -335,6 +371,8 @@ void install_nsarray(Runtime& r) {
         {"countByEnumeratingWithState:objects:count:", "Q40@0:8^{_NSFastEnumerationState=Q^@^Q[5Q]}16^@24Q32", addr(i_countByEnumerating), true},
         {"copyWithZone:", "@24@0:8^{_NSZone=}16", addr(i_copyWithZone), false},
         {"mutableCopyWithZone:", "@24@0:8^{_NSZone=}16", addr(i_mutableCopyWithZone), false},
+        {"enumerateObjectsUsingBlock:", "v24@0:8@?16", addr(i_enumerateObjects), false},
+        {"indexOfObjectPassingTest:", "Q24@0:8@?16", addr(i_indexOfObjectPassingTest), false},
     });
     r.add_native_methods(m, false, {
         {"initWithCapacity:", "@24@0:8Q16", addr(i_initWithCapacity), false},

@@ -258,6 +258,11 @@ void install_foundation(Runtime& rt) {
     // `@[]` and `@{}` compile to loads of the global pointers ___NSArray0__ / ___NSDictionary0__: immortal empty collections in the arena
     auto made_ptr = std::make_shared<std::unordered_map<std::string, uint64_t>>();
     rt.extra_dynamic = [&rt, made_ptr](std::string_view name) -> std::optional<uint64_t> {
+        // block literals bind their isa to these symbols: the address of the matching native class is the isa value
+        if (name == "__NSConcreteStackBlock" || name == "__NSConcreteGlobalBlock" || name == "__NSConcreteMallocBlock") {
+            foundation::Class* c = rt.class_named(name == "__NSConcreteStackBlock" ? "__NSStackBlock__" : name == "__NSConcreteGlobalBlock" ? "__NSGlobalBlock__" : "__NSMallocBlock__");
+            return c ? std::optional<uint64_t>(c->addr) : std::nullopt;
+        }
         const bool arr = name == "___NSArray0__", dic = name == "___NSDictionary0__";
         if (!arr && !dic) return std::nullopt;
         auto& made = *made_ptr;
@@ -274,6 +279,7 @@ void install_foundation(Runtime& rt) {
     };
     rt.set_native_owner("libobjc");               // Apple exports NSObject from libobjc
     foundation::install_nsobject(rt);
+    libsystem::detail::install_block_classes(rt);
     rt.set_native_owner("Foundation");
     foundation::install_nsstring(rt);
     foundation::install_nsnumber(rt);

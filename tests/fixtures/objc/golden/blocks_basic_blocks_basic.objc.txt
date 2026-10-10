@@ -1,0 +1,53 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\blocks_basic\blocks_basic:
+Contents of (__DATA_CONST,__objc_classlist) section
+00000001000022d0 0x100003038 _OBJC_CLASS_$_Token
+           isa 0x100003060 _OBJC_METACLASS_$_Token
+    superclass 0x0 _OBJC_CLASS_$_NSObject
+         cache 0x0
+        vtable 0x0
+          data 0x100003168 (struct class_ro_t *)
+                    flags 0x0
+            instanceStart 8
+             instanceSize 8
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x1000018ef Token
+              baseMethods 0x100003148 (struct method_list_t *)
+		   entsize 24
+		     count 1
+		      name 0x1000017f6 dealloc
+		     types 0x1000018f5 v16@0:8
+		       imp -[Token dealloc]
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x0
+    superclass 0x0 _OBJC_METACLASS_$_NSObject
+         cache 0x0
+        vtable 0x0
+          data 0x100003100 (struct class_ro_t *)
+                    flags 0x1 RO_META
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x1000018ef Token
+              baseMethods 0x0 (struct method_list_t *)
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Contents of (__DATA,__objc_classrefs) section
+00000001000031b0 0x0 _OBJC_CLASS_$_NSAutoreleasePool
+00000001000031b8 0x100003038 _OBJC_CLASS_$_Token
+00000001000031c0 0x0 _OBJC_CLASS_$_NSNumber
+00000001000031c8 0x0 _OBJC_CLASS_$_NSArray
+00000001000031d0 0x0 _OBJC_CLASS_$_NSDictionary
+00000001000031d8 0x0 _OBJC_CLASS_$_NSMutableArray
+Contents of (__DATA,__objc_superrefs) section
+0000000100003088 0x100003038 _OBJC_CLASS_$_Token
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

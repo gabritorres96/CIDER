@@ -2,171 +2,171 @@ C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\foundation_subclass\fou
 
 Rebase table:
 segment  section            address     type
-__DATA_CONST __cfstring         0x100003028  pointer
-__DATA_CONST __cfstring         0x100003048  pointer
-__DATA_CONST __cfstring         0x100003068  pointer
-__DATA_CONST __cfstring         0x100003088  pointer
-__DATA_CONST __cfstring         0x1000030A8  pointer
-__DATA_CONST __cfstring         0x1000030C8  pointer
-__DATA_CONST __cfstring         0x1000030E8  pointer
-__DATA_CONST __cfstring         0x100003108  pointer
-__DATA_CONST __cfstring         0x100003128  pointer
-__DATA_CONST __cfstring         0x100003148  pointer
-__DATA_CONST __cfstring         0x100003168  pointer
-__DATA_CONST __cfstring         0x100003188  pointer
-__DATA_CONST __objc_protolist   0x100003198  pointer
-__DATA_CONST __objc_classlist   0x1000031A0  pointer
-__DATA_CONST __objc_classlist   0x1000031A8  pointer
-__DATA   __la_symbol_ptr    0x100004000  pointer
-__DATA   __la_symbol_ptr    0x100004008  pointer
-__DATA   __la_symbol_ptr    0x100004010  pointer
-__DATA   __la_symbol_ptr    0x100004018  pointer
-__DATA   __la_symbol_ptr    0x100004020  pointer
-__DATA   __la_symbol_ptr    0x100004028  pointer
-__DATA   __la_symbol_ptr    0x100004030  pointer
-__DATA   __objc_data        0x100004038  pointer
-__DATA   __objc_data        0x100004058  pointer
-__DATA   __objc_data        0x100004080  pointer
-__DATA   __objc_data        0x100004088  pointer
-__DATA   __objc_data        0x100004090  pointer
-__DATA   __objc_data        0x1000040A8  pointer
-__DATA   __objc_data        0x1000040B8  pointer
-__DATA   __objc_data        0x1000040D0  pointer
-__DATA   __objc_classrefs   0x1000040D8  pointer
-__DATA   __objc_classrefs   0x100004100  pointer
-__DATA   __objc_selrefs     0x100004110  pointer
-__DATA   __objc_selrefs     0x100004118  pointer
-__DATA   __objc_selrefs     0x100004120  pointer
-__DATA   __objc_selrefs     0x100004128  pointer
-__DATA   __objc_selrefs     0x100004130  pointer
-__DATA   __objc_selrefs     0x100004138  pointer
-__DATA   __objc_selrefs     0x100004140  pointer
-__DATA   __objc_selrefs     0x100004148  pointer
-__DATA   __objc_selrefs     0x100004150  pointer
-__DATA   __objc_selrefs     0x100004158  pointer
-__DATA   __objc_selrefs     0x100004160  pointer
-__DATA   __objc_selrefs     0x100004168  pointer
-__DATA   __objc_selrefs     0x100004170  pointer
-__DATA   __objc_selrefs     0x100004178  pointer
-__DATA   __objc_selrefs     0x100004180  pointer
-__DATA   __objc_selrefs     0x100004188  pointer
-__DATA   __objc_selrefs     0x100004190  pointer
-__DATA   __objc_selrefs     0x100004198  pointer
-__DATA   __objc_selrefs     0x1000041A0  pointer
-__DATA   __objc_selrefs     0x1000041A8  pointer
-__DATA   __objc_selrefs     0x1000041B0  pointer
-__DATA   __objc_selrefs     0x1000041B8  pointer
-__DATA   __objc_selrefs     0x1000041C0  pointer
-__DATA   __objc_selrefs     0x1000041C8  pointer
-__DATA   __objc_selrefs     0x1000041D0  pointer
-__DATA   __objc_selrefs     0x1000041D8  pointer
-__DATA   __objc_selrefs     0x1000041E0  pointer
-__DATA   __objc_selrefs     0x1000041E8  pointer
-__DATA   __objc_selrefs     0x1000041F0  pointer
-__DATA   __objc_selrefs     0x1000041F8  pointer
-__DATA   __objc_selrefs     0x100004200  pointer
-__DATA   __objc_selrefs     0x100004208  pointer
-__DATA   __objc_selrefs     0x100004210  pointer
-__DATA   __objc_superrefs   0x100004218  pointer
-__DATA   __objc_superrefs   0x100004220  pointer
-__DATA   __objc_const       0x100004230  pointer
-__DATA   __objc_const       0x100004238  pointer
-__DATA   __objc_const       0x100004240  pointer
-__DATA   __objc_const       0x100004250  pointer
-__DATA   __objc_const       0x100004258  pointer
-__DATA   __objc_const       0x100004268  pointer
-__DATA   __objc_const       0x100004278  pointer
-__DATA   __objc_const       0x1000042A0  pointer
-__DATA   __objc_const       0x1000042A8  pointer
-__DATA   __objc_const       0x1000042B0  pointer
-__DATA   __objc_const       0x1000042D8  pointer
-__DATA   __objc_const       0x1000042E0  pointer
-__DATA   __objc_const       0x1000042E8  pointer
-__DATA   __objc_const       0x1000042F0  pointer
-__DATA   __objc_const       0x1000042F8  pointer
-__DATA   __objc_const       0x100004300  pointer
-__DATA   __objc_const       0x100004308  pointer
-__DATA   __objc_const       0x100004310  pointer
-__DATA   __objc_const       0x100004318  pointer
-__DATA   __objc_const       0x100004320  pointer
-__DATA   __objc_const       0x100004328  pointer
-__DATA   __objc_const       0x100004330  pointer
-__DATA   __objc_const       0x100004338  pointer
-__DATA   __objc_const       0x100004340  pointer
-__DATA   __objc_const       0x100004348  pointer
-__DATA   __objc_const       0x100004350  pointer
-__DATA   __objc_const       0x100004358  pointer
-__DATA   __objc_const       0x100004360  pointer
-__DATA   __objc_const       0x100004368  pointer
-__DATA   __objc_const       0x100004370  pointer
-__DATA   __objc_const       0x100004378  pointer
-__DATA   __objc_const       0x100004380  pointer
-__DATA   __objc_const       0x100004388  pointer
-__DATA   __objc_const       0x100004390  pointer
-__DATA   __objc_const       0x100004398  pointer
-__DATA   __objc_const       0x1000043A0  pointer
-__DATA   __objc_const       0x1000043A8  pointer
-__DATA   __objc_const       0x1000043B8  pointer
-__DATA   __objc_const       0x1000043C0  pointer
-__DATA   __objc_const       0x1000043C8  pointer
-__DATA   __objc_const       0x1000043D8  pointer
-__DATA   __objc_const       0x1000043E0  pointer
-__DATA   __objc_const       0x1000043E8  pointer
-__DATA   __objc_const       0x1000043F8  pointer
-__DATA   __objc_const       0x100004400  pointer
-__DATA   __objc_const       0x100004408  pointer
-__DATA   __objc_const       0x100004430  pointer
-__DATA   __objc_const       0x100004438  pointer
-__DATA   __objc_const       0x100004440  pointer
-__DATA   __objc_const       0x100004448  pointer
-__DATA   __objc_const       0x100004478  pointer
-__DATA   __objc_const       0x1000044B0  pointer
-__DATA   __objc_const       0x1000044B8  pointer
-__DATA   __objc_const       0x1000044C0  pointer
-__DATA   __objc_const       0x1000044E0  pointer
-__DATA   __objc_const       0x1000044E8  pointer
-__DATA   __data             0x100004518  pointer
-__DATA   __data             0x100004528  pointer
-__DATA   __data             0x100004558  pointer
-__DATA   __objc_protorefs   0x100004590  pointer
+__DATA_CONST __cfstring         0x100002028  pointer
+__DATA_CONST __cfstring         0x100002048  pointer
+__DATA_CONST __cfstring         0x100002068  pointer
+__DATA_CONST __cfstring         0x100002088  pointer
+__DATA_CONST __cfstring         0x1000020A8  pointer
+__DATA_CONST __cfstring         0x1000020C8  pointer
+__DATA_CONST __cfstring         0x1000020E8  pointer
+__DATA_CONST __cfstring         0x100002108  pointer
+__DATA_CONST __cfstring         0x100002128  pointer
+__DATA_CONST __cfstring         0x100002148  pointer
+__DATA_CONST __cfstring         0x100002168  pointer
+__DATA_CONST __cfstring         0x100002188  pointer
+__DATA_CONST __objc_protolist   0x100002198  pointer
+__DATA_CONST __objc_classlist   0x1000021A0  pointer
+__DATA_CONST __objc_classlist   0x1000021A8  pointer
+__DATA   __la_symbol_ptr    0x100003000  pointer
+__DATA   __la_symbol_ptr    0x100003008  pointer
+__DATA   __la_symbol_ptr    0x100003010  pointer
+__DATA   __la_symbol_ptr    0x100003018  pointer
+__DATA   __la_symbol_ptr    0x100003020  pointer
+__DATA   __la_symbol_ptr    0x100003028  pointer
+__DATA   __la_symbol_ptr    0x100003030  pointer
+__DATA   __objc_data        0x100003038  pointer
+__DATA   __objc_data        0x100003058  pointer
+__DATA   __objc_data        0x100003080  pointer
+__DATA   __objc_data        0x100003088  pointer
+__DATA   __objc_data        0x100003090  pointer
+__DATA   __objc_data        0x1000030A8  pointer
+__DATA   __objc_data        0x1000030B8  pointer
+__DATA   __objc_data        0x1000030D0  pointer
+__DATA   __objc_classrefs   0x1000030D8  pointer
+__DATA   __objc_classrefs   0x100003100  pointer
+__DATA   __objc_selrefs     0x100003110  pointer
+__DATA   __objc_selrefs     0x100003118  pointer
+__DATA   __objc_selrefs     0x100003120  pointer
+__DATA   __objc_selrefs     0x100003128  pointer
+__DATA   __objc_selrefs     0x100003130  pointer
+__DATA   __objc_selrefs     0x100003138  pointer
+__DATA   __objc_selrefs     0x100003140  pointer
+__DATA   __objc_selrefs     0x100003148  pointer
+__DATA   __objc_selrefs     0x100003150  pointer
+__DATA   __objc_selrefs     0x100003158  pointer
+__DATA   __objc_selrefs     0x100003160  pointer
+__DATA   __objc_selrefs     0x100003168  pointer
+__DATA   __objc_selrefs     0x100003170  pointer
+__DATA   __objc_selrefs     0x100003178  pointer
+__DATA   __objc_selrefs     0x100003180  pointer
+__DATA   __objc_selrefs     0x100003188  pointer
+__DATA   __objc_selrefs     0x100003190  pointer
+__DATA   __objc_selrefs     0x100003198  pointer
+__DATA   __objc_selrefs     0x1000031A0  pointer
+__DATA   __objc_selrefs     0x1000031A8  pointer
+__DATA   __objc_selrefs     0x1000031B0  pointer
+__DATA   __objc_selrefs     0x1000031B8  pointer
+__DATA   __objc_selrefs     0x1000031C0  pointer
+__DATA   __objc_selrefs     0x1000031C8  pointer
+__DATA   __objc_selrefs     0x1000031D0  pointer
+__DATA   __objc_selrefs     0x1000031D8  pointer
+__DATA   __objc_selrefs     0x1000031E0  pointer
+__DATA   __objc_selrefs     0x1000031E8  pointer
+__DATA   __objc_selrefs     0x1000031F0  pointer
+__DATA   __objc_selrefs     0x1000031F8  pointer
+__DATA   __objc_selrefs     0x100003200  pointer
+__DATA   __objc_selrefs     0x100003208  pointer
+__DATA   __objc_selrefs     0x100003210  pointer
+__DATA   __objc_superrefs   0x100003218  pointer
+__DATA   __objc_superrefs   0x100003220  pointer
+__DATA   __objc_const       0x100003230  pointer
+__DATA   __objc_const       0x100003238  pointer
+__DATA   __objc_const       0x100003240  pointer
+__DATA   __objc_const       0x100003250  pointer
+__DATA   __objc_const       0x100003258  pointer
+__DATA   __objc_const       0x100003268  pointer
+__DATA   __objc_const       0x100003278  pointer
+__DATA   __objc_const       0x1000032A0  pointer
+__DATA   __objc_const       0x1000032A8  pointer
+__DATA   __objc_const       0x1000032B0  pointer
+__DATA   __objc_const       0x1000032D8  pointer
+__DATA   __objc_const       0x1000032E0  pointer
+__DATA   __objc_const       0x1000032E8  pointer
+__DATA   __objc_const       0x1000032F0  pointer
+__DATA   __objc_const       0x1000032F8  pointer
+__DATA   __objc_const       0x100003300  pointer
+__DATA   __objc_const       0x100003308  pointer
+__DATA   __objc_const       0x100003310  pointer
+__DATA   __objc_const       0x100003318  pointer
+__DATA   __objc_const       0x100003320  pointer
+__DATA   __objc_const       0x100003328  pointer
+__DATA   __objc_const       0x100003330  pointer
+__DATA   __objc_const       0x100003338  pointer
+__DATA   __objc_const       0x100003340  pointer
+__DATA   __objc_const       0x100003348  pointer
+__DATA   __objc_const       0x100003350  pointer
+__DATA   __objc_const       0x100003358  pointer
+__DATA   __objc_const       0x100003360  pointer
+__DATA   __objc_const       0x100003368  pointer
+__DATA   __objc_const       0x100003370  pointer
+__DATA   __objc_const       0x100003378  pointer
+__DATA   __objc_const       0x100003380  pointer
+__DATA   __objc_const       0x100003388  pointer
+__DATA   __objc_const       0x100003390  pointer
+__DATA   __objc_const       0x100003398  pointer
+__DATA   __objc_const       0x1000033A0  pointer
+__DATA   __objc_const       0x1000033A8  pointer
+__DATA   __objc_const       0x1000033B8  pointer
+__DATA   __objc_const       0x1000033C0  pointer
+__DATA   __objc_const       0x1000033C8  pointer
+__DATA   __objc_const       0x1000033D8  pointer
+__DATA   __objc_const       0x1000033E0  pointer
+__DATA   __objc_const       0x1000033E8  pointer
+__DATA   __objc_const       0x1000033F8  pointer
+__DATA   __objc_const       0x100003400  pointer
+__DATA   __objc_const       0x100003408  pointer
+__DATA   __objc_const       0x100003430  pointer
+__DATA   __objc_const       0x100003438  pointer
+__DATA   __objc_const       0x100003440  pointer
+__DATA   __objc_const       0x100003448  pointer
+__DATA   __objc_const       0x100003478  pointer
+__DATA   __objc_const       0x1000034B0  pointer
+__DATA   __objc_const       0x1000034B8  pointer
+__DATA   __objc_const       0x1000034C0  pointer
+__DATA   __objc_const       0x1000034E0  pointer
+__DATA   __objc_const       0x1000034E8  pointer
+__DATA   __data             0x100003518  pointer
+__DATA   __data             0x100003528  pointer
+__DATA   __data             0x100003558  pointer
+__DATA   __objc_protorefs   0x100003590  pointer
 
 Bind table:
 segment  section            address    type       addend dylib            symbol
-__DATA_CONST __got              0x100003000 pointer         0 libobjc          _objc_msgSend
-__DATA_CONST __got              0x100003008 pointer         0 libobjc          _objc_release
-__DATA_CONST __got              0x100003010 pointer         0 libSystem        dyld_stub_binder
-__DATA_CONST __cfstring         0x100003018 pointer         0 Foundation       ___CFConstantStringClassReference
-__DATA_CONST __cfstring         0x100003038 pointer         0 Foundation       ___CFConstantStringClassReference
-__DATA_CONST __cfstring         0x100003058 pointer         0 Foundation       ___CFConstantStringClassReference
-__DATA_CONST __cfstring         0x100003078 pointer         0 Foundation       ___CFConstantStringClassReference
-__DATA_CONST __cfstring         0x100003098 pointer         0 Foundation       ___CFConstantStringClassReference
-__DATA_CONST __cfstring         0x1000030B8 pointer         0 Foundation       ___CFConstantStringClassReference
-__DATA_CONST __cfstring         0x1000030D8 pointer         0 Foundation       ___CFConstantStringClassReference
-__DATA_CONST __cfstring         0x1000030F8 pointer         0 Foundation       ___CFConstantStringClassReference
-__DATA_CONST __cfstring         0x100003118 pointer         0 Foundation       ___CFConstantStringClassReference
-__DATA_CONST __cfstring         0x100003138 pointer         0 Foundation       ___CFConstantStringClassReference
-__DATA_CONST __cfstring         0x100003158 pointer         0 Foundation       ___CFConstantStringClassReference
-__DATA_CONST __cfstring         0x100003178 pointer         0 Foundation       ___CFConstantStringClassReference
-__DATA   __objc_data        0x100004040 pointer         0 libobjc          _OBJC_CLASS_$_NSObject
-__DATA   __objc_classrefs   0x1000040E8 pointer         0 libobjc          _OBJC_CLASS_$_NSObject
-__DATA   __objc_data        0x100004048 pointer         0 libobjc          __objc_empty_cache
-__DATA   __objc_data        0x100004070 pointer         0 libobjc          __objc_empty_cache
-__DATA   __objc_data        0x100004098 pointer         0 libobjc          __objc_empty_cache
-__DATA   __objc_data        0x1000040C0 pointer         0 libobjc          __objc_empty_cache
-__DATA   __objc_data        0x100004060 pointer         0 libobjc          _OBJC_METACLASS_$_NSObject
-__DATA   __objc_data        0x100004068 pointer         0 libobjc          _OBJC_METACLASS_$_NSObject
-__DATA   __objc_data        0x1000040B0 pointer         0 libobjc          _OBJC_METACLASS_$_NSObject
-__DATA   __objc_classrefs   0x1000040E0 pointer         0 Foundation       _OBJC_CLASS_$_NSString
-__DATA   __objc_classrefs   0x1000040F0 pointer         0 Foundation       _OBJC_CLASS_$_NSMutableArray
-__DATA   __objc_classrefs   0x1000040F8 pointer         0 Foundation       _OBJC_CLASS_$_NSMutableDictionary
-__DATA   __objc_classrefs   0x100004108 pointer         0 Foundation       _OBJC_CLASS_$_NSAutoreleasePool
+__DATA_CONST __got              0x100002000 pointer         0 libobjc          _objc_msgSend
+__DATA_CONST __got              0x100002008 pointer         0 libobjc          _objc_release
+__DATA_CONST __got              0x100002010 pointer         0 libSystem        dyld_stub_binder
+__DATA_CONST __cfstring         0x100002018 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002038 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002058 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002078 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002098 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000020B8 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000020D8 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000020F8 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002118 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002138 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002158 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002178 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA   __objc_data        0x100003040 pointer         0 libobjc          _OBJC_CLASS_$_NSObject
+__DATA   __objc_classrefs   0x1000030E8 pointer         0 libobjc          _OBJC_CLASS_$_NSObject
+__DATA   __objc_data        0x100003048 pointer         0 libobjc          __objc_empty_cache
+__DATA   __objc_data        0x100003070 pointer         0 libobjc          __objc_empty_cache
+__DATA   __objc_data        0x100003098 pointer         0 libobjc          __objc_empty_cache
+__DATA   __objc_data        0x1000030C0 pointer         0 libobjc          __objc_empty_cache
+__DATA   __objc_data        0x100003060 pointer         0 libobjc          _OBJC_METACLASS_$_NSObject
+__DATA   __objc_data        0x100003068 pointer         0 libobjc          _OBJC_METACLASS_$_NSObject
+__DATA   __objc_data        0x1000030B0 pointer         0 libobjc          _OBJC_METACLASS_$_NSObject
+__DATA   __objc_classrefs   0x1000030E0 pointer         0 Foundation       _OBJC_CLASS_$_NSString
+__DATA   __objc_classrefs   0x1000030F0 pointer         0 Foundation       _OBJC_CLASS_$_NSMutableArray
+__DATA   __objc_classrefs   0x1000030F8 pointer         0 Foundation       _OBJC_CLASS_$_NSMutableDictionary
+__DATA   __objc_classrefs   0x100003108 pointer         0 Foundation       _OBJC_CLASS_$_NSAutoreleasePool
 
 Lazy bind table:
 segment  section            address     dylib            symbol
-__DATA   __la_symbol_ptr    0x100004000 libobjc          _objc_autorelease
-__DATA   __la_symbol_ptr    0x100004008 libobjc          _objc_alloc
-__DATA   __la_symbol_ptr    0x100004010 libobjc          _objc_msgSendSuper2
-__DATA   __la_symbol_ptr    0x100004018 Foundation       _NSLog
-__DATA   __la_symbol_ptr    0x100004020 libobjc          _objc_alloc_init
-__DATA   __la_symbol_ptr    0x100004028 libobjc          _objc_autoreleasePoolPop
-__DATA   __la_symbol_ptr    0x100004030 libobjc          _objc_autoreleasePoolPush
+__DATA   __la_symbol_ptr    0x100003000 libobjc          _objc_autorelease
+__DATA   __la_symbol_ptr    0x100003008 libobjc          _objc_alloc
+__DATA   __la_symbol_ptr    0x100003010 libobjc          _objc_msgSendSuper2
+__DATA   __la_symbol_ptr    0x100003018 Foundation       _NSLog
+__DATA   __la_symbol_ptr    0x100003020 libobjc          _objc_alloc_init
+__DATA   __la_symbol_ptr    0x100003028 libobjc          _objc_autoreleasePoolPop
+__DATA   __la_symbol_ptr    0x100003030 libobjc          _objc_autoreleasePoolPush

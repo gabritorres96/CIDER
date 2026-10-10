@@ -209,6 +209,22 @@ void i_countByEnumerating(GuestRegs* r) {
     r->ret_rax = n;
 }
 
+// -enumerateKeysAndObjectsUsingBlock: void (^)(id key, id obj, BOOL *stop)
+Addr i_enumerateKeysAndObjects(Addr self, Addr, Addr block) {
+    auto* p = dic(self);
+    if (!p) return 0;
+    if (!block || !rt().readable(block, 24)) { raise("NSInvalidArgumentException", "enumerateKeysAndObjectsUsingBlock: the block is nil or unreadable"); return 0; }
+    const uint64_t fn = *reinterpret_cast<const uint64_t*>(block + 16);
+    if (!libsystem::is_valid_callback(fn)) { raise("NSInvalidArgumentException", "block invoke function is not executable guest code"); return 0; }
+    const std::vector<Entry> snapshot = p->entries;
+    for (const Entry& e : snapshot) { rt().retain(e.key); rt().retain(e.value); }
+    uint8_t stop = 0;
+    for (size_t i = 0; i < snapshot.size() && !stop && !rt().failed(); ++i)
+        rt().call_imp(fn, {block, snapshot[i].key, snapshot[i].value, reinterpret_cast<uint64_t>(&stop)});
+    for (const Entry& e : snapshot) { rt().release(e.key); rt().release(e.value); }
+    return 0;
+}
+
 Addr clone(Addr self, bool want_mutable) {
     auto* src = dic(self);
     if (!src) return 0;
@@ -281,6 +297,7 @@ void install_nsdictionary(Runtime& r) {
         {"countByEnumeratingWithState:objects:count:", "Q40@0:8^{_NSFastEnumerationState=Q^@^Q[5Q]}16^@24Q32", addr(i_countByEnumerating), true},
         {"copyWithZone:", "@24@0:8^{_NSZone=}16", addr(i_copyWithZone), false},
         {"mutableCopyWithZone:", "@24@0:8^{_NSZone=}16", addr(i_mutableCopyWithZone), false},
+        {"enumerateKeysAndObjectsUsingBlock:", "v24@0:8@?16", addr(i_enumerateKeysAndObjects), false},
     });
     r.add_native_methods(m, false, {
         {"setObject:forKey:", "v32@0:8@16@24", addr(i_setObjectForKey), false},

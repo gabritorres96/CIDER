@@ -35,8 +35,8 @@ for %%n in (foundation_hello foundation_string foundation_collections) do (
   mkdir bin\%%n
   %LDF% -o bin\%%n\%%n obj\%%n.o || exit /b 1
 )
-for %%n in (foundation_subclass foundation_error) do (
-  clang %COMMON% src\%%n.m -o obj\%%n.o || exit /b 1
+for %%n in (foundation_subclass foundation_error blocks_basic blocks_error) do (
+  clang %COMMON% -fno-objc-exceptions -fno-exceptions src\%%n.m -o obj\%%n.o || exit /b 1
   mkdir bin\%%n
   %LDF% -o bin\%%n\%%n obj\%%n.o || exit /b 1
 )

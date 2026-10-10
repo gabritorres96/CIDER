@@ -178,6 +178,7 @@ const std::vector<HostSymbol>& implemented_symbols() {
     detail::add_misc_symbols(t);
     detail::add_tls_symbols(t);
     detail::add_callback_symbols(t);
+    detail::add_block_symbols(t);
     detail::add_stream_symbols(t);
     detail::add_pthread_symbols(t);
     objc::add_objc_symbols(t);

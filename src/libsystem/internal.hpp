@@ -5,6 +5,7 @@
 
 #include "cider/guest_threads.hpp"
 #include "cider/libsystem.hpp"
+#include "cider/objc.hpp"
 
 namespace cider::libsystem::detail {
 
@@ -15,6 +16,13 @@ void add_stream_symbols(std::vector<HostSymbol>& out);   // stdio_streams.cpp: f
 void add_pthread_symbols(std::vector<HostSymbol>& out);  // pthread_bridge.cpp
 void add_callback_symbols(std::vector<HostSymbol>& out); // callbacks.cpp: qsort, bsearch, atexit
 void add_tls_symbols(std::vector<HostSymbol>& out);     // tls.cpp   : __tlv_bootstrap / tlv_get_addr
+void add_block_symbols(std::vector<HostSymbol>& out);   // blocks.cpp: _Block_copy, _Block_release, _Block_object_assign/dispose
+// Blocks are Objective-C objects (isa = one of the __NS*Block__ classes) whose counts live in the block header (blocks.cpp).
+bool block_is_object(uint64_t obj);
+uint64_t block_retain(uint64_t obj);
+void block_release(uint64_t obj);
+void install_block_classes(objc::Runtime& rt);   // declares NSBlock and the three concrete block classes
+
 
 // Darwin errno values (<sys/errno.h>). They differ from Windows' and from Linux' (EAGAIN is 35 here, 11 on Linux).
 enum DarwinErrno : int {

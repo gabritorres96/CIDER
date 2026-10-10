@@ -1,7 +1,7 @@
 C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\foundation_subclass\foundation_subclass:
 Mach header
       magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
-MH_MAGIC_64  X86_64        ALL LIB64     EXECUTE    17       2624   NOUNDEFS DYLDLINK TWOLEVEL PIE
+MH_MAGIC_64  X86_64        ALL LIB64     EXECUTE    17       2464   NOUNDEFS DYLDLINK TWOLEVEL PIE
 Load command 0
       cmd LC_SEGMENT_64
   cmdsize 72
@@ -16,22 +16,22 @@ Load command 0
     flags (none)
 Load command 1
       cmd LC_SEGMENT_64
-  cmdsize 632
+  cmdsize 472
   segname __TEXT
    vmaddr 0x0000000100000000
-   vmsize 0x0000000000003000
+   vmsize 0x0000000000002000
   fileoff 0
- filesize 12288
+ filesize 8192
   maxprot r-x
  initprot r-x
-   nsects 7
+   nsects 5
     flags (none)
 Section
   sectname __text
    segname __TEXT
-      addr 0x0000000100000a80
+      addr 0x00000001000009e0
       size 0x0000000000000a52
-    offset 2688
+    offset 2528
      align 2^4 (16)
     reloff 0
     nreloc 0
@@ -42,9 +42,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __stubs
    segname __TEXT
-      addr 0x00000001000014d4
+      addr 0x0000000100001434
       size 0x000000000000002a
-    offset 5332
+    offset 5172
      align 2^2 (4)
     reloff 0
     nreloc 0
@@ -55,9 +55,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __stub_helper
    segname __TEXT
-      addr 0x0000000100001500
+      addr 0x0000000100001460
       size 0x0000000000000056
-    offset 5376
+    offset 5216
      align 2^2 (4)
     reloff 0
     nreloc 0
@@ -68,9 +68,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __objc_methname
    segname __TEXT
-      addr 0x0000000100001556
+      addr 0x00000001000014b6
       size 0x00000000000001aa
-    offset 5462
+    offset 5302
      align 2^0 (1)
     reloff 0
     nreloc 0
@@ -81,9 +81,9 @@ attributes (none)
 Section
   sectname __cstring
    segname __TEXT
-      addr 0x0000000100001700
+      addr 0x0000000100001660
       size 0x00000000000004ca
-    offset 5888
+    offset 5728
      align 2^0 (1)
     reloff 0
     nreloc 0
@@ -91,39 +91,13 @@ Section
 attributes (none)
  reserved1 0
  reserved2 0
-Section
-  sectname __unwind_info
-   segname __TEXT
-      addr 0x0000000100001bcc
-      size 0x000000000000104c
-    offset 7116
-     align 2^2 (4)
-    reloff 0
-    nreloc 0
-      type S_REGULAR
-attributes (none)
- reserved1 0
- reserved2 0
-Section
-  sectname __eh_frame
-   segname __TEXT
-      addr 0x0000000100002c18
-      size 0x0000000000000018
-    offset 11288
-     align 2^3 (8)
-    reloff 0
-    nreloc 0
-      type S_COALESCED
-attributes NO_TOC STRIP_STATIC_SYMS
- reserved1 0
- reserved2 0
 Load command 2
       cmd LC_SEGMENT_64
   cmdsize 472
   segname __DATA_CONST
-   vmaddr 0x0000000100003000
+   vmaddr 0x0000000100002000
    vmsize 0x0000000000001000
-  fileoff 12288
+  fileoff 8192
  filesize 4096
   maxprot rw-
  initprot rw-
@@ -132,9 +106,9 @@ Load command 2
 Section
   sectname __got
    segname __DATA_CONST
-      addr 0x0000000100003000
+      addr 0x0000000100002000
       size 0x0000000000000018
-    offset 12288
+    offset 8192
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -145,9 +119,9 @@ attributes (none)
 Section
   sectname __cfstring
    segname __DATA_CONST
-      addr 0x0000000100003018
+      addr 0x0000000100002018
       size 0x0000000000000180
-    offset 12312
+    offset 8216
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -158,9 +132,9 @@ attributes (none)
 Section
   sectname __objc_protolist
    segname __DATA_CONST
-      addr 0x0000000100003198
+      addr 0x0000000100002198
       size 0x0000000000000008
-    offset 12696
+    offset 8600
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -171,9 +145,9 @@ attributes NO_DEAD_STRIP
 Section
   sectname __objc_classlist
    segname __DATA_CONST
-      addr 0x00000001000031a0
+      addr 0x00000001000021a0
       size 0x0000000000000010
-    offset 12704
+    offset 8608
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -184,9 +158,9 @@ attributes NO_DEAD_STRIP
 Section
   sectname __objc_imageinfo
    segname __DATA_CONST
-      addr 0x00000001000031b0
+      addr 0x00000001000021b0
       size 0x0000000000000008
-    offset 12720
+    offset 8624
      align 2^0 (1)
     reloff 0
     nreloc 0
@@ -198,9 +172,9 @@ Load command 3
       cmd LC_SEGMENT_64
   cmdsize 872
   segname __DATA
-   vmaddr 0x0000000100004000
+   vmaddr 0x0000000100003000
    vmsize 0x0000000000001000
-  fileoff 16384
+  fileoff 12288
  filesize 4096
   maxprot rw-
  initprot rw-
@@ -209,9 +183,9 @@ Load command 3
 Section
   sectname __la_symbol_ptr
    segname __DATA
-      addr 0x0000000100004000
+      addr 0x0000000100003000
       size 0x0000000000000038
-    offset 16384
+    offset 12288
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -222,9 +196,9 @@ attributes (none)
 Section
   sectname __objc_data
    segname __DATA
-      addr 0x0000000100004038
+      addr 0x0000000100003038
       size 0x00000000000000a0
-    offset 16440
+    offset 12344
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -235,9 +209,9 @@ attributes (none)
 Section
   sectname __objc_classrefs
    segname __DATA
-      addr 0x00000001000040d8
+      addr 0x00000001000030d8
       size 0x0000000000000038
-    offset 16600
+    offset 12504
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -248,9 +222,9 @@ attributes NO_DEAD_STRIP
 Section
   sectname __objc_selrefs
    segname __DATA
-      addr 0x0000000100004110
+      addr 0x0000000100003110
       size 0x0000000000000108
-    offset 16656
+    offset 12560
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -261,9 +235,9 @@ attributes NO_DEAD_STRIP
 Section
   sectname __objc_superrefs
    segname __DATA
-      addr 0x0000000100004218
+      addr 0x0000000100003218
       size 0x0000000000000010
-    offset 16920
+    offset 12824
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -274,9 +248,9 @@ attributes NO_DEAD_STRIP
 Section
   sectname __objc_const
    segname __DATA
-      addr 0x0000000100004228
+      addr 0x0000000100003228
       size 0x00000000000002e8
-    offset 16936
+    offset 12840
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -287,9 +261,9 @@ attributes (none)
 Section
   sectname __data
    segname __DATA
-      addr 0x0000000100004510
+      addr 0x0000000100003510
       size 0x0000000000000068
-    offset 17680
+    offset 13584
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -300,9 +274,9 @@ attributes (none)
 Section
   sectname __objc_ivar
    segname __DATA
-      addr 0x0000000100004578
+      addr 0x0000000100003578
       size 0x0000000000000018
-    offset 17784
+    offset 13688
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -313,9 +287,9 @@ attributes (none)
 Section
   sectname __objc_protorefs
    segname __DATA
-      addr 0x0000000100004590
+      addr 0x0000000100003590
       size 0x0000000000000008
-    offset 17808
+    offset 13712
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -326,7 +300,7 @@ attributes NO_DEAD_STRIP
 Section
   sectname __bss
    segname __DATA
-      addr 0x0000000100004598
+      addr 0x0000000100003598
       size 0x000000000000000c
     offset 0
      align 2^2 (4)
@@ -340,10 +314,10 @@ Load command 4
       cmd LC_SEGMENT_64
   cmdsize 72
   segname __LINKEDIT
-   vmaddr 0x0000000100005000
-   vmsize 0x0000000000001348
-  fileoff 20480
- filesize 4936
+   vmaddr 0x0000000100004000
+   vmsize 0x0000000000001340
+  fileoff 16384
+ filesize 4928
   maxprot r--
  initprot r--
    nsects 0
@@ -351,22 +325,22 @@ Load command 4
 Load command 5
             cmd LC_DYLD_INFO_ONLY
         cmdsize 48
-     rebase_off 20480
+     rebase_off 16384
     rebase_size 64
-       bind_off 20544
+       bind_off 16448
       bind_size 392
   weak_bind_off 0
  weak_bind_size 0
-  lazy_bind_off 20936
+  lazy_bind_off 16840
  lazy_bind_size 168
-     export_off 21104
-    export_size 192
+     export_off 17008
+    export_size 184
 Load command 6
      cmd LC_SYMTAB
  cmdsize 24
-  symoff 21312
+  symoff 17208
    nsyms 96
-  stroff 22920
+  stroff 18816
  strsize 2496
 Load command 7
             cmd LC_DYSYMTAB
@@ -383,7 +357,7 @@ Load command 7
         nmodtab 0
    extrefsymoff 0
     nextrefsyms 0
- indirectsymoff 22848
+ indirectsymoff 18744
   nindirectsyms 17
       extreloff 0
         nextrel 0
@@ -396,7 +370,7 @@ Load command 8
 Load command 9
      cmd LC_UUID
  cmdsize 24
-    uuid 4C4C44D9-5555-3144-A156-9FE875836FE9
+    uuid 4C4C44AB-5555-3144-A133-82E6F841956D
 Load command 10
        cmd LC_BUILD_VERSION
    cmdsize 32
@@ -409,7 +383,7 @@ Load command 10
 Load command 11
        cmd LC_MAIN
    cmdsize 24
-  entryoff 3360
+  entryoff 3200
  stacksize 0
 Load command 12
           cmd LC_LOAD_DYLIB
@@ -435,10 +409,10 @@ compatibility version 300.0.0
 Load command 15
       cmd LC_FUNCTION_STARTS
   cmdsize 16
-  dataoff 21296
+  dataoff 17192
  datasize 16
 Load command 16
       cmd LC_DATA_IN_CODE
   cmdsize 16
-  dataoff 21312
+  dataoff 17208
  datasize 0

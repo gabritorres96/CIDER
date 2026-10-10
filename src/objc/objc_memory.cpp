@@ -39,6 +39,7 @@ bool Runtime::is_static_object(Addr obj) const {
 
 Addr Runtime::retain(Addr obj) {
     if (!obj) return 0;
+    if (libsystem::detail::block_is_object(obj)) return libsystem::detail::block_retain(obj);      // blocks are objects with their own counts
     auto it = live_.find(obj);
     if (it != live_.end()) { ++it->second.rc; return obj; }
     if (is_static_object(obj)) return obj;                          // constant strings, class objects: immortal
@@ -60,6 +61,7 @@ void Runtime::destruct_instance(Addr obj) {
 
 void Runtime::release(Addr obj) {
     if (!obj) return;
+    if (libsystem::detail::block_is_object(obj)) { libsystem::detail::block_release(obj); return; }
     auto it = live_.find(obj);
     if (it == live_.end()) {
         if (is_static_object(obj)) return;
@@ -90,7 +92,7 @@ Addr Runtime::autorelease(Addr obj) {
         log::warn(log::Category::Objc, "object {:#x} autoreleased with no autorelease pool in place: leaking it", obj);
         return obj;
     }
-    if (!live_.count(obj) && !is_static_object(obj)) {
+    if (!live_.count(obj) && !is_static_object(obj) && !libsystem::detail::block_is_object(obj)) {
         libsystem::detail::trap(std::format("objc: autorelease of {:#x}, which is not a live object", obj));
         return obj;
     }

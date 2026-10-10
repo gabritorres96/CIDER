@@ -132,6 +132,8 @@ __attribute__((objc_root_class))
 - (BOOL)isEqualToArray:(NSArray *)other;
 - (NSString *)componentsJoinedByString:(NSString *)separator;
 - (NSArray *)arrayByAddingObject:(id)object;
+- (void)enumerateObjectsUsingBlock:(void (^)(id obj, NSUInteger idx, BOOL *stop))block;
+- (NSUInteger)indexOfObjectPassingTest:(BOOL (^)(id obj, NSUInteger idx, BOOL *stop))predicate;
 @end
 
 @interface NSMutableArray : NSArray
@@ -159,6 +161,7 @@ __attribute__((objc_root_class))
 - (NSArray *)allKeys;
 - (NSArray *)allValues;
 - (BOOL)isEqualToDictionary:(NSDictionary *)other;
+- (void)enumerateKeysAndObjectsUsingBlock:(void (^)(id key, id obj, BOOL *stop))block;
 @end
 
 @interface NSMutableDictionary : NSDictionary
