@@ -19,7 +19,7 @@ if(MSVC AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   target_compile_definitions(cider_libfuzzer PRIVATE _CRT_SECURE_NO_WARNINGS NOMINMAX)
 endif()
 
-foreach(name fuzz_macho fuzz_plist fuzz_udif fuzz_loader)
+foreach(name fuzz_macho fuzz_plist fuzz_udif fuzz_loader fuzz_chained fuzz_linker)
   add_executable(${name} ${name}.cpp)
   target_link_libraries(${name} PRIVATE cider_macho cider_plist cider_dmg)
   if(CIDER_HAS_RUNTIME)

@@ -9,7 +9,7 @@ No third-party test framework: `tests/unit/test_framework.hpp` is a ~70-line har
 substring filter: `build/bin/Debug/test_dmg.exe extract_`. The integration suite needs
 `CIDER_EXE` (set automatically by CTest).
 
-## Suites (294 tests with all optional inputs; 291 run + 3 skipped without them)
+## Suites (0.3: 403 tests; 401 run + 2 skipped in the verified Release run; the 0.2 list below plus the 0.3 suites)
 
 | Executable | Tests | Covers |
 | --- | --- | --- |
@@ -30,6 +30,11 @@ substring filter: `build/bin/Debug/test_dmg.exe extract_`. The integration suite
 | `test_symbols` | 13 | rebase/bind/lazy-bind opcode decoding (hand-made and malformed streams), decoded fixups vs `llvm-objdump --rebase --bind --lazy-bind` for 17 binaries, resolver with a fake and the real provider |
 | `test_runtime` | 11 | every libSystem function called from guest code through the thunks, registry honesty, guest heap lifetime |
 | `test_execution` | 21 | **real execution** of the Mach-O fixtures A–H in-process with independently computed expectations, binary patching (authenticity), relocation/slide, repeated runs without leaks |
+| `test_linker` | 37 | export trie (vs llvm-objdump, malformed, limits), dependency search, 14 dylib scenarios (one/two/transitive/init/initoff/glob/rpath/loader_path/reexport/weak/cycle/missing/badver/initexit), initializer order, unload, tampered files, Windows-path install names, 600 mutations |
+| `test_abi_raw` | 14 | raw thunk with hand-assembled code: 8 integers, mixed int/double, 10 doubles, stack order, AL, rax:rdx / xmm0:xmm1 returns, alignment, callee-saved registers, red zone, exit; `RegsReader`, `VaListReader` |
+| `test_darwin_runtime` | 27 | printf formatter (fake readers, host-rendering cross-check, refusals, limits), byte-exact stdout/stderr of Mach-O fixtures, files (read/write/escape/junction/leaks), time, ids, errno |
+| `test_chained_fixups` | 14 | decoding vs `llvm-objdump --dyld-info`, execution, PTR_64_OFFSET variant, high8, relocation by slide, malformed/unsupported matrix, 1500 mutations |
+| `test_tls` | 11 | TLV execution (exe + dylib), host TEB/gs/TlsAlloc/thread_local untouched, template layout vs llvm-objdump, register preservation, refusals |
 | `test_execution_errors` | 18 | load failures (nothing runs), result protocol, worker process: crash, illegal instruction, stack overflow, timeout, memory limit, separate pid, captured output |
 
 Skipped (printed as `[SKIP]`, exit code 0) when the input is absent: 7-Zip tests without 7-Zip, the symlink
@@ -101,3 +106,14 @@ released, **never executed**). Results: [PROGRESS.md](PROGRESS.md), [REAL-WORLD.
 * MSVC's own `/fsanitize=address` (needs the VS component; clang-cl ASan was used instead).
 * GitHub Actions has never run this workflow.
 * Long fuzzing campaigns (sessions were minutes, not days).
+
+## 0.3 fixtures
+
+`tests/fixtures/exec` gained 14 programs (`printf_int printf_double printf_str printf_mixed snprintf stdio_out files_read files_write
+open_path time_clock abi_ret unsupported ids` + `darwin.h`, a hand-written mini SDK). `tests/fixtures/dylib` (`tools/gen-dylib-fixtures.cmd`) holds
+scenario directories `one two trans init initoff glob missing cycle rpath loaderpath reexport weak initexit initcrash badver chained
+chainexe tlsexe tlslib` with `llvm-objdump` snapshots (headers, exports trie, symbols, rebase/bind, `--dyld-info`, chained fixups).
+Initializer fixtures are compiled with `-O0` because LLVM's GlobalOpt would otherwise evaluate the constructor at compile time.
+`test_cli` runs `cider.exe` under a real pseudo console (ConPTY) to guard the 0.2 lost-stdout regression.
+
+New fuzzers: `fuzz_chained` (export trie + chained/classic fixup decoders) and `fuzz_linker` (whole multi-image link, never executes).

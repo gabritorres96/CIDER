@@ -5,14 +5,16 @@
 A macOS → Windows compatibility layer, in the spirit of Wine but in the opposite direction.
 Not an emulator, not a VM, no macOS and no XNU kernel required.
 
-> **Status: CIDER 0.2.0 — first experimental execution runtime.**
-> CIDER can now **execute machine code from Mach-O x86_64 files on Windows** (no emulator, no VM, no XNU):
-> `cider run ret42` maps the binary, bridges the System V ABI and prints `Guest exit code: 42`.
-> **Only controlled test programs run** (clang + ld64.lld fixtures importing 24 libSystem functions).
-> **No macOS application runs**: the three real apps tried (Rectangle, Stats, MonitorControl) are refused because
-> Foundation, AppKit, libobjc and the Swift runtime do not exist yet. Static verdicts such as "analysis compatible"
-> still mean "static analysis passed", never "it runs". Execution happens in a separate worker process that
-> limits crashes and resources but is **not a sandbox**. See [docs/EXECUTION.md](docs/EXECUTION.md) and
+> **Status: CIDER 0.3.0 — Darwin runtime and dynamic libraries (experimental).**
+> CIDER executes machine code from Mach-O x86_64 files on Windows (no emulator, no VM, no XNU) and, since 0.3, links
+> **real Mach-O dylibs**: `cider run one` loads `one` + `libmath.dylib`, resolves `_cider_add` through the dylib's export trie, runs the
+> dylib's code and prints `Guest exit code: 42`. 0.3 also adds Mach-O initializers, a variadic-capable ABI bridge, an own `printf`
+> family, a Darwin file/time layer, chained fixups and a thread-local-storage subset.
+> **Only controlled test programs run** (clang + ld64.lld fixtures). **No macOS application runs**: Cocoa, SwiftUI, Foundation,
+> AppKit, libobjc and the Swift runtime do not exist; the three real apps tried (Rectangle, Stats, MonitorControl) are refused.
+> Static verdicts such as "analysis compatible" still mean "static analysis passed", never "it runs". Execution happens in a
+> separate worker process that limits crashes and resources but is **not a sandbox**. See [docs/EXECUTION.md](docs/EXECUTION.md),
+> [docs/DYNAMIC-LINKING.md](docs/DYNAMIC-LINKING.md), [docs/DARWIN-RUNTIME.md](docs/DARWIN-RUNTIME.md), [docs/TLS.md](docs/TLS.md) and
 > [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
 
 ## What works (verified by the test-suite and real-world runs, see [docs/PROGRESS.md](docs/PROGRESS.md), [docs/REAL-WORLD.md](docs/REAL-WORLD.md))
@@ -27,7 +29,10 @@ Not an emulator, not a VM, no macOS and no XNU kernel required.
 | DMG: UDIF `koly` trailer, partitions, compression types | works |
 | DMG extraction | **optional**, through external 7-Zip; limits and path-traversal protection |
 | **Run** controlled Mach-O x86_64 programs (loader, W^X mapping, rebase/bind/lazy-bind, SysV→Win64 bridge, 24 libSystem functions, worker process) | works for the fixtures in `tests/fixtures/exec` — [EXECUTION.md](docs/EXECUTION.md) |
-| Objective-C, Foundation, AppKit, dependent dylibs/frameworks, chained fixups, TLS, threads, printf/stdio | **not implemented** (0.3 – 0.5) |
+| Dependent Mach-O dylibs (`@rpath`/`@loader_path`/`@executable_path`, transitive, re-exports, cycles), `__mod_init_func`/`__init_offsets` | works for the fixtures in `tests/fixtures/dylib` — [DYNAMIC-LINKING.md](docs/DYNAMIC-LINKING.md) |
+| Variadic / mixed-signature / stack-argument ABI, `printf` family (own formatter), files, time, errno (Darwin values) | subset, documented in [DARWIN-RUNTIME.md](docs/DARWIN-RUNTIME.md) |
+| Chained fixups (`DYLD_CHAINED_PTR_64`, `_64_OFFSET`), TLS (Mach-O TLV protocol, single thread) | works for the fixtures; other formats refused by name — [TLS.md](docs/TLS.md) |
+| Objective-C, Foundation, AppKit, frameworks, threads, signals, `FILE` streams (`fopen`) | **not implemented** (0.4 – 0.5) |
 
 ## Commands
 

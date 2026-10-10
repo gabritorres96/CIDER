@@ -138,3 +138,13 @@ Run the tests: `ctest --test-dir build -C Debug --output-on-failure` (suites `te
 Freestanding or minimal C programs for macOS x86_64, linked with classic dyld info (not chained fixups), non-TLS,
 without static initializers, importing only the functions listed above from `/usr/lib/libSystem.B.dylib`.
 Nothing else is claimed.
+
+## 0.3 additions
+
+* The loader is now a **multi-image dynamic linker**: [DYNAMIC-LINKING.md](DYNAMIC-LINKING.md). Initializers run before `main`.
+* ABI bridge gained raw/TLV thunks: [ABI.md](ABI.md). libSystem gained the printf family, files, time: [DARWIN-RUNTIME.md](DARWIN-RUNTIME.md).
+* Chained fixups and TLS: [TLS.md](TLS.md). `cider run --root <dir>` sets the guest's `/`.
+* Guest stdout/stderr reach a real console (fix of the 0.2 `CREATE_NO_WINDOW` regression; ConPTY test).
+* Evidence that the instructions come from the Mach-O (not a PE): the exit code 42 of `tests/fixtures/dylib/bin/one/one` is computed by
+  `lea eax,[rdi+rsi]` inside `libmath.dylib`; replacing those 3 bytes in a copy changes the result to 22 (`test_linker`), and `llvm-objdump -d`
+  shows the same instruction. Both files are `Mach-O 64-bit x86_64` (`magic 0xfeedfacf`), neither contains a PE header.

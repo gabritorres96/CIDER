@@ -113,7 +113,7 @@ std::vector<uint8_t> iso() { return build_iso(example_app_tree()); }
 CIDER_TEST(version_and_help) {
     auto v = cider_run({"--version"});
     CHECK_EQ(v.code, 0);
-    CHECK(has(v, "cider 0.2.0"));
+    CHECK(has(v, "cider 0.3.0"));
     auto h = cider_run({"--help"});
     CHECK_EQ(h.code, 0);
     for (const char* cmd : {"inspect", "dmg-info", "extract", "dependencies", "compatibility", "run", "logs", "doctor"}) CHECK(has(h, cmd));

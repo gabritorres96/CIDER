@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.3.0 — Darwin Runtime & Dynamic Library Support (experimental, 2026-10-10)
+
+Controlled fixtures only; no macOS application runs.
+
+### Fixed
+- **Guest stdout lost on a real console** (`cider run hello` printed only the CIDER log lines): the worker was started with
+  `CREATE_NO_WINDOW`, which gives it a fresh hidden console and invalidates inherited console handles. Pipe-based tests could not
+  see it; a ConPTY test now guards it (it fails without the fix).
+
+### Added
+- **Dynamic linker** (`cider::linker::Program`): `MH_DYLIB`, `LC_LOAD_DYLIB/WEAK/REEXPORT`, `LC_RPATH`, `@executable_path`,
+  `@loader_path`, `@rpath` (per-owner expansion), transitive dependencies, each file loaded once, cycles detected (tolerated or
+  refused), compatibility-version check, export-trie parser, per-(ordinal, symbol) binding, re-exports, unload. System libraries and
+  Windows DLLs are never loaded; Windows-style install names are refused.
+- **Mach-O initializers** `__mod_init_func` / `__init_offsets`, dependencies first, once, after all fixups and W^X protections.
+- **ABI**: raw thunk (`GuestRegs`) for mixed int/double, >6 integer arguments, stack arguments, variadics (AL), aggregate returns;
+  `RegsReader` / `VaListReader`; TLV thunk preserving all registers.
+- **libSystem**: own printf formatter and the printf family, stdio subset, Darwin descriptor table and `open/read/write/close/lseek/stat/fstat/access/getcwd`,
+  `gettimeofday/clock_gettime/time/nanosleep/usleep/sleep`, `getppid/_exit`, `___error`, strings, math, `div/ldiv`, `ldexp/frexp`.
+- `cider run --root <dir>` (guest filesystem root), `--verbose` shows `[CIDER][DYLD]` loading/resolving/binding/initializer steps;
+  JSON gains `images`, `missing_library`, `initializers_run`.
+- **Chained fixups** (`DYLD_CHAINED_PTR_64`, `DYLD_CHAINED_PTR_64_OFFSET`; imports formats 1-3), checked against `llvm-objdump --dyld-info`.
+- **TLS** subset: TLV descriptors served by CIDER, no `gs`/TEB access.
+- Fixtures: 14 exec programs + 19 dylib/chained/TLS scenarios; suites `test_linker`, `test_abi_raw`, `test_darwin_runtime`,
+  `test_chained_fixups`, `test_tls`; fuzzers `fuzz_chained`, `fuzz_linker`. Docs: DYNAMIC-LINKING, DARWIN-RUNTIME, TLS.
+
+### Changed
+- Version 0.2.0 → 0.3.0. Unsupported-feature checks moved: chained fixups and TLS are no longer refused up front (the 0.2 tests that
+  asserted refusal, and the `printf`/`open`/`time` "not implemented" assertions, were updated); the `0x15` thread-local init sections are still refused.
+- `cider run` pre-validation delegates dependencies to the linker (missing libraries still exit 12).
+
 ## 0.2.0 — Native Mach-O Execution Runtime (experimental, 2026-10-10)
 
 CIDER executes machine code from Mach-O x86_64 files on Windows. **Controlled fixtures only; no macOS application runs.**

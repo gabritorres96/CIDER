@@ -40,3 +40,10 @@ Real applications **executed**: none. In 0.1.1 three real apps (Rectangle, Stats
 and extracted from their DMGs; in 0.2 `cider run` refuses them (exit 12: Foundation/AppKit/libobjc/Swift runtime/embedded
 frameworks are not available). Programs executed successfully: only the LLVM-built fixtures listed in EXECUTION.md.
 No compatibility with any real application is claimed.
+
+## What `cider run` adds (0.3)
+
+Dependent Mach-O dylibs are searched and loaded (DYNAMIC-LINKING.md), so a binary whose dependencies are *shipped next to it* as real
+x86_64 Mach-O dylibs and that only imports the functions listed in DARWIN-RUNTIME.md can run. Anything importing Foundation, AppKit,
+libobjc, libc++/libc++abi, the Swift runtime or other system libraries is refused (`Missing library`, exit 12). No compatibility with
+general macOS applications is claimed.

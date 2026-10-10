@@ -9,7 +9,7 @@
 
 namespace cider {
 
-inline constexpr const char* kVersion = "0.2.0";
+inline constexpr const char* kVersion = "0.3.0";
 
 std::string hex(uint64_t value);  // "0x1f"
 std::string version_string(uint32_t packed_xxxx_yy_zz);  // 0x000a0f00 -> "10.15"

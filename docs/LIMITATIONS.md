@@ -62,3 +62,14 @@ No sandbox. No claim of isolation. See SECURITY.md.
 CIDER does not redistribute or download Apple frameworks. Running macOS software may be subject to
 Apple's licence terms (the macOS SLA restricts macOS software to Apple hardware in several
 clauses); this project does not give legal advice — check the licence of what you run.
+
+## Execution (0.3)
+
+* Still not a sandbox: guest machine code runs natively with the user's rights; `--root` confines honest programs only.
+* One guest thread; no signals, `atexit`, `dlopen`, `fork`, `mmap`, `qsort` (no host→guest callbacks), `FILE` streams beyond stdin/stdout/stderr,
+  `readdir`, wide characters, `long double`, locale.
+* `printf`: grammar in DARWIN-RUNTIME.md; `%n %a %Lf %ls %'` trap the guest.
+* Dylibs: no shared cache, interposing, weak coalescing, lazy loading; lazy binds are applied eagerly; resolver (`STUB_AND_RESOLVER`) exports unsupported.
+* Chained fixups: only pointer formats 2 and 6 (no arm64e, 32-bit, kernel-cache, multi-start pages).
+* TLS: single thread, no thread destructors, no `__thread_init`.
+* Verified on one machine (Windows 11 26200); GitHub Actions never ran. arm64 unsupported.

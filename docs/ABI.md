@@ -47,8 +47,28 @@ Consequences for CIDER (to design and test, not yet built):
 | `exit()` | host function sets `GuestCall::exited`; the thunk returns to the host epilogue instead of the guest | code after `exit` never runs |
 | Unwinding | none: an exception inside guest code terminates the worker | `crash`, `recurse`, `ud2` tests |
 
-Still **not** handled: > 6 integer arguments, variadic callees (`al`), struct returns by hidden pointer or in
-rax:rdx, mixed integer/double signatures (positional slots differ), `long double`, callbacks host → guest,
-re-entrancy (one active guest call), SEH/DWARF unwinding across the boundary, `gs`-relative thread storage
-(Windows owns `gs`; macOS code using `%gs:` would read the TEB), raw `syscall` instructions (Windows would
-interpret the number as an NT service).
+## What CIDER 0.3 adds (tests: `test_abi_raw`, `test_darwin_runtime`, `test_tls`)
+
+Three thunk kinds (`abi::ThunkSpec`), chosen per libSystem symbol:
+
+| Kind | Entry | Use |
+| --- | --- | --- |
+| positional (`cider_guest_thunk`) | rdi,rsi,rdx,rcx → rcx,rdx,r8,r9; r8/r9 → stack slots | plain integer / all-double signatures (0.2 behaviour) |
+| raw (`cider_guest_thunk_raw`) | host function receives `GuestRegs*`: rdi..r9, AL (rax), xmm0-7 (low qword), address of the stack-argument area; results go in `ret_rax/ret_rdx/ret_xmm0/ret_xmm1` | mixed int/double, >6 integer args, stack args, **variadics**, aggregate returns |
+| TLV (`cider_guest_thunk_tlv`) | Darwin TLV convention: descriptor in rdi, result rax, **every other register preserved** | `tlv_get_addr` only |
+
+* `RegsReader` walks the psABI: INTEGER class rdi..r9 then 8-byte stack slots, SSE class xmm0-7 then stack slots; both classes share the
+  stack slots in call order (tested with 8 ints + 10 doubles). `VaListReader` reads a Darwin `va_list` in guest memory
+  (`gp_offset`, `fp_offset`, `overflow_arg_area`, `reg_save_area`) and writes the cursor back like `va_arg`.
+* AL (number of vector registers of a variadic call) reaches the callee through `GuestRegs::rax`.
+* Aggregates: ≤16 bytes INTEGER → rax(:rdx), SSE → xmm0(:xmm1) (`div`, `ldiv`, tested with hand-assembled code and real clang code).
+  Hidden-pointer (MEMORY class) returns work for raw functions that read `rdi` themselves; no libSystem function needs it yet.
+* A positional thunk misplaces `f(int, double)`: the double is in xmm0 on System V, xmm1 on Windows (a test documents this).
+* Guest stack pointer is never written by host code: host functions run on the host stack, so the 128-byte red zone below the guest
+  `rsp` survives calls (tested). Stack arguments start 16-byte aligned like at a real call site (tested).
+* callee-saved registers (rbx rbp r12-r15) survive raw thunks even when the host function is noisy (tested).
+
+Still **not** handled: `long double` / x87 arguments, structures passed by value on the stack or in mixed classes as *arguments* to
+host functions (only returns), callbacks host → guest (so no `qsort`/`atexit`), re-entrancy (one active guest call), SEH/DWARF
+unwinding across the boundary, raw `syscall` instructions (Windows would interpret the number as an NT service). `gs`-relative TLS by
+the guest itself is still unsupported; the standard Mach-O TLV protocol does not need it (see [TLS.md](TLS.md)).
