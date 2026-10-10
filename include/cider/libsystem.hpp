@@ -46,6 +46,19 @@ struct TlsImage {
     uint8_t* block = nullptr;            // this (single) guest thread's storage, created on first use in the guest heap
 };
 
+// State of one guest FILE stream (the guest only ever holds an opaque pointer to a pool slot, see stdio_streams.cpp).
+struct Stream {
+    bool in_use = false;
+    int fd = -1;                      // guest descriptor underneath
+    bool readable = false, writable = false, append = false;
+    bool eof = false, error = false;
+    std::vector<uint8_t> rbuf;        // read-ahead
+    size_t rpos = 0;
+    int ungot = -1;                   // ungetc character
+};
+inline constexpr uint64_t kFileObjectSize = 64;   // stride of the FILE objects handed to the guest
+inline constexpr size_t kMaxStreams = 64;         // slots 0-2 are stdin/stdout/stderr
+
 // Per-guest-process state seen by the host functions (single guest at a time).
 struct RuntimeContext {
     RuntimeContext();
@@ -65,6 +78,8 @@ struct RuntimeContext {
     std::filesystem::path root;             // host directory the guest's "/" maps to; empty: file access is refused (EACCES)
     std::vector<GuestFd> fds;               // index = guest descriptor
     uint64_t file_stdin = 0, file_stdout = 0, file_stderr = 0;   // guest addresses of the three FILE objects
+    std::vector<Stream> streams;            // FILE slots (kMaxStreams); the guest FILE* of slot i is stream_base + i * kFileObjectSize
+    uint64_t stream_base = 0;
     std::vector<TlsImage> tls_images;       // images with thread-local storage (filled by the dynamic linker)
     // ---- callbacks (0.4) -------------------------------------------------------------------------------------
     std::vector<std::pair<uint64_t, uint64_t>> code_ranges;   // [lo, hi) executable guest code a callback may target (+ libSystem thunks)

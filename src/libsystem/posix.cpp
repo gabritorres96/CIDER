@@ -145,19 +145,24 @@ int allocate_fd(RuntimeContext& c) {
 
 // ---- open / close / read / write / lseek ---------------------------------------------------------------------------------
 // open(path, flags, ...)  -- variadic in C (mode is read only with O_CREAT)
+int open_impl(const char* path, int flags);
 void w_open(GuestRegs* r) {
     RegsReader a(*r);
     const char* path = reinterpret_cast<const char*>(a.next_int());
     const int flags = static_cast<int>(static_cast<int32_t>(a.next_int()));
+    r->ret_rax = static_cast<uint64_t>(static_cast<int64_t>(open_impl(path, flags)));
+}
+// Opens `path` with Darwin flags; returns the guest descriptor, or -1 with errno set. Binary mode always.
+int open_impl(const char* path, int flags) {
     RuntimeContext* c = context();
-    if (!c) { r->ret_rax = static_cast<uint64_t>(fail_errno(detail::kEFAULT)); return; }
+    if (!c) return static_cast<int>(fail_errno(detail::kEFAULT));
     const int known = kO_ACCMODE | kO_NONBLOCK | kO_APPEND | kO_NOFOLLOW | kO_CREAT | kO_TRUNC | kO_EXCL | kO_CLOEXEC;
     const int acc = flags & kO_ACCMODE;
-    if ((flags & ~known) != 0 || acc == 3 || ((flags & kO_EXCL) && !(flags & kO_CREAT))) { r->ret_rax = static_cast<uint64_t>(fail_errno(detail::kEINVAL)); return; }
+    if ((flags & ~known) != 0 || acc == 3 || ((flags & kO_EXCL) && !(flags & kO_CREAT))) return static_cast<int>(fail_errno(detail::kEINVAL));
     fs::path host;
-    if (int e = resolve_path(path, host)) { r->ret_rax = static_cast<uint64_t>(fail_errno(e)); return; }
+    if (int e = resolve_path(path, host)) return static_cast<int>(fail_errno(e));
     std::error_code ec;
-    if (fs::is_directory(host, ec)) { r->ret_rax = static_cast<uint64_t>(fail_errno(detail::kEISDIR)); return; }   // no readdir support
+    if (fs::is_directory(host, ec)) return static_cast<int>(fail_errno(detail::kEISDIR));   // no readdir support
 
     DWORD access = 0;
     if (acc == kO_RDONLY || acc == kO_RDWR) access |= GENERIC_READ;
@@ -165,19 +170,19 @@ void w_open(GuestRegs* r) {
     DWORD disp;
     if (flags & kO_CREAT) disp = (flags & kO_EXCL) ? CREATE_NEW : ((flags & kO_TRUNC) ? CREATE_ALWAYS : OPEN_ALWAYS);
     else disp = (flags & kO_TRUNC) ? TRUNCATE_EXISTING : OPEN_EXISTING;
-    if ((flags & kO_TRUNC) && acc == kO_RDONLY) { r->ret_rax = static_cast<uint64_t>(fail_errno(detail::kEINVAL)); return; }
+    if ((flags & kO_TRUNC) && acc == kO_RDONLY) return static_cast<int>(fail_errno(detail::kEINVAL));
     const int fd = allocate_fd(*c);
-    if (fd < 0) { r->ret_rax = static_cast<uint64_t>(fail_errno(detail::kEMFILE)); return; }
+    if (fd < 0) return static_cast<int>(fail_errno(detail::kEMFILE));
     HANDLE h = CreateFileW(extended_path(host).c_str(), access, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, disp,
                            FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (h == INVALID_HANDLE_VALUE) { r->ret_rax = static_cast<uint64_t>(fail_errno(errno_from_win32(GetLastError()))); return; }
+    if (h == INVALID_HANDLE_VALUE) return static_cast<int>(fail_errno(errno_from_win32(GetLastError())));
     GuestFd& g = c->fds[static_cast<size_t>(fd)];
     g.kind = GuestFd::Kind::File;
     g.handle = h;
     g.readable = acc != kO_WRONLY;
     g.writable = acc != kO_RDONLY;
     g.append = (flags & kO_APPEND) != 0;
-    r->ret_rax = static_cast<uint32_t>(fd);
+    return fd;
 }
 
 int w_close(int fd) {
@@ -458,6 +463,12 @@ RuntimeContext::~RuntimeContext() {
 }
 
 namespace detail {
+int fd_open(const char* guest_path, int flags) { return open_impl(guest_path, flags); }
+int fd_close(int fd) { return w_close(fd); }
+int64_t fd_read(int fd, void* buf, uint64_t n) { return w_read(fd, buf, n); }
+int64_t fd_write(int fd, const void* buf, uint64_t n) { return w_write_fd(fd, buf, n); }
+int64_t fd_seek(int fd, int64_t off, int whence) { return w_lseek(fd, off, whence); }
+
 void add_posix_symbols(std::vector<HostSymbol>& t) {
 #ifdef _WIN32
     t.push_back({"_open", addr(w_open), true});

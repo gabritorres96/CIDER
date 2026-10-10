@@ -9,7 +9,6 @@ namespace cider::libsystem {
 namespace {
 RuntimeContext* g_ctx = nullptr;
 
-constexpr size_t kFileObjectSize = 64;       // opaque FILE objects: [0] magic, [8] descriptor number
 constexpr uint64_t kFileMagic = 0x43494445522d4649ull;   // "CIDER-FI"
 }  // namespace
 
@@ -32,21 +31,23 @@ Result<std::unique_ptr<LibSystemProvider>> LibSystemProvider::create() {
     p->table_ = std::move(t.value());
 
     // Data page: [3 stream variables (8 bytes each)] [3 FILE objects]. Written once, then read-only.
-    const size_t bytes = 64 + 3 * kFileObjectSize;
-    auto region = memory::Region::reserve(0, memory::page_size(), false);
+    const size_t bytes = 64 + kMaxStreams * kFileObjectSize;
+    auto region = memory::Region::reserve(0, static_cast<size_t>(*memory::align_up(bytes, memory::page_size())), false);
     if (!region.ok()) return region.error();
     p->data_ = std::move(region.value());
     if (auto c = p->data_.commit(0, p->data_.size()); !c.ok()) return c.error();
     uint8_t* base = p->data_.base();
     std::memset(base, 0, bytes);
-    for (int i = 0; i < 3; ++i) {
-        uint8_t* file = base + 64 + static_cast<size_t>(i) * kFileObjectSize;
+    for (size_t i = 0; i < kMaxStreams; ++i) {
+        uint8_t* file = base + 64 + i * kFileObjectSize;
         std::memcpy(file, &kFileMagic, 8);
-        const uint64_t fd = static_cast<uint64_t>(i);
-        std::memcpy(file + 8, &fd, 8);
-        p->files_[i] = reinterpret_cast<uint64_t>(file);
-        const uint64_t ptr = p->files_[i];
-        std::memcpy(base + static_cast<size_t>(i) * 8, &ptr, 8);
+        const uint64_t slot = i;
+        std::memcpy(file + 8, &slot, 8);
+        if (i < 3) {
+            p->files_[i] = reinterpret_cast<uint64_t>(file);
+            const uint64_t ptr = p->files_[i];
+            std::memcpy(base + i * 8, &ptr, 8);
+        }
     }
     p->data_index_["___stdinp"] = reinterpret_cast<uint64_t>(base);
     p->data_index_["___stdoutp"] = reinterpret_cast<uint64_t>(base + 8);
@@ -68,6 +69,15 @@ void LibSystemProvider::install_stdio(RuntimeContext& ctx) const {
     ctx.file_stdin = files_[0];
     ctx.file_stdout = files_[1];
     ctx.file_stderr = files_[2];
+    ctx.stream_base = files_[0];
+    ctx.streams.assign(kMaxStreams, Stream{});
+    for (int i = 0; i < 3; ++i) {
+        Stream& s = ctx.streams[static_cast<size_t>(i)];
+        s.in_use = true;
+        s.fd = i;
+        s.readable = i == 0;
+        s.writable = i != 0;
+    }
 }
 
 bool is_implemented_data(std::string_view s) {

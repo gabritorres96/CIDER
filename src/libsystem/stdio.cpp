@@ -17,14 +17,12 @@ using abi::GuestRegs;
 using abi::RegsReader;
 using detail::fail_errno;
 
-// 1 / 2 for stdout / stderr, 0 for stdin, -1 when `f` is not one of the three streams.
+// Slot of the live stream a guest FILE* designates (0 stdin, 1 stdout, 2 stderr, 3.. fopen'ed), -1 when it is not a live stream.
 int stream_of(uint64_t f) {
     RuntimeContext* c = context();
-    if (!c || !f) return -1;
-    if (f == c->file_stdout) return 1;
-    if (f == c->file_stderr) return 2;
-    if (f == c->file_stdin) return 0;
-    return -1;
+    const int idx = detail::stream_index(f);
+    if (!c || idx < 0 || !c->streams[static_cast<size_t>(idx)].in_use) return -1;
+    return idx;
 }
 
 // Formats into `out`; an unsupported specifier ends the guest run (a trap, never a guess).
@@ -36,9 +34,8 @@ bool render(const char* fmt, abi::ArgReader& args, std::string& out, const char*
 }
 
 int64_t write_stream(int stream, const char* data, size_t n) {
-    if (stream != 1 && stream != 2) return fail_errno(detail::kEBADF);
-    console_write(stream, data, n);
-    return static_cast<int64_t>(n);
+    if (stream < 0) return fail_errno(detail::kEBADF);
+    return detail::stream_write(stream, data, n);
 }
 
 // ---- positional (non-variadic) functions ---------------------------------------------------------------------

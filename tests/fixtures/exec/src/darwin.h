@@ -90,6 +90,22 @@ void _exit(int) __attribute__((noreturn));
 int *__error(void);
 #define errno (*__error())
 
+/* FILE streams */
+#define EOF (-1)
+FILE *fopen(const char *, const char *);
+int fclose(FILE *);
+size_t fread(void *, size_t, size_t, FILE *);
+int fseek(FILE *, long, int);
+long ftell(FILE *);
+void rewind(FILE *);
+int feof(FILE *);
+int ferror(FILE *);
+void clearerr(FILE *);
+char *fgets(char *, int, FILE *);
+int fgetc(FILE *);
+int ungetc(int, FILE *);
+int fileno(FILE *);
+
 /* callbacks */
 void qsort(void *, size_t, size_t, int (*)(const void *, const void *));
 void *bsearch(const void *, const void *, size_t, size_t, int (*)(const void *, const void *));

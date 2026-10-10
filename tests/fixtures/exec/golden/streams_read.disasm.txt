@@ -1,0 +1,369 @@
+streams_read:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	41 56	pushq	%r14
+100000546:	53	pushq	%rbx
+100000547:	48 81 ec 40 01 00 00	subq	$0x140, %rsp
+10000054e:	48 8d 3d 39 07 00 00	leaq	0x739(%rip), %rdi ## literal pool for: "data.bin"
+100000555:	48 8d 35 3b 07 00 00	leaq	0x73b(%rip), %rsi ## literal pool for: "rb"
+10000055c:	e8 17 06 00 00	callq	0x100000b78 ## symbol stub for: _fopen
+100000561:	48 85 c0	testq	%rax, %rax
+100000564:	0f 84 b7 01 00 00	je	0x100000721
+10000056a:	48 89 c3	movq	%rax, %rbx
+10000056d:	48 8d bd b0 fe ff ff	leaq	-0x150(%rbp), %rdi
+100000574:	be 01 00 00 00	movl	$0x1, %esi
+100000579:	ba 10 00 00 00	movl	$0x10, %edx
+10000057e:	48 89 c1	movq	%rax, %rcx
+100000581:	e8 1c 06 00 00	callq	0x100000ba2 ## symbol stub for: _fread
+100000586:	48 89 c1	movq	%rax, %rcx
+100000589:	b8 0b 00 00 00	movl	$0xb, %eax
+10000058e:	48 83 f9 10	cmpq	$0x10, %rcx
+100000592:	0f 85 8e 01 00 00	jne	0x100000726
+100000598:	80 bd b0 fe ff ff 00	cmpb	$0x0, -0x150(%rbp)
+10000059f:	0f 85 81 01 00 00	jne	0x100000726
+1000005a5:	80 bd bf fe ff ff 0f	cmpb	$0xf, -0x141(%rbp)
+1000005ac:	0f 85 74 01 00 00	jne	0x100000726
+1000005b2:	48 89 df	movq	%rbx, %rdi
+1000005b5:	e8 0c 06 00 00	callq	0x100000bc6 ## symbol stub for: _ftell
+1000005ba:	48 89 c1	movq	%rax, %rcx
+1000005bd:	b8 0c 00 00 00	movl	$0xc, %eax
+1000005c2:	48 83 f9 10	cmpq	$0x10, %rcx
+1000005c6:	0f 85 5a 01 00 00	jne	0x100000726
+1000005cc:	be fa 00 00 00	movl	$0xfa, %esi
+1000005d1:	48 89 df	movq	%rbx, %rdi
+1000005d4:	31 d2	xorl	%edx, %edx
+1000005d6:	e8 df 05 00 00	callq	0x100000bba ## symbol stub for: _fseek
+1000005db:	89 c1	movl	%eax, %ecx
+1000005dd:	b8 0d 00 00 00	movl	$0xd, %eax
+1000005e2:	85 c9	testl	%ecx, %ecx
+1000005e4:	0f 85 3c 01 00 00	jne	0x100000726
+1000005ea:	48 89 df	movq	%rbx, %rdi
+1000005ed:	e8 aa 05 00 00	callq	0x100000b9c ## symbol stub for: _fgetc
+1000005f2:	89 c1	movl	%eax, %ecx
+1000005f4:	b8 0e 00 00 00	movl	$0xe, %eax
+1000005f9:	81 f9 fa 00 00 00	cmpl	$0xfa, %ecx
+1000005ff:	0f 85 21 01 00 00	jne	0x100000726
+100000605:	48 89 df	movq	%rbx, %rdi
+100000608:	e8 b9 05 00 00	callq	0x100000bc6 ## symbol stub for: _ftell
+10000060d:	48 89 c1	movq	%rax, %rcx
+100000610:	b8 0f 00 00 00	movl	$0xf, %eax
+100000615:	48 81 f9 fb 00 00 00	cmpq	$0xfb, %rcx
+10000061c:	0f 85 04 01 00 00	jne	0x100000726
+100000622:	bf ab 00 00 00	movl	$0xab, %edi
+100000627:	48 89 de	movq	%rbx, %rsi
+10000062a:	e8 9d 05 00 00	callq	0x100000bcc ## symbol stub for: _ungetc
+10000062f:	89 c1	movl	%eax, %ecx
+100000631:	b8 10 00 00 00	movl	$0x10, %eax
+100000636:	81 f9 ab 00 00 00	cmpl	$0xab, %ecx
+10000063c:	0f 85 e4 00 00 00	jne	0x100000726
+100000642:	48 89 df	movq	%rbx, %rdi
+100000645:	e8 7c 05 00 00	callq	0x100000bc6 ## symbol stub for: _ftell
+10000064a:	48 89 c1	movq	%rax, %rcx
+10000064d:	b8 11 00 00 00	movl	$0x11, %eax
+100000652:	48 81 f9 fa 00 00 00	cmpq	$0xfa, %rcx
+100000659:	0f 85 c7 00 00 00	jne	0x100000726
+10000065f:	48 8d bd b0 fe ff ff	leaq	-0x150(%rbp), %rdi
+100000666:	be 01 00 00 00	movl	$0x1, %esi
+10000066b:	ba 0a 00 00 00	movl	$0xa, %edx
+100000670:	48 89 d9	movq	%rbx, %rcx
+100000673:	e8 2a 05 00 00	callq	0x100000ba2 ## symbol stub for: _fread
+100000678:	48 89 c1	movq	%rax, %rcx
+10000067b:	b8 12 00 00 00	movl	$0x12, %eax
+100000680:	48 83 f9 06	cmpq	$0x6, %rcx
+100000684:	0f 85 9c 00 00 00	jne	0x100000726
+10000068a:	80 bd b0 fe ff ff ab	cmpb	$-0x55, -0x150(%rbp)
+100000691:	0f 85 8f 00 00 00	jne	0x100000726
+100000697:	80 bd b1 fe ff ff fb	cmpb	$-0x5, -0x14f(%rbp)
+10000069e:	0f 85 82 00 00 00	jne	0x100000726
+1000006a4:	80 bd b5 fe ff ff ff	cmpb	$-0x1, -0x14b(%rbp)
+1000006ab:	75 79	jne	0x100000726
+1000006ad:	48 89 df	movq	%rbx, %rdi
+1000006b0:	e8 d5 04 00 00	callq	0x100000b8a ## symbol stub for: _feof
+1000006b5:	89 c1	movl	%eax, %ecx
+1000006b7:	b8 13 00 00 00	movl	$0x13, %eax
+1000006bc:	85 c9	testl	%ecx, %ecx
+1000006be:	74 66	je	0x100000726
+1000006c0:	48 89 df	movq	%rbx, %rdi
+1000006c3:	e8 e0 04 00 00	callq	0x100000ba8 ## symbol stub for: _ferror
+1000006c8:	89 c1	movl	%eax, %ecx
+1000006ca:	b8 13 00 00 00	movl	$0x13, %eax
+1000006cf:	85 c9	testl	%ecx, %ecx
+1000006d1:	75 53	jne	0x100000726
+1000006d3:	48 89 df	movq	%rbx, %rdi
+1000006d6:	e8 c1 04 00 00	callq	0x100000b9c ## symbol stub for: _fgetc
+1000006db:	89 c1	movl	%eax, %ecx
+1000006dd:	b8 14 00 00 00	movl	$0x14, %eax
+1000006e2:	83 f9 ff	cmpl	$-0x1, %ecx
+1000006e5:	75 3f	jne	0x100000726
+1000006e7:	48 89 df	movq	%rbx, %rdi
+1000006ea:	e8 d1 04 00 00	callq	0x100000bc0 ## symbol stub for: _clearerr
+1000006ef:	48 89 df	movq	%rbx, %rdi
+1000006f2:	e8 93 04 00 00	callq	0x100000b8a ## symbol stub for: _feof
+1000006f7:	89 c1	movl	%eax, %ecx
+1000006f9:	b8 15 00 00 00	movl	$0x15, %eax
+1000006fe:	85 c9	testl	%ecx, %ecx
+100000700:	75 24	jne	0x100000726
+100000702:	48 89 df	movq	%rbx, %rdi
+100000705:	48 c7 c6 fe ff ff ff	movq	$-0x2, %rsi
+10000070c:	ba 02 00 00 00	movl	$0x2, %edx
+100000711:	e8 a4 04 00 00	callq	0x100000bba ## symbol stub for: _fseek
+100000716:	85 c0	testl	%eax, %eax
+100000718:	74 18	je	0x100000732
+10000071a:	b8 16 00 00 00	movl	$0x16, %eax
+10000071f:	eb 05	jmp	0x100000726
+100000721:	b8 0a 00 00 00	movl	$0xa, %eax
+100000726:	48 81 c4 40 01 00 00	addq	$0x140, %rsp
+10000072d:	5b	popq	%rbx
+10000072e:	41 5e	popq	%r14
+100000730:	5d	popq	%rbp
+100000731:	c3	retq
+100000732:	48 89 df	movq	%rbx, %rdi
+100000735:	e8 62 04 00 00	callq	0x100000b9c ## symbol stub for: _fgetc
+10000073a:	3d fe 00 00 00	cmpl	$0xfe, %eax
+10000073f:	b8 16 00 00 00	movl	$0x16, %eax
+100000744:	75 e0	jne	0x100000726
+100000746:	48 89 df	movq	%rbx, %rdi
+100000749:	48 c7 c6 ff ff ff ff	movq	$-0x1, %rsi
+100000750:	ba 01 00 00 00	movl	$0x1, %edx
+100000755:	e8 60 04 00 00	callq	0x100000bba ## symbol stub for: _fseek
+10000075a:	85 c0	testl	%eax, %eax
+10000075c:	74 07	je	0x100000765
+10000075e:	b8 17 00 00 00	movl	$0x17, %eax
+100000763:	eb c1	jmp	0x100000726
+100000765:	48 89 df	movq	%rbx, %rdi
+100000768:	e8 2f 04 00 00	callq	0x100000b9c ## symbol stub for: _fgetc
+10000076d:	3d fe 00 00 00	cmpl	$0xfe, %eax
+100000772:	b8 17 00 00 00	movl	$0x17, %eax
+100000777:	75 ad	jne	0x100000726
+100000779:	be e8 03 00 00	movl	$0x3e8, %esi
+10000077e:	48 89 df	movq	%rbx, %rdi
+100000781:	31 d2	xorl	%edx, %edx
+100000783:	e8 32 04 00 00	callq	0x100000bba ## symbol stub for: _fseek
+100000788:	85 c0	testl	%eax, %eax
+10000078a:	75 1e	jne	0x1000007aa
+10000078c:	48 8d bd b0 fe ff ff	leaq	-0x150(%rbp), %rdi
+100000793:	be 01 00 00 00	movl	$0x1, %esi
+100000798:	ba 01 00 00 00	movl	$0x1, %edx
+10000079d:	48 89 d9	movq	%rbx, %rcx
+1000007a0:	e8 fd 03 00 00	callq	0x100000ba2 ## symbol stub for: _fread
+1000007a5:	48 85 c0	testq	%rax, %rax
+1000007a8:	74 0a	je	0x1000007b4
+1000007aa:	b8 18 00 00 00	movl	$0x18, %eax
+1000007af:	e9 72 ff ff ff	jmp	0x100000726
+1000007b4:	48 89 df	movq	%rbx, %rdi
+1000007b7:	e8 ce 03 00 00	callq	0x100000b8a ## symbol stub for: _feof
+1000007bc:	85 c0	testl	%eax, %eax
+1000007be:	b8 18 00 00 00	movl	$0x18, %eax
+1000007c3:	0f 84 5d ff ff ff	je	0x100000726
+1000007c9:	48 89 df	movq	%rbx, %rdi
+1000007cc:	e8 e3 03 00 00	callq	0x100000bb4 ## symbol stub for: _rewind
+1000007d1:	48 89 df	movq	%rbx, %rdi
+1000007d4:	e8 b1 03 00 00	callq	0x100000b8a ## symbol stub for: _feof
+1000007d9:	85 c0	testl	%eax, %eax
+1000007db:	74 0a	je	0x1000007e7
+1000007dd:	b8 19 00 00 00	movl	$0x19, %eax
+1000007e2:	e9 3f ff ff ff	jmp	0x100000726
+1000007e7:	48 89 df	movq	%rbx, %rdi
+1000007ea:	e8 ad 03 00 00	callq	0x100000b9c ## symbol stub for: _fgetc
+1000007ef:	85 c0	testl	%eax, %eax
+1000007f1:	b8 19 00 00 00	movl	$0x19, %eax
+1000007f6:	0f 85 2a ff ff ff	jne	0x100000726
+1000007fc:	48 8d bd b0 fe ff ff	leaq	-0x150(%rbp), %rdi
+100000803:	be 01 00 00 00	movl	$0x1, %esi
+100000808:	ba 2c 01 00 00	movl	$0x12c, %edx
+10000080d:	48 89 d9	movq	%rbx, %rcx
+100000810:	e8 8d 03 00 00	callq	0x100000ba2 ## symbol stub for: _fread
+100000815:	48 3d ff 00 00 00	cmpq	$0xff, %rax
+10000081b:	75 3d	jne	0x10000085a
+10000081d:	48 89 df	movq	%rbx, %rdi
+100000820:	e8 65 03 00 00	callq	0x100000b8a ## symbol stub for: _feof
+100000825:	85 c0	testl	%eax, %eax
+100000827:	b8 1a 00 00 00	movl	$0x1a, %eax
+10000082c:	0f 84 f4 fe ff ff	je	0x100000726
+100000832:	48 8d 3d 61 04 00 00	leaq	0x461(%rip), %rdi ## literal pool for: "x"
+100000839:	be 01 00 00 00	movl	$0x1, %esi
+10000083e:	ba 01 00 00 00	movl	$0x1, %edx
+100000843:	48 89 d9	movq	%rbx, %rcx
+100000846:	e8 63 03 00 00	callq	0x100000bae ## symbol stub for: _fwrite
+10000084b:	48 85 c0	testq	%rax, %rax
+10000084e:	74 14	je	0x100000864
+100000850:	b8 1b 00 00 00	movl	$0x1b, %eax
+100000855:	e9 cc fe ff ff	jmp	0x100000726
+10000085a:	b8 1a 00 00 00	movl	$0x1a, %eax
+10000085f:	e9 c2 fe ff ff	jmp	0x100000726
+100000864:	48 89 df	movq	%rbx, %rdi
+100000867:	e8 3c 03 00 00	callq	0x100000ba8 ## symbol stub for: _ferror
+10000086c:	85 c0	testl	%eax, %eax
+10000086e:	b8 1b 00 00 00	movl	$0x1b, %eax
+100000873:	0f 84 ad fe ff ff	je	0x100000726
+100000879:	48 89 df	movq	%rbx, %rdi
+10000087c:	e8 03 03 00 00	callq	0x100000b84 ## symbol stub for: _fclose
+100000881:	89 c1	movl	%eax, %ecx
+100000883:	b8 1c 00 00 00	movl	$0x1c, %eax
+100000888:	85 c9	testl	%ecx, %ecx
+10000088a:	0f 85 96 fe ff ff	jne	0x100000726
+100000890:	48 89 df	movq	%rbx, %rdi
+100000893:	e8 ec 02 00 00	callq	0x100000b84 ## symbol stub for: _fclose
+100000898:	83 f8 ff	cmpl	$-0x1, %eax
+10000089b:	74 0a	je	0x1000008a7
+10000089d:	b8 1d 00 00 00	movl	$0x1d, %eax
+1000008a2:	e9 7f fe ff ff	jmp	0x100000726
+1000008a7:	e8 d2 02 00 00	callq	0x100000b7e ## symbol stub for: ___error
+1000008ac:	83 38 09	cmpl	$0x9, (%rax)
+1000008af:	b8 1d 00 00 00	movl	$0x1d, %eax
+1000008b4:	0f 85 6c fe ff ff	jne	0x100000726
+1000008ba:	48 8d bd b0 fe ff ff	leaq	-0x150(%rbp), %rdi
+1000008c1:	be 01 00 00 00	movl	$0x1, %esi
+1000008c6:	ba 01 00 00 00	movl	$0x1, %edx
+1000008cb:	48 89 d9	movq	%rbx, %rcx
+1000008ce:	e8 cf 02 00 00	callq	0x100000ba2 ## symbol stub for: _fread
+1000008d3:	48 85 c0	testq	%rax, %rax
+1000008d6:	74 0a	je	0x1000008e2
+1000008d8:	b8 1e 00 00 00	movl	$0x1e, %eax
+1000008dd:	e9 44 fe ff ff	jmp	0x100000726
+1000008e2:	e8 97 02 00 00	callq	0x100000b7e ## symbol stub for: ___error
+1000008e7:	83 38 09	cmpl	$0x9, (%rax)
+1000008ea:	b8 1e 00 00 00	movl	$0x1e, %eax
+1000008ef:	0f 85 31 fe ff ff	jne	0x100000726
+1000008f5:	48 89 df	movq	%rbx, %rdi
+1000008f8:	e8 9f 02 00 00	callq	0x100000b9c ## symbol stub for: _fgetc
+1000008fd:	83 f8 ff	cmpl	$-0x1, %eax
+100000900:	74 0a	je	0x10000090c
+100000902:	b8 1f 00 00 00	movl	$0x1f, %eax
+100000907:	e9 1a fe ff ff	jmp	0x100000726
+10000090c:	48 89 df	movq	%rbx, %rdi
+10000090f:	e8 76 02 00 00	callq	0x100000b8a ## symbol stub for: _feof
+100000914:	85 c0	testl	%eax, %eax
+100000916:	b8 1f 00 00 00	movl	$0x1f, %eax
+10000091b:	0f 85 05 fe ff ff	jne	0x100000726
+100000921:	48 8d 3d 74 03 00 00	leaq	0x374(%rip), %rdi ## literal pool for: "lines.txt"
+100000928:	48 8d 35 77 03 00 00	leaq	0x377(%rip), %rsi ## literal pool for: "r"
+10000092f:	e8 44 02 00 00	callq	0x100000b78 ## symbol stub for: _fopen
+100000934:	48 85 c0	testq	%rax, %rax
+100000937:	74 3b	je	0x100000974
+100000939:	48 89 c3	movq	%rax, %rbx
+10000093c:	48 8d 7d e4	leaq	-0x1c(%rbp), %rdi
+100000940:	be 08 00 00 00	movl	$0x8, %esi
+100000945:	48 89 c2	movq	%rax, %rdx
+100000948:	e8 43 02 00 00	callq	0x100000b90 ## symbol stub for: _fgets
+10000094d:	41 be 21 00 00 00	movl	$0x21, %r14d
+100000953:	48 85 c0	testq	%rax, %rax
+100000956:	74 14	je	0x10000096c
+100000958:	48 8d 35 49 03 00 00	leaq	0x349(%rip), %rsi ## literal pool for: "alpha\n"
+10000095f:	48 8d 7d e4	leaq	-0x1c(%rbp), %rdi
+100000963:	e8 2e 02 00 00	callq	0x100000b96 ## symbol stub for: _strcmp
+100000968:	85 c0	testl	%eax, %eax
+10000096a:	74 12	je	0x10000097e
+10000096c:	44 89 f0	movl	%r14d, %eax
+10000096f:	e9 b2 fd ff ff	jmp	0x100000726
+100000974:	b8 20 00 00 00	movl	$0x20, %eax
+100000979:	e9 a8 fd ff ff	jmp	0x100000726
+10000097e:	48 8d 7d e4	leaq	-0x1c(%rbp), %rdi
+100000982:	be 08 00 00 00	movl	$0x8, %esi
+100000987:	48 89 da	movq	%rbx, %rdx
+10000098a:	e8 01 02 00 00	callq	0x100000b90 ## symbol stub for: _fgets
+10000098f:	41 be 22 00 00 00	movl	$0x22, %r14d
+100000995:	48 85 c0	testq	%rax, %rax
+100000998:	74 d2	je	0x10000096c
+10000099a:	48 8d 35 0e 03 00 00	leaq	0x30e(%rip), %rsi ## literal pool for: "beta\n"
+1000009a1:	48 8d 7d e4	leaq	-0x1c(%rbp), %rdi
+1000009a5:	e8 ec 01 00 00	callq	0x100000b96 ## symbol stub for: _strcmp
+1000009aa:	85 c0	testl	%eax, %eax
+1000009ac:	75 be	jne	0x10000096c
+1000009ae:	48 8d 7d e4	leaq	-0x1c(%rbp), %rdi
+1000009b2:	be 08 00 00 00	movl	$0x8, %esi
+1000009b7:	48 89 da	movq	%rbx, %rdx
+1000009ba:	e8 d1 01 00 00	callq	0x100000b90 ## symbol stub for: _fgets
+1000009bf:	41 be 23 00 00 00	movl	$0x23, %r14d
+1000009c5:	48 85 c0	testq	%rax, %rax
+1000009c8:	74 a2	je	0x10000096c
+1000009ca:	48 8d 35 e4 02 00 00	leaq	0x2e4(%rip), %rsi ## literal pool for: "\n"
+1000009d1:	48 8d 7d e4	leaq	-0x1c(%rbp), %rdi
+1000009d5:	e8 bc 01 00 00	callq	0x100000b96 ## symbol stub for: _strcmp
+1000009da:	85 c0	testl	%eax, %eax
+1000009dc:	75 8e	jne	0x10000096c
+1000009de:	48 8d 7d ec	leaq	-0x14(%rbp), %rdi
+1000009e2:	be 04 00 00 00	movl	$0x4, %esi
+1000009e7:	48 89 da	movq	%rbx, %rdx
+1000009ea:	e8 a1 01 00 00	callq	0x100000b90 ## symbol stub for: _fgets
+1000009ef:	41 be 24 00 00 00	movl	$0x24, %r14d
+1000009f5:	48 85 c0	testq	%rax, %rax
+1000009f8:	0f 84 6e ff ff ff	je	0x10000096c
+1000009fe:	48 8d 35 b2 02 00 00	leaq	0x2b2(%rip), %rsi ## literal pool for: "gam"
+100000a05:	48 8d 7d ec	leaq	-0x14(%rbp), %rdi
+100000a09:	e8 88 01 00 00	callq	0x100000b96 ## symbol stub for: _strcmp
+100000a0e:	85 c0	testl	%eax, %eax
+100000a10:	0f 85 56 ff ff ff	jne	0x10000096c
+100000a16:	48 8d 7d ec	leaq	-0x14(%rbp), %rdi
+100000a1a:	be 04 00 00 00	movl	$0x4, %esi
+100000a1f:	48 89 da	movq	%rbx, %rdx
+100000a22:	e8 69 01 00 00	callq	0x100000b90 ## symbol stub for: _fgets
+100000a27:	41 be 25 00 00 00	movl	$0x25, %r14d
+100000a2d:	48 85 c0	testq	%rax, %rax
+100000a30:	0f 84 36 ff ff ff	je	0x10000096c
+100000a36:	48 8d 35 7e 02 00 00	leaq	0x27e(%rip), %rsi ## literal pool for: "ma"
+100000a3d:	48 8d 7d ec	leaq	-0x14(%rbp), %rdi
+100000a41:	e8 50 01 00 00	callq	0x100000b96 ## symbol stub for: _strcmp
+100000a46:	85 c0	testl	%eax, %eax
+100000a48:	0f 85 1e ff ff ff	jne	0x10000096c
+100000a4e:	48 8d 7d ec	leaq	-0x14(%rbp), %rdi
+100000a52:	be 04 00 00 00	movl	$0x4, %esi
+100000a57:	48 89 da	movq	%rbx, %rdx
+100000a5a:	e8 31 01 00 00	callq	0x100000b90 ## symbol stub for: _fgets
+100000a5f:	41 be 26 00 00 00	movl	$0x26, %r14d
+100000a65:	48 85 c0	testq	%rax, %rax
+100000a68:	0f 85 fe fe ff ff	jne	0x10000096c
+100000a6e:	48 89 df	movq	%rbx, %rdi
+100000a71:	e8 14 01 00 00	callq	0x100000b8a ## symbol stub for: _feof
+100000a76:	85 c0	testl	%eax, %eax
+100000a78:	0f 84 ee fe ff ff	je	0x10000096c
+100000a7e:	48 89 df	movq	%rbx, %rdi
+100000a81:	e8 fe 00 00 00	callq	0x100000b84 ## symbol stub for: _fclose
+100000a86:	48 8d 3d 31 02 00 00	leaq	0x231(%rip), %rdi ## literal pool for: "missing.bin"
+100000a8d:	48 8d 35 12 02 00 00	leaq	0x212(%rip), %rsi ## literal pool for: "r"
+100000a94:	e8 df 00 00 00	callq	0x100000b78 ## symbol stub for: _fopen
+100000a99:	41 be 27 00 00 00	movl	$0x27, %r14d
+100000a9f:	48 85 c0	testq	%rax, %rax
+100000aa2:	0f 85 c4 fe ff ff	jne	0x10000096c
+100000aa8:	e8 d1 00 00 00	callq	0x100000b7e ## symbol stub for: ___error
+100000aad:	83 38 02	cmpl	$0x2, (%rax)
+100000ab0:	0f 85 b6 fe ff ff	jne	0x10000096c
+100000ab6:	48 8d 3d 0d 02 00 00	leaq	0x20d(%rip), %rdi ## literal pool for: "../../outside.bin"
+100000abd:	48 8d 35 e2 01 00 00	leaq	0x1e2(%rip), %rsi ## literal pool for: "r"
+100000ac4:	e8 af 00 00 00	callq	0x100000b78 ## symbol stub for: _fopen
+100000ac9:	41 be 28 00 00 00	movl	$0x28, %r14d
+100000acf:	48 85 c0	testq	%rax, %rax
+100000ad2:	0f 85 94 fe ff ff	jne	0x10000096c
+100000ad8:	e8 a1 00 00 00	callq	0x100000b7e ## symbol stub for: ___error
+100000add:	83 38 02	cmpl	$0x2, (%rax)
+100000ae0:	0f 85 86 fe ff ff	jne	0x10000096c
+100000ae6:	48 8d 3d a1 01 00 00	leaq	0x1a1(%rip), %rdi ## literal pool for: "data.bin"
+100000aed:	48 8d 35 e8 01 00 00	leaq	0x1e8(%rip), %rsi ## literal pool for: "r+"
+100000af4:	e8 7f 00 00 00	callq	0x100000b78 ## symbol stub for: _fopen
+100000af9:	48 85 c0	testq	%rax, %rax
+100000afc:	74 63	je	0x100000b61
+100000afe:	48 8b 05 0b 05 00 00	movq	0x50b(%rip), %rax ## literal pool symbol address: ___stdoutp
+100000b05:	48 8b 38	movq	(%rax), %rdi
+100000b08:	e8 65 00 00 00	callq	0x100000b72 ## symbol stub for: _fileno
+100000b0d:	41 be 2a 00 00 00	movl	$0x2a, %r14d
+100000b13:	83 f8 01	cmpl	$0x1, %eax
+100000b16:	0f 85 50 fe ff ff	jne	0x10000096c
+100000b1c:	48 8b 05 e5 04 00 00	movq	0x4e5(%rip), %rax ## literal pool symbol address: ___stderrp
+100000b23:	48 8b 38	movq	(%rax), %rdi
+100000b26:	e8 47 00 00 00	callq	0x100000b72 ## symbol stub for: _fileno
+100000b2b:	83 f8 02	cmpl	$0x2, %eax
+100000b2e:	0f 85 38 fe ff ff	jne	0x10000096c
+100000b34:	48 8b 05 c5 04 00 00	movq	0x4c5(%rip), %rax ## literal pool symbol address: ___stdinp
+100000b3b:	48 8b 38	movq	(%rax), %rdi
+100000b3e:	e8 2f 00 00 00	callq	0x100000b72 ## symbol stub for: _fileno
+100000b43:	85 c0	testl	%eax, %eax
+100000b45:	0f 85 21 fe ff ff	jne	0x10000096c
+100000b4b:	48 8d 3d 8d 01 00 00	leaq	0x18d(%rip), %rdi ## literal pool for: "streams read ok\n"
+100000b52:	45 31 f6	xorl	%r14d, %r14d
+100000b55:	31 c0	xorl	%eax, %eax
+100000b57:	e8 10 00 00 00	callq	0x100000b6c ## symbol stub for: _printf
+100000b5c:	e9 0b fe ff ff	jmp	0x10000096c
+100000b61:	41 be 29 00 00 00	movl	$0x29, %r14d
+100000b67:	e9 00 fe ff ff	jmp	0x10000096c
