@@ -1,0 +1,50 @@
+printf_double:
+(__TEXT,__text) section
+_main:
+100000590:	55	pushq	%rbp
+100000591:	48 89 e5	movq	%rsp, %rbp
+100000594:	48 8d 3d bd 01 00 00	leaq	0x1bd(%rip), %rdi ## literal pool for: "Float: %.2f\n"
+10000059b:	f2 0f 10 05 1d 01 00 00	movsd	0x11d(%rip), %xmm0
+1000005a3:	b0 01	movb	$0x1, %al
+1000005a5:	e8 f2 00 00 00	callq	0x10000069c ## symbol stub for: _printf
+1000005aa:	48 8d 3d b4 01 00 00	leaq	0x1b4(%rip), %rdi ## literal pool for: "[%f][%e][%g][%G]\n"
+1000005b1:	f2 0f 10 05 0f 01 00 00	movsd	0x10f(%rip), %xmm0
+1000005b9:	f2 0f 10 0d 0f 01 00 00	movsd	0x10f(%rip), %xmm1
+1000005c1:	f2 0f 10 15 0f 01 00 00	movsd	0x10f(%rip), %xmm2
+1000005c9:	f2 0f 10 1d 0f 01 00 00	movsd	0x10f(%rip), %xmm3
+1000005d1:	b0 04	movb	$0x4, %al
+1000005d3:	e8 c4 00 00 00	callq	0x10000069c ## symbol stub for: _printf
+1000005d8:	48 8d 3d 98 01 00 00	leaq	0x198(%rip), %rdi ## literal pool for: "[%10.3f][%-10.1f][%+.0f][%08.2f]\n"
+1000005df:	f2 0f 10 05 01 01 00 00	movsd	0x101(%rip), %xmm0
+1000005e7:	f2 0f 10 0d 01 01 00 00	movsd	0x101(%rip), %xmm1
+1000005ef:	f2 0f 10 1d 01 01 00 00	movsd	0x101(%rip), %xmm3
+1000005f7:	0f 28 d1	movaps	%xmm1, %xmm2
+1000005fa:	b0 04	movb	$0x4, %al
+1000005fc:	e8 9b 00 00 00	callq	0x10000069c ## symbol stub for: _printf
+100000601:	48 8d 3d 91 01 00 00	leaq	0x191(%rip), %rdi ## literal pool for: "[%f][%f][%5.1f][%F][%+f]\n"
+100000608:	f2 0f 10 0d f0 00 00 00	movsd	0xf0(%rip), %xmm1
+100000610:	f2 0f 10 15 f0 00 00 00	movsd	0xf0(%rip), %xmm2
+100000618:	f2 0f 10 05 f0 00 00 00	movsd	0xf0(%rip), %xmm0
+100000620:	0f 28 d8	movaps	%xmm0, %xmm3
+100000623:	0f 28 e0	movaps	%xmm0, %xmm4
+100000626:	b0 05	movb	$0x5, %al
+100000628:	e8 6f 00 00 00	callq	0x10000069c ## symbol stub for: _printf
+10000062d:	48 b9 00 00 00 00 00 00 25 40	movabsq	$0x4025000000000000, %rcx
+100000637:	48 ba 00 00 00 00 00 00 22 40	movabsq	$0x4022000000000000, %rdx
+100000641:	48 8d 3d 6b 01 00 00	leaq	0x16b(%rip), %rdi ## literal pool for: "%g %g %g %g %g %g %g %g %g %g\n"
+100000648:	f2 0f 10 05 c8 00 00 00	movsd	0xc8(%rip), %xmm0
+100000650:	f2 0f 10 0d c8 00 00 00	movsd	0xc8(%rip), %xmm1
+100000658:	f2 0f 10 15 c8 00 00 00	movsd	0xc8(%rip), %xmm2
+100000660:	f2 0f 10 1d c8 00 00 00	movsd	0xc8(%rip), %xmm3
+100000668:	f2 0f 10 25 c8 00 00 00	movsd	0xc8(%rip), %xmm4
+100000670:	f2 0f 10 2d c8 00 00 00	movsd	0xc8(%rip), %xmm5
+100000678:	f2 0f 10 35 c8 00 00 00	movsd	0xc8(%rip), %xmm6
+100000680:	f2 0f 10 3d c8 00 00 00	movsd	0xc8(%rip), %xmm7
+100000688:	b0 08	movb	$0x8, %al
+10000068a:	51	pushq	%rcx
+10000068b:	52	pushq	%rdx
+10000068c:	e8 0b 00 00 00	callq	0x10000069c ## symbol stub for: _printf
+100000691:	48 83 c4 10	addq	$0x10, %rsp
+100000695:	31 c0	xorl	%eax, %eax
+100000697:	5d	popq	%rbp
+100000698:	c3	retq

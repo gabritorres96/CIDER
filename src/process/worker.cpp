@@ -9,7 +9,8 @@
 
 namespace cider::guest {
 
-int worker_main(const std::filesystem::path& image, const std::vector<std::string>& guest_args, const std::filesystem::path& result_file) {
+int worker_main(const std::filesystem::path& image, const std::vector<std::string>& guest_args, const std::filesystem::path& result_file,
+                const std::filesystem::path& root) {
 #ifdef _WIN32
     // No Windows Error Reporting / critical-error dialogs if the guest crashes: the supervisor sees the exit code.
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
@@ -27,6 +28,7 @@ int worker_main(const std::filesystem::path& image, const std::vector<std::strin
         cfg.args.insert(cfg.args.end(), guest_args.begin(), guest_args.end());
         cfg.env = {"CIDER_RUNTIME=1"};
         cfg.image_path = image;
+        cfg.root = root;
         out = run_in_process(ByteView(bytes.value()), cfg);
     }
     if (result_file.empty()) return 0;

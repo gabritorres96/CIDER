@@ -86,13 +86,14 @@ int main(int argc, char** argv) {
         if (a == "--json") opt.json = true;
         else if (a == "--symbols") opt.symbols = true;
         else if (a == "--verbose" || a == "-v") { level = cider::log::Level::Debug; level_set = true; }
-        else if (a == "--output" || a == "-o" || a == "--7z" || a == "--temp-dir" || a == "--max-size" || a == "--timeout" || a == "--result-file") {
+        else if (a == "--output" || a == "-o" || a == "--7z" || a == "--temp-dir" || a == "--max-size" || a == "--timeout" || a == "--result-file" || a == "--root") {
             if (i + 1 >= args.size()) { std::fprintf(stderr, "error: %s needs a value\n", a.c_str()); return 2; }
             const std::string& v = args[++i];
             if (a == "--output" || a == "-o") opt.output = v;
             else if (a == "--7z") opt.seven_zip = v;
             else if (a == "--temp-dir") opt.temp_dir = v;
             else if (a == "--result-file") opt.result_file = v;
+            else if (a == "--root") opt.root = v;
             else if (a == "--timeout") {
                 char* end = nullptr;
                 opt.timeout_s = std::strtoull(v.c_str(), &end, 10);

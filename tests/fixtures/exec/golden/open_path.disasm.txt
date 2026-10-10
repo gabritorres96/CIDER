@@ -1,0 +1,41 @@
+open_path:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	41 57	pushq	%r15
+100000546:	41 56	pushq	%r14
+100000548:	53	pushq	%rbx
+100000549:	48 83 ec 18	subq	$0x18, %rsp
+10000054d:	bb 63 00 00 00	movl	$0x63, %ebx
+100000552:	83 ff 02	cmpl	$0x2, %edi
+100000555:	7c 4b	jl	0x1000005a2
+100000557:	48 8b 7e 08	movq	0x8(%rsi), %rdi
+10000055b:	31 db	xorl	%ebx, %ebx
+10000055d:	31 f6	xorl	%esi, %esi
+10000055f:	31 c0	xorl	%eax, %eax
+100000561:	e8 62 00 00 00	callq	0x1000005c8 ## symbol stub for: _open
+100000566:	85 c0	testl	%eax, %eax
+100000568:	78 31	js	0x10000059b
+10000056a:	41 89 c6	movl	%eax, %r14d
+10000056d:	48 8d 75 d0	leaq	-0x30(%rbp), %rsi
+100000571:	ba 0f 00 00 00	movl	$0xf, %edx
+100000576:	89 c7	movl	%eax, %edi
+100000578:	e8 45 00 00 00	callq	0x1000005c2 ## symbol stub for: _read
+10000057d:	49 89 c7	movq	%rax, %r15
+100000580:	44 89 f7	movl	%r14d, %edi
+100000583:	e8 34 00 00 00	callq	0x1000005bc ## symbol stub for: _close
+100000588:	48 8d 3d 83 00 00 00	leaq	0x83(%rip), %rdi ## literal pool for: "%ld\n"
+10000058f:	4c 89 fe	movq	%r15, %rsi
+100000592:	31 c0	xorl	%eax, %eax
+100000594:	e8 1d 00 00 00	callq	0x1000005b6 ## symbol stub for: _printf
+100000599:	eb 07	jmp	0x1000005a2
+10000059b:	e8 10 00 00 00	callq	0x1000005b0 ## symbol stub for: ___error
+1000005a0:	8b 18	movl	(%rax), %ebx
+1000005a2:	89 d8	movl	%ebx, %eax
+1000005a4:	48 83 c4 18	addq	$0x18, %rsp
+1000005a8:	5b	popq	%rbx
+1000005a9:	41 5e	popq	%r14
+1000005ab:	41 5f	popq	%r15
+1000005ad:	5d	popq	%rbp
+1000005ae:	c3	retq

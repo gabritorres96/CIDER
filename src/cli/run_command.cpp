@@ -201,6 +201,13 @@ int cmd_run(const Options& o) {
     if (so.worker_exe.empty()) return finish(o, failed(kInternal, "internal-error", "cannot locate the cider executable to start the worker"));
     so.image = target;
     so.guest_args = o.guest_args;
+    // The guest's "/" is --root, or the directory cider was started in. Always an existing absolute directory.
+    {
+        std::error_code rec;
+        fs::path root = o.root.empty() ? fs::current_path(rec) : fs::absolute(path_from_utf8(o.root), rec);
+        if (rec || !fs::is_directory(root, rec)) return finish(o, failed(kIncompatible, "file-error", "--root is not an existing directory: " + (o.root.empty() ? std::string(".") : o.root)));
+        so.root = root;
+    }
     so.timeout = std::chrono::seconds(o.timeout_s ? o.timeout_s : 60);
     so.capture_output = o.json;
     // JSON mode always collects at least INFO-level runtime messages into the "log" array.
@@ -252,7 +259,8 @@ int cmd_run(const Options& o) {
 
 int cmd_worker(const Options& o) {
     if (o.positional.empty()) return 2;
-    return guest::worker_main(path_from_utf8(o.positional[0]), o.guest_args, o.result_file.empty() ? fs::path() : path_from_utf8(o.result_file));
+    return guest::worker_main(path_from_utf8(o.positional[0]), o.guest_args, o.result_file.empty() ? fs::path() : path_from_utf8(o.result_file),
+                              o.root.empty() ? fs::path() : path_from_utf8(o.root));
 }
 
 }  // namespace cider::cli

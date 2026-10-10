@@ -1,0 +1,162 @@
+files_write:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	53	pushq	%rbx
+100000545:	48 81 ec 98 00 00 00	subq	$0x98, %rsp
+10000054c:	48 8d 3d 0b 03 00 00	leaq	0x30b(%rip), %rdi ## literal pool for: "out.txt"
+100000553:	be 01 06 00 00	movl	$0x601, %esi
+100000558:	ba a4 01 00 00	movl	$0x1a4, %edx
+10000055d:	31 c0	xorl	%eax, %eax
+10000055f:	e8 84 02 00 00	callq	0x1000007e8 ## symbol stub for: _open
+100000564:	89 c3	movl	%eax, %ebx
+100000566:	b8 0a 00 00 00	movl	$0xa, %eax
+10000056b:	83 fb 03	cmpl	$0x3, %ebx
+10000056e:	0f 8c 5d 02 00 00	jl	0x1000007d1
+100000574:	48 8d 35 eb 02 00 00	leaq	0x2eb(%rip), %rsi ## literal pool for: "alpha\n"
+10000057b:	ba 06 00 00 00	movl	$0x6, %edx
+100000580:	89 df	movl	%ebx, %edi
+100000582:	e8 6d 02 00 00	callq	0x1000007f4 ## symbol stub for: _write
+100000587:	48 89 c1	movq	%rax, %rcx
+10000058a:	b8 0b 00 00 00	movl	$0xb, %eax
+10000058f:	48 83 f9 06	cmpq	$0x6, %rcx
+100000593:	0f 85 38 02 00 00	jne	0x1000007d1
+100000599:	48 8d 35 cd 02 00 00	leaq	0x2cd(%rip), %rsi ## literal pool for: "beta\n"
+1000005a0:	ba 05 00 00 00	movl	$0x5, %edx
+1000005a5:	89 df	movl	%ebx, %edi
+1000005a7:	e8 48 02 00 00	callq	0x1000007f4 ## symbol stub for: _write
+1000005ac:	48 89 c1	movq	%rax, %rcx
+1000005af:	b8 0c 00 00 00	movl	$0xc, %eax
+1000005b4:	48 83 f9 05	cmpq	$0x5, %rcx
+1000005b8:	0f 85 13 02 00 00	jne	0x1000007d1
+1000005be:	89 df	movl	%ebx, %edi
+1000005c0:	e8 29 02 00 00	callq	0x1000007ee ## symbol stub for: _close
+1000005c5:	89 c1	movl	%eax, %ecx
+1000005c7:	b8 0d 00 00 00	movl	$0xd, %eax
+1000005cc:	85 c9	testl	%ecx, %ecx
+1000005ce:	0f 85 fd 01 00 00	jne	0x1000007d1
+1000005d4:	48 8d 3d 83 02 00 00	leaq	0x283(%rip), %rdi ## literal pool for: "out.txt"
+1000005db:	be 01 0a 00 00	movl	$0xa01, %esi
+1000005e0:	ba a4 01 00 00	movl	$0x1a4, %edx
+1000005e5:	31 c0	xorl	%eax, %eax
+1000005e7:	e8 fc 01 00 00	callq	0x1000007e8 ## symbol stub for: _open
+1000005ec:	89 c1	movl	%eax, %ecx
+1000005ee:	b8 0e 00 00 00	movl	$0xe, %eax
+1000005f3:	83 f9 ff	cmpl	$-0x1, %ecx
+1000005f6:	0f 85 d5 01 00 00	jne	0x1000007d1
+1000005fc:	e8 e1 01 00 00	callq	0x1000007e2 ## symbol stub for: ___error
+100000601:	48 89 c1	movq	%rax, %rcx
+100000604:	b8 0e 00 00 00	movl	$0xe, %eax
+100000609:	83 39 11	cmpl	$0x11, (%rcx)
+10000060c:	0f 85 bf 01 00 00	jne	0x1000007d1
+100000612:	48 8d 3d 45 02 00 00	leaq	0x245(%rip), %rdi ## literal pool for: "out.txt"
+100000619:	be 09 00 00 00	movl	$0x9, %esi
+10000061e:	31 c0	xorl	%eax, %eax
+100000620:	e8 c3 01 00 00	callq	0x1000007e8 ## symbol stub for: _open
+100000625:	89 c3	movl	%eax, %ebx
+100000627:	b8 0f 00 00 00	movl	$0xf, %eax
+10000062c:	83 fb 03	cmpl	$0x3, %ebx
+10000062f:	0f 8c 9c 01 00 00	jl	0x1000007d1
+100000635:	48 8d 35 37 02 00 00	leaq	0x237(%rip), %rsi ## literal pool for: "gamma\n"
+10000063c:	ba 06 00 00 00	movl	$0x6, %edx
+100000641:	89 df	movl	%ebx, %edi
+100000643:	e8 ac 01 00 00	callq	0x1000007f4 ## symbol stub for: _write
+100000648:	48 89 c1	movq	%rax, %rcx
+10000064b:	b8 10 00 00 00	movl	$0x10, %eax
+100000650:	48 83 f9 06	cmpq	$0x6, %rcx
+100000654:	0f 85 77 01 00 00	jne	0x1000007d1
+10000065a:	89 df	movl	%ebx, %edi
+10000065c:	e8 8d 01 00 00	callq	0x1000007ee ## symbol stub for: _close
+100000661:	48 8d 3d f6 01 00 00	leaq	0x1f6(%rip), %rdi ## literal pool for: "out.txt"
+100000668:	48 8d b5 68 ff ff ff	leaq	-0x98(%rbp), %rsi
+10000066f:	e8 8c 01 00 00	callq	0x100000800 ## symbol stub for: _stat$INODE64
+100000674:	89 c1	movl	%eax, %ecx
+100000676:	b8 11 00 00 00	movl	$0x11, %eax
+10000067b:	85 c9	testl	%ecx, %ecx
+10000067d:	0f 85 4e 01 00 00	jne	0x1000007d1
+100000683:	48 83 7d c8 11	cmpq	$0x11, -0x38(%rbp)
+100000688:	0f 85 43 01 00 00	jne	0x1000007d1
+10000068e:	48 8d 3d c9 01 00 00	leaq	0x1c9(%rip), %rdi ## literal pool for: "out.txt"
+100000695:	be 06 00 00 00	movl	$0x6, %esi
+10000069a:	e8 5b 01 00 00	callq	0x1000007fa ## symbol stub for: _access
+10000069f:	89 c1	movl	%eax, %ecx
+1000006a1:	b8 12 00 00 00	movl	$0x12, %eax
+1000006a6:	85 c9	testl	%ecx, %ecx
+1000006a8:	0f 85 23 01 00 00	jne	0x1000007d1
+1000006ae:	48 8d 3d a9 01 00 00	leaq	0x1a9(%rip), %rdi ## literal pool for: "out.txt"
+1000006b5:	31 f6	xorl	%esi, %esi
+1000006b7:	31 c0	xorl	%eax, %eax
+1000006b9:	e8 2a 01 00 00	callq	0x1000007e8 ## symbol stub for: _open
+1000006be:	89 c3	movl	%eax, %ebx
+1000006c0:	48 8d 35 b3 01 00 00	leaq	0x1b3(%rip), %rsi ## literal pool for: "x"
+1000006c7:	ba 01 00 00 00	movl	$0x1, %edx
+1000006cc:	89 c7	movl	%eax, %edi
+1000006ce:	e8 21 01 00 00	callq	0x1000007f4 ## symbol stub for: _write
+1000006d3:	48 89 c1	movq	%rax, %rcx
+1000006d6:	b8 13 00 00 00	movl	$0x13, %eax
+1000006db:	48 83 f9 ff	cmpq	$-0x1, %rcx
+1000006df:	0f 85 ec 00 00 00	jne	0x1000007d1
+1000006e5:	e8 f8 00 00 00	callq	0x1000007e2 ## symbol stub for: ___error
+1000006ea:	48 89 c1	movq	%rax, %rcx
+1000006ed:	b8 13 00 00 00	movl	$0x13, %eax
+1000006f2:	83 39 09	cmpl	$0x9, (%rcx)
+1000006f5:	0f 85 d6 00 00 00	jne	0x1000007d1
+1000006fb:	89 df	movl	%ebx, %edi
+1000006fd:	e8 ec 00 00 00	callq	0x1000007ee ## symbol stub for: _close
+100000702:	48 8d 3d 73 01 00 00	leaq	0x173(%rip), %rdi ## literal pool for: "../../../escape.txt"
+100000709:	be 01 06 00 00	movl	$0x601, %esi
+10000070e:	ba a4 01 00 00	movl	$0x1a4, %edx
+100000713:	31 c0	xorl	%eax, %eax
+100000715:	e8 ce 00 00 00	callq	0x1000007e8 ## symbol stub for: _open
+10000071a:	89 c3	movl	%eax, %ebx
+10000071c:	b8 14 00 00 00	movl	$0x14, %eax
+100000721:	83 fb 03	cmpl	$0x3, %ebx
+100000724:	0f 8c a7 00 00 00	jl	0x1000007d1
+10000072a:	48 8d 35 5f 01 00 00	leaq	0x15f(%rip), %rsi ## literal pool for: "inside"
+100000731:	ba 06 00 00 00	movl	$0x6, %edx
+100000736:	89 df	movl	%ebx, %edi
+100000738:	e8 b7 00 00 00	callq	0x1000007f4 ## symbol stub for: _write
+10000073d:	89 df	movl	%ebx, %edi
+10000073f:	e8 aa 00 00 00	callq	0x1000007ee ## symbol stub for: _close
+100000744:	48 8d 3d 4c 01 00 00	leaq	0x14c(%rip), %rdi ## literal pool for: "C:\\Windows\\win.ini"
+10000074b:	31 f6	xorl	%esi, %esi
+10000074d:	31 c0	xorl	%eax, %eax
+10000074f:	e8 94 00 00 00	callq	0x1000007e8 ## symbol stub for: _open
+100000754:	83 f8 ff	cmpl	$-0x1, %eax
+100000757:	74 07	je	0x100000760
+100000759:	b8 15 00 00 00	movl	$0x15, %eax
+10000075e:	eb 71	jmp	0x1000007d1
+100000760:	e8 7d 00 00 00	callq	0x1000007e2 ## symbol stub for: ___error
+100000765:	83 38 16	cmpl	$0x16, (%rax)
+100000768:	b8 15 00 00 00	movl	$0x15, %eax
+10000076d:	75 62	jne	0x1000007d1
+10000076f:	48 8d 3d 34 01 00 00	leaq	0x134(%rip), %rdi ## literal pool for: "con"
+100000776:	be 01 02 00 00	movl	$0x201, %esi
+10000077b:	ba a4 01 00 00	movl	$0x1a4, %edx
+100000780:	31 c0	xorl	%eax, %eax
+100000782:	e8 61 00 00 00	callq	0x1000007e8 ## symbol stub for: _open
+100000787:	89 c1	movl	%eax, %ecx
+100000789:	b8 16 00 00 00	movl	$0x16, %eax
+10000078e:	83 f9 ff	cmpl	$-0x1, %ecx
+100000791:	75 3e	jne	0x1000007d1
+100000793:	48 8d 3d c4 00 00 00	leaq	0xc4(%rip), %rdi ## literal pool for: "out.txt"
+10000079a:	be 00 00 00 40	movl	$0x40000000, %esi
+10000079f:	31 c0	xorl	%eax, %eax
+1000007a1:	e8 42 00 00 00	callq	0x1000007e8 ## symbol stub for: _open
+1000007a6:	83 f8 ff	cmpl	$-0x1, %eax
+1000007a9:	74 07	je	0x1000007b2
+1000007ab:	b8 17 00 00 00	movl	$0x17, %eax
+1000007b0:	eb 1f	jmp	0x1000007d1
+1000007b2:	e8 2b 00 00 00	callq	0x1000007e2 ## symbol stub for: ___error
+1000007b7:	83 38 16	cmpl	$0x16, (%rax)
+1000007ba:	b8 17 00 00 00	movl	$0x17, %eax
+1000007bf:	75 10	jne	0x1000007d1
+1000007c1:	48 8d 3d e6 00 00 00	leaq	0xe6(%rip), %rdi ## literal pool for: "written\n"
+1000007c8:	31 c0	xorl	%eax, %eax
+1000007ca:	e8 0d 00 00 00	callq	0x1000007dc ## symbol stub for: _printf
+1000007cf:	31 c0	xorl	%eax, %eax
+1000007d1:	48 81 c4 98 00 00 00	addq	$0x98, %rsp
+1000007d8:	5b	popq	%rbx
+1000007d9:	5d	popq	%rbp
+1000007da:	c3	retq

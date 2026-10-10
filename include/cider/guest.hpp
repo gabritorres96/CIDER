@@ -22,6 +22,7 @@ struct GuestConfig {
     std::vector<std::string> env;    // "NAME=value"
     std::function<void(int fd, const char* data, size_t size)> sink;  // default: real stdout/stderr
     std::filesystem::path image_path;   // where the executable lives: base of @executable_path and @rpath searches
+    std::filesystem::path root;         // host directory that the guest sees as "/" (empty: the guest cannot open files)
     bool reject_cycles = false;         // refuse dependency cycles instead of tolerating them (dyld tolerates them)
 };
 
@@ -76,6 +77,7 @@ struct SupervisorOptions {
     std::string log_level = "info";
     std::filesystem::path log_file;       // worker log file (empty: worker logs to stderr)
     uint64_t memory_limit = 4ull << 30;   // per-process committed memory limit
+    std::filesystem::path root;           // guest file root (`cider run --root`); empty: guest file access is refused
 };
 
 struct SupervisorResult {
@@ -100,6 +102,6 @@ SupervisorResult run_supervised(const SupervisorOptions& opts);
 // Entry point of `cider __worker`: loads the image, runs it, writes the result file. Returns the worker
 // process exit code (0 when a result was written, even if the guest failed).
 int worker_main(const std::filesystem::path& image, const std::vector<std::string>& guest_args,
-                const std::filesystem::path& result_file);
+                const std::filesystem::path& result_file, const std::filesystem::path& root = {});
 
 }  // namespace cider::guest

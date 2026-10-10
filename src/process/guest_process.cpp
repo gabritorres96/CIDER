@@ -80,6 +80,8 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     libsystem::RuntimeContext ctx;
     ctx.env = cfg.env;
     ctx.sink = cfg.sink;
+    ctx.root = cfg.root;
+    provider.value()->install_stdio(ctx);
     libsystem::set_context(&ctx);
 
     // ---- Mach-O initializers (never Windows constructors): dependencies first, each exactly once ----------

@@ -1,0 +1,55 @@
+snprintf:
+(__TEXT,__text) section
+_main:
+100000590:	55	pushq	%rbp
+100000591:	48 89 e5	movq	%rsp, %rbp
+100000594:	41 57	pushq	%r15
+100000596:	41 56	pushq	%r14
+100000598:	53	pushq	%rbx
+100000599:	48 83 ec 48	subq	$0x48, %rsp
+10000059d:	48 8d 15 04 01 00 00	leaq	0x104(%rip), %rdx ## literal pool for: "%s-%d"
+1000005a4:	48 8d 0d 03 01 00 00	leaq	0x103(%rip), %rcx ## literal pool for: "abcdef"
+1000005ab:	48 8d 5d e0	leaq	-0x20(%rbp), %rbx
+1000005af:	be 08 00 00 00	movl	$0x8, %esi
+1000005b4:	48 89 df	movq	%rbx, %rdi
+1000005b7:	41 b8 39 30 00 00	movl	$0x3039, %r8d
+1000005bd:	31 c0	xorl	%eax, %eax
+1000005bf:	e8 98 00 00 00	callq	0x10000065c ## symbol stub for: _snprintf
+1000005c4:	48 8d 3d ea 00 00 00	leaq	0xea(%rip), %rdi ## literal pool for: "[%s] %d\n"
+1000005cb:	48 89 de	movq	%rbx, %rsi
+1000005ce:	89 c2	movl	%eax, %edx
+1000005d0:	31 c0	xorl	%eax, %eax
+1000005d2:	e8 79 00 00 00	callq	0x100000650 ## symbol stub for: _printf
+1000005d7:	48 8d 15 e0 00 00 00	leaq	0xe0(%rip), %rdx ## literal pool for: "%d"
+1000005de:	31 ff	xorl	%edi, %edi
+1000005e0:	31 f6	xorl	%esi, %esi
+1000005e2:	b9 40 e2 01 00	movl	$0x1e240, %ecx
+1000005e7:	31 c0	xorl	%eax, %eax
+1000005e9:	e8 6e 00 00 00	callq	0x10000065c ## symbol stub for: _snprintf
+1000005ee:	89 c3	movl	%eax, %ebx
+1000005f0:	48 8d 3d ca 00 00 00	leaq	0xca(%rip), %rdi ## literal pool for: "%d\n"
+1000005f7:	89 c6	movl	%eax, %esi
+1000005f9:	31 c0	xorl	%eax, %eax
+1000005fb:	e8 50 00 00 00	callq	0x100000650 ## symbol stub for: _printf
+100000600:	48 8d 35 be 00 00 00	leaq	0xbe(%rip), %rsi ## literal pool for: "%05d:%s:%.1f"
+100000607:	48 8d 0d c4 00 00 00	leaq	0xc4(%rip), %rcx ## literal pool for: "x"
+10000060e:	4c 8d 75 a0	leaq	-0x60(%rbp), %r14
+100000612:	f2 0f 10 05 86 00 00 00	movsd	0x86(%rip), %xmm0
+10000061a:	4c 89 f7	movq	%r14, %rdi
+10000061d:	ba 2a 00 00 00	movl	$0x2a, %edx
+100000622:	b0 01	movb	$0x1, %al
+100000624:	e8 2d 00 00 00	callq	0x100000656 ## symbol stub for: _sprintf
+100000629:	41 89 c7	movl	%eax, %r15d
+10000062c:	48 8d 3d a1 00 00 00	leaq	0xa1(%rip), %rdi ## literal pool for: "%s %d\n"
+100000633:	4c 89 f6	movq	%r14, %rsi
+100000636:	89 c2	movl	%eax, %edx
+100000638:	31 c0	xorl	%eax, %eax
+10000063a:	e8 11 00 00 00	callq	0x100000650 ## symbol stub for: _printf
+10000063f:	41 01 df	addl	%ebx, %r15d
+100000642:	44 89 f8	movl	%r15d, %eax
+100000645:	48 83 c4 48	addq	$0x48, %rsp
+100000649:	5b	popq	%rbx
+10000064a:	41 5e	popq	%r14
+10000064c:	41 5f	popq	%r15
+10000064e:	5d	popq	%rbp
+10000064f:	c3	retq

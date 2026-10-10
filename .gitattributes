@@ -7,3 +7,4 @@ tests/fixtures/exec/golden/** text eol=lf
 tests/fixtures/dylib/bin/** binary
 tests/fixtures/dylib/golden/** text eol=lf
 tests/fixtures/dylib/tbd/** text eol=lf
+tests/fixtures/exec/src/*.h text eol=lf

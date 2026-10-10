@@ -102,4 +102,54 @@ guest_exited:
     jmp cider_host_epilogue
 cider_guest_thunk ENDP
 
+; Raw variant: the host function receives a pointer to a GuestRegs record (include/cider/abi.hpp) describing every
+; register and the stack-argument area of the System V call, and leaves its results in the same record.
+;   GuestRegs: +0 rdi +8 rsi +16 rdx +24 rcx +32 r8 +40 r9 +48 rax (AL = vector registers used by variadic calls)
+;              +56 stack_args +64..+120 xmm0..xmm7 (low qwords) +128 ret_rax +136 ret_rdx +144 ret_xmm0 +152 ret_xmm1
+; Entered like cider_guest_thunk: [rsp] = guest return address, r10 = host function  void fn(GuestRegs*).
+cider_guest_thunk_raw PROC
+    mov r11, cider_current_call
+    mov qword ptr [r11+56], rsp          ; remember the guest stack
+    mov rsp, qword ptr [r11+48]          ; HOST stack
+    sub rsp, 208                         ; 32 shadow + 168 GuestRegs + 8 padding: rsp is 16-byte aligned at the call
+    mov qword ptr [rsp+32+48], rax       ; AL of a variadic call (rax is untouched so far)
+    mov qword ptr [rsp+32+0],  rdi
+    mov qword ptr [rsp+32+8],  rsi
+    mov qword ptr [rsp+32+16], rdx
+    mov qword ptr [rsp+32+24], rcx
+    mov qword ptr [rsp+32+32], r8
+    mov qword ptr [rsp+32+40], r9
+    mov rax, qword ptr [r11+56]          ; guest rsp: [rsp] = return address, stack arguments start at rsp+8
+    add rax, 8
+    mov qword ptr [rsp+32+56], rax
+    movq qword ptr [rsp+32+64],  xmm0
+    movq qword ptr [rsp+32+72],  xmm1
+    movq qword ptr [rsp+32+80],  xmm2
+    movq qword ptr [rsp+32+88],  xmm3
+    movq qword ptr [rsp+32+96],  xmm4
+    movq qword ptr [rsp+32+104], xmm5
+    movq qword ptr [rsp+32+112], xmm6
+    movq qword ptr [rsp+32+120], xmm7
+    xor eax, eax
+    mov qword ptr [rsp+32+128], rax      ; results start as zero
+    mov qword ptr [rsp+32+136], rax
+    mov qword ptr [rsp+32+144], rax
+    mov qword ptr [rsp+32+152], rax
+    lea rcx, qword ptr [rsp+32]          ; Windows ABI: first argument = GuestRegs*
+    call r10
+    mov r11, cider_current_call
+    cmp qword ptr [r11+72], 0            ; did the function request exit()?
+    jne raw_exited
+    mov rax, qword ptr [rsp+32+128]      ; rax
+    mov rdx, qword ptr [rsp+32+136]      ; rdx (second integer eightbyte)
+    movq xmm0, qword ptr [rsp+32+144]
+    movq xmm1, qword ptr [rsp+32+152]
+    mov rsp, qword ptr [r11+56]          ; back to the guest stack, return into guest code
+    ret
+raw_exited:
+    mov rax, qword ptr [r11+80]
+    mov qword ptr [r11+64], rax
+    jmp cider_host_epilogue
+cider_guest_thunk_raw ENDP
+
 END

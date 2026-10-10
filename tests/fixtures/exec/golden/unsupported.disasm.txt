@@ -1,0 +1,96 @@
+unsupported:
+(__TEXT,__text) section
+_main:
+100000590:	55	pushq	%rbp
+100000591:	48 89 e5	movq	%rsp, %rbp
+100000594:	53	pushq	%rbx
+100000595:	48 83 ec 18	subq	$0x18, %rsp
+100000599:	c7 45 f4 00 00 00 00	movl	$0x0, -0xc(%rbp)
+1000005a0:	bb 6e 00 00 00	movl	$0x6e, %ebx
+1000005a5:	83 ff 02	cmpl	$0x2, %edi
+1000005a8:	7c 07	jl	0x1000005b1
+1000005aa:	48 8b 46 08	movq	0x8(%rsi), %rax
+1000005ae:	0f be 18	movsbl	(%rax), %ebx
+1000005b1:	48 8d 3d 84 01 00 00	leaq	0x184(%rip), %rdi ## literal pool for: "before"
+1000005b8:	e8 43 01 00 00	callq	0x100000700 ## symbol stub for: _puts
+1000005bd:	83 c3 b4	addl	$-0x4c, %ebx
+1000005c0:	83 fb 2b	cmpl	$0x2b, %ebx
+1000005c3:	77 73	ja	0x100000638
+1000005c5:	48 8d 05 84 00 00 00	leaq	0x84(%rip), %rax
+1000005cc:	48 63 0c 98	movslq	(%rax,%rbx,4), %rcx
+1000005d0:	48 01 c1	addq	%rax, %rcx
+1000005d3:	ff e1	jmpq	*%rcx
+1000005d5:	d9 05 5d 01 00 00	flds	0x15d(%rip)
+1000005db:	db 3c 24	fstpt	(%rsp)
+1000005de:	48 8d 3d 65 01 00 00	leaq	0x165(%rip), %rdi ## literal pool for: "%Lf\n"
+1000005e5:	31 c0	xorl	%eax, %eax
+1000005e7:	e8 1a 01 00 00	callq	0x100000706 ## symbol stub for: _printf
+1000005ec:	eb 4a	jmp	0x100000638
+1000005ee:	48 8d 3d 4e 01 00 00	leaq	0x14e(%rip), %rdi ## literal pool for: "%n"
+1000005f5:	48 8d 75 f4	leaq	-0xc(%rbp), %rsi
+1000005f9:	eb 36	jmp	0x100000631
+1000005fb:	48 8d 3d 44 01 00 00	leaq	0x144(%rip), %rdi ## literal pool for: "%a\n"
+100000602:	f2 0f 10 05 26 01 00 00	movsd	0x126(%rip), %xmm0
+10000060a:	b0 01	movb	$0x1, %al
+10000060c:	e8 f5 00 00 00	callq	0x100000706 ## symbol stub for: _printf
+100000611:	eb 25	jmp	0x100000638
+100000613:	48 8d 3d 3a 01 00 00	leaq	0x13a(%rip), %rdi ## literal pool for: "%'d\n"
+10000061a:	be e8 03 00 00	movl	$0x3e8, %esi
+10000061f:	31 c0	xorl	%eax, %eax
+100000621:	e8 e0 00 00 00	callq	0x100000706 ## symbol stub for: _printf
+100000626:	eb 10	jmp	0x100000638
+100000628:	48 8d 3d 20 01 00 00	leaq	0x120(%rip), %rdi ## literal pool for: "%ls\n"
+10000062f:	31 f6	xorl	%esi, %esi
+100000631:	31 c0	xorl	%eax, %eax
+100000633:	e8 ce 00 00 00	callq	0x100000706 ## symbol stub for: _printf
+100000638:	48 8d 3d 1a 01 00 00	leaq	0x11a(%rip), %rdi ## literal pool for: "after"
+10000063f:	e8 bc 00 00 00	callq	0x100000700 ## symbol stub for: _puts
+100000644:	b8 05 00 00 00	movl	$0x5, %eax
+100000649:	48 83 c4 18	addq	$0x18, %rsp
+10000064d:	5b	popq	%rbx
+10000064e:	5d	popq	%rbp
+10000064f:	c3	retq
+100000650:	85 ff ff ff	.long 4294967173	@ KIND_JUMP_TABLE32
+100000654:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000658:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+10000065c:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000660:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000664:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000668:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+10000066c:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000670:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000674:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000678:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+10000067c:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000680:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000684:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000688:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+10000068c:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000690:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000694:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+100000698:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+10000069c:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006a0:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006a4:	ab ff ff ff	.long 4294967211	@ KIND_JUMP_TABLE32
+1000006a8:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006ac:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006b0:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006b4:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006b8:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006bc:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006c0:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006c4:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006c8:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006cc:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006d0:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006d4:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006d8:	9e ff ff ff	.long 4294967198	@ KIND_JUMP_TABLE32
+1000006dc:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006e0:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006e4:	c3 ff ff ff	.long 4294967235	@ KIND_JUMP_TABLE32
+1000006e8:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006ec:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006f0:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006f4:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006f8:	e8 ff ff ff	.long 4294967272	@ KIND_JUMP_TABLE32
+1000006fc:	d8 ff ff ff	.long 4294967256	@ KIND_JUMP_TABLE32

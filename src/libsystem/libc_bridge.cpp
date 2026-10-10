@@ -8,6 +8,7 @@
 #include "cider/abi.hpp"
 #include "cider/libsystem.hpp"
 #include "cider/log.hpp"
+#include "internal.hpp"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -17,32 +18,9 @@
 namespace cider::libsystem {
 namespace {
 
-void emit(int fd, const char* data, size_t n) {
-    RuntimeContext* c = context();
-    if (c) {
-        (fd == 2 ? c->bytes_err : c->bytes_out) += n;
-        ++c->calls;
-        if (c->sink) { c->sink(fd, data, n); return; }
-    }
-#ifdef _WIN32
-    HANDLE h = GetStdHandle(fd == 2 ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE);
-    size_t done = 0;
-    while (done < n && h && h != INVALID_HANDLE_VALUE) {
-        DWORD w = 0;
-        if (!WriteFile(h, data + done, static_cast<DWORD>(std::min<size_t>(n - done, 1u << 20)), &w, nullptr) || w == 0) break;
-        done += w;
-    }
-#else
-    (void)fwrite(data, 1, n, fd == 2 ? stderr : stdout);
-#endif
-}
+void emit(int fd, const char* data, size_t n) { console_write(fd, data, n); }
 
 // ---- I/O --------------------------------------------------------------------------------------
-int64_t w_write(int fd, const void* buf, uint64_t n) {
-    if ((fd != 1 && fd != 2) || (!buf && n)) return -1;  // only stdout/stderr exist in this runtime
-    emit(fd, static_cast<const char*>(buf), n);
-    return static_cast<int64_t>(n);
-}
 int w_puts(const char* s) {
     if (!s) return -1;
     emit(1, s, std::strlen(s));
@@ -149,9 +127,39 @@ template <class F> void* addr(F* f) { return reinterpret_cast<void*>(f); }
 
 }  // namespace
 
+void console_write(int fd, const char* data, size_t n) {
+    RuntimeContext* c = context();
+    if (c) {
+        (fd == 2 ? c->bytes_err : c->bytes_out) += n;
+        ++c->calls;
+        if (c->sink) { c->sink(fd, data, n); return; }
+    }
+#ifdef _WIN32
+    HANDLE h = GetStdHandle(fd == 2 ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE);
+    size_t done = 0;
+    while (done < n && h && h != INVALID_HANDLE_VALUE) {
+        DWORD w = 0;
+        if (!WriteFile(h, data + done, static_cast<DWORD>(std::min<size_t>(n - done, 1u << 20)), &w, nullptr) || w == 0) break;
+        done += w;
+    }
+#else
+    (void)fwrite(data, 1, n, fd == 2 ? stderr : stdout);
+#endif
+}
+
+namespace detail {
+void* guest_malloc(uint64_t n) { return w_malloc(n); }
+void trap(const std::string& what) {
+    if (RuntimeContext* c = context()) c->fault = what;
+    log::error("guest trapped: {}", what);
+    abi::request_guest_exit(134);
+}
+}  // namespace detail
+
 const std::vector<HostSymbol>& implemented_symbols() {
-    static const std::vector<HostSymbol> table = {
-        {"_puts", addr(w_puts)},       {"_putchar", addr(w_putchar)}, {"_write", addr(w_write)},   {"_exit", addr(w_exit)},
+    static const std::vector<HostSymbol> table = [] {
+    std::vector<HostSymbol> t = {
+        {"_puts", addr(w_puts)},       {"_putchar", addr(w_putchar)}, {"_exit", addr(w_exit)},
         {"_getpid", addr(w_getpid)},   {"_getenv", addr(w_getenv)},   {"_strlen", addr(w_strlen)}, {"_strcmp", addr(w_strcmp)},
         {"_strncmp", addr(w_strncmp)}, {"_memcpy", addr(w_memcpy)},   {"_memmove", addr(w_memmove)}, {"_memset", addr(w_memset)},
         {"_memcmp", addr(w_memcmp)},   {"_abs", addr(w_abs)},         {"_labs", addr(w_labs)},     {"_malloc", addr(w_malloc)},
@@ -159,12 +167,19 @@ const std::vector<HostSymbol>& implemented_symbols() {
         {"_fabs", addr(w_fabs)},       {"_floor", addr(w_floor)},     {"_ceil", addr(w_ceil)},     {"_pow", addr(w_pow)},
         {"dyld_stub_binder", addr(w_lazy_bind_trap)},
     };
+    detail::add_stdio_symbols(t);
+    detail::add_posix_symbols(t);
+    detail::add_misc_symbols(t);
+    return t;
+    }();
     return table;
 }
 
 bool is_implemented(std::string_view s) {
     for (const auto& h : implemented_symbols())
         if (s == h.name) return true;
+    for (const auto& d : implemented_data_symbols())
+        if (s == d.name) return true;
     return false;
 }
 

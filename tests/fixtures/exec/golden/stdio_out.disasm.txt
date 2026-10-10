@@ -1,0 +1,60 @@
+stdio_out:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	53	pushq	%rbx
+100000545:	50	pushq	%rax
+100000546:	48 8d 3d a7 01 00 00	leaq	0x1a7(%rip), %rdi ## literal pool for: "out-1"
+10000054d:	e8 28 01 00 00	callq	0x10000067a ## symbol stub for: _puts
+100000552:	48 8b 1d af 0a 00 00	movq	0xaaf(%rip), %rbx ## literal pool symbol address: ___stderrp
+100000559:	48 8b 33	movq	(%rbx), %rsi
+10000055c:	48 8d 3d 97 01 00 00	leaq	0x197(%rip), %rdi ## literal pool for: "err-1\n"
+100000563:	e8 0c 01 00 00	callq	0x100000674 ## symbol stub for: _fputs
+100000568:	bf 41 00 00 00	movl	$0x41, %edi
+10000056d:	e8 fc 00 00 00	callq	0x10000066e ## symbol stub for: _putchar
+100000572:	bf 0a 00 00 00	movl	$0xa, %edi
+100000577:	e8 f2 00 00 00	callq	0x10000066e ## symbol stub for: _putchar
+10000057c:	48 8b 3b	movq	(%rbx), %rdi
+10000057f:	48 8d 35 7b 01 00 00	leaq	0x17b(%rip), %rsi ## literal pool for: "err-%d\n"
+100000586:	ba 02 00 00 00	movl	$0x2, %edx
+10000058b:	31 c0	xorl	%eax, %eax
+10000058d:	e8 d6 00 00 00	callq	0x100000668 ## symbol stub for: _fprintf
+100000592:	48 8b 1d 67 0a 00 00	movq	0xa67(%rip), %rbx ## literal pool symbol address: ___stdoutp
+100000599:	48 8b 0b	movq	(%rbx), %rcx
+10000059c:	48 8d 3d 66 01 00 00	leaq	0x166(%rip), %rdi ## literal pool for: "fw"
+1000005a3:	be 01 00 00 00	movl	$0x1, %esi
+1000005a8:	ba 02 00 00 00	movl	$0x2, %edx
+1000005ad:	e8 b0 00 00 00	callq	0x100000662 ## symbol stub for: _fwrite
+1000005b2:	48 8b 0b	movq	(%rbx), %rcx
+1000005b5:	48 8d 3d 50 01 00 00	leaq	0x150(%rip), %rdi ## literal pool for: "\n"
+1000005bc:	be 01 00 00 00	movl	$0x1, %esi
+1000005c1:	ba 01 00 00 00	movl	$0x1, %edx
+1000005c6:	e8 97 00 00 00	callq	0x100000662 ## symbol stub for: _fwrite
+1000005cb:	48 8d 35 3c 01 00 00	leaq	0x13c(%rip), %rsi ## literal pool for: "w1\n"
+1000005d2:	ba 03 00 00 00	movl	$0x3, %edx
+1000005d7:	bf 01 00 00 00	movl	$0x1, %edi
+1000005dc:	e8 7b 00 00 00	callq	0x10000065c ## symbol stub for: _write
+1000005e1:	48 8d 35 2a 01 00 00	leaq	0x12a(%rip), %rsi ## literal pool for: "w2\n"
+1000005e8:	ba 03 00 00 00	movl	$0x3, %edx
+1000005ed:	bf 02 00 00 00	movl	$0x2, %edi
+1000005f2:	e8 65 00 00 00	callq	0x10000065c ## symbol stub for: _write
+1000005f7:	48 8b 33	movq	(%rbx), %rsi
+1000005fa:	bf 5a 00 00 00	movl	$0x5a, %edi
+1000005ff:	e8 52 00 00 00	callq	0x100000656 ## symbol stub for: _fputc
+100000604:	48 8b 33	movq	(%rbx), %rsi
+100000607:	bf 0a 00 00 00	movl	$0xa, %edi
+10000060c:	e8 3f 00 00 00	callq	0x100000650 ## symbol stub for: _putc
+100000611:	48 8d 3d fe 00 00 00	leaq	0xfe(%rip), %rdi ## literal pool for: "end %s\n"
+100000618:	48 8d 35 ff 00 00 00	leaq	0xff(%rip), %rsi ## literal pool for: "ok"
+10000061f:	31 c0	xorl	%eax, %eax
+100000621:	e8 24 00 00 00	callq	0x10000064a ## symbol stub for: _printf
+100000626:	48 8b 3b	movq	(%rbx), %rdi
+100000629:	e8 16 00 00 00	callq	0x100000644 ## symbol stub for: _fflush
+10000062e:	31 ff	xorl	%edi, %edi
+100000630:	e8 0f 00 00 00	callq	0x100000644 ## symbol stub for: _fflush
+100000635:	b8 03 00 00 00	movl	$0x3, %eax
+10000063a:	48 83 c4 08	addq	$0x8, %rsp
+10000063e:	5b	popq	%rbx
+10000063f:	5d	popq	%rbp
+100000640:	c3	retq

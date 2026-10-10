@@ -1,0 +1,44 @@
+printf_str:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	48 8d 3d cf 00 00 00	leaq	0xcf(%rip), %rdi ## literal pool for: "Text: %s\n"
+10000054b:	48 8d 35 d2 00 00 00	leaq	0xd2(%rip), %rsi ## literal pool for: "CIDER"
+100000552:	31 c0	xorl	%eax, %eax
+100000554:	e8 9f 00 00 00	callq	0x1000005f8 ## symbol stub for: _printf
+100000559:	48 8d 3d ca 00 00 00	leaq	0xca(%rip), %rdi ## literal pool for: "[%10s][%-10s][%.3s][%10.2s]\n"
+100000560:	48 8d 0d e0 00 00 00	leaq	0xe0(%rip), %rcx ## literal pool for: "hello"
+100000567:	48 89 ce	movq	%rcx, %rsi
+10000056a:	48 89 ca	movq	%rcx, %rdx
+10000056d:	49 89 c8	movq	%rcx, %r8
+100000570:	31 c0	xorl	%eax, %eax
+100000572:	e8 81 00 00 00	callq	0x1000005f8 ## symbol stub for: _printf
+100000577:	48 8d 3d cf 00 00 00	leaq	0xcf(%rip), %rdi ## literal pool for: "[%s][%8s]\n"
+10000057e:	31 f6	xorl	%esi, %esi
+100000580:	31 d2	xorl	%edx, %edx
+100000582:	31 c0	xorl	%eax, %eax
+100000584:	e8 6f 00 00 00	callq	0x1000005f8 ## symbol stub for: _printf
+100000589:	4c 8d 15 ea 00 00 00	leaq	0xea(%rip), %r10 ## literal pool for: "g"
+100000590:	4c 8d 1d e1 00 00 00	leaq	0xe1(%rip), %r11 ## literal pool for: "f"
+100000597:	48 8d 3d ba 00 00 00	leaq	0xba(%rip), %rdi ## literal pool for: "%s %s %s %s %s %s %s\n"
+10000059e:	48 8d 35 c9 00 00 00	leaq	0xc9(%rip), %rsi ## literal pool for: "a"
+1000005a5:	48 8d 15 c4 00 00 00	leaq	0xc4(%rip), %rdx ## literal pool for: "b"
+1000005ac:	48 8d 0d bf 00 00 00	leaq	0xbf(%rip), %rcx ## literal pool for: "c"
+1000005b3:	4c 8d 05 ba 00 00 00	leaq	0xba(%rip), %r8 ## literal pool for: "d"
+1000005ba:	4c 8d 0d b5 00 00 00	leaq	0xb5(%rip), %r9 ## literal pool for: "e"
+1000005c1:	31 c0	xorl	%eax, %eax
+1000005c3:	41 52	pushq	%r10
+1000005c5:	41 53	pushq	%r11
+1000005c7:	e8 2c 00 00 00	callq	0x1000005f8 ## symbol stub for: _printf
+1000005cc:	48 83 c4 10	addq	$0x10, %rsp
+1000005d0:	48 8d 3d a5 00 00 00	leaq	0xa5(%rip), %rdi ## literal pool for: "%c%c%c%c\n"
+1000005d7:	be 6f 00 00 00	movl	$0x6f, %esi
+1000005dc:	ba 6b 00 00 00	movl	$0x6b, %edx
+1000005e1:	b9 20 00 00 00	movl	$0x20, %ecx
+1000005e6:	41 b8 21 00 00 00	movl	$0x21, %r8d
+1000005ec:	31 c0	xorl	%eax, %eax
+1000005ee:	e8 05 00 00 00	callq	0x1000005f8 ## symbol stub for: _printf
+1000005f3:	31 c0	xorl	%eax, %eax
+1000005f5:	5d	popq	%rbp
+1000005f6:	c3	retq

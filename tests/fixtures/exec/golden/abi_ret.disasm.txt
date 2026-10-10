@@ -1,0 +1,54 @@
+abi_ret:
+(__TEXT,__text) section
+_main:
+100000590:	55	pushq	%rbp
+100000591:	48 89 e5	movq	%rsp, %rbp
+100000594:	41 57	pushq	%r15
+100000596:	41 56	pushq	%r14
+100000598:	41 54	pushq	%r12
+10000059a:	53	pushq	%rbx
+10000059b:	48 83 ec 20	subq	$0x20, %rsp
+10000059f:	bf 2f 00 00 00	movl	$0x2f, %edi
+1000005a4:	be 05 00 00 00	movl	$0x5, %esi
+1000005a9:	e8 cc 00 00 00	callq	0x10000067a ## symbol stub for: _div
+1000005ae:	49 89 c6	movq	%rax, %r14
+1000005b1:	48 89 c3	movq	%rax, %rbx
+1000005b4:	48 c1 eb 20	shrq	$0x20, %rbx
+1000005b8:	48 bf 00 18 89 b7 e8 ff ff ff	movabsq	$-0x174876e800, %rdi
+1000005c2:	be 07 00 00 00	movl	$0x7, %esi
+1000005c7:	e8 a8 00 00 00	callq	0x100000674 ## symbol stub for: _ldiv
+1000005cc:	49 89 c7	movq	%rax, %r15
+1000005cf:	49 89 d4	movq	%rdx, %r12
+1000005d2:	f2 0f 10 05 f6 00 00 00	movsd	0xf6(%rip), %xmm0
+1000005da:	bf 04 00 00 00	movl	$0x4, %edi
+1000005df:	e8 8a 00 00 00	callq	0x10000066e ## symbol stub for: _ldexp
+1000005e4:	f2 0f 11 45 c8	movsd	%xmm0, -0x38(%rbp)
+1000005e9:	c7 45 dc 00 00 00 00	movl	$0x0, -0x24(%rbp)
+1000005f0:	f2 0f 10 05 e0 00 00 00	movsd	0xe0(%rip), %xmm0
+1000005f8:	48 8d 7d dc	leaq	-0x24(%rbp), %rdi
+1000005fc:	e8 67 00 00 00	callq	0x100000668 ## symbol stub for: _frexp
+100000601:	f2 0f 11 45 d0	movsd	%xmm0, -0x30(%rbp)
+100000606:	f2 0f 10 05 d2 00 00 00	movsd	0xd2(%rip), %xmm0
+10000060e:	f2 0f 10 0d ba 00 00 00	movsd	0xba(%rip), %xmm1
+100000616:	e8 47 00 00 00	callq	0x100000662 ## symbol stub for: _fmod
+10000061b:	0f 28 d0	movaps	%xmm0, %xmm2
+10000061e:	44 8b 4d dc	movl	-0x24(%rbp), %r9d
+100000622:	48 8d 3d bf 00 00 00	leaq	0xbf(%rip), %rdi ## literal pool for: "%d %d %ld %ld %.1f %.2f %d %.1f\n"
+100000629:	44 89 f6	movl	%r14d, %esi
+10000062c:	89 da	movl	%ebx, %edx
+10000062e:	4c 89 f9	movq	%r15, %rcx
+100000631:	4d 89 e0	movq	%r12, %r8
+100000634:	f2 0f 10 45 c8	movsd	-0x38(%rbp), %xmm0
+100000639:	f2 0f 10 4d d0	movsd	-0x30(%rbp), %xmm1
+10000063e:	b0 03	movb	$0x3, %al
+100000640:	e8 17 00 00 00	callq	0x10000065c ## symbol stub for: _printf
+100000645:	44 01 f3	addl	%r14d, %ebx
+100000648:	03 5d dc	addl	-0x24(%rbp), %ebx
+10000064b:	89 d8	movl	%ebx, %eax
+10000064d:	48 83 c4 20	addq	$0x20, %rsp
+100000651:	5b	popq	%rbx
+100000652:	41 5c	popq	%r12
+100000654:	41 5e	popq	%r14
+100000656:	41 5f	popq	%r15
+100000658:	5d	popq	%rbp
+100000659:	c3	retq

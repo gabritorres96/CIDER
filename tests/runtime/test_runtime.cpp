@@ -40,13 +40,25 @@ CIDER_TEST(registry_lists_exactly_the_documented_symbols) {
         CHECK(s.fn != nullptr);
         CHECK(s.name[0] == '_' || std::string(s.name) == "dyld_stub_binder");
     }
-    for (const char* n : {"_puts", "_putchar", "_write", "_exit", "_getpid", "_getenv", "_strlen", "_strcmp", "_strncmp", "_memcpy", "_memmove",
-                          "_memset", "_memcmp", "_abs", "_labs", "_malloc", "_calloc", "_realloc", "_free", "_sqrt", "_fabs", "_floor", "_ceil", "_pow"})
-        CHECK(is_implemented(n));
+    // The complete, documented list (docs/DARWIN-RUNTIME.md). Anything else must not be implemented.
+    const std::set<std::string> expected = {
+        // 0.2
+        "_puts", "_putchar", "_write", "_exit", "_getpid", "_getenv", "_strlen", "_strcmp", "_strncmp", "_memcpy", "_memmove", "_memset", "_memcmp",
+        "_abs", "_labs", "_malloc", "_calloc", "_realloc", "_free", "_sqrt", "_fabs", "_floor", "_ceil", "_pow", "dyld_stub_binder",
+        // 0.3 stdio
+        "_fputs", "_fputc", "_putc", "_fwrite", "_fflush", "_printf", "_fprintf", "_sprintf", "_snprintf", "_vprintf", "_vfprintf", "_vsprintf", "_vsnprintf",
+        // 0.3 POSIX
+        "_open", "_close", "_read", "_lseek", "_stat", "_stat$INODE64", "_fstat", "_fstat$INODE64", "_access", "_getcwd", "_gettimeofday",
+        "_clock_gettime", "_time", "_nanosleep", "_usleep", "_sleep", "_getppid", "__exit", "___error",
+        // 0.3 strings, math, aggregates
+        "_strcpy", "_strncpy", "_strcat", "_strchr", "_strrchr", "_strstr", "_strdup", "_atoi", "_strtol", "_sin", "_cos", "_tan", "_exp", "_log",
+        "_log10", "_atan", "_atan2", "_fmod", "_ldexp", "_frexp", "_div", "_ldiv"};
+    CHECK(names == expected);
+    for (const auto& n : expected) CHECK(is_implemented(n));
+    for (const char* n : {"___stdinp", "___stdoutp", "___stderrp"}) CHECK(is_implemented(n));
     // honest negatives: NOT implemented, so binaries importing them are rejected at load time
-    for (const char* n : {"_printf", "_fprintf", "_fopen", "_fork", "_execve", "_signal", "_pthread_create", "_mmap", "_sin", "_open", "_read", "_time"})
+    for (const char* n : {"_fopen", "_fread", "_fgets", "_fork", "_execve", "_signal", "_pthread_create", "_mmap", "_qsort", "_dlopen", "_sysctl", "_sscanf", "_scanf"})
         CHECK(!is_implemented(n));
-    CHECK_EQ(implemented_symbols().size(), size_t{25});
 }
 
 CIDER_TEST(puts_putchar_and_write_reach_the_sink_with_correct_values) {

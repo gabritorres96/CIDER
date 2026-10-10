@@ -1,0 +1,20 @@
+ids:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	53	pushq	%rbx
+100000545:	50	pushq	%rax
+100000546:	e8 31 00 00 00	callq	0x10000057c ## symbol stub for: _getpid
+10000054b:	89 c3	movl	%eax, %ebx
+10000054d:	e8 24 00 00 00	callq	0x100000576 ## symbol stub for: _getppid
+100000552:	48 8d 3d 59 00 00 00	leaq	0x59(%rip), %rdi ## literal pool for: "pid=%d ppid=%d\n"
+100000559:	89 de	movl	%ebx, %esi
+10000055b:	89 c2	movl	%eax, %edx
+10000055d:	31 c0	xorl	%eax, %eax
+10000055f:	e8 0c 00 00 00	callq	0x100000570 ## symbol stub for: _printf
+100000564:	31 c0	xorl	%eax, %eax
+100000566:	48 83 c4 08	addq	$0x8, %rsp
+10000056a:	5b	popq	%rbx
+10000056b:	5d	popq	%rbp
+10000056c:	c3	retq

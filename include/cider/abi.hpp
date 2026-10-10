@@ -38,9 +38,33 @@ static_assert(offsetof(GuestCall, fn) == 0 && offsetof(GuestCall, stack_top) == 
               offsetof(GuestCall, exited) == 72 && offsetof(GuestCall, exit_code) == 80 && sizeof(GuestCall) == 88,
               "GuestCall layout is mirrored in entry_trampoline.asm");
 
+// Everything a System V callee can look at when guest code calls a "raw" host function (src/abi/entry_trampoline.asm,
+// cider_guest_thunk_raw). Layout is hard-coded in the assembly: DO NOT reorder. The raw thunk exists for signatures the
+// positional register remapping of cider_guest_thunk cannot express: mixed integer/double arguments, more than six
+// integer arguments, arguments on the stack, variadic functions (AL = number of vector registers used) and
+// aggregate returns in rax:rdx / xmm0:xmm1 or through a hidden pointer.
+struct GuestRegs {
+    uint64_t gp[6] = {};          //   0 rdi rsi rdx rcx r8 r9
+    uint64_t rax = 0;             //  48 on entry: AL is the number of vector registers used by a variadic call
+    uint64_t stack_args = 0;      //  56 guest address of the first stack-passed argument (guest rsp + 8)
+    uint64_t xmm[8] = {};         //  64 low 64 bits of xmm0..xmm7 (doubles; floats in the low 32 bits)
+    uint64_t ret_rax = 0;         // 128 returned in rax
+    uint64_t ret_rdx = 0;         // 136 returned in rdx (second INTEGER eightbyte)
+    uint64_t ret_xmm0 = 0;        // 144 returned in xmm0 (low 64 bits)
+    uint64_t ret_xmm1 = 0;        // 152 returned in xmm1 (second SSE eightbyte)
+    uint64_t pad = 0;             // 160
+};
+static_assert(offsetof(GuestRegs, rax) == 48 && offsetof(GuestRegs, stack_args) == 56 && offsetof(GuestRegs, xmm) == 64 &&
+              offsetof(GuestRegs, ret_rax) == 128 && offsetof(GuestRegs, ret_xmm1) == 152 && sizeof(GuestRegs) == 168,
+              "GuestRegs layout is mirrored in entry_trampoline.asm");
+
+// A raw host function receives the guest registers and returns nothing: results go into ret_*.
+using RawHostFn = void (*)(GuestRegs*);
+
 extern "C" {
 uint64_t cider_enter_guest(GuestCall* call);
 void cider_guest_thunk();
+void cider_guest_thunk_raw();
 extern GuestCall* cider_current_call;
 }
 
@@ -71,9 +95,15 @@ Result<GuestArgs> build_guest_args(GuestStack& stack, const std::vector<std::str
 
 // Executable page(s) of per-symbol stubs. Each stub loads r10 = host function and jumps to
 // cider_guest_thunk. Owned memory is released on destruction.
+struct ThunkSpec {
+    void* fn = nullptr;     // Windows x64 function, or a RawHostFn when raw
+    bool raw = false;       // true: the function receives GuestRegs* (see above)
+};
+
 class ThunkTable {
 public:
-    static Result<ThunkTable> build(const std::vector<void*>& host_functions);
+    static Result<ThunkTable> build(const std::vector<void*>& host_functions);   // all positional (cider_guest_thunk)
+    static Result<ThunkTable> build_specs(const std::vector<ThunkSpec>& host_functions);
     uint64_t address(size_t i) const noexcept { return base_ + i * kStride; }
     size_t size() const noexcept { return count_; }
     static constexpr size_t kStride = 32;
@@ -82,6 +112,41 @@ private:
     memory::Region region_;
     uint64_t base_ = 0;
     size_t count_ = 0;
+};
+
+// Sequential reader of System V arguments, shared by the register/stack path (a raw thunk) and by `va_list`.
+class ArgReader {
+public:
+    virtual ~ArgReader() = default;
+    virtual uint64_t next_int() = 0;       // INTEGER class argument (also pointers)
+    virtual double next_double() = 0;      // SSE class argument (double)
+};
+
+// Arguments of a direct call: INTEGER class from rdi..r9 then the stack; SSE class from xmm0..xmm7 then the stack.
+// Stack slots are shared by both classes in the order the arguments were passed, exactly as in the psABI.
+class RegsReader final : public ArgReader {
+public:
+    explicit RegsReader(const GuestRegs& r, unsigned first_int = 0) : r_(r), gp_(first_int) {}
+    uint64_t next_int() override;
+    double next_double() override;
+
+private:
+    const GuestRegs& r_;
+    unsigned gp_ = 0, fp_ = 0;
+    uint64_t stack_ = 0;     // bytes consumed from the stack-argument area
+};
+
+// A System V `va_list` living in guest memory: {gp_offset, fp_offset, overflow_arg_area, reg_save_area}.
+// Reading advances (and writes back) the structure like va_arg does.
+class VaListReader final : public ArgReader {
+public:
+    explicit VaListReader(uint64_t guest_va_list) : va_(reinterpret_cast<VaList*>(guest_va_list)) {}
+    uint64_t next_int() override;
+    double next_double() override;
+    struct VaList { uint32_t gp_offset; uint32_t fp_offset; uint64_t overflow_arg_area; uint64_t reg_save_area; };
+
+private:
+    VaList* va_;
 };
 
 struct CallOutcome {

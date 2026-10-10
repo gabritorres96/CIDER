@@ -80,6 +80,7 @@ SupervisorResult run_supervised(const SupervisorOptions& opts) {
 
     std::vector<std::string> args = {"__worker", "--result-file", path_to_utf8(result_file), "--log-level", opts.log_level};
     if (!opts.log_file.empty()) { args.push_back("--log-file"); args.push_back(path_to_utf8(opts.log_file)); }
+    if (!opts.root.empty()) { args.push_back("--root"); args.push_back(path_to_utf8(opts.root)); }
     args.push_back(path_to_utf8(opts.image));
     if (!opts.guest_args.empty()) {
         args.push_back("--");

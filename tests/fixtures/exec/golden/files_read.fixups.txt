@@ -1,0 +1,31 @@
+files_read:
+
+Rebase table:
+segment  section            address     type
+__DATA   __la_symbol_ptr    0x100002000  pointer
+__DATA   __la_symbol_ptr    0x100002008  pointer
+__DATA   __la_symbol_ptr    0x100002010  pointer
+__DATA   __la_symbol_ptr    0x100002018  pointer
+__DATA   __la_symbol_ptr    0x100002020  pointer
+__DATA   __la_symbol_ptr    0x100002028  pointer
+__DATA   __la_symbol_ptr    0x100002030  pointer
+__DATA   __la_symbol_ptr    0x100002038  pointer
+__DATA   __la_symbol_ptr    0x100002040  pointer
+__DATA   __la_symbol_ptr    0x100002048  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100001000 pointer         0 libSystem        dyld_stub_binder
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100002000 libSystem        _getcwd
+__DATA   __la_symbol_ptr    0x100002008 libSystem        _access
+__DATA   __la_symbol_ptr    0x100002010 libSystem        ___error
+__DATA   __la_symbol_ptr    0x100002018 libSystem        _stat$INODE64
+__DATA   __la_symbol_ptr    0x100002020 libSystem        _open
+__DATA   __la_symbol_ptr    0x100002028 libSystem        _close
+__DATA   __la_symbol_ptr    0x100002030 libSystem        _read
+__DATA   __la_symbol_ptr    0x100002038 libSystem        _lseek
+__DATA   __la_symbol_ptr    0x100002040 libSystem        _printf
+__DATA   __la_symbol_ptr    0x100002048 libSystem        _fstat$INODE64

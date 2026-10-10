@@ -12,6 +12,7 @@ struct Options {
     std::string temp_dir;      // --temp-dir <path> (private work directories are created here)
     std::vector<std::string> guest_args;   // after "--": argv[1..] of the guest
     std::string result_file;               // internal: worker result path
+    std::string root;                      // run --root: host directory the guest sees as "/"
     unsigned long long timeout_s = 0;      // --timeout for run (0 = default)
     unsigned long long max_size_mib = 0;  // --max-size <MiB>; 0 = default
     std::vector<std::string> positional;

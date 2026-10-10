@@ -9,7 +9,14 @@ current-version: 1311
 compatibility-version: 1
 exports:
   - targets:         [ x86_64-macos ]
-    symbols:         [ _puts, _putchar, _write, _exit, _getpid, _getenv, _strlen, _strcmp, _strncmp, _memcpy,
-                       _memmove, _memset, _memcmp, _abs, _labs, _malloc, _calloc, _realloc, _free, _sqrt,
-                       _fabs, _floor, _ceil, _pow, _fork, _execve, _printf, _fopen, _signal, dyld_stub_binder ]
+    symbols:         [ _puts, _putchar, _write, _exit, __exit, _getpid, _getppid, _getenv, _strlen, _strcmp, _strncmp,
+                       _memcpy, _memmove, _memset, _memcmp, _abs, _labs, _malloc, _calloc, _realloc, _free, _sqrt,
+                       _fabs, _floor, _ceil, _pow, _fork, _execve, _fopen, _signal, dyld_stub_binder, _qsort,
+                       _fputs, _fputc, _putc, _fwrite, _fflush, _printf, _fprintf, _sprintf, _snprintf, _vprintf,
+                       _vfprintf, _vsprintf, _vsnprintf, ___stdinp, ___stdoutp, ___stderrp,
+                       _open, _close, _read, _lseek, '_stat$INODE64', '_fstat$INODE64', _stat, _fstat, _access, _getcwd,
+                       _gettimeofday, _clock_gettime, _time, _nanosleep, _usleep, _sleep, ___error,
+                       _strcpy, _strncpy, _strcat, _strchr, _strrchr, _strstr, _strdup, _atoi, _strtol,
+                       _sin, _cos, _tan, _exp, _log, _log10, _atan, _atan2, _fmod, _ldexp, _frexp, _div, _ldiv,
+                       __tlv_bootstrap ]
 ...

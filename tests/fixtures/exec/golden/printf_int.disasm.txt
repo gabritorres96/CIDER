@@ -1,0 +1,67 @@
+printf_int:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	48 8d 3d 43 01 00 00	leaq	0x143(%rip), %rdi ## literal pool for: "Number: %d\n"
+10000054b:	be 2a 00 00 00	movl	$0x2a, %esi
+100000550:	31 c0	xorl	%eax, %eax
+100000552:	e8 15 01 00 00	callq	0x10000066c ## symbol stub for: _printf
+100000557:	48 8d 3d 3c 01 00 00	leaq	0x13c(%rip), %rdi ## literal pool for: "[%5d][%-5d][%05d][%+d][% d]\n"
+10000055e:	be 2a 00 00 00	movl	$0x2a, %esi
+100000563:	ba 2a 00 00 00	movl	$0x2a, %edx
+100000568:	b9 2a 00 00 00	movl	$0x2a, %ecx
+10000056d:	41 b8 2a 00 00 00	movl	$0x2a, %r8d
+100000573:	41 b9 2a 00 00 00	movl	$0x2a, %r9d
+100000579:	31 c0	xorl	%eax, %eax
+10000057b:	e8 ec 00 00 00	callq	0x10000066c ## symbol stub for: _printf
+100000580:	48 8d 3d 30 01 00 00	leaq	0x130(%rip), %rdi ## literal pool for: "[%x][%X][%#x][%o][%u]\n"
+100000587:	be ff 00 00 00	movl	$0xff, %esi
+10000058c:	ba ff 00 00 00	movl	$0xff, %edx
+100000591:	b9 ff 00 00 00	movl	$0xff, %ecx
+100000596:	41 b8 08 00 00 00	movl	$0x8, %r8d
+10000059c:	41 b9 00 28 6b ee	movl	$0xee6b2800, %r9d
+1000005a2:	31 c0	xorl	%eax, %eax
+1000005a4:	e8 c3 00 00 00	callq	0x10000066c ## symbol stub for: _printf
+1000005a9:	48 8d 3d 1e 01 00 00	leaq	0x11e(%rip), %rdi ## literal pool for: "[%ld][%lld][%hhd][%hd]\n"
+1000005b0:	48 be 00 0e fa d5 fe ff ff ff	movabsq	$-0x12a05f200, %rsi
+1000005ba:	48 ba 00 00 84 e2 50 6c e6 7c	movabsq	$0x7ce66c50e2840000, %rdx
+1000005c4:	b9 2c 01 00 00	movl	$0x12c, %ecx
+1000005c9:	41 b8 70 11 01 00	movl	$0x11170, %r8d
+1000005cf:	31 c0	xorl	%eax, %eax
+1000005d1:	e8 96 00 00 00	callq	0x10000066c ## symbol stub for: _printf
+1000005d6:	48 8d 3d 09 01 00 00	leaq	0x109(%rip), %rdi ## literal pool for: "[%c][%3c][%-3c]%%\n"
+1000005dd:	be 41 00 00 00	movl	$0x41, %esi
+1000005e2:	ba 42 00 00 00	movl	$0x42, %edx
+1000005e7:	b9 43 00 00 00	movl	$0x43, %ecx
+1000005ec:	31 c0	xorl	%eax, %eax
+1000005ee:	e8 79 00 00 00	callq	0x10000066c ## symbol stub for: _printf
+1000005f3:	48 83 ec 08	subq	$0x8, %rsp
+1000005f7:	48 8d 3d fb 00 00 00	leaq	0xfb(%rip), %rdi ## literal pool for: "[%*d][%-*d][%.*d]\n"
+1000005fe:	be 06 00 00 00	movl	$0x6, %esi
+100000603:	ba 07 00 00 00	movl	$0x7, %edx
+100000608:	b9 06 00 00 00	movl	$0x6, %ecx
+10000060d:	41 b8 07 00 00 00	movl	$0x7, %r8d
+100000613:	41 b9 04 00 00 00	movl	$0x4, %r9d
+100000619:	31 c0	xorl	%eax, %eax
+10000061b:	6a 07	pushq	$0x7
+10000061d:	e8 4a 00 00 00	callq	0x10000066c ## symbol stub for: _printf
+100000622:	48 83 c4 08	addq	$0x8, %rsp
+100000626:	48 8d 3d df 00 00 00	leaq	0xdf(%rip), %rdi ## literal pool for: "%d %d %d %d %d %d %d %d %d %d\n"
+10000062d:	be 01 00 00 00	movl	$0x1, %esi
+100000632:	ba 02 00 00 00	movl	$0x2, %edx
+100000637:	b9 03 00 00 00	movl	$0x3, %ecx
+10000063c:	41 b8 04 00 00 00	movl	$0x4, %r8d
+100000642:	41 b9 05 00 00 00	movl	$0x5, %r9d
+100000648:	31 c0	xorl	%eax, %eax
+10000064a:	6a 0a	pushq	$0xa
+10000064c:	6a 09	pushq	$0x9
+10000064e:	6a 08	pushq	$0x8
+100000650:	6a 07	pushq	$0x7
+100000652:	6a 06	pushq	$0x6
+100000654:	e8 13 00 00 00	callq	0x10000066c ## symbol stub for: _printf
+100000659:	48 83 c4 30	addq	$0x30, %rsp
+10000065d:	48 8d 3d c7 00 00 00	leaq	0xc7(%rip), %rdi ## literal pool for: "end\n"
+100000664:	31 c0	xorl	%eax, %eax
+100000666:	5d	popq	%rbp
+100000667:	e9 00 00 00 00	jmp	0x10000066c ## symbol stub for: _printf
