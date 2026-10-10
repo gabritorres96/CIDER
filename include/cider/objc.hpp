@@ -106,7 +106,10 @@ public:
     bool has_objc_images() const { return !images_.empty(); }
     bool foundation_requested = false;            // some image links against Foundation/CoreFoundation
     bool objc_requested = false;
-    std::function<std::optional<uint64_t>(std::string_view)> extra_dynamic;   // data symbols of the Foundation subset (___NSArray0__...)
+    bool appkit_requested = false;                // some image links against AppKit
+    // Data symbols of the framework subsets (___NSArray0__, _NSApp, _CGRectZero...): asked in registration order after the built-in names.
+    using DynamicProvider = std::function<std::optional<uint64_t>(std::string_view)>;
+    void add_dynamic_provider(DynamicProvider f) { providers_.push_back(std::move(f)); }
 
     // ---- selectors, classes, methods -----------------------------------------------------------------------------------------
     Addr sel(std::string_view name);              // sel_registerName
@@ -218,6 +221,7 @@ private:
     // native thunks
     struct NativeEntry { Class* cls; bool class_method; size_t index; };
     std::vector<std::pair<NativeEntry, NativeMethod>> native_;
+    std::vector<DynamicProvider> providers_;
     std::string native_owner_;
     std::unordered_map<std::string, std::string> native_owner_of_;
     abi::ThunkTable native_table_;

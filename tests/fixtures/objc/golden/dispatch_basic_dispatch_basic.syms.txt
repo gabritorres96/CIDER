@@ -7,10 +7,10 @@ SYMBOL TABLE:
 0000000100002050 l     O __DATA_CONST,__const ___block_literal_global
 0000000100002070 l     O __DATA_CONST,__const ___block_literal_global.4
 0000000100002090 l     O __DATA_CONST,__const ___block_literal_global.7
-0000000100000880 l     F __TEXT,__text ___main_block_invoke
+0000000100000950 l     F __TEXT,__text ___main_block_invoke
 0000000100003108 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.3
-00000001000008a0 l     F __TEXT,__text ___main_block_invoke_2
-00000001000008c0 l     F __TEXT,__text ___main_block_invoke_3
+0000000100000970 l     F __TEXT,__text ___main_block_invoke_2
+0000000100000990 l     F __TEXT,__text ___main_block_invoke_3
 0000000100003110 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.9
 0000000100003118 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.11
 0000000100003120 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.13
@@ -18,15 +18,15 @@ SYMBOL TABLE:
 0000000100003168 l     O __DATA,__bss _main_thread
 00000001000030f8 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.20
 0000000100003128 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.24
-0000000100001010 l     F __TEXT,__text ___phase_a_block_invoke
+00000001000010e0 l     F __TEXT,__text ___phase_a_block_invoke
 00000001000020e0 l     O __DATA_CONST,__const ___block_literal_global.26
-00000001000010c0 l     F __TEXT,__text ___phase_a_block_invoke_2
-0000000100001140 l     F __TEXT,__text ___phase_a_block_invoke.33
+0000000100001190 l     F __TEXT,__text ___phase_a_block_invoke_2
+0000000100001210 l     F __TEXT,__text ___phase_a_block_invoke.33
 0000000100002160 l     O __DATA_CONST,__const ___block_literal_global.37
 0000000100003178 l     O __DATA,__bss _phase_a.once
 0000000100002180 l     O __DATA_CONST,__const ___block_literal_global.41
 00000001000021a0 l     O __DATA_CONST,__const ___block_literal_global.42
-0000000100001200 l     F __TEXT,__text _work_fn
+00000001000012d0 l     F __TEXT,__text _work_fn
 0000000100002200 l     O __DATA_CONST,__const ___block_literal_global.46
 0000000100003180 l     O __DATA,__bss _apply_sum
 0000000100003130 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.51
@@ -34,41 +34,41 @@ SYMBOL TABLE:
 0000000100003184 l     O __DATA,__bss _once_count
 0000000100003160 l     O __DATA,__bss _keep_alive_queue
 0000000100002220 l     O __DATA_CONST,__const ___block_literal_global.59
-0000000100001070 l     F __TEXT,__text ___phase_a_block_invoke.25
-00000001000011a0 l     F __TEXT,__text ___phase_a_block_invoke.36
-00000001000011c0 l     F __TEXT,__text ___phase_a_block_invoke_2.40
-00000001000011d0 l     F __TEXT,__text ___phase_a_block_invoke_3
+0000000100001140 l     F __TEXT,__text ___phase_a_block_invoke.25
+0000000100001270 l     F __TEXT,__text ___phase_a_block_invoke.36
+0000000100001290 l     F __TEXT,__text ___phase_a_block_invoke_2.40
+00000001000012a0 l     F __TEXT,__text ___phase_a_block_invoke_3
 00000001000021c0 l     O __DATA_CONST,__const ___block_literal_global.43
-00000001000011f0 l     F __TEXT,__text ___phase_a_block_invoke_4
-0000000100001210 l     F __TEXT,__text ___phase_a_block_invoke_5
-0000000100001220 l     F __TEXT,__text ___phase_a_block_invoke_6
+00000001000012c0 l     F __TEXT,__text ___phase_a_block_invoke_4
+00000001000012e0 l     F __TEXT,__text ___phase_a_block_invoke_5
+00000001000012f0 l     F __TEXT,__text ___phase_a_block_invoke_6
 0000000100002240 l     O __DATA_CONST,__const ___block_literal_global.60
-0000000100001260 l     F __TEXT,__text ___phase_b_block_invoke
+0000000100001330 l     F __TEXT,__text ___phase_b_block_invoke
 0000000100002260 l     O __DATA_CONST,__const ___block_literal_global.62
 0000000100002280 l     O __DATA_CONST,__const ___block_literal_global.65
-00000001000012c0 l     F __TEXT,__text ___phase_b_block_invoke_2
-0000000100001310 l     F __TEXT,__text ___phase_b_block_invoke_3
-0000000100001420 l     F __TEXT,__text ___phase_c_block_invoke
+0000000100001390 l     F __TEXT,__text ___phase_b_block_invoke_2
+00000001000013e0 l     F __TEXT,__text ___phase_b_block_invoke_3
+00000001000014f0 l     F __TEXT,__text ___phase_c_block_invoke
 00000001000022d0 l     O __DATA_CONST,__const ___block_literal_global.70
 00000001000022f0 l     O __DATA_CONST,__const ___block_literal_global.73
-00000001000014e0 l     F __TEXT,__text ___phase_c_block_invoke.69
-0000000100001500 l     F __TEXT,__text ___phase_c_block_invoke_2
+00000001000015b0 l     F __TEXT,__text ___phase_c_block_invoke.69
+00000001000015d0 l     F __TEXT,__text ___phase_c_block_invoke_2
 0000000100003138 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.76
 0000000100003140 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.85
 0000000100003148 l     O __DATA,__data __dyld_private
-0000000100001050 l     F __TEXT,__text .hidden ___copy_helper_block_8_32s
-0000000100001060 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32s
-00000001000010e0 l     F __TEXT,__text .hidden ___copy_helper_block_8_32s40r
-0000000100001110 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32s40r
-0000000100001160 l     F __TEXT,__text .hidden ___copy_helper_block_8_32r
-0000000100001180 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32r
+0000000100001120 l     F __TEXT,__text .hidden ___copy_helper_block_8_32s
+0000000100001130 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32s
+00000001000011b0 l     F __TEXT,__text .hidden ___copy_helper_block_8_32s40r
+00000001000011e0 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32s40r
+0000000100001230 l     F __TEXT,__text .hidden ___copy_helper_block_8_32r
+0000000100001250 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32r
 0000000100002030 l     O __DATA_CONST,__const .hidden ___block_descriptor_32_e5_v8?0l
 00000001000020b0 l     O __DATA_CONST,__const .hidden ___block_descriptor_44_8_32s_e5_v8?0l
 0000000100002100 l     O __DATA_CONST,__const .hidden ___block_descriptor_48_8_32s40r_e5_v8?0l
 0000000100002130 l     O __DATA_CONST,__const .hidden ___block_descriptor_40_8_32r_e5_v8?0l
 00000001000021e0 l     O __DATA_CONST,__const .hidden ___block_descriptor_32_e8_v16?0Q8l
 00000001000022a0 l     O __DATA_CONST,__const .hidden ___block_descriptor_48_8_32r_e5_v8?0l
-0000000100000800 g     F __TEXT,__text _main
+00000001000008d0 g     F __TEXT,__text _main
 0000000100000000 g     F __TEXT,__text __mh_execute_header
 0000000000000000         *UND* __Block_object_assign
 0000000000000000         *UND* __Block_object_dispose

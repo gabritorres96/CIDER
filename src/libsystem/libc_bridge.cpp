@@ -11,6 +11,8 @@
 #include "cider/guest_threads.hpp"
 #include "cider/objc.hpp"
 #include "internal.hpp"
+#include "../graphics/cg_bridge.hpp"
+#include "../corefoundation/cf_bridge.hpp"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -184,6 +186,8 @@ const std::vector<HostSymbol>& implemented_symbols() {
     detail::add_pthread_symbols(t);
     objc::add_objc_symbols(t);
     objc::add_foundation_symbols(t);
+    graphics::add_cg_symbols(t);
+    corefoundation::add_cf_symbols(t);
     return t;
     }();
     return table;

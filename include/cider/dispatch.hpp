@@ -17,4 +17,6 @@ bool run_main_queue_once();                               // runs one ready main
 bool main_queue_pending();                                // a block is ready now
 int64_t ms_until_next_main_timer();                       // dispatch_after on the main queue: ms until due, -1 when none
 
+void set_main_wake(void (*wake)());                       // called (from any guest thread) when work is added to the main queue
+
 }  // namespace cider::dispatch

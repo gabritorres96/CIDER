@@ -1,10 +1,10 @@
 C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\blocks_error\blocks_error:
 
 SYMBOL TABLE:
-0000000100000800 l     F __TEXT,__text ___main_block_invoke
+00000001000008d0 l     F __TEXT,__text ___main_block_invoke
 0000000100002018 l     O __DATA,__data __dyld_private
 0000000100001010 l     O __DATA_CONST,__const .hidden ___block_descriptor_36_e8_i12?0i8l
-00000001000006c0 g     F __TEXT,__text _main
+0000000100000790 g     F __TEXT,__text _main
 0000000100000000 g     F __TEXT,__text __mh_execute_header
 0000000000000000         *UND* __Block_copy
 0000000000000000         *UND* __Block_release

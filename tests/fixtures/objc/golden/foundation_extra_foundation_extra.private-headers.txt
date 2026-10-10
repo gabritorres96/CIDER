@@ -1,7 +1,7 @@
 C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\foundation_extra\foundation_extra:
 Mach header
       magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
-MH_MAGIC_64  X86_64        ALL LIB64     EXECUTE    17       2144   NOUNDEFS DYLDLINK TWOLEVEL PIE
+MH_MAGIC_64  X86_64        ALL LIB64     EXECUTE    19       2352   NOUNDEFS DYLDLINK TWOLEVEL PIE
 Load command 0
       cmd LC_SEGMENT_64
   cmdsize 72
@@ -29,9 +29,9 @@ Load command 1
 Section
   sectname __text
    segname __TEXT
-      addr 0x00000001000008a0
+      addr 0x0000000100000970
       size 0x0000000000002168
-    offset 2208
+    offset 2416
      align 2^4 (16)
     reloff 0
     nreloc 0
@@ -42,9 +42,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __stubs
    segname __TEXT
-      addr 0x0000000100002a08
+      addr 0x0000000100002ad8
       size 0x000000000000001e
-    offset 10760
+    offset 10968
      align 2^2 (4)
     reloff 0
     nreloc 0
@@ -55,9 +55,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __stub_helper
    segname __TEXT
-      addr 0x0000000100002a28
+      addr 0x0000000100002af8
       size 0x0000000000000042
-    offset 10792
+    offset 11000
      align 2^2 (4)
     reloff 0
     nreloc 0
@@ -68,9 +68,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __literals
    segname __TEXT
-      addr 0x0000000100002a70
+      addr 0x0000000100002b40
       size 0x0000000000000038
-    offset 10864
+    offset 11072
      align 2^4 (16)
     reloff 0
     nreloc 0
@@ -81,9 +81,9 @@ attributes (none)
 Section
   sectname __objc_methname
    segname __TEXT
-      addr 0x0000000100002aa8
+      addr 0x0000000100002b78
       size 0x0000000000000577
-    offset 10920
+    offset 11128
      align 2^0 (1)
     reloff 0
     nreloc 0
@@ -94,9 +94,9 @@ attributes (none)
 Section
   sectname __cstring
    segname __TEXT
-      addr 0x000000010000301f
+      addr 0x00000001000030ef
       size 0x0000000000001406
-    offset 12319
+    offset 12527
      align 2^0 (1)
     reloff 0
     nreloc 0
@@ -107,9 +107,9 @@ attributes (none)
 Section
   sectname __ustring
    segname __TEXT
-      addr 0x0000000100004426
+      addr 0x00000001000044f6
       size 0x0000000000000010
-    offset 17446
+    offset 17654
      align 2^1 (2)
     reloff 0
     nreloc 0
@@ -120,9 +120,9 @@ attributes (none)
 Section
   sectname __const
    segname __TEXT
-      addr 0x0000000100004436
+      addr 0x0000000100004506
       size 0x0000000000000007
-    offset 17462
+    offset 17670
      align 2^0 (1)
     reloff 0
     nreloc 0
@@ -318,7 +318,7 @@ Load command 8
 Load command 9
      cmd LC_UUID
  cmdsize 24
-    uuid 4C4C4444-5555-3144-A195-2019FE75E7FE
+    uuid 4C4C4414-5555-3144-A1ED-77E2F257F64B
 Load command 10
        cmd LC_BUILD_VERSION
    cmdsize 32
@@ -331,7 +331,7 @@ Load command 10
 Load command 11
        cmd LC_MAIN
    cmdsize 24
-  entryoff 2208
+  entryoff 2416
  stacksize 0
 Load command 12
           cmd LC_LOAD_DYLIB
@@ -355,11 +355,25 @@ Load command 14
       current version 1858.0.0
 compatibility version 300.0.0
 Load command 15
+          cmd LC_LOAD_DYLIB
+      cmdsize 104
+         name /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (offset 24)
+   time stamp 0 Thu Jan  1 01:00:00 1970
+      current version 3000.0.0
+compatibility version 150.0.0
+Load command 16
+          cmd LC_LOAD_DYLIB
+      cmdsize 104
+         name /System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics (offset 24)
+   time stamp 0 Thu Jan  1 01:00:00 1970
+      current version 1500.0.0
+compatibility version 64.0.0
+Load command 17
       cmd LC_FUNCTION_STARTS
   cmdsize 16
   dataoff 29480
  datasize 8
-Load command 16
+Load command 18
       cmd LC_DATA_IN_CODE
   cmdsize 16
   dataoff 29488

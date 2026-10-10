@@ -1,7 +1,7 @@
 C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\dispatch_basic\dispatch_basic:
 Mach header
       magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
-MH_MAGIC_64  X86_64        ALL LIB64     EXECUTE    17       1984   NOUNDEFS DYLDLINK TWOLEVEL PIE
+MH_MAGIC_64  X86_64        ALL LIB64     EXECUTE    19       2192   NOUNDEFS DYLDLINK TWOLEVEL PIE
 Load command 0
       cmd LC_SEGMENT_64
   cmdsize 72
@@ -29,9 +29,9 @@ Load command 1
 Section
   sectname __text
    segname __TEXT
-      addr 0x0000000100000800
+      addr 0x00000001000008d0
       size 0x0000000000000eb5
-    offset 2048
+    offset 2256
      align 2^4 (16)
     reloff 0
     nreloc 0
@@ -42,9 +42,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __stubs
    segname __TEXT
-      addr 0x00000001000016b8
+      addr 0x0000000100001788
       size 0x00000000000000b4
-    offset 5816
+    offset 6024
      align 2^2 (4)
     reloff 0
     nreloc 0
@@ -55,9 +55,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __stub_helper
    segname __TEXT
-      addr 0x000000010000176c
+      addr 0x000000010000183c
       size 0x000000000000013c
-    offset 5996
+    offset 6204
      align 2^2 (4)
     reloff 0
     nreloc 0
@@ -68,9 +68,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __objc_methname
    segname __TEXT
-      addr 0x00000001000018a8
+      addr 0x0000000100001978
       size 0x000000000000008d
-    offset 6312
+    offset 6520
      align 2^0 (1)
     reloff 0
     nreloc 0
@@ -81,9 +81,9 @@ attributes (none)
 Section
   sectname __cstring
    segname __TEXT
-      addr 0x0000000100001935
+      addr 0x0000000100001a05
       size 0x000000000000036f
-    offset 6453
+    offset 6661
      align 2^0 (1)
     reloff 0
     nreloc 0
@@ -292,7 +292,7 @@ Load command 8
 Load command 9
      cmd LC_UUID
  cmdsize 24
-    uuid 4C4C44D9-5555-3144-A155-24667A8446B2
+    uuid 4C4C4458-5555-3144-A1B4-23BF5D973F6D
 Load command 10
        cmd LC_BUILD_VERSION
    cmdsize 32
@@ -305,7 +305,7 @@ Load command 10
 Load command 11
        cmd LC_MAIN
    cmdsize 24
-  entryoff 2048
+  entryoff 2256
  stacksize 0
 Load command 12
           cmd LC_LOAD_DYLIB
@@ -329,11 +329,25 @@ Load command 14
       current version 1858.0.0
 compatibility version 300.0.0
 Load command 15
+          cmd LC_LOAD_DYLIB
+      cmdsize 104
+         name /System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (offset 24)
+   time stamp 0 Thu Jan  1 01:00:00 1970
+      current version 3000.0.0
+compatibility version 150.0.0
+Load command 16
+          cmd LC_LOAD_DYLIB
+      cmdsize 104
+         name /System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics (offset 24)
+   time stamp 0 Thu Jan  1 01:00:00 1970
+      current version 1500.0.0
+compatibility version 64.0.0
+Load command 17
       cmd LC_FUNCTION_STARTS
   cmdsize 16
   dataoff 17624
  datasize 40
-Load command 16
+Load command 18
       cmd LC_DATA_IN_CODE
   cmdsize 16
   dataoff 17664

@@ -68,6 +68,7 @@ struct Obj {
 };
 
 objc::Runtime* g_rt = nullptr;
+void (*g_main_wake)() = nullptr;
 std::unordered_map<Addr, std::unique_ptr<Obj>> g_objs;
 Addr g_main_queue = 0, g_attr_concurrent = 0;
 Addr g_global[4] = {};
@@ -162,7 +163,7 @@ void enqueue(Addr queue_obj, Item it) {
     if (queue_obj && !q->global && !q->main) g_rt->retain(queue_obj);          // a pending item keeps its queue alive
     if (it.due_ns) q->timers.push_back(it); else q->ready.push_back(it);
     if (GuestThreads* th = threads()) th->notify();
-    if (q->main) return;                                       // drained by the main thread
+    if (q->main) { if (g_main_wake) g_main_wake(); return; }                                       // drained by the main thread
     if (!q->worker) {
         GuestThreads* th = threads();
         if (!th) { trap("dispatch: no guest thread scheduler"); return; }
@@ -256,6 +257,7 @@ void sync_run(Addr queue_obj, Item it, bool is_block) {
         it.done = &done;
         q->ready.push_back(it);
         th->notify();
+        if (g_main_wake) g_main_wake();
         th->wait_until([&] { return done || dying(); });
         if (!done) { for (Item& pending : q->ready) if (pending.done == &done) pending.done = nullptr; }     // the caller leaves: do not write into its frame
         return;
@@ -515,6 +517,8 @@ std::optional<uint64_t> data_symbol(std::string_view name) {
     if (name == "__dispatch_queue_attr_concurrent") return g_attr_concurrent ? std::optional<uint64_t>(g_attr_concurrent) : std::nullopt;
     return std::nullopt;
 }
+
+void set_main_wake(void (*wake)()) { g_main_wake = wake; }
 
 void shutdown() {
     if (!g_rt) return;

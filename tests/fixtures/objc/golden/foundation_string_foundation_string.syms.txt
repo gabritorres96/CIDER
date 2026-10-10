@@ -37,7 +37,7 @@ SYMBOL TABLE:
 0000000100004128 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.170
 0000000100004138 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.171
 0000000100004140 l     O __DATA,__data __dyld_private
-0000000100000850 g     F __TEXT,__text _main
+0000000100000920 g     F __TEXT,__text _main
 0000000100000000 g     F __TEXT,__text __mh_execute_header
 0000000000000000         *UND* dyld_stub_binder
 0000000000000000         *UND* _OBJC_CLASS_$_NSObject

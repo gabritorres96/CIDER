@@ -11,12 +11,12 @@ Contents of (__DATA_CONST,__objc_classlist) section
              instanceSize 8
                  reserved 0x0
                ivarLayout 0x0
-                     name 0x1000018ef Token
+                     name 0x1000019bf Token
               baseMethods 0x100003148 (struct method_list_t *)
 		   entsize 24
 		     count 1
-		      name 0x1000017f6 dealloc
-		     types 0x1000018f5 v16@0:8
+		      name 0x1000018c6 dealloc
+		     types 0x1000019c5 v16@0:8
 		       imp -[Token dealloc]
             baseProtocols 0x0
                     ivars 0x0
@@ -33,7 +33,7 @@ Meta Class
              instanceSize 40
                  reserved 0x0
                ivarLayout 0x0
-                     name 0x1000018ef Token
+                     name 0x1000019bf Token
               baseMethods 0x0 (struct method_list_t *)
             baseProtocols 0x0
                     ivars 0x0

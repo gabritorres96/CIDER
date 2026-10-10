@@ -4,6 +4,9 @@
 #include <unordered_map>
 
 #include "cider/dispatch.hpp"
+#include "../graphics/cg_bridge.hpp"
+#include "../corefoundation/cf_bridge.hpp"
+#include "cider/runloop.hpp"
 #include "cider/libsystem.hpp"
 #include "cider/log.hpp"
 #include "cider/objc.hpp"
@@ -275,7 +278,7 @@ void install_foundation(Runtime& rt) {
     foundation::g_rt_set(&rt);
     // `@[]` and `@{}` compile to loads of the global pointers ___NSArray0__ / ___NSDictionary0__: immortal empty collections in the arena
     auto made_ptr = std::make_shared<std::unordered_map<std::string, uint64_t>>();
-    rt.extra_dynamic = [&rt, made_ptr](std::string_view name) -> std::optional<uint64_t> {
+    rt.add_dynamic_provider([&rt, made_ptr](std::string_view name) -> std::optional<uint64_t> {
         // block literals bind their isa to these symbols: the address of the matching native class is the isa value
         if (name == "__NSConcreteStackBlock" || name == "__NSConcreteGlobalBlock" || name == "__NSConcreteMallocBlock") {
             foundation::Class* c = rt.class_named(name == "__NSConcreteStackBlock" ? "__NSStackBlock__" : name == "__NSConcreteGlobalBlock" ? "__NSGlobalBlock__" : "__NSMallocBlock__");
@@ -295,7 +298,7 @@ void install_foundation(Runtime& rt) {
         *reinterpret_cast<uint64_t*>(var) = obj;
         made[std::string(name)] = var;
         return var;
-    };
+    });
     rt.set_native_owner("libobjc");               // Apple exports NSObject from libobjc
     foundation::install_nsobject(rt);
     libsystem::detail::install_block_classes(rt);
@@ -307,5 +310,8 @@ void install_foundation(Runtime& rt) {
     foundation::install_nsdictionary(rt);
     foundation::install_misc(rt);
     foundation::install_nsextras(rt);
+    graphics::install_cg(rt);
+    corefoundation::install(rt);
+    runloop::install(rt);
 }
 }  // namespace cider::objc

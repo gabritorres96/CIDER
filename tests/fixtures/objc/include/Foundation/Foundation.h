@@ -3,11 +3,27 @@
 #ifndef CIDER_FOUNDATION_H
 #define CIDER_FOUNDATION_H
 #include "../objc_min.h"
+#include "../CoreGraphics/CoreGraphics.h"
 
 typedef long NSInteger;
 typedef unsigned long NSUInteger;
 typedef struct _NSZone NSZone;
 typedef struct { NSUInteger location, length; } NSRange;
+typedef CGPoint NSPoint;
+typedef CGSize NSSize;
+typedef CGRect NSRect;
+extern const NSPoint NSZeroPoint;
+extern const NSSize NSZeroSize;
+extern const NSRect NSZeroRect;
+static inline NSPoint NSMakePoint(CGFloat x, CGFloat y) { return CGPointMake(x, y); }
+static inline NSSize NSMakeSize(CGFloat w, CGFloat h) { return CGSizeMake(w, h); }
+static inline NSRect NSMakeRect(CGFloat x, CGFloat y, CGFloat w, CGFloat h) { return CGRectMake(x, y, w, h); }
+static inline CGFloat NSMinX(NSRect r) { return CGRectGetMinX(r); }
+static inline CGFloat NSMaxX(NSRect r) { return CGRectGetMaxX(r); }
+static inline CGFloat NSMinY(NSRect r) { return CGRectGetMinY(r); }
+static inline CGFloat NSMaxY(NSRect r) { return CGRectGetMaxY(r); }
+static inline CGFloat NSWidth(NSRect r) { return CGRectGetWidth(r); }
+static inline CGFloat NSHeight(NSRect r) { return CGRectGetHeight(r); }
 static inline NSRange NSMakeRange(NSUInteger location, NSUInteger length) { NSRange r = { location, length }; return r; }
 typedef NSInteger NSComparisonResult;
 enum { NSOrderedAscending = -1, NSOrderedSame = 0, NSOrderedDescending = 1 };
@@ -276,6 +292,15 @@ extern NSString *const NSPOSIXErrorDomain;
 - (void)drain;
 @end
 
+BOOL NSPointInRect(NSPoint p, NSRect r);
+BOOL NSMouseInRect(NSPoint p, NSRect r, BOOL flipped);
+BOOL NSEqualRects(NSRect a, NSRect b); BOOL NSEqualPoints(NSPoint a, NSPoint b); BOOL NSEqualSizes(NSSize a, NSSize b);
+BOOL NSIsEmptyRect(NSRect r); BOOL NSContainsRect(NSRect a, NSRect b);
+NSRect NSIntersectionRect(NSRect a, NSRect b); NSRect NSUnionRect(NSRect a, NSRect b);
+NSRect NSInsetRect(NSRect r, CGFloat dx, CGFloat dy); NSRect NSOffsetRect(NSRect r, CGFloat dx, CGFloat dy); NSRect NSIntegralRect(NSRect r);
+NSString *NSStringFromRect(NSRect r); NSString *NSStringFromPoint(NSPoint p); NSString *NSStringFromSize(NSSize s);
+extern NSString *const NSDefaultRunLoopMode;
+extern NSString *const NSRunLoopCommonModes;
 void NSLog(NSString *format, ...) __attribute__((format(__NSString__, 1, 2)));
 NSString *NSStringFromClass(Class cls);
 Class NSClassFromString(NSString *name);

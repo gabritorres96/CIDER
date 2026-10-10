@@ -1,0 +1,17 @@
+--- !tapi-tbd
+tbd-version:     4
+targets:         [ x86_64-macos ]
+uuids:
+  - target:          x86_64-macos
+    value:           00000000-0000-0000-0000-0000000000c2
+install-name:    '/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics'
+current-version: 1500
+compatibility-version: 64
+exports:
+  - targets:         [ x86_64-macos ]
+    symbols:         [ _CGPointZero, _CGSizeZero, _CGRectZero, _CGRectNull, _CGRectInfinite, _CGRectGetMinX, _CGRectGetMidX, _CGRectGetMaxX,
+                       _CGRectGetMinY, _CGRectGetMidY, _CGRectGetMaxY, _CGRectGetWidth, _CGRectGetHeight, _CGPointEqualToPoint, _CGSizeEqualToSize,
+                       _CGRectEqualToRect, _CGRectIsEmpty, _CGRectIsNull, _CGRectIsInfinite, _CGRectContainsPoint, _CGRectContainsRect,
+                       _CGRectIntersectsRect, _CGRectStandardize, _CGRectIntegral, _CGRectInset, _CGRectOffset, _CGRectUnion, _CGRectIntersection,
+                       _CGRectDivide ]
+...

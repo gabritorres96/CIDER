@@ -76,6 +76,7 @@ Addr new_number(const NumberPayload& n, bool autorelease);
 // arrays / dictionaries
 ArrayPayload* array_of(Addr obj);
 DictPayload* dict_of(Addr obj);
+bool dict_set(Addr dict, Addr key, Addr value);       // insert or replace (copies the key), whatever the mutability of the receiver
 
 Addr new_array(std::vector<Addr> items, bool mutable_, bool retain_items);   // autoreleased; retain_items=false adopts the +1 the caller holds
 

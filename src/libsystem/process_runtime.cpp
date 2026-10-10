@@ -63,7 +63,10 @@ namespace {
 std::optional<Lib> group_of(std::string_view n) {
     if (n == kInstallName) return Lib::System;
     if (n == kObjcInstallName) return Lib::Objc;
-    if (n == kFoundationInstallName || n == kCoreFoundationInstallName || n == "/System/Library/Frameworks/Foundation.framework/Foundation") return Lib::Foundation;
+    if (n == kFoundationInstallName || n == "/System/Library/Frameworks/Foundation.framework/Foundation") return Lib::Foundation;
+    if (n == kCoreFoundationInstallName || n == "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation") return Lib::CoreFoundation;
+    if (n == kCoreGraphicsInstallName) return Lib::CoreGraphics;
+    if (n == kAppKitInstallName || n == "/System/Library/Frameworks/AppKit.framework/AppKit") return Lib::AppKit;
     return std::nullopt;
 }
 }  // namespace
@@ -78,7 +81,9 @@ std::optional<dyld::ResolvedSymbol> LibSystemProvider::lookup(std::string_view l
         if (!want) return true;
         auto it = lib_of_.find(name);
         const Lib have = it == lib_of_.end() ? Lib::System : it->second;    // data symbols and dynamic ones: resolved below by group
-        return have == *want;
+        // the frameworks re-export each other (AppKit re-exports Foundation, Foundation re-exports CoreFoundation...): a symbol bound to any of them is found in any
+        auto framework = [](Lib l) { return l == Lib::Foundation || l == Lib::CoreFoundation || l == Lib::CoreGraphics || l == Lib::AppKit; };
+        return have == *want || (framework(have) && framework(*want));
     };
     if (auto it = index_.find(symbol); it != index_.end()) return owns(symbol) ? std::optional<dyld::ResolvedSymbol>(dyld::ResolvedSymbol{table_.address(it->second), true}) : std::nullopt;
     if (auto it = direct_index_.find(symbol); it != direct_index_.end()) return owns(symbol) ? std::optional<dyld::ResolvedSymbol>(dyld::ResolvedSymbol{it->second, true}) : std::nullopt;

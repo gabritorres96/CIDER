@@ -29,13 +29,13 @@ mkdir bin\objc_arc
 %LD% -o bin\objc_arc\objc_arc obj\objc_arc.o || exit /b 1
 
 rem ---- Foundation subset (CIDER 0.4.6): ARC programs and MRC programs, linked against the hand-written Foundation.tbd -----------------
-set "LDF=ld64.lld -arch x86_64 -platform_version macos 10.15.0 12.0.0 -syslibroot sysroot -lSystem -lobjc -framework Foundation"
+set "LDF=ld64.lld -arch x86_64 -platform_version macos 10.15.0 12.0.0 -syslibroot sysroot -lSystem -lobjc -framework Foundation -framework CoreFoundation -framework CoreGraphics"
 for %%n in (foundation_hello foundation_string foundation_collections dispatch_basic dispatch_error foundation_extra) do (
   clang %COMMON% -fobjc-arc -fno-objc-exceptions src\%%n.m -o obj\%%n.o || exit /b 1
   mkdir bin\%%n
   %LDF% -o bin\%%n\%%n obj\%%n.o || exit /b 1
 )
-for %%n in (foundation_subclass foundation_error blocks_basic blocks_error) do (
+for %%n in (foundation_subclass foundation_error blocks_basic blocks_error cf_basic) do (
   clang %COMMON% -fno-objc-exceptions -fno-exceptions src\%%n.m -o obj\%%n.o || exit /b 1
   mkdir bin\%%n
   %LDF% -o bin\%%n\%%n obj\%%n.o || exit /b 1

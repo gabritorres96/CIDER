@@ -668,9 +668,10 @@ Addr fm_contentsOfDirectory(Addr self, Addr, Addr path, Addr error_out) {
 }
 Addr fm_currentDirectoryPath(Addr, Addr) { return new_string_autoreleased("/"); }
 
+std::unordered_map<std::string, Addr> vars;
+
 void install_constants(Runtime& r) {
     key_localized_description = immortal_string("NSLocalizedDescription");
-    static std::unordered_map<std::string, Addr> vars;
     vars.clear();
     const std::pair<const char*, const char*> table[] = {{"_NSLocalizedDescriptionKey", "NSLocalizedDescription"}, {"_NSFilePathErrorKey", "NSFilePath"},
                                                          {"_NSUnderlyingErrorKey", "NSUnderlyingError"},         {"_NSCocoaErrorDomain", "NSCocoaErrorDomain"},
@@ -680,12 +681,11 @@ void install_constants(Runtime& r) {
         *reinterpret_cast<Addr*>(var) = std::string_view(text) == "NSLocalizedDescription" ? key_localized_description : immortal_string(text);
         vars[sym] = var;
     }
-    auto previous = r.extra_dynamic;
-    r.extra_dynamic = [previous](std::string_view name) -> std::optional<uint64_t> {
+    r.add_dynamic_provider([](std::string_view name) -> std::optional<uint64_t> {
         auto it = vars.find(std::string(name));
         if (it != vars.end()) return it->second;
-        return previous ? previous(name) : std::nullopt;
-    };
+        return std::nullopt;
+    });
 }
 
 }  // namespace

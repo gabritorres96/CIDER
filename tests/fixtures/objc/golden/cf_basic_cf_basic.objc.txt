@@ -1,0 +1,6 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\cf_basic\cf_basic:
+Contents of (__DATA,__objc_classrefs) section
+00000001000052a0 0x0 _OBJC_CLASS_$_NSAutoreleasePool
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

@@ -1,62 +1,62 @@
 C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\blocks_basic\blocks_basic:
 
 SYMBOL TABLE:
-0000000100000940 l     F __TEXT,__text -[Token dealloc]
+0000000100000a10 l     F __TEXT,__text -[Token dealloc]
 00000001000031e8 l     O __DATA,__bss _deallocs
 0000000100003090 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_
 00000001000031b0 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_
 0000000100002040 l     O __DATA_CONST,__const ___block_literal_global
-0000000100001370 l     F __TEXT,__text _call_int
+0000000100001440 l     F __TEXT,__text _call_int
 00000001000031ec l     O __DATA,__bss _fails
-0000000100001380 l     F __TEXT,__text ___main_block_invoke_2
-0000000100001390 l     F __TEXT,__text ___main_block_invoke_3
-00000001000013f0 l     F __TEXT,__text _call_void
-0000000100001400 l     F __TEXT,__text _make_counter
+0000000100001450 l     F __TEXT,__text ___main_block_invoke_2
+0000000100001460 l     F __TEXT,__text ___main_block_invoke_3
+00000001000014c0 l     F __TEXT,__text _call_void
+00000001000014d0 l     F __TEXT,__text _make_counter
 00000001000031b8 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.11
 0000000100003098 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.13
-0000000100001490 l     F __TEXT,__text ___main_block_invoke.15
+0000000100001560 l     F __TEXT,__text ___main_block_invoke.15
 00000001000020e0 l     O __DATA_CONST,__const ___block_literal_global.20
-00000001000014f0 l     F __TEXT,__text ___main_block_invoke_2.21
+00000001000015c0 l     F __TEXT,__text ___main_block_invoke_2.21
 00000001000031c0 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.23
 00000001000030a0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.25
 00000001000031c8 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.26
 00000001000030a8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.28
-0000000100001550 l     F __TEXT,__text ___main_block_invoke.29
+0000000100001620 l     F __TEXT,__text ___main_block_invoke.29
 00000001000030b8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.35
-00000001000016c0 l     F __TEXT,__text ___main_block_invoke.37
+0000000100001790 l     F __TEXT,__text ___main_block_invoke.37
 00000001000030c0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.43
 00000001000021b0 l     O __DATA_CONST,__const ___block_literal_global.41
 00000001000021d0 l     O __DATA_CONST,__const ___block_literal_global.46
 00000001000031d0 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.52
 00000001000030c8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.54
-0000000100001710 l     F __TEXT,__text ___main_block_invoke_3.55
+00000001000017e0 l     F __TEXT,__text ___main_block_invoke_3.55
 00000001000030d0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.58
-0000000100001740 l     F __TEXT,__text ___main_block_invoke.60
+0000000100001810 l     F __TEXT,__text ___main_block_invoke.60
 00000001000031d8 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.61
 00000001000030d8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.63
 00000001000030e0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.65
 00000001000030e8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.67
 00000001000030f0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.70
 00000001000030f8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.72
-0000000100001360 l     F __TEXT,__text ___main_block_invoke
-0000000100001750 l     F __TEXT,__text ___make_counter_block_invoke
-00000001000014e0 l     F __TEXT,__text ___main_block_invoke.19
-00000001000015c0 l     F __TEXT,__text ___main_block_invoke_2.30
+0000000100001430 l     F __TEXT,__text ___main_block_invoke
+0000000100001820 l     F __TEXT,__text ___make_counter_block_invoke
+00000001000015b0 l     F __TEXT,__text ___main_block_invoke.19
+0000000100001690 l     F __TEXT,__text ___main_block_invoke_2.30
 00000001000030b0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.32
-00000001000016e0 l     F __TEXT,__text ___main_block_invoke.39
-0000000100001700 l     F __TEXT,__text ___main_block_invoke_2.45
+00000001000017b0 l     F __TEXT,__text ___main_block_invoke.39
+00000001000017d0 l     F __TEXT,__text ___main_block_invoke_2.45
 0000000100003168 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Token
 0000000100003100 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Token
 0000000100003148 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Token
 00000001000031e0 l     O __DATA,__data __dyld_private
-00000001000013b0 l     F __TEXT,__text .hidden ___copy_helper_block_8_32r
-00000001000013d0 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32r
-00000001000014a0 l     F __TEXT,__text .hidden ___copy_helper_block_8_32o
-00000001000014c0 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32o
-0000000100001510 l     F __TEXT,__text .hidden ___copy_helper_block_8_32b
-0000000100001530 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32b
-0000000100001630 l     F __TEXT,__text .hidden ___copy_helper_block_8_32o40r48r
-0000000100001680 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32o40r48r
+0000000100001480 l     F __TEXT,__text .hidden ___copy_helper_block_8_32r
+00000001000014a0 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32r
+0000000100001570 l     F __TEXT,__text .hidden ___copy_helper_block_8_32o
+0000000100001590 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32o
+00000001000015e0 l     F __TEXT,__text .hidden ___copy_helper_block_8_32b
+0000000100001600 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32b
+0000000100001700 l     F __TEXT,__text .hidden ___copy_helper_block_8_32o40r48r
+0000000100001750 l     F __TEXT,__text .hidden ___destroy_helper_block_8_32o40r48r
 0000000100002020 l     O __DATA_CONST,__const .hidden ___block_descriptor_32_e8_i12?0i8l
 0000000100002060 l     O __DATA_CONST,__const .hidden ___block_descriptor_36_e8_i12?0i8l
 0000000100002080 l     O __DATA_CONST,__const .hidden ___block_descriptor_40_8_32r_e5_v8?0l
@@ -67,7 +67,7 @@ SYMBOL TABLE:
 0000000100002190 l     O __DATA_CONST,__const .hidden ___block_descriptor_32_e15_c32?08Q16^c24l
 00000001000021f0 l     O __DATA_CONST,__const .hidden ___block_descriptor_40_8_32r_e15_v32?0816^c24l
 0000000100002220 l     O __DATA_CONST,__const .hidden ___block_descriptor_48_8_32r_e5_v8?0l
-0000000100000980 g     F __TEXT,__text _main
+0000000100000a50 g     F __TEXT,__text _main
 0000000100003038 g     O __DATA,__objc_data _OBJC_CLASS_$_Token
 0000000100003060 g     O __DATA,__objc_data _OBJC_METACLASS_$_Token
 0000000100000000 g     F __TEXT,__text __mh_execute_header

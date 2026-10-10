@@ -1,0 +1,240 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\cf_basic\cf_basic:
+
+Rebase table:
+segment  section            address     type
+__DATA_CONST __const            0x100004088  pointer
+__DATA_CONST __const            0x1000040A8  pointer
+__DATA_CONST __const            0x1000040B0  pointer
+__DATA_CONST __cfstring         0x1000040C8  pointer
+__DATA_CONST __cfstring         0x1000040E8  pointer
+__DATA_CONST __cfstring         0x100004108  pointer
+__DATA_CONST __cfstring         0x100004128  pointer
+__DATA_CONST __cfstring         0x100004148  pointer
+__DATA_CONST __cfstring         0x100004168  pointer
+__DATA_CONST __cfstring         0x100004188  pointer
+__DATA_CONST __cfstring         0x1000041A8  pointer
+__DATA_CONST __cfstring         0x1000041C8  pointer
+__DATA_CONST __cfstring         0x1000041E8  pointer
+__DATA_CONST __cfstring         0x100004208  pointer
+__DATA_CONST __cfstring         0x100004228  pointer
+__DATA_CONST __cfstring         0x100004248  pointer
+__DATA_CONST __cfstring         0x100004268  pointer
+__DATA_CONST __cfstring         0x100004288  pointer
+__DATA_CONST __cfstring         0x1000042A8  pointer
+__DATA_CONST __cfstring         0x1000042C8  pointer
+__DATA_CONST __cfstring         0x1000042E8  pointer
+__DATA   __la_symbol_ptr    0x100005000  pointer
+__DATA   __la_symbol_ptr    0x100005008  pointer
+__DATA   __la_symbol_ptr    0x100005010  pointer
+__DATA   __la_symbol_ptr    0x100005018  pointer
+__DATA   __la_symbol_ptr    0x100005020  pointer
+__DATA   __la_symbol_ptr    0x100005028  pointer
+__DATA   __la_symbol_ptr    0x100005030  pointer
+__DATA   __la_symbol_ptr    0x100005038  pointer
+__DATA   __la_symbol_ptr    0x100005040  pointer
+__DATA   __la_symbol_ptr    0x100005048  pointer
+__DATA   __la_symbol_ptr    0x100005050  pointer
+__DATA   __la_symbol_ptr    0x100005058  pointer
+__DATA   __la_symbol_ptr    0x100005060  pointer
+__DATA   __la_symbol_ptr    0x100005068  pointer
+__DATA   __la_symbol_ptr    0x100005070  pointer
+__DATA   __la_symbol_ptr    0x100005078  pointer
+__DATA   __la_symbol_ptr    0x100005080  pointer
+__DATA   __la_symbol_ptr    0x100005088  pointer
+__DATA   __la_symbol_ptr    0x100005090  pointer
+__DATA   __la_symbol_ptr    0x100005098  pointer
+__DATA   __la_symbol_ptr    0x1000050A0  pointer
+__DATA   __la_symbol_ptr    0x1000050A8  pointer
+__DATA   __la_symbol_ptr    0x1000050B0  pointer
+__DATA   __la_symbol_ptr    0x1000050B8  pointer
+__DATA   __la_symbol_ptr    0x1000050C0  pointer
+__DATA   __la_symbol_ptr    0x1000050C8  pointer
+__DATA   __la_symbol_ptr    0x1000050D0  pointer
+__DATA   __la_symbol_ptr    0x1000050D8  pointer
+__DATA   __la_symbol_ptr    0x1000050E0  pointer
+__DATA   __la_symbol_ptr    0x1000050E8  pointer
+__DATA   __la_symbol_ptr    0x1000050F0  pointer
+__DATA   __la_symbol_ptr    0x1000050F8  pointer
+__DATA   __la_symbol_ptr    0x100005100  pointer
+__DATA   __la_symbol_ptr    0x100005108  pointer
+__DATA   __la_symbol_ptr    0x100005110  pointer
+__DATA   __la_symbol_ptr    0x100005118  pointer
+__DATA   __la_symbol_ptr    0x100005120  pointer
+__DATA   __la_symbol_ptr    0x100005128  pointer
+__DATA   __la_symbol_ptr    0x100005130  pointer
+__DATA   __la_symbol_ptr    0x100005138  pointer
+__DATA   __la_symbol_ptr    0x100005140  pointer
+__DATA   __la_symbol_ptr    0x100005148  pointer
+__DATA   __la_symbol_ptr    0x100005150  pointer
+__DATA   __la_symbol_ptr    0x100005158  pointer
+__DATA   __la_symbol_ptr    0x100005160  pointer
+__DATA   __la_symbol_ptr    0x100005168  pointer
+__DATA   __la_symbol_ptr    0x100005170  pointer
+__DATA   __la_symbol_ptr    0x100005178  pointer
+__DATA   __la_symbol_ptr    0x100005180  pointer
+__DATA   __la_symbol_ptr    0x100005188  pointer
+__DATA   __la_symbol_ptr    0x100005190  pointer
+__DATA   __la_symbol_ptr    0x100005198  pointer
+__DATA   __la_symbol_ptr    0x1000051A0  pointer
+__DATA   __la_symbol_ptr    0x1000051A8  pointer
+__DATA   __la_symbol_ptr    0x1000051B0  pointer
+__DATA   __la_symbol_ptr    0x1000051B8  pointer
+__DATA   __la_symbol_ptr    0x1000051C0  pointer
+__DATA   __la_symbol_ptr    0x1000051C8  pointer
+__DATA   __la_symbol_ptr    0x1000051D0  pointer
+__DATA   __la_symbol_ptr    0x1000051D8  pointer
+__DATA   __la_symbol_ptr    0x1000051E0  pointer
+__DATA   __la_symbol_ptr    0x1000051E8  pointer
+__DATA   __la_symbol_ptr    0x1000051F0  pointer
+__DATA   __la_symbol_ptr    0x1000051F8  pointer
+__DATA   __la_symbol_ptr    0x100005200  pointer
+__DATA   __la_symbol_ptr    0x100005208  pointer
+__DATA   __la_symbol_ptr    0x100005210  pointer
+__DATA   __la_symbol_ptr    0x100005218  pointer
+__DATA   __la_symbol_ptr    0x100005220  pointer
+__DATA   __la_symbol_ptr    0x100005228  pointer
+__DATA   __la_symbol_ptr    0x100005230  pointer
+__DATA   __la_symbol_ptr    0x100005238  pointer
+__DATA   __la_symbol_ptr    0x100005240  pointer
+__DATA   __la_symbol_ptr    0x100005248  pointer
+__DATA   __la_symbol_ptr    0x100005250  pointer
+__DATA   __la_symbol_ptr    0x100005258  pointer
+__DATA   __la_symbol_ptr    0x100005260  pointer
+__DATA   __la_symbol_ptr    0x100005268  pointer
+__DATA   __la_symbol_ptr    0x100005270  pointer
+__DATA   __la_symbol_ptr    0x100005278  pointer
+__DATA   __la_symbol_ptr    0x100005280  pointer
+__DATA   __la_symbol_ptr    0x100005288  pointer
+__DATA   __la_symbol_ptr    0x100005290  pointer
+__DATA   __la_symbol_ptr    0x100005298  pointer
+__DATA   __objc_selrefs     0x1000052A8  pointer
+__DATA   __objc_selrefs     0x1000052B0  pointer
+__DATA   __objc_selrefs     0x1000052B8  pointer
+__DATA   __objc_selrefs     0x1000052C0  pointer
+__DATA   __objc_selrefs     0x1000052C8  pointer
+__DATA   __objc_selrefs     0x1000052D0  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100004000 pointer         0 libobjc          _objc_msgSend
+__DATA_CONST __got              0x100004008 pointer         0 libSystem        __dispatch_main_q
+__DATA_CONST __got              0x100004010 pointer         0 CoreFoundation   _kCFRunLoopCommonModes
+__DATA_CONST __got              0x100004018 pointer         0 CoreFoundation   _kCFRunLoopDefaultMode
+__DATA_CONST __got              0x100004020 pointer         0 CoreGraphics     _CGPointZero
+__DATA_CONST __got              0x100004028 pointer         0 Foundation       _NSZeroPoint
+__DATA_CONST __got              0x100004030 pointer         0 Foundation       _NSZeroRect
+__DATA_CONST __got              0x100004038 pointer         0 CoreGraphics     _CGRectZero
+__DATA_CONST __got              0x100004040 pointer         0 CoreGraphics     _CGRectInfinite
+__DATA_CONST __got              0x100004048 pointer         0 CoreGraphics     _CGRectNull
+__DATA_CONST __got              0x100004050 pointer         0 CoreFoundation   _kCFTypeDictionaryValueCallBacks
+__DATA_CONST __got              0x100004058 pointer         0 CoreFoundation   _kCFTypeDictionaryKeyCallBacks
+__DATA_CONST __got              0x100004060 pointer         0 CoreFoundation   _kCFTypeArrayCallBacks
+__DATA_CONST __got              0x100004068 pointer         0 CoreFoundation   _kCFAllocatorDefault
+__DATA_CONST __got              0x100004070 pointer         0 libSystem        dyld_stub_binder
+__DATA_CONST __const            0x100004098 pointer         0 libSystem        __NSConcreteGlobalBlock
+__DATA_CONST __cfstring         0x1000040B8 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000040D8 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000040F8 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100004118 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100004138 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100004158 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100004178 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100004198 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000041B8 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000041D8 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000041F8 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100004218 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100004238 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100004258 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100004278 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100004298 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000042B8 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000042D8 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA   __objc_classrefs   0x1000052A0 pointer         0 Foundation       _OBJC_CLASS_$_NSAutoreleasePool
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100005000 CoreFoundation   _CFDictionaryContainsKey
+__DATA   __la_symbol_ptr    0x100005008 Foundation       _NSLog
+__DATA   __la_symbol_ptr    0x100005010 CoreFoundation   _CFRunLoopRunInMode
+__DATA   __la_symbol_ptr    0x100005018 CoreFoundation   _CFAbsoluteTimeGetCurrent
+__DATA   __la_symbol_ptr    0x100005020 CoreFoundation   _CFRelease
+__DATA   __la_symbol_ptr    0x100005028 CoreFoundation   _CFRunLoopSourceIsValid
+__DATA   __la_symbol_ptr    0x100005030 CoreFoundation   _CFRunLoopSourceInvalidate
+__DATA   __la_symbol_ptr    0x100005038 CoreFoundation   _CFRunLoopTimerIsValid
+__DATA   __la_symbol_ptr    0x100005040 CoreFoundation   _CFRunLoopRun
+__DATA   __la_symbol_ptr    0x100005048 libSystem        _dispatch_async
+__DATA   __la_symbol_ptr    0x100005050 CoreFoundation   _CFRunLoopAddTimer
+__DATA   __la_symbol_ptr    0x100005058 CoreFoundation   _CFRunLoopTimerCreate
+__DATA   __la_symbol_ptr    0x100005060 CoreFoundation   _CFRunLoopContainsSource
+__DATA   __la_symbol_ptr    0x100005068 CoreFoundation   _CFRunLoopAddSource
+__DATA   __la_symbol_ptr    0x100005070 CoreFoundation   _CFRunLoopSourceCreate
+__DATA   __la_symbol_ptr    0x100005078 CoreFoundation   _CFRunLoopGetCurrent
+__DATA   __la_symbol_ptr    0x100005080 CoreFoundation   _CFRunLoopGetMain
+__DATA   __la_symbol_ptr    0x100005088 Foundation       _NSStringFromSize
+__DATA   __la_symbol_ptr    0x100005090 Foundation       _NSStringFromPoint
+__DATA   __la_symbol_ptr    0x100005098 Foundation       _NSStringFromRect
+__DATA   __la_symbol_ptr    0x1000050A0 Foundation       _NSEqualPoints
+__DATA   __la_symbol_ptr    0x1000050A8 Foundation       _NSEqualRects
+__DATA   __la_symbol_ptr    0x1000050B0 Foundation       _NSPointInRect
+__DATA   __la_symbol_ptr    0x1000050B8 CoreGraphics     _CGRectDivide
+__DATA   __la_symbol_ptr    0x1000050C0 CoreGraphics     _CGRectIntegral
+__DATA   __la_symbol_ptr    0x1000050C8 CoreGraphics     _CGRectStandardize
+__DATA   __la_symbol_ptr    0x1000050D0 CoreGraphics     _CGRectIsInfinite
+__DATA   __la_symbol_ptr    0x1000050D8 CoreGraphics     _CGRectIsNull
+__DATA   __la_symbol_ptr    0x1000050E0 CoreGraphics     _CGRectIsEmpty
+__DATA   __la_symbol_ptr    0x1000050E8 CoreGraphics     _CGSizeEqualToSize
+__DATA   __la_symbol_ptr    0x1000050F0 CoreGraphics     _CGPointEqualToPoint
+__DATA   __la_symbol_ptr    0x1000050F8 CoreGraphics     _CGRectEqualToRect
+__DATA   __la_symbol_ptr    0x100005100 CoreGraphics     _CGRectIntersectsRect
+__DATA   __la_symbol_ptr    0x100005108 CoreGraphics     _CGRectContainsRect
+__DATA   __la_symbol_ptr    0x100005110 CoreGraphics     _CGRectContainsPoint
+__DATA   __la_symbol_ptr    0x100005118 CoreGraphics     _CGRectOffset
+__DATA   __la_symbol_ptr    0x100005120 CoreGraphics     _CGRectInset
+__DATA   __la_symbol_ptr    0x100005128 CoreGraphics     _CGRectIntersection
+__DATA   __la_symbol_ptr    0x100005130 CoreGraphics     _CGRectUnion
+__DATA   __la_symbol_ptr    0x100005138 CoreGraphics     _CGRectGetHeight
+__DATA   __la_symbol_ptr    0x100005140 CoreGraphics     _CGRectGetWidth
+__DATA   __la_symbol_ptr    0x100005148 CoreGraphics     _CGRectGetMidX
+__DATA   __la_symbol_ptr    0x100005150 CoreGraphics     _CGRectGetMaxY
+__DATA   __la_symbol_ptr    0x100005158 CoreGraphics     _CGRectGetMinY
+__DATA   __la_symbol_ptr    0x100005160 CoreGraphics     _CGRectGetMaxX
+__DATA   __la_symbol_ptr    0x100005168 CoreGraphics     _CGRectGetMinX
+__DATA   __la_symbol_ptr    0x100005170 CoreFoundation   _CFNumberGetValue
+__DATA   __la_symbol_ptr    0x100005178 CoreFoundation   _CFNumberCreate
+__DATA   __la_symbol_ptr    0x100005180 CoreFoundation   _CFDictionaryGetCount
+__DATA   __la_symbol_ptr    0x100005188 CoreFoundation   _CFDictionaryRemoveValue
+__DATA   __la_symbol_ptr    0x100005190 CoreFoundation   _CFDictionaryGetValue
+__DATA   __la_symbol_ptr    0x100005198 CoreFoundation   _CFDictionarySetValue
+__DATA   __la_symbol_ptr    0x1000051A0 CoreFoundation   _CFDictionaryAddValue
+__DATA   __la_symbol_ptr    0x1000051A8 CoreFoundation   _CFDictionaryCreateMutable
+__DATA   __la_symbol_ptr    0x1000051B0 CoreFoundation   _CFDictionaryGetKeysAndValues
+__DATA   __la_symbol_ptr    0x1000051B8 CoreFoundation   _CFDictionaryCreate
+__DATA   __la_symbol_ptr    0x1000051C0 CoreFoundation   _CFGetRetainCount
+__DATA   __la_symbol_ptr    0x1000051C8 CoreFoundation   _CFArrayGetValueAtIndex
+__DATA   __la_symbol_ptr    0x1000051D0 CoreFoundation   _CFArrayGetCount
+__DATA   __la_symbol_ptr    0x1000051D8 CoreFoundation   _CFArrayRemoveValueAtIndex
+__DATA   __la_symbol_ptr    0x1000051E0 CoreFoundation   _CFArrayAppendValue
+__DATA   __la_symbol_ptr    0x1000051E8 CoreFoundation   _CFArrayCreateMutable
+__DATA   __la_symbol_ptr    0x1000051F0 CoreFoundation   _CFArrayGetTypeID
+__DATA   __la_symbol_ptr    0x1000051F8 CoreFoundation   _CFGetTypeID
+__DATA   __la_symbol_ptr    0x100005200 CoreFoundation   _CFArrayCreate
+__DATA   __la_symbol_ptr    0x100005208 CoreFoundation   _CFStringCreateWithCString
+__DATA   __la_symbol_ptr    0x100005210 CoreFoundation   _CFCopyDescription
+__DATA   __la_symbol_ptr    0x100005218 CoreFoundation   _CFStringAppend
+__DATA   __la_symbol_ptr    0x100005220 CoreFoundation   _CFStringAppendCString
+__DATA   __la_symbol_ptr    0x100005228 CoreFoundation   _CFStringCreateMutable
+__DATA   __la_symbol_ptr    0x100005230 CoreFoundation   _CFStringCreateWithFormat
+__DATA   __la_symbol_ptr    0x100005238 CoreFoundation   _CFHash
+__DATA   __la_symbol_ptr    0x100005240 CoreFoundation   _CFEqual
+__DATA   __la_symbol_ptr    0x100005248 CoreFoundation   _CFStringCompare
+__DATA   __la_symbol_ptr    0x100005250 CoreFoundation   _CFRetain
+__DATA   __la_symbol_ptr    0x100005258 CoreFoundation   _CFStringGetTypeID
+__DATA   __la_symbol_ptr    0x100005260 CoreFoundation   _CFStringGetCharacterAtIndex
+__DATA   __la_symbol_ptr    0x100005268 CoreFoundation   _CFStringGetCStringPtr
+__DATA   __la_symbol_ptr    0x100005270 CoreFoundation   _CFStringGetCString
+__DATA   __la_symbol_ptr    0x100005278 CoreFoundation   _CFStringGetLength
+__DATA   __la_symbol_ptr    0x100005280 libobjc          _objc_alloc_init
+__DATA   __la_symbol_ptr    0x100005288 CoreFoundation   _CFRunLoopSourceSignal
+__DATA   __la_symbol_ptr    0x100005290 CoreFoundation   _CFRunLoopStop
+__DATA   __la_symbol_ptr    0x100005298 CoreFoundation   _CFRunLoopTimerInvalidate

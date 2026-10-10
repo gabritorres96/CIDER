@@ -267,6 +267,7 @@ template <class F> void* addr(F* f) { return reinterpret_cast<void*>(f); }
 }  // namespace
 
 DictPayload* dict_of(Addr obj) { return dic(obj); }
+bool dict_set(Addr dict, Addr key, Addr value) { return put(dict, key, value, "CFDictionary"); }
 
 void install_nsdictionary(Runtime& r) {
     Class* d = r.declare_native_class("NSDictionary", "NSObject", 16);

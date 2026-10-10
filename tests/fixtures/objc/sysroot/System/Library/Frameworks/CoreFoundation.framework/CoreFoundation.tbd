@@ -1,0 +1,25 @@
+--- !tapi-tbd
+tbd-version:     4
+targets:         [ x86_64-macos ]
+uuids:
+  - target:          x86_64-macos
+    value:           00000000-0000-0000-0000-0000000000c1
+install-name:    '/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation'
+current-version: 3000
+compatibility-version: 150
+exports:
+  - targets:         [ x86_64-macos ]
+    symbols:         [ _CFRetain, _CFRelease, _CFGetRetainCount, _CFGetTypeID, _CFStringGetTypeID, _CFArrayGetTypeID, _CFDictionaryGetTypeID,
+                       _CFNumberGetTypeID, _CFRunLoopGetTypeID, _CFEqual, _CFHash, _CFCopyDescription, _CFShow, _CFStringCreateWithCString,
+                       _CFStringCreateWithFormat, _CFStringGetLength, _CFStringGetCharacterAtIndex, _CFStringGetCString, _CFStringGetCStringPtr,
+                       _CFStringCompare, _CFStringCreateCopy, _CFStringCreateMutable, _CFStringAppend, _CFStringAppendCString, _CFArrayCreate,
+                       _CFArrayCreateMutable, _CFArrayGetCount, _CFArrayGetValueAtIndex, _CFArrayAppendValue, _CFArrayRemoveValueAtIndex,
+                       _CFDictionaryCreate, _CFDictionaryCreateMutable, _CFDictionaryGetCount, _CFDictionaryGetValue, _CFDictionaryContainsKey,
+                       _CFDictionarySetValue, _CFDictionaryAddValue, _CFDictionaryRemoveValue, _CFDictionaryGetKeysAndValues, _CFNumberCreate,
+                       _CFNumberGetValue, _CFBooleanGetValue, _CFAbsoluteTimeGetCurrent, _CFRunLoopGetMain, _CFRunLoopGetCurrent, _CFRunLoopRun,
+                       _CFRunLoopRunInMode, _CFRunLoopStop, _CFRunLoopWakeUp, _CFRunLoopIsWaiting, _CFRunLoopSourceCreate, _CFRunLoopSourceSignal,
+                       _CFRunLoopSourceIsValid, _CFRunLoopSourceInvalidate, _CFRunLoopAddSource, _CFRunLoopRemoveSource, _CFRunLoopContainsSource,
+                       _CFRunLoopTimerCreate, _CFRunLoopAddTimer, _CFRunLoopRemoveTimer, _CFRunLoopTimerInvalidate, _CFRunLoopTimerIsValid,
+                       _kCFTypeArrayCallBacks, _kCFTypeDictionaryKeyCallBacks, _kCFTypeDictionaryValueCallBacks, _kCFAllocatorDefault,
+                       _kCFAllocatorNull, _kCFRunLoopDefaultMode, _kCFRunLoopCommonModes, ___CFConstantStringClassReference ]
+...

@@ -2,6 +2,7 @@
 
 #include "cider/abi.hpp"
 #include "cider/dispatch.hpp"
+#include "cider/runloop.hpp"
 #include "cider/guest.hpp"
 #include "cider/guest_threads.hpp"
 #include "cider/libsystem.hpp"
@@ -184,7 +185,8 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     }
     // The process ends here: other guest threads (if any) are told to unwind and joined.
     if (!ctx.threads->shutdown()) log::warn(log::Category::Execution, "some guest threads did not stop; the worker exit will end them");
-    dispatch::shutdown();                            // drops queued work and the references dispatch workers held
+    dispatch::shutdown();
+    runloop::shutdown();                            // drops queued work and the references dispatch workers held
     out.objc_live_objects = objc_rt->live_object_count();
     libsystem::set_context(nullptr);
 

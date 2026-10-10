@@ -222,6 +222,8 @@ bool Runtime::prepare_image(linker::ImageRecord& image, std::string& error) {
     for (const auto& d : image.info.dylibs) {
         if (d.path == libsystem::kObjcInstallName) objc_requested = true;
         if (d.path == libsystem::kFoundationInstallName || d.path == libsystem::kCoreFoundationInstallName) foundation_requested = true;
+        if (d.path == libsystem::kAppKitInstallName || d.path == libsystem::kCoreGraphicsInstallName) foundation_requested = true;
+        if (d.path == libsystem::kAppKitInstallName) appkit_requested = true;
     }
     Parser p{*this, image, {}};
     if (!p.run()) { error = "Objective-C metadata: " + p.err; return false; }
