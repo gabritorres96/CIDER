@@ -206,10 +206,16 @@ CIDER_TEST(decoded_fixups_equal_llvm_objdump_for_every_execution_fixture) {
     }
 }
 
-CIDER_TEST(chained_fixups_are_refused_by_the_decoder) {
+CIDER_TEST(chained_fixups_are_decoded_since_0_3_5) {
     auto bytes = read_file(std::filesystem::path(CIDER_REAL_FIXTURES_DIR) / "bin" / "hello_chained_x86_64", 1 << 20).value();
     auto file = macho::parse_file(ByteView(bytes)).value();
-    CHECK_ERR(decode_fixups(*file.slices[0].image, ByteView(bytes)), ErrorCode::Unsupported);
+    auto fx = take(decode_fixups(*file.slices[0].image, ByteView(bytes)));
+    std::vector<std::string> names;
+    for (auto& f : fx) if (f.kind == Fixup::Kind::Bind) names.push_back(f.symbol);
+    std::sort(names.begin(), names.end());
+    CHECK_EQ(names.size(), size_t{2});
+    CHECK_EQ(names[0], std::string("_exit"));
+    CHECK_EQ(names[1], std::string("_puts"));
 }
 
 CIDER_TEST(weak_bind_streams_are_refused_by_the_decoder) {

@@ -235,8 +235,10 @@ Result<std::vector<Fixup>> decode_bind_stream(ByteView stream, const std::vector
 }
 
 Result<std::vector<Fixup>> decode_fixups(const macho::Image& img, ByteView slice, const FixupLimits& lim) {
-    if (img.chained_fixups)
-        return Error{ErrorCode::Unsupported, "LC_DYLD_CHAINED_FIXUPS is not supported yet (only classic LC_DYLD_INFO_ONLY fixups)"};
+    if (img.chained_fixups) {
+        if (img.dyld_info) return Error{ErrorCode::Malformed, "image has both LC_DYLD_CHAINED_FIXUPS and LC_DYLD_INFO(_ONLY)"};
+        return decode_chained_fixups(img, slice, lim);
+    }
     std::vector<Fixup> all;
     if (!img.dyld_info) return all;  // nothing to fix up
     const auto& di = *img.dyld_info;

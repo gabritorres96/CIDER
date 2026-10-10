@@ -1,0 +1,10 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\chained\libchain.dylib:
+
+SYMBOL TABLE:
+0000000000000350 l     F __TEXT,__text _twice
+0000000000000360 g     F __TEXT,__text _chain_get
+0000000000001000 g     O __DATA,__data _chain_value
+0000000000001008 g     O __DATA,__data _chain_fn
+0000000000001010 g     O __DATA,__data _chain_name
+0000000000001018 g     O __DATA,__data _chain_ptr
+0000000000000000         *UND* dyld_stub_binder

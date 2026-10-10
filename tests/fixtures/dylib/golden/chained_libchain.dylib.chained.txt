@@ -1,0 +1,22 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\chained\libchain.dylib:
+chained fixups header (LC_DYLD_CHAINED_FIXUPS)
+  fixups_version = 0
+  starts_offset  = 32
+  imports_offset = 72
+  symbols_offset = 72
+  imports_count  = 0
+  imports_format = 1 (DYLD_CHAINED_IMPORT)
+  symbols_format = 0
+chained starts in image
+  seg_count = 3
+    seg_offset[0] = 0 (__TEXT)
+    seg_offset[1] = 16 (__DATA)
+    seg_offset[2] = 0 (__LINKEDIT)
+chained starts in segment 1 (__DATA)
+  size = 24
+  page_size = 0x1000
+  pointer_format = 2 (DYLD_CHAINED_PTR_64)
+  segment_offset = 0x1000
+  max_valid_pointer = 0
+  page_count = 1
+    page_start[0] = 8

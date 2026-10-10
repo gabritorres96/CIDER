@@ -36,8 +36,6 @@ ValidationReport validate_for_execution(const macho::Image& img, const Validator
     } else if (img.entry->kind != macho::EntryPoint::Kind::Main) {
         add(r, K::Unsupported, "LC_UNIXTHREAD entry protocol is not supported (only LC_MAIN)");
     }
-    if (img.chained_fixups)
-        add(r, K::Unsupported, "chained fixups (LC_DYLD_CHAINED_FIXUPS) are not supported yet; link with classic dyld info (-no_fixup_chains)");
     if (img.dyld_info && img.dyld_info->weak_bind.size)
         add(r, K::Unsupported, "weak binding information is not supported yet");
 

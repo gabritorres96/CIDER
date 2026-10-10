@@ -1,0 +1,7 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\chainexe\chainexe:
+dyld information:
+segment      section address    pointer            type   addend dylib   symbol/vm address
+__DATA_CONST __got   0x100001000 0x8020000000000000 bind   0x0    libSystem _printf
+__DATA_CONST __const 0x100001010 0x001000010000200C rebase               0x10000200C
+__DATA_CONST __const 0x100001018 0x0010000100002000 rebase               0x100002000
+__DATA_CONST __const 0x100001020 0x0000000100002008 rebase               0x100002008

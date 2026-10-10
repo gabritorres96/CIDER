@@ -66,6 +66,8 @@ Status apply_impl(LoadedImage& image, const macho::Image& img, const std::vector
         std::memcpy(&value, slot, 8);
         if (f.kind == dyld::Fixup::Kind::Rebase) {
             value = static_cast<uint64_t>(static_cast<int64_t>(value) + image.slide);
+        } else if (f.kind == dyld::Fixup::Kind::ChainedRebase) {
+            value = (static_cast<uint64_t>(f.addend) << 56) | (static_cast<uint64_t>(static_cast<int64_t>(f.target) + image.slide) & 0x00FFFFFFFFFFFFFFull);
         } else {
             auto v = bind_value(i, f);
             if (!v.ok()) return v.error();

@@ -279,7 +279,7 @@ private:
             std::map<std::pair<int64_t, std::string>, std::pair<bool, uint64_t>> cache;
             for (size_t i = 0; i < p.fixups.size(); ++i) {
                 const dyld::Fixup& f = p.fixups[i];
-                if (f.kind == dyld::Fixup::Kind::Rebase) { ++r->rebases; continue; }
+                if (f.kind != dyld::Fixup::Kind::Bind) { ++r->rebases; continue; }
                 ++r->binds;
                 auto key = std::make_pair(f.library_ordinal, f.symbol);
                 auto hit = cache.find(key);

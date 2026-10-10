@@ -13,7 +13,7 @@ mkdir "%R%\obj" "%R%\bin" "%R%\golden" 2>nul
 pushd "%R%"
 
 set "SYS=..\exec\sysroot"
-set "CFLAGS=--target=x86_64-apple-macos10.15 -O1 -ffreestanding -nostdinc -fno-builtin -fno-stack-protector -fno-ident -c"
+set "CFLAGS=-I..\exec\src --target=x86_64-apple-macos10.15 -O1 -ffreestanding -nostdinc -fno-builtin -fno-stack-protector -fno-ident -c"
 set "LD=ld64.lld -arch x86_64 -platform_version macos 10.15.0 12.0.0 -syslibroot %SYS%"
 
 rem ---- compile every source once --------------------------------------------------------------------
@@ -110,6 +110,14 @@ mkdir bin\badver
 %LD% -rpath @executable_path -Lbin\badver -lmath -o bin\badver\badver obj\badver_main.o -lSystem || exit /b 1
 %LD% -dylib -install_name @rpath/libmath.dylib -current_version 1.0.0 -compatibility_version 1.0.0 -o bin\badver\libmath.dylib obj\math.o -lSystem || exit /b 1
 
+rem ---- chained: LC_DYLD_CHAINED_FIXUPS (DYLD_CHAINED_PTR_64) in an executable and a dylib --------------------------------------
+set "LDC=ld64.lld -arch x86_64 -platform_version macos 12.0.0 12.0.0 -fixup_chains -syslibroot %SYS%"
+mkdir bin\chained
+%LDC% -dylib -install_name @rpath/libchain.dylib -o bin\chained\libchain.dylib obj\chain_lib.o -lSystem || exit /b 1
+%LDC% -rpath @executable_path -Lbin\chained -lchain -o bin\chained\chained obj\chain_main.o -lSystem || exit /b 1
+mkdir bin\chainexe
+%LDC% -o bin\chainexe\chainexe obj\chain_exe.o -lSystem || exit /b 1
+
 rem ---- snapshots of every Mach-O produced ----------------------------------------------------------------------------------------
 for /r bin %%f in (*) do (
   set "N=%%~nxf"
@@ -119,6 +127,8 @@ for /r bin %%f in (*) do (
   llvm-objdump --macho --private-headers "%%f" > "golden\!KEY!.private-headers.txt" || exit /b 1
   llvm-objdump --macho --exports-trie "%%f" > "golden\!KEY!.exports.txt" || exit /b 1
   llvm-objdump --macho --syms "%%f" > "golden\!KEY!.syms.txt" || exit /b 1
+  llvm-objdump --macho --dyld-info "%%f" > "golden\!KEY!.dyldinfo.txt" || exit /b 1
+  llvm-objdump --macho --chained-fixups "%%f" > "golden\!KEY!.chained.txt" || exit /b 1
   llvm-objdump --macho --rebase --bind --lazy-bind "%%f" > "golden\!KEY!.fixups.txt" || exit /b 1
 )
 llvm-objdump --version | findstr /b /c:"  LLVM version" > golden\TOOL-VERSION.txt

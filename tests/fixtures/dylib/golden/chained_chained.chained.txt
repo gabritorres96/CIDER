@@ -1,0 +1,56 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\chained\chained:
+chained fixups header (LC_DYLD_CHAINED_FIXUPS)
+  fixups_version = 0
+  starts_offset  = 32
+  imports_offset = 104
+  symbols_offset = 128
+  imports_count  = 6
+  imports_format = 1 (DYLD_CHAINED_IMPORT)
+  symbols_format = 0
+chained starts in image
+  seg_count = 5
+    seg_offset[0] = 0 (__PAGEZERO)
+    seg_offset[1] = 0 (__TEXT)
+    seg_offset[2] = 24 (__DATA_CONST)
+    seg_offset[3] = 48 (__DATA)
+    seg_offset[4] = 0 (__LINKEDIT)
+chained starts in segment 2 (__DATA_CONST)
+  size = 24
+  page_size = 0x1000
+  pointer_format = 2 (DYLD_CHAINED_PTR_64)
+  segment_offset = 0x1000
+  max_valid_pointer = 0
+  page_count = 1
+    page_start[0] = 0
+chained starts in segment 3 (__DATA)
+  size = 24
+  page_size = 0x1000
+  pointer_format = 2 (DYLD_CHAINED_PTR_64)
+  segment_offset = 0x2000
+  max_valid_pointer = 0
+  page_count = 1
+    page_start[0] = 0
+dyld chained import[0]
+  lib_ordinal = 1 (libchain)
+  weak_import = 0
+  name_offset = 0 (_chain_get)
+dyld chained import[1]
+  lib_ordinal = 1 (libchain)
+  weak_import = 0
+  name_offset = 11 (_chain_fn)
+dyld chained import[2]
+  lib_ordinal = 1 (libchain)
+  weak_import = 0
+  name_offset = 21 (_chain_value)
+dyld chained import[3]
+  lib_ordinal = 2 (libSystem)
+  weak_import = 0
+  name_offset = 34 (_printf)
+dyld chained import[4]
+  lib_ordinal = 2 (libSystem)
+  weak_import = 0
+  name_offset = 42 (_puts)
+dyld chained import[5]
+  lib_ordinal = 1 (libchain)
+  weak_import = 0
+  name_offset = 48 (_chain_name)

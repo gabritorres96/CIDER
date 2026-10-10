@@ -1,0 +1,3 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\missing\missing:
+dyld information:
+segment section address pointer            type   addend dylib symbol/vm address

@@ -9,7 +9,7 @@ cider_lib(cider_plist corefoundation/plist.cpp)
 target_link_libraries(cider_plist PUBLIC cider_core)
 cider_lib(cider_macho macho/macho.cpp macho/names.cpp macho/codesign.cpp)
 target_link_libraries(cider_macho PUBLIC cider_core)
-cider_lib(cider_dyld dyld/install_name.cpp dyld/relocation_engine.cpp dyld/symbol_resolver.cpp dyld/export_trie.cpp)
+cider_lib(cider_dyld dyld/install_name.cpp dyld/relocation_engine.cpp dyld/symbol_resolver.cpp dyld/export_trie.cpp dyld/chained_fixups.cpp)
 
 target_link_libraries(cider_dyld PUBLIC cider_core cider_macho)
 cider_lib(cider_bundle bundle/bundle.cpp)

@@ -456,7 +456,8 @@ CIDER_TEST(run_incompatible_files_have_their_own_exit_code) {
     CHECK_EQ(arm.code, 11);
     CHECK(has(arm, "no usable x86_64 slice"));
     CHECK_EQ(cider_run({"run", path_to_utf8(fs::path(CIDER_REAL_FIXTURES_DIR) / "bin" / "libfoo.dylib")}).code, 11);
-    CHECK_EQ(cider_run({"run", path_to_utf8(fs::path(CIDER_REAL_FIXTURES_DIR) / "bin" / "hello_chained_x86_64")}).code, 11);
+    // hello_chained_x86_64 (chained fixups) was refused in 0.2; since 0.3.5 it runs
+    CHECK_EQ(cider_run({"run", path_to_utf8(fs::path(CIDER_REAL_FIXTURES_DIR) / "bin" / "hello_chained_x86_64"), "--log-level", "off"}).code, 0);
     auto junk = t.write("junk", std::vector<uint8_t>(300, 0x41));
     CHECK_EQ(cider_run({"run", path_to_utf8(junk)}).code, 11);
     CHECK_EQ(cider_run({"run", path_to_utf8(t.path() / "missing")}).code, 11);

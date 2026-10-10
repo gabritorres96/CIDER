@@ -1,0 +1,154 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\chained\libchain.dylib:
+Mach header
+      magic cputype cpusubtype  caps    filetype ncmds sizeofcmds      flags
+MH_MAGIC_64  X86_64        ALL  0x00       DYLIB    13        784   NOUNDEFS DYLDLINK TWOLEVEL NO_REEXPORTED_DYLIBS
+Load command 0
+      cmd LC_SEGMENT_64
+  cmdsize 232
+  segname __TEXT
+   vmaddr 0x0000000000000000
+   vmsize 0x0000000000001000
+  fileoff 0
+ filesize 4096
+  maxprot r-x
+ initprot r-x
+   nsects 2
+    flags (none)
+Section
+  sectname __text
+   segname __TEXT
+      addr 0x0000000000000350
+      size 0x000000000000001f
+    offset 848
+     align 2^4 (16)
+    reloff 0
+    nreloc 0
+      type S_REGULAR
+attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
+ reserved1 0
+ reserved2 0
+Section
+  sectname __cstring
+   segname __TEXT
+      addr 0x000000000000036f
+      size 0x000000000000000a
+    offset 879
+     align 2^0 (1)
+    reloff 0
+    nreloc 0
+      type S_CSTRING_LITERALS
+attributes (none)
+ reserved1 0
+ reserved2 0
+Load command 1
+      cmd LC_SEGMENT_64
+  cmdsize 152
+  segname __DATA
+   vmaddr 0x0000000000001000
+   vmsize 0x0000000000001000
+  fileoff 4096
+ filesize 4096
+  maxprot rw-
+ initprot rw-
+   nsects 1
+    flags (none)
+Section
+  sectname __data
+   segname __DATA
+      addr 0x0000000000001000
+      size 0x0000000000000020
+    offset 4096
+     align 2^3 (8)
+    reloff 0
+    nreloc 0
+      type S_REGULAR
+attributes (none)
+ reserved1 0
+ reserved2 0
+Load command 2
+      cmd LC_SEGMENT_64
+  cmdsize 72
+  segname __LINKEDIT
+   vmaddr 0x0000000000002000
+   vmsize 0x0000000000000160
+  fileoff 8192
+ filesize 352
+  maxprot r--
+ initprot r--
+   nsects 0
+    flags (none)
+Load command 3
+      cmd LC_DYLD_CHAINED_FIXUPS
+  cmdsize 16
+  dataoff 8192
+ datasize 72
+Load command 4
+      cmd LC_DYLD_EXPORTS_TRIE
+  cmdsize 16
+  dataoff 8264
+ datasize 72
+Load command 5
+     cmd LC_SYMTAB
+ cmdsize 24
+  symoff 8344
+   nsyms 7
+  stroff 8456
+ strsize 88
+Load command 6
+            cmd LC_DYSYMTAB
+        cmdsize 80
+      ilocalsym 0
+      nlocalsym 1
+     iextdefsym 1
+     nextdefsym 5
+      iundefsym 6
+      nundefsym 1
+         tocoff 0
+           ntoc 0
+      modtaboff 0
+        nmodtab 0
+   extrefsymoff 0
+    nextrefsyms 0
+ indirectsymoff 0
+  nindirectsyms 0
+      extreloff 0
+        nextrel 0
+      locreloff 0
+        nlocrel 0
+Load command 7
+          cmd LC_ID_DYLIB
+      cmdsize 48
+         name @rpath/libchain.dylib (offset 24)
+   time stamp 0 Thu Jan  1 01:00:00 1970
+      current version 0.0.0
+compatibility version 0.0.0
+Load command 8
+     cmd LC_UUID
+ cmdsize 24
+    uuid 4C4C4436-5555-3144-A127-E20421923813
+Load command 9
+       cmd LC_BUILD_VERSION
+   cmdsize 32
+  platform macos
+       sdk 12.0
+     minos 12.0
+    ntools 1
+      tool lld
+   version 23.1.3
+Load command 10
+          cmd LC_LOAD_DYLIB
+      cmdsize 56
+         name /usr/lib/libSystem.B.dylib (offset 24)
+   time stamp 0 Thu Jan  1 01:00:00 1970
+      current version 1311.0.0
+compatibility version 1.0.0
+Load command 11
+      cmd LC_FUNCTION_STARTS
+  cmdsize 16
+  dataoff 8336
+ datasize 8
+Load command 12
+      cmd LC_DATA_IN_CODE
+  cmdsize 16
+  dataoff 8344
+ datasize 0

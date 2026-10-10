@@ -59,7 +59,7 @@ LoadResult load_macho(ByteView file, dyld::SymbolProvider& provider, const Valid
     auto fixups = dyld::decode_fixups(img, bytes.value());
     if (!fixups.ok())
         return fail(fixups.error().code == ErrorCode::Unsupported ? LoadFailure::Unsupported : LoadFailure::Incompatible, fixups.error().message, report);
-    for (auto& f : fixups.value()) (f.kind == dyld::Fixup::Kind::Rebase ? report.rebases : report.binds)++;
+    for (auto& f : fixups.value()) (f.kind == dyld::Fixup::Kind::Bind ? report.binds : report.rebases)++;
     dyld::ResolutionReport res = dyld::resolve_symbols(img, fixups.value(), provider);
     for (auto& l : res.libraries) {
         bool dup = false;

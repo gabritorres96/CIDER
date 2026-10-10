@@ -1,0 +1,8 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\chained\libchain.dylib:
+
+Exports trie:
+0x00000360  _chain_get
+0x00001010  _chain_name
+0x00001000  _chain_value
+0x00001018  _chain_ptr
+0x00001008  _chain_fn

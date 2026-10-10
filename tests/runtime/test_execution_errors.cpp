@@ -70,7 +70,6 @@ CIDER_TEST(incompatible_files_are_rejected_with_specific_reasons) {
         {real("hello_arm64"), loader::LoadFailure::Incompatible, "no x86_64 slice"},
         {real("libfoo.dylib"), loader::LoadFailure::Incompatible, "not an executable"},
         {real("hello_x86_64.o"), loader::LoadFailure::Incompatible, "not an executable"},
-        {real("hello_chained_x86_64"), loader::LoadFailure::Unsupported, "chained fixups"},
     };
     for (auto& c : cases) {
         auto r = load_only(c.bytes);

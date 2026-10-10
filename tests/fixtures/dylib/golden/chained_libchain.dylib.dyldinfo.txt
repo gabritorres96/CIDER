@@ -1,0 +1,6 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\chained\libchain.dylib:
+dyld information:
+segment section address pointer            type   addend dylib symbol/vm address
+__DATA  __data  0x1008  0x0010000000000350 rebase             0x350
+__DATA  __data  0x1010  0x001000000000036F rebase             0x36F
+__DATA  __data  0x1018  0x0000000000001000 rebase             0x1000

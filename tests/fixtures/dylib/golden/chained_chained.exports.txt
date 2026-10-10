@@ -1,0 +1,6 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\chained\chained:
+
+Exports trie:
+0x100000000  __mh_execute_header
+0x1000004F0  _main
+0x100002000  _local_fn

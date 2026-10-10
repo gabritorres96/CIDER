@@ -1,0 +1,10 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\chained\chained:
+dyld information:
+segment      section address    pointer            type   addend dylib        symbol/vm address
+__DATA_CONST __got   0x100001000 0x8010000000000000 bind   0x0    libchain     _chain_get
+__DATA_CONST __got   0x100001008 0x8010000000000001 bind   0x0    libchain     _chain_fn
+__DATA_CONST __got   0x100001010 0x8010000000000002 bind   0x0    libchain     _chain_value
+__DATA_CONST __got   0x100001018 0x8010000000000003 bind   0x0    libSystem    _printf
+__DATA_CONST __got   0x100001020 0x8010000000000004 bind   0x0    libSystem    _puts
+__DATA_CONST __got   0x100001028 0x8000000000000005 bind   0x0    libchain     _chain_name
+__DATA       __data  0x100002000 0x00000001000004E0 rebase                    0x1000004E0

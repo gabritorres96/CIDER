@@ -192,9 +192,7 @@ CIDER_TEST(validator_reports_missing_dependencies_precisely) {
 CIDER_TEST(validator_rejects_features_the_runtime_cannot_honour) {
     auto i = synthetic();
     i.chained_fixups = macho::LinkeditRange{0x1000, 16};
-    auto rep = validate_for_execution(i);
-    REQUIRE(!rep.ok());
-    CHECK(rep.issues[0].kind == Issue::Kind::Unsupported);
+    CHECK(validate_for_execution(i).ok());                         // chained fixups are judged by the decoder (test_chained_fixups), not refused up front
     i = synthetic();
     macho::Section tls;
     tls.name = "__thread_vars"; tls.segment = "__DATA"; tls.flags = 0x13; tls.size = 24;
@@ -213,13 +211,13 @@ CIDER_TEST(validator_rejects_features_the_runtime_cannot_honour) {
     CHECK(!validate_for_execution(i).ok());
 }
 
-CIDER_TEST(real_chained_fixups_binary_is_refused_with_a_clear_message) {
+CIDER_TEST(real_chained_fixups_binary_loads_since_0_3_5) {
+    // CIDER 0.2 refused this image; the chained-fixups decoder (DYLD_CHAINED_PTR_64) now maps and binds it.
     auto bytes = read_file(std::filesystem::path(CIDER_REAL_FIXTURES_DIR) / "bin" / "hello_chained_x86_64", 1 << 20).value();
     auto provider = take(libsystem::LibSystemProvider::create());
     auto r = load_macho(ByteView(bytes), *provider);
-    REQUIRE(!r.ok());
-    CHECK(r.error->kind == LoadFailure::Unsupported);
-    CHECK(r.error->message.find("chained fixups") != std::string::npos);
+    REQUIRE(r.ok());
+    CHECK_EQ(r.report.binds, size_t{2});                          // _exit and _puts through the GOT
 }
 
 // ---- mapping ------------------------------------------------------------------------------------------------

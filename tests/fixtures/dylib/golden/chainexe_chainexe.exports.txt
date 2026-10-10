@@ -1,0 +1,5 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\chainexe\chainexe:
+
+Exports trie:
+0x1000004E0  _main
+0x100000000  __mh_execute_header

@@ -1,0 +1,9 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\chainexe\chainexe:
+
+SYMBOL TABLE:
+0000000100001010 l     O __DATA_CONST,__const _pointers
+0000000100002000 l     O __DATA,__data _table
+00000001000004e0 g     F __TEXT,__text _main
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _printf
+0000000000000000         *UND* dyld_stub_binder
