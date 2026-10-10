@@ -8,3 +8,6 @@ build-*/
 .toolchain/
 .validation/
 tests/fixtures/real/obj/
+
+# External SDKs, Apple developer downloads and local research utilities
+/utilities/
