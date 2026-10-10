@@ -148,3 +148,13 @@ Nothing else is claimed.
 * Evidence that the instructions come from the Mach-O (not a PE): the exit code 42 of `tests/fixtures/dylib/bin/one/one` is computed by
   `lea eax,[rdi+rsi]` inside `libmath.dylib`; replacing those 3 bytes in a copy changes the result to 22 (`test_linker`), and `llvm-objdump -d`
   shows the same instruction. Both files are `Mach-O 64-bit x86_64` (`magic 0xfeedfacf`), neither contains a PE header.
+
+## 0.4 additions
+
+* **Objective-C**: `cider run` links `libobjc.A.dylib` (80 exported functions), parses Apple objc2 metadata, dispatches `objc_msgSend` and logs
+  `[CIDER][OBJC] Runtime initialized`, `Class X registered`, `Selector s resolved`, `Message dispatched: -[X s]` — see [OBJECTIVE-C-RUNTIME.md](OBJECTIVE-C-RUNTIME.md).
+  `cider run tests\fixtures\objc\bin\objc_calc\objc_calc` prints `Guest exit code: 42` (the 42 is computed by `-[Calculator add:to:]`, compiled Objective-C).
+* **Foundation subset**: `cider run tests\fixtures\objc\bin\foundation_hello\foundation_hello` prints `CIDER result: 42` (NSLog, stderr) and `Guest exit code: 42` — [FOUNDATION.md](FOUNDATION.md).
+* **Callbacks** (`qsort`, `bsearch`, `atexit`): [CALLBACKS.md](CALLBACKS.md). **Threads** (`pthread_*`, cooperative): [THREADING.md](THREADING.md).
+  **FILE streams** (`fopen` … `fclose`, opaque `FILE*`, binary mode, confined to `--root`): [DARWIN-RUNTIME.md](DARWIN-RUNTIME.md).
+* `GuestConfig`/`Outcome` gained `objc_live_objects` (objects still alive at exit).

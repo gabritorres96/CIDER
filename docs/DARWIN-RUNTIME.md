@@ -47,4 +47,15 @@ the `'` flag, positional `%1$d`, absurd widths. Numeric rendering uses the host 
 
 ## Limits
 
-One guest thread; no signals; no `atexit`; output goes through the worker's stdout/stderr (or the JSON capture).
+Cooperative guest threads only ([THREADING.md](THREADING.md)); no signals; output goes through the worker's stdout/stderr (or the JSON capture).
+
+## 0.4 additions
+
+* **FILE streams**: `fopen`, `fclose`, `fread`, `fwrite`, `fseek`, `fseeko`, `ftell`, `ftello`, `rewind`, `feof`, `ferror`, `clearerr`, `fflush`, `fgets`, `fgetc`/`getc`, `ungetc`, `fputs`, `fputc`,
+  `fileno`, `setvbuf`. A guest `FILE*` is an **opaque pointer to a 64-byte read-only slot** of a pool (64 slots; 0-2 are the standard streams), never a copy of Darwin's
+  `FILE` struct, and is only compared with the pool range and indexed — a forged, stale or NULL pointer fails with `EBADF`. Streams sit on top of the descriptor table, so `--root`
+  confinement, the descriptor limit and close-at-exit are shared with `open`. Files are opened in **binary mode** (bytes written are bytes on disk; no CRLF translation, no Ctrl-Z),
+  writes are unbuffered, reads are buffered in 4 KiB chunks that `fseek`/`rewind` discard. Without `--root` `fopen` fails with `EACCES`. Not implemented: `fscanf`, `popen`, `tmpfile`, `freopen`, `fdopen`, wide streams, `fmemopen`.
+* `qsort`, `bsearch`, `atexit` (host → guest callbacks, [CALLBACKS.md](CALLBACKS.md)); `pthread_*` ([THREADING.md](THREADING.md)); per-thread `errno`.
+* `printf`-family conversions gained `%@` **only** for NSLog / `+stringWithFormat:` (the libSystem `printf` rejects it).
+* Objective-C runtime and Foundation subset: [OBJECTIVE-C-RUNTIME.md](OBJECTIVE-C-RUNTIME.md), [FOUNDATION.md](FOUNDATION.md).

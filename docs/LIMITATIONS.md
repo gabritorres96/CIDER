@@ -73,3 +73,14 @@ clauses); this project does not give legal advice — check the licence of what 
 * Chained fixups: only pointer formats 2 and 6 (no arm64e, 32-bit, kernel-cache, multi-start pages).
 * TLS: single thread, no thread destructors, no `__thread_init`.
 * Verified on one machine (Windows 11 26200); GitHub Actions never ran. arm64 unsupported.
+
+## 0.4 (Objective-C / Foundation subset)
+
+* Objective-C support covers what clang emits for plain classes, categories, protocols, ARC and MRC on the objc2 ABI. Not supported: blocks, `@try/@catch`, `@synchronized`,
+  Swift, relative method lists, message forwarding (`forwardInvocation:`, `resolveInstanceMethod:`), property reflection, KVC/KVO, `NSInvocation`.
+* Foundation is a **host-written subset** of 9 classes (NSObject, NSString, NSConstantString, NSNumber, NSArray, NSMutableArray, NSDictionary, NSMutableDictionary, NSAutoreleasePool) plus `NSLog` and four helper functions ([FOUNDATION.md](FOUNDATION.md)); `NSLog` omits Apple's timestamp/pid prefix;
+  exceptions end the guest; dictionary lookup is linear; no `NSMutableString`, `NSData`, `NSDate`, `NSURL`, `NSFileManager`, `NSBundle`, run loops, formatters or localisation.
+* Threads are cooperative, one at a time: no parallelism, spinning threads starve the others, no race detection ([THREADING.md](THREADING.md)).
+* Callbacks are entered only at addresses inside a loaded image's code ([CALLBACKS.md](CALLBACKS.md)); no signal handlers.
+* The worker is still **not a sandbox**: Objective-C and Foundation code runs with the worker's full rights.
+* Only clang-built fixtures were run; no Apple-built binary and no downloaded application.

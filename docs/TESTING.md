@@ -36,6 +36,12 @@ substring filter: `build/bin/Debug/test_dmg.exe extract_`. The integration suite
 | `test_chained_fixups` | 14 | decoding vs `llvm-objdump --dyld-info`, execution, PTR_64_OFFSET variant, high8, relocation by slide, malformed/unsupported matrix, 1500 mutations |
 | `test_tls` | 11 | TLV execution (exe + dylib), host TEB/gs/TlsAlloc/thread_local untouched, template layout vs llvm-objdump, register preservation, refusals |
 | `test_execution_errors` | 18 | load failures (nothing runs), result protocol, worker process: crash, illegal instruction, stack overflow, timeout, memory limit, separate pid, captured output |
+| `test_callbacks` | 18 | host→guest callbacks: integer/double/mixed/8-argument/aggregate results, nesting, depth limit, invalid targets, `exit()` in nested callbacks, red zone; `qsort` (ints, strings, records, nested), `bsearch`, `atexit` order/exit/`_exit`, invalid comparator |
+| `test_streams` | 6 | `FILE` streams byte-exact (no text translation), `fread/fseek/ftell/feof/ferror/fgets` contract, `--root` confinement, `EACCES` without a root, finite pool + forged pointers, close at exit |
+| `test_threads` | 13 | pthread create/join/exit, mutex exactness and the unprotected-race control, per-thread TLS and errno, condition variables, `exit()` from a thread, thread limit, host thread state untouched, no leaks, deterministic scheduling, opaque handles, fault containment |
+| `test_objc` | 16 | metadata parsed vs `llvm-objdump --objc-meta-data`, compiled programs (calc → 42, inheritance, run-time classes, categories/`+load`/protocols, ABI return classes, ivar sliding, MRC, ARC/weak/pools), error traps, hostile-metadata matrix |
+| `test_foundation` | 7 | compiled Foundation programs: `CIDER result: 42`, NSString/NSNumber/NSArray/NSDictionary checks inside the guest, guest subclasses of NSObject, ten misuse diagnoses, patching the literal changes the output |
+
 
 Skipped (printed as `[SKIP]`, exit code 0) when the input is absent: 7-Zip tests without 7-Zip, the symlink
 test without symlink privilege, and three that need explicit inputs:
@@ -117,3 +123,14 @@ Initializer fixtures are compiled with `-O0` because LLVM's GlobalOpt would othe
 `test_cli` runs `cider.exe` under a real pseudo console (ConPTY) to guard the 0.2 lost-stdout regression.
 
 New fuzzers: `fuzz_chained` (export trie + chained/classic fixup decoders) and `fuzz_linker` (whole multi-image link, never executes).
+
+## 0.4 notes
+
+* Objective-C and Foundation fixtures are real Mach-O files built by `tools\llvm-env.cmd tools\gen-objc-fixtures.cmd` (clang `-target x86_64-apple-macos10.15` + ld64.lld against hand-written
+  `tests/fixtures/objc/include` and `sysroot` stubs; no Apple SDK). Their `llvm-objdump` snapshots are in `tests/fixtures/objc/golden`. The guest programs check themselves and exit with the
+  number of failed checks; the host tests assert exit codes, exact NSLog output and `objc_live_objects`.
+* `fuzz_objc`: libFuzzer harness that links a mutated Mach-O with the Objective-C runtime hooks and realizes the classes (never runs guest code). Seed corpus: every file under `tests/fixtures/objc/bin`
+  and `tests/fixtures/dylib/bin`.
+* ASan: `repeated_runs_do_not_leak_memory_or_address_space` allows 200 MiB growth under ASan (its quarantine of freed host blocks, up to 256 MiB, otherwise trips the 24 MiB release limit); a real
+  guest leak of 150 × 8 MiB stacks would still fail it.
+* Threads are cooperative: the suite cannot, and does not claim to, find data races (no ThreadSanitizer on Windows here).

@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.4.0 — Objective-C Runtime & Foundation Subset (experimental, 2026-10-10)
+
+Controlled fixtures only (clang + ld64.lld Mach-O programs); no macOS application runs; no Cocoa. Foundation is a host-written subset, not Apple's.
+
+### Added
+- **0.4.0 host→guest callbacks**: `abi::call_guest_nested`, nested `GuestCall` records below the red zone, depth limit 64, validated targets (inside a loaded image's code),
+  `exit()` unwinding; `qsort` (stable merge sort), `bsearch`, `atexit` (reverse order, `exit()` in a handler). [CALLBACKS.md](docs/CALLBACKS.md).
+- **0.4.1 FILE streams**: `fopen fclose fread fwrite fseek fseeko ftell ftello rewind feof ferror clearerr fflush fgets fgetc getc ungetc fputs fputc fileno setvbuf`; opaque 64-slot pool,
+  binary mode, confined to `--root`, closed at exit.
+- **0.4.2 threads**: `pthread_create/join/detach/self/equal/exit`, attributes, mutexes (normal/errorcheck/recursive), condition variables, `pthread_once`, keys, `sched_yield`; real Windows threads
+  under a fair cooperative scheduler; per-thread `errno`, TLS blocks and autorelease pools; `GS`/TEB never touched. [THREADING.md](docs/THREADING.md).
+- **0.4.3 research** [OBJECTIVE-C-RUNTIME.md](docs/OBJECTIVE-C-RUNTIME.md): GNUstep libobjc2 evaluated and rejected (MIT, but not Apple-ABI-equivalent; GNUstep-base is LGPL); own runtime.
+- **0.4.4 Objective-C runtime** (`src/objc/`): objc2 metadata (classes, metaclasses, categories, protocols, ivars, selector refs), non-fragile ivar sliding, `objc_msgSend` family as MASM tail-jump stubs
+  (`_stret`, `_fpret`, `Super`, `Super2`), nil messaging, unrecognized-selector traps, `+load`, run-time class construction, 80 libobjc exports, `Category::Objc` log lines.
+- **0.4.5 memory**: retain/release/autorelease, per-thread pools, `-dealloc` + `.cxx_destruct`, weak references, ARC helpers (`objc_alloc*`, `retainAutoreleasedReturnValue`, `storeStrong`, …), double-release/invalid-token
+  diagnoses, leak counter `objc_live_objects`.
+- **0.4.6 Foundation subset** (`src/foundation/`): NSObject, NSString/NSConstantString (UTF-16 lengths), NSNumber, NSArray/NSMutableArray, NSDictionary/NSMutableDictionary, NSAutoreleasePool, `NSLog`
+  (`%@`), `NSStringFromClass` & co.; literals `@"…" @42 @[…] @{…}`, subscripts, fast enumeration. [FOUNDATION.md](docs/FOUNDATION.md).
+- Reference program: `foundation_hello` prints `CIDER result: 42` and exits 42. Fixtures: 15 Objective-C program directories (14 programs + the `slide` dylib scenario), 17 new exec fixtures; suites `test_callbacks`, `test_streams`, `test_threads`, `test_objc`,
+  `test_foundation`; fuzzer `fuzz_objc`.
+- `printf_format` `%@` hook (Foundation only), `LinkOptions::before_protect`, `LibSystemProvider::set_dynamic_data`, per-library symbol groups (libSystem / libobjc / Foundation).
+
+### Fixed
+- Wrapped ULEB backward moves in rebase/bind streams emitted by ld64.lld ("offset overflows").
+- `@protocol(X)` handles produced by the compiler were not recognised by `conformsToProtocol:`.
+- `exit()` inside an `atexit` handler or a joined thread lost its exit code; `pthread_join` returned normally while the process was exiting.
+- Test flakes: `test_tls` stack-limit comparison; `repeated_runs_do_not_leak_memory_or_address_space` under ASan (quarantine).
+
+### Changed
+- Version 0.3.0 → 0.4.0. `GuestCall` is 200 bytes. A program importing `libobjc`/Foundation is no longer refused up front; unknown symbols still fail the link (exit 12).
+
+### Not done / known limits
+Blocks, exceptions, Swift, AppKit/Cocoa, run loops, `NSData/NSDate/NSURL/NSMutableString`, message forwarding, relative method lists, parallel threads (cooperative only), race detection. See [LIMITATIONS.md](docs/LIMITATIONS.md).
+
+
 ## 0.3.0 — Darwin Runtime & Dynamic Library Support (experimental, 2026-10-10)
 
 Controlled fixtures only; no macOS application runs.

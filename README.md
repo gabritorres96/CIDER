@@ -5,17 +5,19 @@
 A macOS → Windows compatibility layer, in the spirit of Wine but in the opposite direction.
 Not an emulator, not a VM, no macOS and no XNU kernel required.
 
-> **Status: CIDER 0.3.0 — Darwin runtime and dynamic libraries (experimental).**
-> CIDER executes machine code from Mach-O x86_64 files on Windows (no emulator, no VM, no XNU) and, since 0.3, links
-> **real Mach-O dylibs**: `cider run one` loads `one` + `libmath.dylib`, resolves `_cider_add` through the dylib's export trie, runs the
-> dylib's code and prints `Guest exit code: 42`. 0.3 also adds Mach-O initializers, a variadic-capable ABI bridge, an own `printf`
-> family, a Darwin file/time layer, chained fixups and a thread-local-storage subset.
-> **Only controlled test programs run** (clang + ld64.lld fixtures). **No macOS application runs**: Cocoa, SwiftUI, Foundation,
-> AppKit, libobjc and the Swift runtime do not exist; the three real apps tried (Rectangle, Stats, MonitorControl) are refused.
-> Static verdicts such as "analysis compatible" still mean "static analysis passed", never "it runs". Execution happens in a
-> separate worker process that limits crashes and resources but is **not a sandbox**. See [docs/EXECUTION.md](docs/EXECUTION.md),
-> [docs/DYNAMIC-LINKING.md](docs/DYNAMIC-LINKING.md), [docs/DARWIN-RUNTIME.md](docs/DARWIN-RUNTIME.md), [docs/TLS.md](docs/TLS.md) and
-> [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
+> **Status: CIDER 0.4.0 — Objective-C runtime and a Foundation subset (experimental).**
+> CIDER executes machine code from Mach-O x86_64 files on Windows (no emulator, no VM, no XNU). 0.3 added **real Mach-O dylibs**, initializers, a
+> variadic-capable ABI bridge, an own `printf` family, a Darwin file/time layer, chained fixups and TLS. 0.4 adds host→guest callbacks (`qsort`,
+> `atexit`), `FILE` streams, cooperative pthreads, an own **Apple-ABI Objective-C runtime** and a small **Foundation subset**: `cider run
+> tests/fixtures/objc/bin/foundation_hello/foundation_hello` runs a clang-built Objective-C Mach-O (`@"CIDER"`, `@[@20, @22]`, `NSLog`,
+> `@autoreleasepool`), prints `CIDER result: 42` and ends with `Guest exit code: 42`.
+> **Only controlled test programs run** (clang + ld64.lld fixtures). **No macOS application runs and no Cocoa/AppKit/SwiftUI exists**:
+> Foundation is a host-written subset of 9 classes ([docs/FOUNDATION.md](docs/FOUNDATION.md)), not Apple's framework; the three real apps tried
+> (Rectangle, Stats, MonitorControl) are refused. Static verdicts such as "analysis compatible" still mean "static analysis passed", never "it
+> runs". Execution happens in a separate worker process that limits crashes and resources but is **not a sandbox**. See
+> [docs/EXECUTION.md](docs/EXECUTION.md), [docs/OBJECTIVE-C-RUNTIME.md](docs/OBJECTIVE-C-RUNTIME.md), [docs/FOUNDATION.md](docs/FOUNDATION.md),
+> [docs/CALLBACKS.md](docs/CALLBACKS.md), [docs/THREADING.md](docs/THREADING.md), [docs/DYNAMIC-LINKING.md](docs/DYNAMIC-LINKING.md),
+> [docs/DARWIN-RUNTIME.md](docs/DARWIN-RUNTIME.md), [docs/TLS.md](docs/TLS.md) and [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
 
 ## What works (verified by the test-suite and real-world runs, see [docs/PROGRESS.md](docs/PROGRESS.md), [docs/REAL-WORLD.md](docs/REAL-WORLD.md))
 
@@ -32,7 +34,9 @@ Not an emulator, not a VM, no macOS and no XNU kernel required.
 | Dependent Mach-O dylibs (`@rpath`/`@loader_path`/`@executable_path`, transitive, re-exports, cycles), `__mod_init_func`/`__init_offsets` | works for the fixtures in `tests/fixtures/dylib` — [DYNAMIC-LINKING.md](docs/DYNAMIC-LINKING.md) |
 | Variadic / mixed-signature / stack-argument ABI, `printf` family (own formatter), files, time, errno (Darwin values) | subset, documented in [DARWIN-RUNTIME.md](docs/DARWIN-RUNTIME.md) |
 | Chained fixups (`DYLD_CHAINED_PTR_64`, `_64_OFFSET`), TLS (Mach-O TLV protocol, single thread) | works for the fixtures; other formats refused by name — [TLS.md](docs/TLS.md) |
-| Objective-C, Foundation, AppKit, frameworks, threads, signals, `FILE` streams (`fopen`) | **not implemented** (0.4 – 0.5) |
+| Host→guest callbacks (`qsort`, `bsearch`, `atexit`), `FILE` streams, cooperative pthreads | subset, fixtures only — [CALLBACKS.md](docs/CALLBACKS.md), [DARWIN-RUNTIME.md](docs/DARWIN-RUNTIME.md), [THREADING.md](docs/THREADING.md) |
+| Objective-C (Apple objc2 ABI: classes, categories, protocols, `objc_msgSend`, MRC/ARC) and a Foundation subset (NSObject, NSString, NSNumber, NSArray, NSDictionary, NSLog, pools) | works for the clang-built fixtures in `tests/fixtures/objc` — [OBJECTIVE-C-RUNTIME.md](docs/OBJECTIVE-C-RUNTIME.md), [FOUNDATION.md](docs/FOUNDATION.md) |
+| Blocks, exceptions, AppKit/Cocoa, other frameworks, Swift, signals | **not implemented** (0.5+) |
 
 ## Commands
 
@@ -88,6 +92,13 @@ Analysis commands are strictly static: nothing from a Mach-O file or a disk imag
 Guest exit code: 42
 ```
 
+Objective-C and Foundation (0.4), all built from the sources in `tests/fixtures/objc/src` by `tools\llvm-env.cmd tools\gen-objc-fixtures.cmd`:
+
+```text
+> cider run tests/fixtures/objc/bin/objc_calc/objc_calc                 # Guest exit code: 42 (Objective-C, no Foundation)
+> cider run tests/fixtures/objc/bin/foundation_hello/foundation_hello   # stderr: CIDER result: 42 · Guest exit code: 42
+```
+
 ## Building
 
 Requirements: Windows 10/11 x64, Visual Studio 2022+ (C++ workload, includes MASM) , CMake ≥ 3.21.
@@ -107,6 +118,7 @@ More: [docs/BUILDING.md](docs/BUILDING.md), [docs/TESTING.md](docs/TESTING.md).
 [ARCHITECTURE](docs/ARCHITECTURE.md) · [MACHO](docs/MACHO.md) · [DMG](docs/DMG.md) ·
 [EXECUTION](docs/EXECUTION.md) · [LOADER](docs/LOADER.md) · [DARWIN](docs/DARWIN.md) · [ABI](docs/ABI.md) ·
 [COMPATIBILITY](docs/COMPATIBILITY.md) · [ROADMAP](docs/ROADMAP.md) · [TESTING](docs/TESTING.md) ·
+[OBJECTIVE-C-RUNTIME](docs/OBJECTIVE-C-RUNTIME.md) · [FOUNDATION](docs/FOUNDATION.md) · [CALLBACKS](docs/CALLBACKS.md) · [THREADING](docs/THREADING.md) · [TLS](docs/TLS.md) ·
 [REAL-WORLD](docs/REAL-WORLD.md) · [LIMITATIONS](docs/LIMITATIONS.md) · [CHANGELOG](CHANGELOG.md) · [LICENSES](docs/LICENSES.md) · [PROGRESS](docs/PROGRESS.md)
 
 Contributing: [CONTRIBUTING.md](CONTRIBUTING.md). Security: [SECURITY.md](SECURITY.md).

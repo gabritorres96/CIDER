@@ -178,7 +178,12 @@ CIDER_TEST(repeated_runs_do_not_leak_memory_or_address_space) {
         CHECK(range_free(0x100000000ull));
     }
     uint64_t after = priv();
-    CHECK(after < before + (24ull << 20));                           // 150 runs of an 8 MiB stack + image would be > 1 GiB if leaked
+    // 150 runs of an 8 MiB stack + image would be > 1 GiB if leaked. ASan keeps freed host blocks in a quarantine (up to 256 MiB), so its limit is wider.
+#if defined(__SANITIZE_ADDRESS__)
+    CHECK(after < before + (200ull << 20));
+#else
+    CHECK(after < before + (24ull << 20));
+#endif
 #endif
 }
 

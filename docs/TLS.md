@@ -38,6 +38,13 @@ At link time the linker validates the template (size ≤ 16 MiB, alignment ≤ 4
 
 ## Limits / refused
 
-Single thread only (no `pthread_key`, no per-thread blocks); no thread destructors (`_tlv_atexit`); `S_THREAD_LOCAL_INIT_FUNCTION_POINTERS`
+Since 0.4.2 every guest thread has its own TLS blocks (created lazily from the template, see [THREADING.md](THREADING.md)); no thread destructors (`_tlv_atexit`); `S_THREAD_LOCAL_INIT_FUNCTION_POINTERS`
 (0x15) refused; alignment > 4096 refused; arm64 TLS not applicable. Tests: `tests/runtime/test_tls.cpp` (TEB/`gs`/TlsAlloc/`thread_local`
 identical before and after a guest run; register preservation; template layout vs `llvm-objdump`).
+
+## 0.4.2: per-thread blocks
+
+`_tlv_get_addr` now keys the block on the **calling guest thread** (`ThreadState::tls_blocks`, one block per TLS image, created on first use from `__thread_data`/`__thread_bss`
+in the thread's own guest memory). Each new thread starts from the template, not from the creator's values (`thread_tls` fixture). Still never written: `gs`, the TEB,
+`TlsAlloc`/FLS slots and host `thread_local` data; `test_threads` checks that the host's thread state is identical before and after a multithreaded guest run.
+Not implemented: `_tlv_atexit` destructors, `pthread_key_create` destructors at thread exit.

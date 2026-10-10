@@ -69,6 +69,16 @@ Three thunk kinds (`abi::ThunkSpec`), chosen per libSystem symbol:
 * callee-saved registers (rbx rbp r12-r15) survive raw thunks even when the host function is noisy (tested).
 
 Still **not** handled: `long double` / x87 arguments, structures passed by value on the stack or in mixed classes as *arguments* to
-host functions (only returns), callbacks host → guest (so no `qsort`/`atexit`), re-entrancy (one active guest call), SEH/DWARF
+host functions (only returns), SEH/DWARF
 unwinding across the boundary, raw `syscall` instructions (Windows would interpret the number as an NT service). `gs`-relative TLS by
 the guest itself is still unsupported; the standard Mach-O TLV protocol does not need it (see [TLS.md](TLS.md)).
+
+## 0.4 additions: host → guest callbacks and re-entrancy
+
+Host functions can now call guest code (`abi::call_guest_nested`, `Runtime::call_imp`): the callee runs on the same guest stack below the interrupted frame's
+128-byte red zone, nesting is allowed up to 64 levels, `exit()` inside a callback unwinds all host frames, and the callback target must lie in the executable
+range of a loaded image. `GuestCall` grew to 200 bytes (`test_abi` pins the layout shared with `entry_trampoline.asm`). Details: [CALLBACKS.md](CALLBACKS.md).
+The ABI state that lives in globals (current call, depth, stack bound) is saved and restored per guest thread when the cooperative scheduler switches threads
+([THREADING.md](THREADING.md)). Objective-C `objc_msgSend` is not a Windows-ABI thunk at all: it is a MASM tail-jump stub that forwards the System V registers
+unchanged to the method's IMP ([OBJECTIVE-C-RUNTIME.md](OBJECTIVE-C-RUNTIME.md)); native Foundation methods use the positional thunk for up to four integer
+arguments and the raw thunk for `double` results, `NSRange` returns, variadics and five or more arguments.

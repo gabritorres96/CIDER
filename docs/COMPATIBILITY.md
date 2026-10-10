@@ -47,3 +47,11 @@ Dependent Mach-O dylibs are searched and loaded (DYNAMIC-LINKING.md), so a binar
 x86_64 Mach-O dylibs and that only imports the functions listed in DARWIN-RUNTIME.md can run. Anything importing Foundation, AppKit,
 libobjc, libc++/libc++abi, the Swift runtime or other system libraries is refused (`Missing library`, exit 12). No compatibility with
 general macOS applications is claimed.
+
+## What `cider run` adds (0.4)
+
+Programs that import `libobjc.A.dylib` and, optionally, the **Foundation subset** listed in [FOUNDATION.md](FOUNDATION.md) can run, plus `FILE` streams,
+`qsort`/`bsearch`/`atexit` and pthreads (cooperative). Compatibility is defined by the symbol and selector tables, not by an application list: a program that
+imports any other Foundation, CoreFoundation, AppKit, libc++, Swift or system symbol is refused (exit 12) with the symbol name, and a message that the subset
+does not implement ends the guest with `unrecognized selector`. The only Objective-C programs known to run are the clang-built fixtures in `tests/fixtures/objc`.
+**No compatibility with Cocoa, with real macOS applications or with Apple's Foundation as a whole is claimed**; Rectangle, Stats and MonitorControl remain refused.

@@ -93,12 +93,33 @@ CIDER_TEST(foundation_misuse_ends_the_guest_with_an_exception_style_diagnosis) {
     }
 }
 
-CIDER_TEST(foundation_program_without_the_selector_is_not_faked) {
-    // The program only runs because the selectors exist in the runtime's tables: a class that is NOT part of the subset is not linked.
+CIDER_TEST(the_foundation_fixture_is_a_real_macho_linked_against_the_foundation_framework) {
+    // The fixture is the compiler/linker output, not a host-side stand-in: it carries the Foundation load command.
     auto bytes = read_file(bin("foundation_hello"), 32u << 20);
     CHECK(bytes.ok());
     if (!bytes.ok()) return;
     const std::string text(reinterpret_cast<const char*>(bytes.value().data()), bytes.value().size());
     CHECK(text.find("Foundation.framework/Versions/C/Foundation") != std::string::npos);     // really linked against Foundation
-    CHECK(text.find("_OBJC_CLASS_$_NSArray") != std::string::npos || text.find("NSArray") != std::string::npos);
+}
+
+CIDER_TEST(patching_the_literal_in_the_macho_changes_what_nslog_prints) {
+    // The text and the numbers come from the compiled file: change the bytes of the @"CIDER" literal in a copy and the output follows.
+    auto b = read_file(bin("foundation_hello"), 32u << 20);
+    CHECK(b.ok());
+    if (!b.ok()) return;
+    std::vector<uint8_t> bytes = b.value();
+    const char needle[] = "CIDER";                              // the C string behind the constant string object (also inside "CIDER result")
+    size_t hits = 0;
+    for (size_t i = 0; i + sizeof(needle) <= bytes.size(); ++i)
+        if (std::memcmp(bytes.data() + i, needle, sizeof(needle)) == 0) { bytes[i] = 'S'; ++hits; }   // "CIDER\0" with the terminator: only the literal
+    CHECK(hits >= 1);
+    guest::GuestConfig cfg;
+    cfg.args = {"foundation_hello"};
+    cfg.image_path = bin("foundation_hello");
+    std::string err;
+    cfg.sink = [&](int fd, const char* d, size_t n) { if (fd == 2) err.append(d, n); };
+    auto out = guest::run_in_process(ByteView(bytes), cfg);
+    CHECK_EQ(out.state, guest::State::Exited);
+    CHECK_EQ(out.exit_code, 42);
+    CHECK_EQ(err, std::string("SIDER result: 42\n"));
 }
