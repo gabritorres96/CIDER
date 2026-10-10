@@ -293,7 +293,7 @@ CIDER_TEST(libsystem_provider_resolves_known_symbols_to_executable_thunks) {
     CHECK(memory::query_address(reinterpret_cast<void*>(puts->address)).executable);
     CHECK(p->lookup("", "_puts").has_value());                                       // flat lookup
     CHECK(!p->lookup("/usr/lib/libSystem.B.dylib", "_fork").has_value());           // not implemented
-    CHECK(!p->lookup("/usr/lib/libSystem.B.dylib", "_fopen").has_value());
+    CHECK(!p->lookup("/usr/lib/libSystem.B.dylib", "_sscanf").has_value());
     auto out = p->lookup("/usr/lib/libSystem.B.dylib", "___stdoutp");              // a data symbol: readable, not executable
     REQUIRE(out.has_value());
     CHECK(!out->is_function);
