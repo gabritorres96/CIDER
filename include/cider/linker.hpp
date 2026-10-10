@@ -68,6 +68,10 @@ struct LinkOptions {
     size_t max_images = 128;
     size_t max_depth = 64;
     uint64_t max_file_size = 512ull << 20;
+    // Called once per image after every bind was applied and BEFORE the final W^X protections (the data segments are still
+    // writable): the Objective-C runtime uses it to uniquify selector references and slide instance-variable offsets.
+    // Return false (and fill `error`) to abort the link.
+    std::function<bool(ImageRecord& image, std::string& error)> before_protect;
 };
 
 struct LinkError {

@@ -1,0 +1,99 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_abi\objc_abi:
+Contents of (__DATA_CONST,__objc_classlist) section
+0000000100003010 0x100004018 _OBJC_CLASS_$_Kit
+           isa 0x100004040 _OBJC_METACLASS_$_Kit
+    superclass 0x0
+         cache 0x0
+        vtable 0x0
+          data 0x100004258 (struct class_ro_t *)
+                    flags 0x2 RO_ROOT
+            instanceStart 0
+             instanceSize 16
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100001040 Kit
+              baseMethods 0x1000040d0 (struct method_list_t *)
+		   entsize 24
+		     count 13
+		      name 0x10000111b halve:
+		     types 0x10000104c d24@0:8d16
+		       imp -[Kit halve:]
+		      name 0x100001122 third:
+		     types 0x100001057 f20@0:8f16
+		       imp -[Kit third:]
+		      name 0x100001129 pair:
+		     types 0x100001062 {Pair=qq}24@0:8q16
+		       imp -[Kit pair:]
+		      name 0x10000112f big:
+		     types 0x100001075 {Big=[5q]}24@0:8q16
+		       imp -[Kit big:]
+		      name 0x100001134 vec:
+		     types 0x100001089 {Vec=dd}24@0:8d16
+		       imp -[Kit vec:]
+		      name 0x100001139 isEven:
+		     types 0x10000109b c20@0:8i16
+		       imp -[Kit isEven:]
+		      name 0x100001141 letter
+		     types 0x1000010a6 c16@0:8
+		       imp -[Kit letter]
+		      name 0x100001148 sum8::::::::
+		     types 0x1000010ae q80@0:8q16q24q32q40q48q56q64q72
+		       imp -[Kit sum8::::::::]
+		      name 0x100001155 mix:d:i:d:
+		     types 0x1000010ce d40@0:8i16d20i28d32
+		       imp -[Kit mix:d:i:d:]
+		      name 0x100001160 sumFirst:
+		     types 0x1000010e2 i20@0:8i16
+		       imp -[Kit sumFirst:]
+		      name 0x10000116a avg:
+		     types 0x1000010ed d20@0:8i16
+		       imp -[Kit avg:]
+		      name 0x10000116f setScale:
+		     types 0x1000010f8 v24@0:8d16
+		       imp -[Kit setScale:]
+		      name 0x100001179 scale
+		     types 0x100001103 d16@0:8
+		       imp -[Kit scale]
+            baseProtocols 0x0
+                    ivars 0x100004210
+                    entsize 32
+                      count 2
+			   offset 0x1000042a0 0
+			     name 0x10000117f isa
+			     type 0x10000110b #
+			alignment 3
+			     size 8
+			   offset 0x1000042a8 8
+			     name 0x100001179 scale
+			     type 0x10000110d d
+			alignment 3
+			     size 8
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x100004040 _OBJC_METACLASS_$_Kit
+    superclass 0x100004018 _OBJC_CLASS_$_Kit
+         cache 0x0
+        vtable 0x0
+          data 0x100004088 (struct class_ro_t *)
+                    flags 0x3 RO_META RO_ROOT
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100001040 Kit
+              baseMethods 0x100004068 (struct method_list_t *)
+		   entsize 24
+		     count 1
+		      name 0x100001117 new
+		     types 0x100001044 @16@0:8
+		       imp +[Kit new]
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Contents of (__DATA,__objc_classrefs) section
+00000001000042b0 0x100004018 _OBJC_CLASS_$_Kit
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

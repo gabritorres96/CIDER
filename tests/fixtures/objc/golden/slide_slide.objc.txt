@@ -1,0 +1,56 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\slide\slide:
+Contents of (__DATA_CONST,__objc_classlist) section
+0000000100002010 0x100003148 _OBJC_CLASS_$_Square
+           isa 0x100003120 _OBJC_METACLASS_$_Square
+    superclass 0x0 _OBJC_CLASS_$_Shape
+         cache 0x0
+        vtable 0x0
+          data 0x1000030d8 (struct class_ro_t *)
+                    flags 0x0
+            instanceStart 16
+             instanceSize 20
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000aba Square
+              baseMethods 0x100003078 (struct method_list_t *)
+		   entsize 24
+		     count 2
+		      name 0x100000aff setSide:
+		     types 0x100000ac1 v20@0:8i16
+		       imp -[Square setSide:]
+		      name 0x100000b08 side
+		     types 0x100000acc i16@0:8
+		       imp -[Square side]
+            baseProtocols 0x0
+                    ivars 0x1000030b0
+                    entsize 32
+                      count 1
+			   offset 0x100003028 16
+			     name 0x100000b08 side
+			     type 0x100000ad4 i
+			alignment 2
+			     size 4
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x0
+    superclass 0x0 _OBJC_METACLASS_$_Shape
+         cache 0x0
+        vtable 0x0
+          data 0x100003030 (struct class_ro_t *)
+                    flags 0x1 RO_META
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000aba Square
+              baseMethods 0x0 (struct method_list_t *)
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Contents of (__DATA,__objc_classrefs) section
+0000000100003170 0x100003148 _OBJC_CLASS_$_Square
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

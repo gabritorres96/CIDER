@@ -1,0 +1,51 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\slide\slide:
+
+Rebase table:
+segment  section            address     type
+__DATA_CONST __objc_classlist   0x100002010  pointer
+__DATA   __la_symbol_ptr    0x100003000  pointer
+__DATA   __la_symbol_ptr    0x100003008  pointer
+__DATA   __la_symbol_ptr    0x100003010  pointer
+__DATA   __la_symbol_ptr    0x100003018  pointer
+__DATA   __la_symbol_ptr    0x100003020  pointer
+__DATA   __objc_const       0x100003048  pointer
+__DATA   __objc_const       0x100003080  pointer
+__DATA   __objc_const       0x100003088  pointer
+__DATA   __objc_const       0x100003090  pointer
+__DATA   __objc_const       0x100003098  pointer
+__DATA   __objc_const       0x1000030A0  pointer
+__DATA   __objc_const       0x1000030A8  pointer
+__DATA   __objc_const       0x1000030B8  pointer
+__DATA   __objc_const       0x1000030C0  pointer
+__DATA   __objc_const       0x1000030C8  pointer
+__DATA   __objc_const       0x1000030F0  pointer
+__DATA   __objc_const       0x1000030F8  pointer
+__DATA   __objc_const       0x100003108  pointer
+__DATA   __objc_data        0x100003140  pointer
+__DATA   __objc_data        0x100003148  pointer
+__DATA   __objc_data        0x100003168  pointer
+__DATA   __objc_classrefs   0x100003170  pointer
+__DATA   __objc_selrefs     0x100003178  pointer
+__DATA   __objc_selrefs     0x100003180  pointer
+__DATA   __objc_selrefs     0x100003188  pointer
+__DATA   __objc_selrefs     0x100003190  pointer
+__DATA   __objc_selrefs     0x100003198  pointer
+__DATA   __objc_selrefs     0x1000031A0  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100002000 pointer         0 libobjc          _objc_msgSend
+__DATA_CONST __got              0x100002008 pointer         0 libSystem        dyld_stub_binder
+__DATA   __objc_data        0x100003120 pointer         0 libshape         _OBJC_METACLASS_$_Shape
+__DATA   __objc_data        0x100003128 pointer         0 libshape         _OBJC_METACLASS_$_Shape
+__DATA   __objc_data        0x100003130 pointer         0 libobjc          __objc_empty_cache
+__DATA   __objc_data        0x100003158 pointer         0 libobjc          __objc_empty_cache
+__DATA   __objc_data        0x100003150 pointer         0 libshape         _OBJC_CLASS_$_Shape
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100003000 libobjc          _ivar_getOffset
+__DATA   __la_symbol_ptr    0x100003008 libobjc          _class_getInstanceVariable
+__DATA   __la_symbol_ptr    0x100003010 libobjc          _objc_getClass
+__DATA   __la_symbol_ptr    0x100003018 libobjc          _class_getInstanceSize
+__DATA   __la_symbol_ptr    0x100003020 libSystem        _printf

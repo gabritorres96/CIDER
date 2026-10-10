@@ -1,0 +1,84 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_dynamic\objc_dynamic:
+
+Rebase table:
+segment  section            address     type
+__DATA_CONST __objc_classlist   0x100002008  pointer
+__DATA   __la_symbol_ptr    0x100003000  pointer
+__DATA   __la_symbol_ptr    0x100003008  pointer
+__DATA   __la_symbol_ptr    0x100003010  pointer
+__DATA   __la_symbol_ptr    0x100003018  pointer
+__DATA   __la_symbol_ptr    0x100003020  pointer
+__DATA   __la_symbol_ptr    0x100003028  pointer
+__DATA   __la_symbol_ptr    0x100003030  pointer
+__DATA   __la_symbol_ptr    0x100003038  pointer
+__DATA   __la_symbol_ptr    0x100003040  pointer
+__DATA   __la_symbol_ptr    0x100003048  pointer
+__DATA   __la_symbol_ptr    0x100003050  pointer
+__DATA   __la_symbol_ptr    0x100003058  pointer
+__DATA   __la_symbol_ptr    0x100003060  pointer
+__DATA   __la_symbol_ptr    0x100003068  pointer
+__DATA   __la_symbol_ptr    0x100003070  pointer
+__DATA   __la_symbol_ptr    0x100003078  pointer
+__DATA   __la_symbol_ptr    0x100003080  pointer
+__DATA   __la_symbol_ptr    0x100003088  pointer
+__DATA   __la_symbol_ptr    0x100003090  pointer
+__DATA   __la_symbol_ptr    0x100003098  pointer
+__DATA   __la_symbol_ptr    0x1000030A0  pointer
+__DATA   __objc_data        0x1000030A8  pointer
+__DATA   __objc_data        0x1000030C8  pointer
+__DATA   __objc_data        0x1000030D0  pointer
+__DATA   __objc_data        0x1000030D8  pointer
+__DATA   __objc_data        0x1000030F0  pointer
+__DATA   __objc_const       0x100003100  pointer
+__DATA   __objc_const       0x100003108  pointer
+__DATA   __objc_const       0x100003110  pointer
+__DATA   __objc_const       0x100003130  pointer
+__DATA   __objc_const       0x100003138  pointer
+__DATA   __objc_const       0x100003168  pointer
+__DATA   __objc_const       0x100003170  pointer
+__DATA   __objc_const       0x100003178  pointer
+__DATA   __objc_const       0x100003180  pointer
+__DATA   __objc_const       0x100003188  pointer
+__DATA   __objc_const       0x100003190  pointer
+__DATA   __objc_const       0x100003198  pointer
+__DATA   __objc_const       0x1000031A0  pointer
+__DATA   __objc_const       0x1000031A8  pointer
+__DATA   __objc_const       0x1000031B8  pointer
+__DATA   __objc_const       0x1000031C0  pointer
+__DATA   __objc_const       0x1000031C8  pointer
+__DATA   __objc_const       0x1000031D8  pointer
+__DATA   __objc_const       0x1000031E0  pointer
+__DATA   __objc_const       0x1000031E8  pointer
+__DATA   __objc_const       0x100003210  pointer
+__DATA   __objc_const       0x100003218  pointer
+__DATA   __objc_const       0x100003228  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100002000 pointer         0 libSystem        dyld_stub_binder
+__DATA   __objc_data        0x1000030B8 pointer         0 libobjc          __objc_empty_cache
+__DATA   __objc_data        0x1000030E0 pointer         0 libobjc          __objc_empty_cache
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100003000 libobjc          _class_createInstance
+__DATA   __la_symbol_ptr    0x100003008 libSystem        _printf
+__DATA   __la_symbol_ptr    0x100003010 libobjc          _objc_getClass
+__DATA   __la_symbol_ptr    0x100003018 libobjc          _objc_disposeClassPair
+__DATA   __la_symbol_ptr    0x100003020 libobjc          _object_dispose
+__DATA   __la_symbol_ptr    0x100003028 libobjc          _objc_msgSend
+__DATA   __la_symbol_ptr    0x100003030 libobjc          _sel_registerName
+__DATA   __la_symbol_ptr    0x100003038 libobjc          _method_setImplementation
+__DATA   __la_symbol_ptr    0x100003040 libobjc          _method_getImplementation
+__DATA   __la_symbol_ptr    0x100003048 libobjc          _method_getName
+__DATA   __la_symbol_ptr    0x100003050 libobjc          _class_getInstanceMethod
+__DATA   __la_symbol_ptr    0x100003058 libobjc          _class_respondsToSelector
+__DATA   __la_symbol_ptr    0x100003060 libobjc          _object_setIvar
+__DATA   __la_symbol_ptr    0x100003068 libobjc          _object_getClass
+__DATA   __la_symbol_ptr    0x100003070 libobjc          _class_getInstanceVariable
+__DATA   __la_symbol_ptr    0x100003078 libobjc          _ivar_getOffset
+__DATA   __la_symbol_ptr    0x100003080 libobjc          _class_addIvar
+__DATA   __la_symbol_ptr    0x100003088 libobjc          _objc_allocateClassPair
+__DATA   __la_symbol_ptr    0x100003090 libobjc          _objc_registerClassPair
+__DATA   __la_symbol_ptr    0x100003098 libobjc          _class_addMethod
+__DATA   __la_symbol_ptr    0x1000030A0 libobjc          _object_getIvar

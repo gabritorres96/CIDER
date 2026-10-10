@@ -65,6 +65,7 @@ const char* category_name(Category c) noexcept {
         case Category::LibSystem: return "LIBSYSTEM";
         case Category::Execution: return "EXECUTION";
         case Category::Process: return "PROCESS";
+        case Category::Objc: return "OBJC";
     }
     return "";
 }

@@ -9,3 +9,8 @@ tests/fixtures/dylib/golden/** text eol=lf
 tests/fixtures/dylib/tbd/** text eol=lf
 tests/fixtures/exec/src/*.h text eol=lf
 tests/fixtures/dylib/src/*.c text eol=lf
+tests/fixtures/objc/bin/** binary
+tests/fixtures/objc/golden/** text eol=lf
+tests/fixtures/objc/src/** text eol=lf
+tests/fixtures/objc/include/** text eol=lf
+tests/fixtures/objc/sysroot/** text eol=lf

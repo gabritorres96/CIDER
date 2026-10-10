@@ -1,0 +1,63 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_error\objc_error:
+Contents of (__DATA_CONST,__objc_classlist) section
+0000000100002010 0x100003018 _OBJC_CLASS_$_Thing
+           isa 0x100003040 _OBJC_METACLASS_$_Thing
+    superclass 0x0
+         cache 0x0
+        vtable 0x0
+          data 0x100003138 (struct class_ro_t *)
+                    flags 0x2 RO_ROOT
+            instanceStart 0
+             instanceSize 12
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x1000009f2 Thing
+              baseMethods 0x1000030d0 (struct method_list_t *)
+		   entsize 24
+		     count 1
+		      name 0x100000a1d known
+		     types 0x100000a00 i16@0:8
+		       imp -[Thing known]
+            baseProtocols 0x0
+                    ivars 0x1000030f0
+                    entsize 32
+                      count 2
+			   offset 0x100003180 0
+			     name 0x100000a23 isa
+			     type 0x100000a08 #
+			alignment 3
+			     size 8
+			   offset 0x100003188 8
+			     name 0x100000a27 v
+			     type 0x100000a0a i
+			alignment 2
+			     size 4
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x100003040 _OBJC_METACLASS_$_Thing
+    superclass 0x100003018 _OBJC_CLASS_$_Thing
+         cache 0x0
+        vtable 0x0
+          data 0x100003088 (struct class_ro_t *)
+                    flags 0x3 RO_META RO_ROOT
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x1000009f2 Thing
+              baseMethods 0x100003068 (struct method_list_t *)
+		   entsize 24
+		     count 1
+		      name 0x100000a19 new
+		     types 0x1000009f8 @16@0:8
+		       imp +[Thing new]
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Contents of (__DATA,__objc_classrefs) section
+0000000100003190 0x100003018 _OBJC_CLASS_$_Thing
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

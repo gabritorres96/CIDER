@@ -1,0 +1,52 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\slide\libshape.dylib:
+
+Rebase table:
+segment  section            address     type
+__DATA_CONST __objc_classlist   0x00002008  pointer
+__DATA   __la_symbol_ptr    0x00003000  pointer
+__DATA   __la_symbol_ptr    0x00003008  pointer
+__DATA   __objc_data        0x00003010  pointer
+__DATA   __objc_data        0x00003030  pointer
+__DATA   __objc_data        0x00003038  pointer
+__DATA   __objc_data        0x00003040  pointer
+__DATA   __objc_data        0x00003058  pointer
+__DATA   __objc_const       0x00003068  pointer
+__DATA   __objc_const       0x00003070  pointer
+__DATA   __objc_const       0x00003078  pointer
+__DATA   __objc_const       0x00003098  pointer
+__DATA   __objc_const       0x000030A0  pointer
+__DATA   __objc_const       0x000030D0  pointer
+__DATA   __objc_const       0x000030D8  pointer
+__DATA   __objc_const       0x000030E0  pointer
+__DATA   __objc_const       0x000030E8  pointer
+__DATA   __objc_const       0x000030F0  pointer
+__DATA   __objc_const       0x000030F8  pointer
+__DATA   __objc_const       0x00003100  pointer
+__DATA   __objc_const       0x00003108  pointer
+__DATA   __objc_const       0x00003110  pointer
+__DATA   __objc_const       0x00003120  pointer
+__DATA   __objc_const       0x00003128  pointer
+__DATA   __objc_const       0x00003130  pointer
+__DATA   __objc_const       0x00003140  pointer
+__DATA   __objc_const       0x00003148  pointer
+__DATA   __objc_const       0x00003150  pointer
+__DATA   __objc_const       0x00003160  pointer
+__DATA   __objc_const       0x00003168  pointer
+__DATA   __objc_const       0x00003170  pointer
+__DATA   __objc_const       0x00003180  pointer
+__DATA   __objc_const       0x00003188  pointer
+__DATA   __objc_const       0x00003190  pointer
+__DATA   __objc_const       0x000031B8  pointer
+__DATA   __objc_const       0x000031C0  pointer
+__DATA   __objc_const       0x000031D0  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x00002000 pointer         0 libSystem        dyld_stub_binder
+__DATA   __objc_data        0x00003020 pointer         0 libobjc          __objc_empty_cache
+__DATA   __objc_data        0x00003048 pointer         0 libobjc          __objc_empty_cache
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x00003000 libobjc          _class_createInstance
+__DATA   __la_symbol_ptr    0x00003008 libobjc          _object_dispose

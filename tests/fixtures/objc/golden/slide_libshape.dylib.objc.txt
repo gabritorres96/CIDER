@@ -1,0 +1,77 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\slide\libshape.dylib:
+Contents of (__DATA_CONST,__objc_classlist) section
+0000000000002008 0x3010 _OBJC_CLASS_$_Shape
+           isa 0x3038 _OBJC_METACLASS_$_Shape
+    superclass 0x0
+         cache 0x0
+        vtable 0x0
+          data 0x31a0 (struct class_ro_t *)
+                    flags 0x2 RO_ROOT
+            instanceStart 0
+             instanceSize 24
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x82c Shape
+              baseMethods 0x30c8 (struct method_list_t *)
+		   entsize 24
+		     count 3
+		      name 0x85c area
+		     types 0x83a i16@0:8
+		       imp -[Shape area]
+		      name 0x861 extra
+		     types 0x842 q16@0:8
+		       imp -[Shape extra]
+		      name 0x867 destroy
+		     types 0x84a v16@0:8
+		       imp -[Shape destroy]
+            baseProtocols 0x0
+                    ivars 0x3118
+                    entsize 32
+                      count 4
+			   offset 0x31e8 0
+			     name 0x86f isa
+			     type 0x852 #
+			alignment 3
+			     size 8
+			   offset 0x31f0 8
+			     name 0x873 w
+			     type 0x854 i
+			alignment 2
+			     size 4
+			   offset 0x31f8 12
+			     name 0x875 h
+			     type 0x854 i
+			alignment 2
+			     size 4
+			   offset 0x3200 16
+			     name 0x861 extra
+			     type 0x856 q
+			alignment 3
+			     size 8
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x3038 _OBJC_METACLASS_$_Shape
+    superclass 0x3010 _OBJC_CLASS_$_Shape
+         cache 0x0
+        vtable 0x0
+          data 0x3080 (struct class_ro_t *)
+                    flags 0x3 RO_META RO_ROOT
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x82c Shape
+              baseMethods 0x3060 (struct method_list_t *)
+		   entsize 24
+		     count 1
+		      name 0x858 new
+		     types 0x832 @16@0:8
+		       imp +[Shape new]
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

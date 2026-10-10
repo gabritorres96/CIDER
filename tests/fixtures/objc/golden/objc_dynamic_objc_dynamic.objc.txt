@@ -1,0 +1,67 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_dynamic\objc_dynamic:
+Contents of (__DATA_CONST,__objc_classlist) section
+0000000100002008 0x1000030a8 _OBJC_CLASS_$_Seed
+           isa 0x1000030d0 _OBJC_METACLASS_$_Seed
+    superclass 0x0
+         cache 0x0
+        vtable 0x0
+          data 0x1000031f8 (struct class_ro_t *)
+                    flags 0x2 RO_ROOT
+            instanceStart 0
+             instanceSize 12
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000d9e Seed
+              baseMethods 0x100003160 (struct method_list_t *)
+		   entsize 24
+		     count 3
+		      name 0x100000e26 base
+		     types 0x100000dab i16@0:8
+		       imp -[Seed base]
+		      name 0x100000e2b setBase:
+		     types 0x100000db3 v20@0:8i16
+		       imp -[Seed setBase:]
+		      name 0x100000e34 original
+		     types 0x100000dab i16@0:8
+		       imp -[Seed original]
+            baseProtocols 0x0
+                    ivars 0x1000031b0
+                    entsize 32
+                      count 2
+			   offset 0x100003240 0
+			     name 0x100000e3d isa
+			     type 0x100000dbe #
+			alignment 3
+			     size 8
+			   offset 0x100003248 8
+			     name 0x100000e26 base
+			     type 0x100000dc0 i
+			alignment 2
+			     size 4
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x1000030d0 _OBJC_METACLASS_$_Seed
+    superclass 0x1000030a8 _OBJC_CLASS_$_Seed
+         cache 0x0
+        vtable 0x0
+          data 0x100003118 (struct class_ro_t *)
+                    flags 0x3 RO_META RO_ROOT
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000d9e Seed
+              baseMethods 0x1000030f8 (struct method_list_t *)
+		   entsize 24
+		     count 1
+		      name 0x100000e22 new
+		     types 0x100000da3 @16@0:8
+		       imp +[Seed new]
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

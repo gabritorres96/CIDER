@@ -11,7 +11,7 @@ enum class Level { Trace = 0, Debug, Info, Warn, Error, Fatal, Off };
 
 // Subsystem tag for runtime messages: "[CIDER][LOADER] text" (info) or "[CIDER][LOADER][WARN] text".
 // Errors are logged without a category on purpose: "[CIDER][ERROR] text".
-enum class Category { None = 0, Loader, Memory, Abi, Dyld, Symbols, LibSystem, Execution, Process };
+enum class Category { None = 0, Loader, Memory, Abi, Dyld, Symbols, LibSystem, Execution, Process, Objc };
 const char* category_name(Category c) noexcept;
 
 const char* level_name(Level l) noexcept;

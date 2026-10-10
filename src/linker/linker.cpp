@@ -62,6 +62,11 @@ public:
 
         if (!map_all()) return false;
         if (!bind_all()) return false;
+        if (opts_.before_protect)
+            for (auto& r : prog_.images_) {
+                std::string why;
+                if (!opts_.before_protect(*r, why)) return fail(loader::LoadFailure::Incompatible, std::format("{}: {}", r->leaf, why));
+            }
         if (!protect_all()) return false;
         if (!collect_initializers()) return false;
         if (!collect_tls()) return false;

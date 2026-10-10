@@ -39,6 +39,7 @@ struct ThreadState {
     int errno_value = 0;                     // errno is per thread on Darwin
     std::vector<uint8_t*> tls_blocks;        // thread-local storage, one block per TlsImage (lazily created)
     std::map<uint32_t, uint64_t> specific;   // pthread_setspecific values
+    std::vector<std::vector<uint64_t>> pools;   // Objective-C autorelease pools of this thread (innermost last)
 };
 
 struct MutexObject { bool in_use = false; int type = 0; uint64_t owner = 0; int count = 0; };

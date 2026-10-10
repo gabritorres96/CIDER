@@ -5,6 +5,7 @@
 #include "cider/guest_threads.hpp"
 #include "cider/libsystem.hpp"
 #include "cider/linker.hpp"
+#include "cider/objc.hpp"
 #include "cider/log.hpp"
 #include "cider/util.hpp"
 
@@ -46,9 +47,27 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     auto provider = libsystem::LibSystemProvider::create();
     if (!provider.ok()) return internal_failure("cannot initialise libSystem: " + provider.error().message);
 
+    libsystem::RuntimeContext ctx;
+    ctx.env = cfg.env;
+    ctx.sink = cfg.sink;
+    ctx.root = cfg.root;
+    provider.value()->install_stdio(ctx);
+
+    // ---- Objective-C runtime and the host-implemented classes (created before linking: binds to _OBJC_CLASS_$_NSObject and
+    // friends resolve to them, and the linker hands every image's metadata to the runtime before the final protections) ----
+    ctx.objc = std::make_unique<objc::Runtime>(ctx);
+    objc::install_foundation(*ctx.objc);
+    {
+        std::string why;
+        if (ctx.objc->failed() || !ctx.objc->build_native_thunks(why)) return internal_failure("cannot initialise the Objective-C runtime: " + why);
+    }
+    objc::Runtime* objc_rt = ctx.objc.get();
+    provider.value()->set_dynamic_data([objc_rt](std::string_view symbol) { return objc_rt->dynamic_symbol(symbol); });
+
     // ---- loading: the dynamic linker maps the executable and every dylib, resolves symbols between them,
     // applies fixups and the final W^X protections. No guest instruction runs yet. -------------------------
     linker::LinkOptions lo;
+    lo.before_protect = [objc_rt](linker::ImageRecord& image, std::string& error) { return objc_rt->prepare_image(image, error); };
     lo.executable_path = cfg.image_path;
     lo.validator = vopts;
     lo.reject_cycles = cfg.reject_cycles;
@@ -78,11 +97,18 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     auto ga = abi::build_guest_args(stack.value(), argv, cfg.env, apple);
     if (!ga.ok()) return internal_failure("cannot build the guest arguments: " + ga.error().message);
 
-    libsystem::RuntimeContext ctx;
-    ctx.env = cfg.env;
-    ctx.sink = cfg.sink;
-    ctx.root = cfg.root;
-    provider.value()->install_stdio(ctx);
+    {
+        std::string why;
+        if (!objc_rt->finish_images(why)) {
+            Outcome o;
+            o.state = State::LoadFailed;
+            o.load_failure = loader::LoadFailure::Incompatible;
+            o.message = "Objective-C: " + why;
+            o.required_libs = program->required_libs();
+            return o;
+        }
+    }
+    if (objc_rt->foundation_requested) log::info(log::Category::Objc, "Foundation compatibility loaded");
     // Callbacks may only target executable code of the loaded images and the libSystem thunks.
     for (const auto& r : program->images())
         for (const auto& s : r->mapped.layout.segments)
@@ -91,6 +117,7 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
                 ctx.code_ranges.emplace_back(seg_lo, seg_lo + s.vmsize);
             }
     ctx.code_ranges.push_back(provider.value()->thunk_range());
+    if (auto r = objc_rt->thunk_range(); r.first) ctx.code_ranges.push_back(r);
     for (const auto& r : program->images()) {
         if (!r->tls.present()) continue;
         libsystem::TlsImage t;
@@ -105,6 +132,13 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     libsystem::set_context(&ctx);
     ctx.threads = std::make_unique<libsystem::GuestThreads>(ctx);
     ctx.threads->attach_main();                      // this OS thread is guest thread 1 and owns the guest lock
+
+    // ---- Objective-C +load, then Mach-O initializers ---------------------------------------------------------
+    objc_rt->set_top_level_stack(&stack.value(), ga.value().initial_sp);
+    if (objc_rt->has_objc_images()) {
+        const abi::GuestArgs& ga0 = ga.value();
+        objc_rt->run_load_methods([&](objc::Addr imp, objc::Addr self, objc::Addr sel) { abi::call_guest(imp, stack.value(), ga0.initial_sp, self, sel); });
+    }
 
     // ---- Mach-O initializers (never Windows constructors): dependencies first, each exactly once ----------
     // dyld calls them as init(argc, argv, envp, apple).

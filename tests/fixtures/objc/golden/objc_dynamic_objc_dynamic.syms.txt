@@ -1,0 +1,45 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_dynamic\objc_dynamic:
+
+SYMBOL TABLE:
+0000000100000840 l     F __TEXT,__text +[Seed new]
+0000000100000850 l     F __TEXT,__text -[Seed base]
+0000000100000860 l     F __TEXT,__text -[Seed setBase:]
+0000000100000870 l     F __TEXT,__text -[Seed original]
+0000000100000c10 l     F __TEXT,__text _addBias
+0000000100003258 l     O __DATA,__bss _g_bias
+0000000100000c30 l     F __TEXT,__text _replacement
+00000001000031f8 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Seed
+0000000100003118 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Seed
+00000001000030f8 l     O __DATA,__objc_const __OBJC_$_CLASS_METHODS_Seed
+0000000100003160 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Seed
+00000001000031b0 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_Seed
+0000000100003250 l     O __DATA,__data __dyld_private
+0000000100000880 g     F __TEXT,__text _main
+00000001000030a8 g     O __DATA,__objc_data _OBJC_CLASS_$_Seed
+00000001000030d0 g     O __DATA,__objc_data _OBJC_METACLASS_$_Seed
+0000000100003240 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Seed.isa
+0000000100003248 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Seed.base
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _printf
+0000000000000000         *UND* dyld_stub_binder
+0000000000000000         *UND* __objc_empty_cache
+0000000000000000         *UND* _class_addIvar
+0000000000000000         *UND* _class_addMethod
+0000000000000000         *UND* _class_createInstance
+0000000000000000         *UND* _class_getInstanceMethod
+0000000000000000         *UND* _class_getInstanceVariable
+0000000000000000         *UND* _class_respondsToSelector
+0000000000000000         *UND* _ivar_getOffset
+0000000000000000         *UND* _method_getImplementation
+0000000000000000         *UND* _method_getName
+0000000000000000         *UND* _method_setImplementation
+0000000000000000         *UND* _objc_allocateClassPair
+0000000000000000         *UND* _objc_disposeClassPair
+0000000000000000         *UND* _objc_getClass
+0000000000000000         *UND* _objc_msgSend
+0000000000000000         *UND* _objc_registerClassPair
+0000000000000000         *UND* _object_dispose
+0000000000000000         *UND* _object_getClass
+0000000000000000         *UND* _object_getIvar
+0000000000000000         *UND* _object_setIvar
+0000000000000000         *UND* _sel_registerName

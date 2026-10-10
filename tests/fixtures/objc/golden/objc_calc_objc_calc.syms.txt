@@ -1,0 +1,25 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_calc\objc_calc:
+
+SYMBOL TABLE:
+0000000100000890 l     F __TEXT,__text +[Calculator new]
+00000001000008a0 l     F __TEXT,__text -[Calculator add:to:]
+00000001000008b0 l     F __TEXT,__text -[Calculator total]
+0000000100003198 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_
+00000001000031a0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_
+00000001000031a8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.8
+0000000100003140 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Calculator
+0000000100003078 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Calculator
+0000000100003058 l     O __DATA,__objc_const __OBJC_$_CLASS_METHODS_Calculator
+00000001000030c0 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Calculator
+00000001000030f8 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_Calculator
+00000001000031b0 l     O __DATA,__data __dyld_private
+00000001000008c0 g     F __TEXT,__text _main
+0000000100003008 g     O __DATA,__objc_data _OBJC_CLASS_$_Calculator
+0000000100003030 g     O __DATA,__objc_data _OBJC_METACLASS_$_Calculator
+0000000100003188 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Calculator.isa
+0000000100003190 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Calculator.total
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* dyld_stub_binder
+0000000000000000         *UND* __objc_empty_cache
+0000000000000000         *UND* _class_createInstance
+0000000000000000         *UND* _objc_msgSend

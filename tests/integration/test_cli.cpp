@@ -634,3 +634,16 @@ CIDER_TEST(run_cycles_are_tolerated_and_reported) {
     CHECK(has(r, "dependency cycle"));
     CHECK(has(r, "Guest exit code: 42"));
 }
+
+// ---- cider run (CIDER 0.4): Objective-C ---------------------------------------------------------------------------------------------
+CIDER_TEST(run_objective_c_program_logs_the_runtime_and_returns_42) {
+    auto r = cider_run({"run", path_to_utf8(fs::path(CIDER_OBJC_FIXTURES_DIR) / "bin" / "objc_calc" / "objc_calc")});
+    CHECK_EQ(r.code, 0);
+    CHECK(has(r, "[CIDER][OBJC] Runtime initialized"));
+    CHECK(has(r, "[CIDER][OBJC] Class Calculator registered"));
+    CHECK(has(r, "[CIDER][OBJC] Selector add:to: resolved"));
+    CHECK(has(r, "[CIDER][OBJC] Message dispatched: -[Calculator add:to:]"));
+    CHECK(has(r, "[CIDER][EXECUTION] guest returned 42"));
+    CHECK(has(r, "Guest exit code: 42"));
+    CHECK(r.out.find("Class Calculator registered") < r.out.find("Message dispatched"));
+}

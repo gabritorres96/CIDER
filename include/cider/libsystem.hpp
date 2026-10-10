@@ -26,6 +26,11 @@
 namespace cider::libsystem {
 
 inline constexpr const char* kInstallName = "/usr/lib/libSystem.B.dylib";
+inline constexpr const char* kObjcInstallName = "/usr/lib/libobjc.A.dylib";
+inline constexpr const char* kFoundationInstallName = "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation";
+inline constexpr const char* kCoreFoundationInstallName = "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation";
+// Which provided library a symbol belongs to. CoreFoundation and Foundation are one group: CIDER's Foundation subset serves both.
+enum class Lib : uint8_t { System = 0, Objc = 1, Foundation = 2 };
 
 // A file descriptor of the guest. These are NOT Windows handles and NOT the host's CRT descriptors: the guest sees a
 // small integer table starting at 0 (stdin), 1 (stdout), 2 (stderr), like a Darwin process.
@@ -37,6 +42,11 @@ struct GuestFd {
 };
 
 class GuestThreads;
+}
+namespace cider::objc {
+class Runtime;
+}
+namespace cider::libsystem {
 
 // Thread-local storage of one image (Mach-O TLV protocol, see src/libsystem/tls.cpp).
 struct TlsImage {
@@ -80,6 +90,7 @@ struct RuntimeContext {
     std::filesystem::path root;             // host directory the guest's "/" maps to; empty: file access is refused (EACCES)
     std::vector<GuestFd> fds;               // index = guest descriptor
     uint64_t file_stdin = 0, file_stdout = 0, file_stderr = 0;   // guest addresses of the three FILE objects
+    std::unique_ptr<objc::Runtime> objc;     // Objective-C runtime (created by the runner before linking)
     std::unique_ptr<GuestThreads> threads;  // guest threads (pthreads) and the cooperative guest lock; created by the runner
     std::vector<Stream> streams;            // FILE slots (kMaxStreams); the guest FILE* of slot i is stream_base + i * kFileObjectSize
     uint64_t stream_base = 0;
@@ -103,6 +114,8 @@ struct HostSymbol {
     void* fn;          // Windows x64 function (positional thunk) or abi::RawHostFn (raw thunk)
     bool raw = false;  // true: fn receives abi::GuestRegs* (variadic, mixed, stack arguments, aggregate returns)
     bool preserve_all = false;   // true: Darwin TLV convention, every register except rax survives (tlv_get_addr)
+    bool direct = false;         // true: `fn` is guest-callable machine code (objc_msgSend...): its address IS the symbol, no thunk
+    Lib lib = Lib::System;       // library that exports the symbol
 };
 const std::vector<HostSymbol>& implemented_symbols();
 bool is_implemented(std::string_view mach_o_symbol);
@@ -120,6 +133,9 @@ public:
     static Result<std::unique_ptr<LibSystemProvider>> create();
     std::optional<dyld::ResolvedSymbol> lookup(std::string_view library, std::string_view symbol) override;
     bool provides_library(std::string_view install_name) const override;
+    // Symbols whose addresses only exist at run time (Objective-C classes, empty caches...): looked up after the static tables.
+    using DynamicLookup = std::function<std::optional<uint64_t>(std::string_view symbol)>;
+    void set_dynamic_data(DynamicLookup f) { dynamic_ = std::move(f); }
     // Addresses of the FILE objects behind stdin/stdout/stderr (to be stored in the RuntimeContext).
     void install_stdio(RuntimeContext& ctx) const;
     // [lo, hi) of the thunk table: guest code may legitimately pass libSystem functions (strcmp...) as callbacks.
@@ -130,6 +146,9 @@ private:
     memory::Region data_;              // stdio variables and FILE objects (read-only after initialisation)
     std::map<std::string, size_t, std::less<>> index_;
     std::map<std::string, uint64_t, std::less<>> data_index_;
+    std::map<std::string, uint64_t, std::less<>> direct_index_;    // name -> address of machine code
+    std::map<std::string, Lib, std::less<>> lib_of_;
+    DynamicLookup dynamic_;
     uint64_t files_[3] = {};
 };
 

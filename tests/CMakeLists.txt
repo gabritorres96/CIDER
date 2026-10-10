@@ -36,7 +36,8 @@ cider_test(test_real_macho regression/test_real_macho.cpp)
 target_compile_definitions(test_real_macho PRIVATE CIDER_REAL_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/real")
 target_compile_definitions(test_cli PRIVATE CIDER_REAL_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/real"
   CIDER_EXEC_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/exec"
-  CIDER_DYLIB_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/dylib")
+  CIDER_DYLIB_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/dylib"
+  CIDER_OBJC_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/objc")
 
 # ---- CIDER 0.2 runtime: real Mach-O execution (Windows x64 only) ---------------------------------------------------------
 if(CIDER_HAS_RUNTIME)
@@ -45,6 +46,7 @@ if(CIDER_HAS_RUNTIME)
     target_compile_definitions(${name} PRIVATE
       CIDER_EXEC_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/exec"
       CIDER_DYLIB_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/dylib"
+      CIDER_OBJC_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/objc"
       CIDER_REAL_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/fixtures/real")
   endfunction()
   cider_runtime_test(test_memory runtime/test_memory.cpp)
@@ -58,6 +60,7 @@ if(CIDER_HAS_RUNTIME)
   cider_runtime_test(test_callbacks runtime/test_callbacks.cpp)
   cider_runtime_test(test_streams runtime/test_streams.cpp)
   cider_runtime_test(test_threads runtime/test_threads.cpp)
+  cider_runtime_test(test_objc runtime/test_objc.cpp)
   add_dependencies(test_threads cider)
   set_tests_properties(test_threads PROPERTIES ENVIRONMENT "CIDER_EXE=$<TARGET_FILE:cider>")
   cider_runtime_test(test_symbols runtime/test_symbols.cpp)

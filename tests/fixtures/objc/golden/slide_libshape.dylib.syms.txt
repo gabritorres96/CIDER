@@ -1,0 +1,23 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\slide\libshape.dylib:
+
+SYMBOL TABLE:
+00000000000007a0 l     F __TEXT,__text +[Shape new]
+00000000000007d0 l     F __TEXT,__text -[Shape area]
+00000000000007e0 l     F __TEXT,__text -[Shape extra]
+00000000000007f0 l     F __TEXT,__text -[Shape destroy]
+00000000000031a0 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Shape
+0000000000003080 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Shape
+0000000000003060 l     O __DATA,__objc_const __OBJC_$_CLASS_METHODS_Shape
+00000000000030c8 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Shape
+0000000000003118 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_Shape
+0000000000003208 l     O __DATA,__data __dyld_private
+0000000000003010 g     O __DATA,__objc_data _OBJC_CLASS_$_Shape
+0000000000003038 g     O __DATA,__objc_data _OBJC_METACLASS_$_Shape
+00000000000031e8 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Shape.isa
+00000000000031f0 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Shape.w
+00000000000031f8 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Shape.h
+0000000000003200 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Shape.extra
+0000000000000000         *UND* __objc_empty_cache
+0000000000000000         *UND* _class_createInstance
+0000000000000000         *UND* _object_dispose
+0000000000000000         *UND* dyld_stub_binder

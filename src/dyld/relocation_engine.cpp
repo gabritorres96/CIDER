@@ -101,9 +101,9 @@ Result<std::vector<Fixup>> decode_rebase_stream(ByteView stream, const std::vect
         return {};
     };
     auto advance = [&](uint64_t n) -> Status {
-        auto v = add(off, n);
-        if (!v) return Error{ErrorCode::Overflow, "rebase: offset overflows"};
-        off = *v;
+        // dyld encodes a backwards move as a ULEB128 that wraps modulo 2^64 (ld64.lld emits it for Objective-C data); the new offset is
+        // validated against the segment before it is used, so a wrapped value can only land inside the segment or be rejected there
+        off = off + n;
         return {};
     };
     while (!r.done()) {
@@ -177,9 +177,7 @@ Result<std::vector<Fixup>> decode_bind_stream(ByteView stream, const std::vector
         return {};
     };
     auto advance = [&](uint64_t n) -> Status {
-        auto v = add(off, n);
-        if (!v) return Error{ErrorCode::Overflow, "bind: offset overflows"};
-        off = *v;
+        off = off + n;                       // wraps like dyld's (see the rebase decoder); check_slot validates every use
         return {};
     };
     while (!r.done()) {

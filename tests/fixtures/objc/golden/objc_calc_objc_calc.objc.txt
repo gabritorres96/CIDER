@@ -1,0 +1,66 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_calc\objc_calc:
+Contents of (__DATA_CONST,__objc_classlist) section
+0000000100002010 0x100003008 _OBJC_CLASS_$_Calculator
+           isa 0x100003030 _OBJC_METACLASS_$_Calculator
+    superclass 0x0
+         cache 0x0
+        vtable 0x0
+          data 0x100003140 (struct class_ro_t *)
+                    flags 0x2 RO_ROOT
+            instanceStart 0
+             instanceSize 12
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x10000091e Calculator
+              baseMethods 0x1000030c0 (struct method_list_t *)
+		   entsize 24
+		     count 2
+		      name 0x10000094f add:to:
+		     types 0x100000931 i24@0:8i16i20
+		       imp -[Calculator add:to:]
+		      name 0x100000957 total
+		     types 0x10000093f i16@0:8
+		       imp -[Calculator total]
+            baseProtocols 0x0
+                    ivars 0x1000030f8
+                    entsize 32
+                      count 2
+			   offset 0x100003188 0
+			     name 0x10000095d isa
+			     type 0x100000947 #
+			alignment 3
+			     size 8
+			   offset 0x100003190 8
+			     name 0x100000957 total
+			     type 0x100000949 i
+			alignment 2
+			     size 4
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x100003030 _OBJC_METACLASS_$_Calculator
+    superclass 0x100003008 _OBJC_CLASS_$_Calculator
+         cache 0x0
+        vtable 0x0
+          data 0x100003078 (struct class_ro_t *)
+                    flags 0x3 RO_META RO_ROOT
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x10000091e Calculator
+              baseMethods 0x100003058 (struct method_list_t *)
+		   entsize 24
+		     count 1
+		      name 0x10000094b new
+		     types 0x100000929 @16@0:8
+		       imp +[Calculator new]
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Contents of (__DATA,__objc_classrefs) section
+0000000100003198 0x100003008 _OBJC_CLASS_$_Calculator
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

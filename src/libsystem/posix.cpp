@@ -25,6 +25,7 @@
 #include "cider/log.hpp"
 #include "cider/util.hpp"
 #include "cider/guest_threads.hpp"
+#include "cider/objc.hpp"
 #include "internal.hpp"
 
 namespace cider::libsystem {
@@ -462,6 +463,7 @@ template <class F> void* addr(F* f) { return reinterpret_cast<void*>(f); }
 
 RuntimeContext::~RuntimeContext() {
     threads.reset();                                  // joins the OS threads before anything they could touch goes away
+    objc.reset();
 #ifdef _WIN32
     for (auto& f : fds)
         if (f.kind == GuestFd::Kind::File && f.handle) CloseHandle(static_cast<HANDLE>(f.handle));

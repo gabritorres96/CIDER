@@ -22,7 +22,9 @@ Result<std::unique_ptr<LibSystemProvider>> LibSystemProvider::create() {
     auto p = std::unique_ptr<LibSystemProvider>(new LibSystemProvider());
     std::vector<abi::ThunkSpec> specs;
     for (const auto& s : implemented_symbols()) {
-        if (p->index_.count(s.name)) return Error{ErrorCode::Malformed, std::string("duplicate libSystem symbol ") + s.name};
+        if (p->index_.count(s.name) || p->direct_index_.count(s.name)) return Error{ErrorCode::Malformed, std::string("duplicate libSystem symbol ") + s.name};
+        p->lib_of_[s.name] = s.lib;
+        if (s.direct) { p->direct_index_[s.name] = reinterpret_cast<uint64_t>(s.fn); continue; }
         p->index_[s.name] = specs.size();
         specs.push_back({s.fn, s.raw, s.preserve_all});
     }
@@ -56,14 +58,40 @@ Result<std::unique_ptr<LibSystemProvider>> LibSystemProvider::create() {
     return p;
 }
 
+namespace {
+// Group a library install name belongs to; nullopt when CIDER does not provide it.
+std::optional<Lib> group_of(std::string_view n) {
+    if (n == kInstallName) return Lib::System;
+    if (n == kObjcInstallName) return Lib::Objc;
+    if (n == kFoundationInstallName || n == kCoreFoundationInstallName || n == "/System/Library/Frameworks/Foundation.framework/Foundation") return Lib::Foundation;
+    return std::nullopt;
+}
+}  // namespace
+
 std::optional<dyld::ResolvedSymbol> LibSystemProvider::lookup(std::string_view library, std::string_view symbol) {
-    if (!library.empty() && library != kInstallName) return std::nullopt;
-    if (auto it = index_.find(symbol); it != index_.end()) return dyld::ResolvedSymbol{table_.address(it->second), true};
+    std::optional<Lib> want;
+    if (!library.empty()) {
+        want = group_of(library);
+        if (!want) return std::nullopt;
+    }
+    auto owns = [&](std::string_view name) {
+        if (!want) return true;
+        auto it = lib_of_.find(name);
+        const Lib have = it == lib_of_.end() ? Lib::System : it->second;    // data symbols and dynamic ones: resolved below by group
+        return have == *want;
+    };
+    if (auto it = index_.find(symbol); it != index_.end()) return owns(symbol) ? std::optional<dyld::ResolvedSymbol>(dyld::ResolvedSymbol{table_.address(it->second), true}) : std::nullopt;
+    if (auto it = direct_index_.find(symbol); it != direct_index_.end()) return owns(symbol) ? std::optional<dyld::ResolvedSymbol>(dyld::ResolvedSymbol{it->second, true}) : std::nullopt;
     if (auto it = data_index_.find(symbol); it != data_index_.end()) return dyld::ResolvedSymbol{it->second, false};
+    if (dynamic_) {
+        // Objective-C classes and Foundation data are only visible through libobjc / Foundation, never through libSystem
+        if (!want || *want != Lib::System)
+            if (auto a = dynamic_(symbol)) return dyld::ResolvedSymbol{*a, false};
+    }
     return std::nullopt;
 }
 
-bool LibSystemProvider::provides_library(std::string_view install_name) const { return install_name == kInstallName; }
+bool LibSystemProvider::provides_library(std::string_view install_name) const { return group_of(install_name).has_value(); }
 
 void LibSystemProvider::install_stdio(RuntimeContext& ctx) const {
     ctx.file_stdin = files_[0];

@@ -47,6 +47,7 @@ int64_t stream_write(int slot, const void* data, size_t n);  // bytes written, -
 
 // malloc from the guest's private heap (used by getcwd(NULL, 0), strdup).
 void* guest_malloc(uint64_t n);
+void guest_free(void* p);
 
 // A runtime trap: the guest asked for something CIDER refuses to emulate. Marks the run as faulted and ends it.
 void trap(const std::string& what);

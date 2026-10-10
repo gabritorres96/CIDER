@@ -1,0 +1,32 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\slide\slide:
+
+SYMBOL TABLE:
+00000001000008e0 l     F __TEXT,__text -[Square setSide:]
+00000001000008f0 l     F __TEXT,__text -[Square side]
+0000000100003170 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_
+0000000100003178 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_
+0000000100003180 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.5
+0000000100003188 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.7
+0000000100003190 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.8
+0000000100003198 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.10
+00000001000031a0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.14
+0000000100003030 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Square
+0000000100003078 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Square
+00000001000030b0 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_Square
+00000001000030d8 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Square
+00000001000031a8 l     O __DATA,__data __dyld_private
+0000000100000900 g     F __TEXT,__text _main
+0000000100003028 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Square.side
+0000000100003120 g     O __DATA,__objc_data _OBJC_METACLASS_$_Square
+0000000100003148 g     O __DATA,__objc_data _OBJC_CLASS_$_Square
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _OBJC_CLASS_$_Shape
+0000000000000000         *UND* _OBJC_METACLASS_$_Shape
+0000000000000000         *UND* _printf
+0000000000000000         *UND* dyld_stub_binder
+0000000000000000         *UND* __objc_empty_cache
+0000000000000000         *UND* _class_getInstanceSize
+0000000000000000         *UND* _class_getInstanceVariable
+0000000000000000         *UND* _ivar_getOffset
+0000000000000000         *UND* _objc_getClass
+0000000000000000         *UND* _objc_msgSend
