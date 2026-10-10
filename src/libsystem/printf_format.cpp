@@ -47,7 +47,7 @@ void pad(std::string& out, const std::string& body, const Spec& s) {
 
 }  // namespace
 
-FormatStatus format_printf(const char* fmt, abi::ArgReader& args, std::string& out, size_t max_output, size_t max_string) {
+FormatStatus format_printf(const char* fmt, abi::ArgReader& args, std::string& out, size_t max_output, size_t max_string, const ObjectFormatter* objects) {
     auto fail = [&](std::string why) { return FormatStatus{false, std::move(why)}; };
     if (!fmt) return fail("NULL format string");
     for (const char* p = fmt; *p;) {
@@ -181,6 +181,13 @@ FormatStatus format_printf(const char* fmt, abi::ArgReader& args, std::string& o
                     else if (s.space) body.insert(body.begin(), ' ');
                     pad(out, body, s);
                 }
+                break;
+            }
+            case '@': {
+                if (!objects) return fail("%@ is only available in NSLog/stringWithFormat: (Foundation)");
+                std::string body;
+                if (!(*objects)(args.next_int(), body)) return fail("%@: the object could not be described");
+                pad(out, body, s);
                 break;
             }
             case 'n': return fail("%n is never honoured (it would write to guest memory)");

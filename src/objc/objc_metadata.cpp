@@ -80,6 +80,7 @@ struct Parser {
             std::string n;
             if (!rt.read_cstring(name, n, 512) || n.empty()) continue;
             out.push_back(n);
+            rt.proto_handles_[p] = n;
             if (!rt.protocols_.count(n)) {
                 Protocol pr;
                 pr.name = n;
@@ -154,6 +155,8 @@ struct Parser {
         Protocol pr;
         if (!rt.read_cstring(name, pr.name, 512) || pr.name.empty()) return fail("protocol name is not readable");
         protocol_names(parents, pr.parents);
+        rt.proto_handles_[p] = pr.name;
+        { auto old = rt.protocols_.find(pr.name); if (old != rt.protocols_.end()) pr.handle = old->second.handle; }
         rt.protocols_[pr.name] = std::move(pr);
         return true;
     }

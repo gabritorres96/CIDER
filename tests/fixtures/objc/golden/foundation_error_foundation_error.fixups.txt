@@ -1,0 +1,47 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\foundation_error\foundation_error:
+
+Rebase table:
+segment  section            address     type
+__DATA_CONST __cfstring         0x100002020  pointer
+__DATA_CONST __cfstring         0x100002040  pointer
+__DATA_CONST __cfstring         0x100002060  pointer
+__DATA_CONST __cfstring         0x100002080  pointer
+__DATA_CONST __cfstring         0x1000020A0  pointer
+__DATA_CONST __cfstring         0x1000020C0  pointer
+__DATA   __la_symbol_ptr    0x100003000  pointer
+__DATA   __la_symbol_ptr    0x100003008  pointer
+__DATA   __objc_selrefs     0x100003030  pointer
+__DATA   __objc_selrefs     0x100003038  pointer
+__DATA   __objc_selrefs     0x100003040  pointer
+__DATA   __objc_selrefs     0x100003048  pointer
+__DATA   __objc_selrefs     0x100003050  pointer
+__DATA   __objc_selrefs     0x100003058  pointer
+__DATA   __objc_selrefs     0x100003060  pointer
+__DATA   __objc_selrefs     0x100003068  pointer
+__DATA   __objc_selrefs     0x100003070  pointer
+__DATA   __objc_selrefs     0x100003078  pointer
+__DATA   __objc_selrefs     0x100003080  pointer
+__DATA   __objc_selrefs     0x100003088  pointer
+__DATA   __objc_selrefs     0x100003090  pointer
+__DATA   __objc_selrefs     0x100003098  pointer
+__DATA   __objc_selrefs     0x1000030A0  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100002000 pointer         0 libobjc          _objc_msgSend
+__DATA_CONST __got              0x100002008 pointer         0 libSystem        dyld_stub_binder
+__DATA_CONST __cfstring         0x100002010 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002030 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002050 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002070 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002090 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000020B0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA   __objc_classrefs   0x100003010 pointer         0 Foundation       _OBJC_CLASS_$_NSMutableArray
+__DATA   __objc_classrefs   0x100003018 pointer         0 Foundation       _OBJC_CLASS_$_NSNumber
+__DATA   __objc_classrefs   0x100003020 pointer         0 Foundation       _OBJC_CLASS_$_NSMutableDictionary
+__DATA   __objc_classrefs   0x100003028 pointer         0 Foundation       _OBJC_CLASS_$_NSArray
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100003000 Foundation       _NSSelectorFromString
+__DATA   __la_symbol_ptr    0x100003008 Foundation       _NSLog

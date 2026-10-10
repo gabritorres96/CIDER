@@ -106,6 +106,7 @@ public:
     bool has_objc_images() const { return !images_.empty(); }
     bool foundation_requested = false;            // some image links against Foundation/CoreFoundation
     bool objc_requested = false;
+    std::function<std::optional<uint64_t>(std::string_view)> extra_dynamic;   // data symbols of the Foundation subset (___NSArray0__...)
 
     // ---- selectors, classes, methods -----------------------------------------------------------------------------------------
     Addr sel(std::string_view name);              // sel_registerName

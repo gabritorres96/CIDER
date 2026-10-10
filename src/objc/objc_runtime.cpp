@@ -399,6 +399,8 @@ std::optional<uint64_t> Runtime::dynamic_symbol(std::string_view name) {
     } else if (name == "___CFConstantStringClassReference") {
         Class* c = class_named("NSConstantString");
         if (c) return c->addr;
+    } else if (extra_dynamic) {
+        return extra_dynamic(name);
     }
     return std::nullopt;
 }

@@ -1,0 +1,9 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\foundation_error\foundation_error:
+Contents of (__DATA,__objc_classrefs) section
+0000000100003010 0x0 _OBJC_CLASS_$_NSMutableArray
+0000000100003018 0x0 _OBJC_CLASS_$_NSNumber
+0000000100003020 0x0 _OBJC_CLASS_$_NSMutableDictionary
+0000000100003028 0x0 _OBJC_CLASS_$_NSArray
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

@@ -28,6 +28,19 @@ clang %COMMON% -fobjc-arc -fno-objc-exceptions src\objc_arc.m -o obj\objc_arc.o 
 mkdir bin\objc_arc
 %LD% -o bin\objc_arc\objc_arc obj\objc_arc.o || exit /b 1
 
+rem ---- Foundation subset (CIDER 0.4.6): ARC programs and MRC programs, linked against the hand-written Foundation.tbd -----------------
+set "LDF=ld64.lld -arch x86_64 -platform_version macos 10.15.0 12.0.0 -syslibroot sysroot -lSystem -lobjc -framework Foundation"
+for %%n in (foundation_hello foundation_string foundation_collections) do (
+  clang %COMMON% -fobjc-arc -fno-objc-exceptions src\%%n.m -o obj\%%n.o || exit /b 1
+  mkdir bin\%%n
+  %LDF% -o bin\%%n\%%n obj\%%n.o || exit /b 1
+)
+for %%n in (foundation_subclass foundation_error) do (
+  clang %COMMON% src\%%n.m -o obj\%%n.o || exit /b 1
+  mkdir bin\%%n
+  %LDF% -o bin\%%n\%%n obj\%%n.o || exit /b 1
+)
+
 rem ---- slide: the base class lives in a dylib that is newer than the header the executable was compiled against --------------------
 clang %COMMON% src\shape_v2.m -o obj\shape_v2.o || exit /b 1
 clang %COMMON% src\slide_main.m -o obj\slide_main.o || exit /b 1

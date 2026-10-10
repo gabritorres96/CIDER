@@ -20,6 +20,7 @@
 // positional arguments (%1$d) and the ' ' / '#' flags on conversions where they have no meaning are ignored as in C.
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <string>
 
 #include "cider/abi.hpp"
@@ -34,7 +35,10 @@ struct FormatStatus {
 // Appends the formatted text to `out`. Fails (leaving whatever was produced so far) on an unsupported
 // specifier, a malformed one, or when the output would exceed `max_output` bytes.
 // `%s` reads the guest string up to its NUL or the precision, at most `max_string` bytes.
+// Optional %@ support (Foundation's NSLog / stringWithFormat:): renders an Objective-C object (its -description) into `out`.
+using ObjectFormatter = std::function<bool(uint64_t object, std::string& out)>;
+
 FormatStatus format_printf(const char* fmt, abi::ArgReader& args, std::string& out, size_t max_output = 16u << 20,
-                           size_t max_string = 8u << 20);
+                           size_t max_string = 8u << 20, const ObjectFormatter* objects = nullptr);
 
 }  // namespace cider::libsystem

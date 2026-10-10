@@ -647,3 +647,13 @@ CIDER_TEST(run_objective_c_program_logs_the_runtime_and_returns_42) {
     CHECK(has(r, "Guest exit code: 42"));
     CHECK(r.out.find("Class Calculator registered") < r.out.find("Message dispatched"));
 }
+
+CIDER_TEST(run_foundation_program_prints_nslog_output_and_returns_42) {
+    auto r = cider_run({"run", path_to_utf8(fs::path(CIDER_OBJC_FIXTURES_DIR) / "bin" / "foundation_hello" / "foundation_hello")});
+    CHECK_EQ(r.code, 0);
+    CHECK(has(r, "[CIDER][OBJC] Foundation compatibility loaded"));
+    CHECK(has(r, "CIDER result: 42"));
+    CHECK(has(r, "Message dispatched: +[NSArray arrayWithObjects:count:]"));
+    CHECK(has(r, "[CIDER][EXECUTION] guest returned 42"));
+    CHECK(has(r, "Guest exit code: 42"));
+}

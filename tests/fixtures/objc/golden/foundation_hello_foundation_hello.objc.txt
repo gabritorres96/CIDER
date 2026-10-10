@@ -1,0 +1,7 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\foundation_hello\foundation_hello:
+Contents of (__DATA,__objc_classrefs) section
+0000000100002028 0x0 _OBJC_CLASS_$_NSNumber
+0000000100002030 0x0 _OBJC_CLASS_$_NSArray
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES
