@@ -11,6 +11,7 @@
 #include "cider/guest_threads.hpp"
 #include "cider/objc.hpp"
 #include "internal.hpp"
+namespace cider::objc { void add_exception_symbols(std::vector<libsystem::HostSymbol>& t); }
 #include "../graphics/cg_bridge.hpp"
 #include "../corefoundation/cf_bridge.hpp"
 
@@ -187,6 +188,7 @@ const std::vector<HostSymbol>& implemented_symbols() {
     detail::add_pthread_symbols(t);
     objc::add_objc_symbols(t);
     objc::add_foundation_symbols(t);
+    objc::add_exception_symbols(t);
     graphics::add_cg_symbols(t);
     corefoundation::add_cf_symbols(t);
     return t;

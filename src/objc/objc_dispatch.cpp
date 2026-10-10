@@ -18,9 +18,25 @@ Addr Runtime::lookup_for_message(Addr self, Addr s) {
         libsystem::detail::trap(std::format("objc: message {} sent to an invalid object {:#x} (its isa is not a registered class)", sel_name(s), self));
         return forward_imp_;
     }
-    const Addr imp = find_imp(c, s);
+    Addr imp = find_imp(c, s);
     if (imp) return imp;
-    return forward_imp_;                       // traps with "unrecognized selector sent to instance|class"
+    // dynamic method resolution: +resolveInstanceMethod: / +resolveClassMethod: may add the method (class_addMethod) and answer YES
+    if (!resolving_) {
+        const bool meta = c->is_meta;
+        Class* target = meta ? c->instance_class : c;
+        const Addr resolver = sel(meta ? "resolveClassMethod:" : "resolveInstanceMethod:");
+        if (target && find_imp(target->meta, resolver)) {
+            resolving_ = true;
+            const bool yes = (send(target->addr, resolver, {s}) & 0xff) != 0;
+            resolving_ = false;
+            if (yes) {
+                flush_caches();
+                imp = find_imp(c, s);
+                if (imp) return imp;
+            }
+        }
+    }
+    return forward_imp_;                       // forwarding (objc_forward_message): target, invocation, or "unrecognized selector sent to instance|class"
 }
 
 Addr Runtime::lookup_for_super(Addr super_struct, Addr s, int mode) {

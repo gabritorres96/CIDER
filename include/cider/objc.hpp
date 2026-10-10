@@ -87,6 +87,9 @@ struct NativeMethod {
     bool raw = false;
 };
 
+// Raw thunk behind the "no method found" IMP: -forwardingTargetForSelector:, -forwardInvocation:, else the unrecognized-selector trap.
+void objc_forward_message(abi::GuestRegs* regs);
+
 class Runtime {
 public:
     explicit Runtime(libsystem::RuntimeContext& ctx);
@@ -222,6 +225,7 @@ private:
     struct NativeEntry { Class* cls; bool class_method; size_t index; };
     std::vector<std::pair<NativeEntry, NativeMethod>> native_;
     std::vector<DynamicProvider> providers_;
+    bool resolving_ = false;
     std::string native_owner_;
     std::unordered_map<std::string, std::string> native_owner_of_;
     abi::ThunkTable native_table_;

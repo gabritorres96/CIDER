@@ -91,6 +91,8 @@ void install_nsarray(Runtime& rt);
 void install_nsdictionary(Runtime& rt);
 void install_misc(Runtime& rt);
 void install_nsextras(Runtime& rt);
+void install_nsexception(Runtime& rt);          // NSException + objc_exception_throw (uncaught only)
+void install_nsinvocation(Runtime& rt);         // NSMethodSignature, NSInvocation and the NSObject forwarding defaults
 void install_nsnotification(Runtime& rt);       // NSNotification, NSNotificationCenter
 void post_notification(const std::string& name, Addr object, Addr userinfo);   // synchronous delivery through the default center       // NSMutableString, NSData, NSMutableData, NSDate, NSURL, NSError, NSFileManager
 

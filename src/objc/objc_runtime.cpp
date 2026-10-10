@@ -24,7 +24,6 @@ constexpr uint64_t kMaxInstanceSize = 256ull << 20;
 // host functions behind the dispatch stubs (positional thunks)
 uint64_t host_lookup(uint64_t self, uint64_t sel) { return g_runtime ? g_runtime->lookup_for_message(self, sel) : 0; }
 uint64_t host_lookup_super(uint64_t super, uint64_t sel, uint64_t mode) { return g_runtime ? g_runtime->lookup_for_super(super, sel, static_cast<int>(mode)) : 0; }
-uint64_t host_forward_trap(uint64_t self, uint64_t sel);
 }  // namespace
 
 Runtime* Runtime::current() { return g_runtime; }
@@ -36,7 +35,7 @@ Runtime::Runtime(libsystem::RuntimeContext& ctx) : ctx_(ctx) {
     else failed_ = true;
     std::vector<abi::ThunkSpec> specs = {{reinterpret_cast<void*>(&host_lookup), false},
                                          {reinterpret_cast<void*>(&host_lookup_super), false},
-                                         {reinterpret_cast<void*>(&host_forward_trap), false}};
+                                         {reinterpret_cast<void*>(&objc_forward_message), true}};
     auto t = abi::ThunkTable::build_specs(specs);
     if (!t.ok()) { failed_ = true; return; }
     core_table_ = std::move(t.value());
@@ -450,20 +449,6 @@ uint64_t Runtime::send(Addr self, Addr s, std::initializer_list<uint64_t> args) 
 
 uint64_t Runtime::send(Addr self, std::string_view selector, std::initializer_list<uint64_t> args) { return send(self, sel(selector), args); }
 
-namespace {
-uint64_t host_forward_trap(uint64_t self, uint64_t sel) {
-    Runtime* rt = Runtime::current();
-    std::string what = "unrecognized selector";
-    if (rt) {
-        Class* c = rt->class_of_object(self);
-        if (c)
-            what = std::format("{}[{} {}]: unrecognized selector sent to {} {:#x}", c->is_meta ? '+' : '-', c->is_meta ? c->instance_class->name : c->name, rt->sel_name(sel),
-                               c->is_meta ? "class" : "instance", self);
-    }
-    libsystem::detail::trap("objc: " + what);
-    return 0;
-}
-}  // namespace
 
 }  // namespace cider::objc
 

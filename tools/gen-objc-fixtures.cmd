@@ -35,11 +35,16 @@ for %%n in (foundation_hello foundation_string foundation_collections dispatch_b
   mkdir bin\%%n
   %LDF% -o bin\%%n\%%n obj\%%n.o || exit /b 1
 )
-for %%n in (foundation_subclass foundation_error blocks_basic blocks_error cf_basic) do (
+for %%n in (foundation_subclass foundation_error blocks_basic blocks_error cf_basic objc_forward objc_exception) do (
   clang %COMMON% -fno-objc-exceptions -fno-exceptions src\%%n.m -o obj\%%n.o || exit /b 1
   mkdir bin\%%n
   %LDF% -o bin\%%n\%%n obj\%%n.o || exit /b 1
 )
+
+rem ---- @try/@catch: compiled WITH Objective-C exceptions; CIDER must refuse it (no unwinder) -----------------------------------------------
+clang %COMMON% -fobjc-exceptions -fexceptions src\objc_try.m -o obj\objc_try.o || exit /b 1
+mkdir bin\objc_try
+%LDF% -o bin\objc_try\objc_try obj\objc_try.o || exit /b 1
 
 rem ---- slide: the base class lives in a dylib that is newer than the header the executable was compiled against --------------------
 clang %COMMON% src\shape_v2.m -o obj\shape_v2.o || exit /b 1

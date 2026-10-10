@@ -312,6 +312,8 @@ void install_foundation(Runtime& rt) {
     foundation::install_misc(rt);
     foundation::install_nsextras(rt);
     foundation::install_nsnotification(rt);
+    foundation::install_nsinvocation(rt);
+    foundation::install_nsexception(rt);
     graphics::install_cg(rt);
     corefoundation::install(rt);
     runloop::install(rt);

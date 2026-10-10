@@ -1,0 +1,21 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_try\objc_try:
+
+SYMBOL TABLE:
+0000000100003040 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_
+0000000100003048 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_
+0000000100003050 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.6
+00000001000009f4 l     O __TEXT,__gcc_except_tab GCC_except_table0
+0000000100003038 l     O __DATA,__data __dyld_private
+0000000100000920 g     F __TEXT,__text _main
+0000000100003020  w    O __DATA,__data _OBJC_EHTYPE_$_NSException
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* __Unwind_Resume
+0000000000000000         *UND* dyld_stub_binder
+0000000000000000         *UND* ___objc_personality_v0
+0000000000000000         *UND* _objc_begin_catch
+0000000000000000         *UND* _objc_ehtype_vtable
+0000000000000000         *UND* _objc_end_catch
+0000000000000000         *UND* _objc_msgSend
+0000000000000000         *UND* _OBJC_CLASS_$_NSException
+0000000000000000         *UND* _NSLog
+0000000000000000         *UND* ___CFConstantStringClassReference

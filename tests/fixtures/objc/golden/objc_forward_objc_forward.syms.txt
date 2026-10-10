@@ -1,0 +1,126 @@
+C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\objc\bin\objc_forward\objc_forward:
+
+SYMBOL TABLE:
+0000000100000a60 l     F __TEXT,__text -[Worker doubleIt:]
+0000000100000a70 l     F __TEXT,__text -[Worker add:to:]
+0000000100000a80 l     F __TEXT,__text -[Worker scale:by:]
+0000000100000a90 l     F __TEXT,__text -[Worker label:with:]
+0000000100003030 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_
+0000000100003080 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_
+0000000100000ac0 l     F __TEXT,__text -[Worker half:]
+0000000100000ad0 l     F __TEXT,__text +[Resolver resolveInstanceMethod:]
+0000000100003088 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.11
+0000000100003098 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.16
+0000000100003090 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.13
+0000000100000b40 l     F __TEXT,__text _dynamic_instance_imp
+0000000100000b50 l     F __TEXT,__text +[Resolver resolveClassMethod:]
+00000001000030a0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.18
+00000001000030a8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.21
+0000000100000bb0 l     F __TEXT,__text _dynamic_class_imp
+0000000100000bc0 l     F __TEXT,__text -[TargetProxy initWith:]
+00000001000030b0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.26
+0000000100000c00 l     F __TEXT,__text -[TargetProxy forwardingTargetForSelector:]
+00000001000030b8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.28
+0000000100000c30 l     F __TEXT,__text -[InvocationProxy initWith:]
+0000000100000c70 l     F __TEXT,__text -[InvocationProxy methodSignatureForSelector:]
+00000001000030c0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.38
+0000000100000cd0 l     F __TEXT,__text -[InvocationProxy forwardInvocation:]
+0000000100003958 l     O __DATA,__bss _invocations
+00000001000030c8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.40
+00000001000030d0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.41
+00000001000030e8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.47
+00000001000030d8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.43
+00000001000030e0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.45
+00000001000030f0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.49
+00000001000030f8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.51
+0000000100003100 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.53
+0000000100000df0 l     F __TEXT,__text -[StructTaker takeRect:]
+0000000100000e00 l     F __TEXT,__text -[StructProxy initWith:]
+0000000100000e40 l     F __TEXT,__text -[StructProxy methodSignatureForSelector:]
+0000000100000e60 l     F __TEXT,__text -[StructProxy forwardInvocation:]
+0000000100003038 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.63
+0000000100003040 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.64
+0000000100003048 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.65
+000000010000395c l     O __DATA,__bss _fails
+0000000100003108 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.74
+0000000100003050 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.76
+0000000100003110 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.77
+0000000100003118 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.79
+0000000100003120 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.81
+0000000100003128 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.83
+0000000100003130 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.87
+0000000100003058 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.91
+0000000100003138 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.102
+0000000100003140 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.104
+0000000100003148 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.106
+0000000100003150 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.109
+0000000100003158 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.112
+0000000100003060 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.114
+0000000100003160 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.116
+0000000100003168 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.118
+0000000100003170 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.120
+0000000100003178 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.122
+0000000100003180 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.124
+0000000100003068 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.126
+0000000100003188 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.129
+0000000100003070 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.131
+0000000100003078 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_.132
+0000000100003190 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.133
+0000000100003198 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.137
+00000001000031a0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.139
+00000001000031a8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.141
+00000001000031b0 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Worker
+00000001000031f8 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Worker
+0000000100003278 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Worker
+00000001000032f8 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Resolver
+00000001000032c0 l     O __DATA,__objc_const __OBJC_$_CLASS_METHODS_Resolver
+0000000100003340 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Resolver
+0000000100003430 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_TargetProxy
+0000000100003388 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_TargetProxy
+00000001000033d0 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_TargetProxy
+0000000100003408 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_TargetProxy
+0000000100003538 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_InvocationProxy
+0000000100003478 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_InvocationProxy
+00000001000034c0 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_InvocationProxy
+0000000100003510 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_InvocationProxy
+0000000100003580 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_StructTaker
+00000001000035c8 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_StructTaker
+00000001000035e8 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_StructTaker
+00000001000036f0 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_StructProxy
+0000000100003630 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_StructProxy
+0000000100003678 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_StructProxy
+00000001000036c8 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_StructProxy
+0000000100003950 l     O __DATA,__data __dyld_private
+0000000100000e80 g     F __TEXT,__text _main
+0000000100003738 g     O __DATA,__objc_data _OBJC_METACLASS_$_Worker
+0000000100003760 g     O __DATA,__objc_data _OBJC_CLASS_$_Worker
+0000000100003788 g     O __DATA,__objc_data _OBJC_METACLASS_$_Resolver
+00000001000037b0 g     O __DATA,__objc_data _OBJC_CLASS_$_Resolver
+00000001000037d8 g     O __DATA,__objc_data _OBJC_CLASS_$_TargetProxy
+0000000100003800 g     O __DATA,__objc_data _OBJC_METACLASS_$_TargetProxy
+0000000100003828 g     O __DATA,__objc_data _OBJC_CLASS_$_InvocationProxy
+0000000100003850 g     O __DATA,__objc_data _OBJC_METACLASS_$_InvocationProxy
+0000000100003878 g     O __DATA,__objc_data _OBJC_METACLASS_$_StructTaker
+00000001000038a0 g     O __DATA,__objc_data _OBJC_CLASS_$_StructTaker
+00000001000038c8 g     O __DATA,__objc_data _OBJC_CLASS_$_StructProxy
+00000001000038f0 g     O __DATA,__objc_data _OBJC_METACLASS_$_StructProxy
+0000000100003938 g     O __DATA,__objc_ivar _OBJC_IVAR_$_TargetProxy.worker
+0000000100003940 g     O __DATA,__objc_ivar _OBJC_IVAR_$_InvocationProxy.worker
+0000000100003948 g     O __DATA,__objc_ivar _OBJC_IVAR_$_StructProxy.t
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* dyld_stub_binder
+0000000000000000         *UND* _OBJC_CLASS_$_NSObject
+0000000000000000         *UND* _OBJC_METACLASS_$_NSObject
+0000000000000000         *UND* __objc_empty_cache
+0000000000000000         *UND* _class_addMethod
+0000000000000000         *UND* _objc_alloc
+0000000000000000         *UND* _objc_alloc_init
+0000000000000000         *UND* _objc_msgSend
+0000000000000000         *UND* _objc_msgSendSuper2
+0000000000000000         *UND* _object_getClass
+0000000000000000         *UND* _OBJC_CLASS_$_NSAutoreleasePool
+0000000000000000         *UND* _OBJC_CLASS_$_NSInvocation
+0000000000000000         *UND* _OBJC_CLASS_$_NSMethodSignature
+0000000000000000         *UND* _OBJC_CLASS_$_NSString
+0000000000000000         *UND* _NSLog
+0000000000000000         *UND* ___CFConstantStringClassReference

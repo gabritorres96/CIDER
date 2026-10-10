@@ -30,7 +30,7 @@ enum { NSOrderedAscending = -1, NSOrderedSame = 0, NSOrderedDescending = 1 };
 #define NSNotFound ((NSInteger)0x7fffffffffffffffL)
 typedef struct { unsigned long state; __unsafe_unretained id *itemsPtr; unsigned long *mutationsPtr; unsigned long extra[5]; } NSFastEnumerationState;
 
-@class NSString, NSNumber, NSArray, NSDictionary, NSData, NSDate, NSURL, NSError;
+@class NSString, NSNumber, NSArray, NSDictionary, NSData, NSDate, NSURL, NSError, NSMethodSignature, NSInvocation;
 
 @protocol NSCopying
 - (id)copyWithZone:(NSZone *)zone;
@@ -53,7 +53,14 @@ __attribute__((objc_root_class))
 + (BOOL)instancesRespondToSelector:(SEL)selector;
 + (BOOL)isSubclassOfClass:(Class)cls;
 + (NSString *)description;
++ (BOOL)resolveInstanceMethod:(SEL)selector;
++ (BOOL)resolveClassMethod:(SEL)selector;
++ (NSMethodSignature *)methodSignatureForSelector:(SEL)selector;
 - (instancetype)init;
+- (id)forwardingTargetForSelector:(SEL)selector;
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector;
+- (void)forwardInvocation:(NSInvocation *)invocation;
+- (void)doesNotRecognizeSelector:(SEL)selector;
 - (void)dealloc;
 - (id)retain;
 - (oneway void)release;
@@ -286,6 +293,38 @@ extern NSString *const NSPOSIXErrorDomain;
 - (BOOL)createDirectoryAtPath:(NSString *)path withIntermediateDirectories:(BOOL)intermediate attributes:(NSDictionary *)attributes error:(NSError **)error;
 - (NSArray *)contentsOfDirectoryAtPath:(NSString *)path error:(NSError **)error;
 - (NSString *)currentDirectoryPath;
+@end
+
+@interface NSException : NSObject
++ (NSException *)exceptionWithName:(NSString *)name reason:(NSString *)reason userInfo:(NSDictionary *)userInfo;
++ (void)raise:(NSString *)name format:(NSString *)format, ... __attribute__((format(__NSString__, 2, 3)));
+- (instancetype)initWithName:(NSString *)name reason:(NSString *)reason userInfo:(NSDictionary *)userInfo;
+- (NSString *)name;
+- (NSString *)reason;
+- (NSDictionary *)userInfo;
+- (void)raise;
+@end
+
+@interface NSMethodSignature : NSObject
++ (NSMethodSignature *)signatureWithObjCTypes:(const char *)types;
+- (NSUInteger)numberOfArguments;
+- (const char *)getArgumentTypeAtIndex:(NSUInteger)index;
+- (const char *)methodReturnType;
+- (NSUInteger)methodReturnLength;
+@end
+@interface NSInvocation : NSObject
++ (NSInvocation *)invocationWithMethodSignature:(NSMethodSignature *)signature;
+- (id)target;
+- (void)setTarget:(id)target;
+- (SEL)selector;
+- (void)setSelector:(SEL)selector;
+- (NSMethodSignature *)methodSignature;
+- (void)getArgument:(void *)buffer atIndex:(NSInteger)index;
+- (void)setArgument:(void *)buffer atIndex:(NSInteger)index;
+- (void)getReturnValue:(void *)buffer;
+- (void)setReturnValue:(void *)buffer;
+- (void)invoke;
+- (void)invokeWithTarget:(id)target;
 @end
 
 @interface NSNotification : NSObject
