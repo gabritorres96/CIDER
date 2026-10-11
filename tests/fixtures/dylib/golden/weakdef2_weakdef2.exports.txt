@@ -1,0 +1,5 @@
+bin\weakdef2\weakdef2:
+
+Exports trie:
+0x100000570  _main
+0x100000000  __mh_execute_header

@@ -324,6 +324,55 @@ private:
                 return fail(loader::LoadFailure::Internal, std::format("{}: applying fixups failed: {}", p.rec->leaf, a.error().message));
             log::info(log::Category::Dyld, "{}: applied {} rebase(s) and {} bind(s)", p.rec->leaf, p.rec->rebases, p.rec->binds);
         }
+        return weak_bind_all();
+    }
+
+    // Weak-binding streams: every site listed for a symbol is pointed at ONE definition, chosen across the loaded images in load
+    // order (main executable first). A definition that is not weak (export without the weak-definition flag) beats any weak one, as in
+    // dyld; among equals the first image wins. Sites of a symbol nobody defines keep the value the rebase/bind gave them (usually the
+    // image's own definition, or null for a weak reference): that is reported at debug level, never turned into an error.
+    bool weak_bind_all() {
+        struct Site { ImageRecord* rec; dyld::Fixup f; };
+        std::map<std::string, std::vector<Site>> sites;
+        std::vector<std::string> order;
+        for (auto& r : prog_.images_) {
+            auto wb = dyld::decode_weak_binds(r->info, r->slice);
+            if (!wb.ok())
+                return fail(wb.error().code == ErrorCode::Unsupported ? loader::LoadFailure::Unsupported : loader::LoadFailure::Incompatible,
+                            std::format("{}: weak binding: {}", r->leaf, wb.error().message));
+            for (auto& f : wb.value().sites) {
+                auto it = sites.find(f.symbol);
+                if (it == sites.end()) { order.push_back(f.symbol); it = sites.emplace(f.symbol, std::vector<Site>{}).first; }
+                it->second.push_back({r.get(), std::move(f)});
+            }
+        }
+        for (const auto& name : order) {
+            std::optional<uint64_t> weak_def, strong_def;
+            for (auto& im : prog_.images_) {
+                auto it = im->export_index.find(name);
+                if (it == im->export_index.end()) continue;
+                const dyld::ExportedSymbol& e = im->exports[it->second];
+                if (e.is_reexport() || (e.flags & dyld::kExportStubAndResolver)) continue;
+                const uint64_t a = e.is_absolute() ? e.address : im->header + e.address;
+                if (e.flags & dyld::kExportWeakDefinition) { if (!weak_def) weak_def = a; }
+                else if (!strong_def) strong_def = a;
+            }
+            const auto winner = strong_def ? strong_def : weak_def;
+            if (!winner) {
+                log::debug(log::Category::Dyld, "weak symbol {} has no definition in any loaded image: its {} site(s) keep their value", name, sites[name].size());
+                continue;
+            }
+            for (auto& s : sites[name]) {
+                const auto& seg = s.rec->info.segments[s.f.segment];                // decode_weak_binds validated the index
+                uint8_t* host = s.rec->mapped.host_address(seg.vmaddr + s.f.offset);
+                if (!host || !s.rec->mapped.host_address(seg.vmaddr + s.f.offset + 7))
+                    return fail(loader::LoadFailure::Incompatible, std::format("{}: weak bind site for {} is outside the mapped image", s.rec->leaf, name));
+                const uint64_t value = *winner + static_cast<uint64_t>(s.f.addend);
+                std::memcpy(host, &value, 8);
+                ++s.rec->weak_binds;
+            }
+            log::debug(log::Category::Dyld, "weak symbol {} coalesced to {:#x} ({} site(s))", name, *winner, sites[name].size());
+        }
         return true;
     }
 

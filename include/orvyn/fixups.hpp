@@ -3,8 +3,8 @@
 // resolution against a pluggable provider. Platform independent: nothing here touches process memory.
 //
 // Supported: x86_64 pointer rebases (type 1) and pointer binds (type 1), lazy binds (applied eagerly),
-// special ordinals self/main-executable/flat-lookup, weak imports. NOT supported (rejected with a clear
-// error): chained fixups, threaded binds, non-pointer bind types, weak-binding streams.
+// special ordinals self/main-executable/flat-lookup, weak imports, weak-binding streams (decode_weak_binds; the linker coalesces them
+// across the loaded images). NOT supported (rejected with a clear error): threaded binds, non-pointer bind types.
 #include <cstdint>
 #include <map>
 #include <optional>
@@ -48,6 +48,15 @@ Result<std::vector<Fixup>> decode_fixups(const macho::Image& img, ByteView slice
 // Raw stream decoders (exposed for tests).
 Result<std::vector<Fixup>> decode_rebase_stream(ByteView stream, const std::vector<macho::Segment>& segs, const FixupLimits& limits = {});
 Result<std::vector<Fixup>> decode_bind_stream(ByteView stream, const std::vector<macho::Segment>& segs, bool lazy, const FixupLimits& limits = {});
+
+// Weak-binding stream (LC_DYLD_INFO weak_bind): `sites` are the pointers that must end up at the coalesced definition of `symbol` (+ addend);
+// `definitions` are the symbols the image says it defines non-weakly. The linker picks the definition across the loaded images.
+struct WeakBindInfo {
+    std::vector<Fixup> sites;                 // Kind::Bind, library_ordinal unused
+    std::vector<std::string> definitions;
+};
+Result<WeakBindInfo> decode_weak_bind_stream(ByteView stream, const std::vector<macho::Segment>& segs, const FixupLimits& limits = {});
+Result<WeakBindInfo> decode_weak_binds(const macho::Image& img, ByteView slice, const FixupLimits& limits = {});
 
 // ---- symbol resolution ----------------------------------------------------------------------
 struct ResolvedSymbol {

@@ -1,0 +1,6 @@
+bin\weakdef2\libwb.dylib:
+
+SYMBOL TABLE:
+00000000000003b0 g     F __TEXT,__text _orvyn_b_get
+0000000000002000  w    O __DATA,__data _orvyn_shared
+0000000000000000         *UND* dyld_stub_binder

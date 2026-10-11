@@ -365,6 +365,82 @@ ORVYN_TEST(a_missing_weak_library_binds_to_null) {
 }
 
 // ============================== cycles ======================================================================================
+// ============================== weak binding (ORVYN 0.6) ===============================================================================
+ORVYN_TEST(weak_definitions_in_the_executable_and_a_dylib_coalesce_to_the_executable) {
+    // The library's own references (GOT entries and the lazy pointer of the weak function) must follow the executable's definitions.
+    expect_exit("weakdef", 42);
+    auto l = link_scenario("weakdef");
+    REQUIRE(l.program != nullptr);
+    CHECK(l.program->images()[0]->weak_binds >= 1);
+    CHECK(l.program->images()[1]->weak_binds >= 2);          // _orvyn_wval and _orvyn_wfn
+    // the library's GOT slot for _orvyn_wval really holds the executable's variable
+    auto exe_wval = l.program->find_symbol(0, "_orvyn_wval");
+    auto lib_wval = l.program->find_symbol(1, "_orvyn_wval");
+    REQUIRE(exe_wval.has_value());
+    REQUIRE(lib_wval.has_value());
+    CHECK(*exe_wval != *lib_wval);                           // two different definitions exist
+    CHECK_EQ(*reinterpret_cast<const int*>(*exe_wval), 22);
+    CHECK_EQ(*reinterpret_cast<const int*>(*lib_wval), 11);
+}
+ORVYN_TEST(the_first_dylib_in_load_order_wins_when_only_dylibs_define_a_weak_symbol) { expect_exit("weakdef2", 14); }
+ORVYN_TEST(a_weak_symbol_that_nothing_defines_keeps_the_value_the_rebase_gave_it) {
+    // Rename the symbols in the library's weak-binding stream: the stream now names symbols no image exports, so nothing is coalesced
+    // and the executable sees the library's OWN variable (exit code 1) - a hostile or stale stream cannot invent a definition.
+    TempDir t;
+    t.write("weakdef", file_bytes(dy("weakdef", "weakdef")));
+    auto lib = file_bytes(dy("weakdef", "libwdef.dylib"));
+    auto parsed = take(macho::parse_file(ByteView(lib)));
+    const auto& wb = parsed.slices[0].image->dyld_info->weak_bind;
+    REQUIRE(wb.size > 0);
+    size_t renamed = 0;
+    for (size_t i = wb.offset; i + 11 < wb.offset + wb.size; ++i)
+        if (std::memcmp(lib.data() + i, "_orvyn_w", 8) == 0) { lib[i + 7] = 'x'; ++renamed; }    // _orvyn_wval -> _orvyn_xval
+    REQUIRE(renamed >= 2);
+    t.write("libwdef.dylib", lib);
+    Run r = run_path(t.path() / "weakdef");
+    REQUIRE(r.r.state == guest::State::Exited);
+    CHECK_EQ(r.r.exit_code, 1);
+}
+ORVYN_TEST(weak_bind_streams_are_decoded_and_hostile_streams_are_refused) {
+    auto segs = take(macho::parse_file(ByteView(file_bytes(dy("weakdef", "libwdef.dylib"))))).slices[0].image->segments;
+    // symbol "_a" (weak), segment 2 offset 0x10, addend -4, three pointers 8 apart
+    const std::vector<uint8_t> good = {0x40, '_', 'a', 0, 0x51, 0x60, 0x7c /*addend -4*/, 0x72, 0x10, 0x90, 0xb0 /*bind, advance 8*/, 0x90, 0x00};
+    auto ok = dyld::decode_weak_bind_stream(ByteView(good), segs);
+    REQUIRE(ok.ok());
+    REQUIRE_EQ(ok.value().sites.size(), size_t{3});
+    CHECK_EQ(ok.value().sites[0].symbol, std::string("_a"));
+    CHECK_EQ(ok.value().sites[0].offset, uint64_t{0x10});
+    CHECK_EQ(ok.value().sites[0].addend, int64_t{-4});
+    CHECK_EQ(ok.value().sites[1].offset, uint64_t{0x18});
+    CHECK_EQ(ok.value().sites[2].offset, uint64_t{0x20});      // 0xb0 (scaled immediate 0): bind, then advance 8
+    // a non-weak definition announcement binds nothing
+    const std::vector<uint8_t> def = {0x48, '_', 'b', 0, 0x00};
+    auto d = dyld::decode_weak_bind_stream(ByteView(def), segs);
+    REQUIRE(d.ok());
+    CHECK(d.value().sites.empty());
+    REQUIRE_EQ(d.value().definitions.size(), size_t{1});
+    // hostile: ordinals, threaded binds, DO_BIND without symbol/segment, bad type, out-of-range slot, unterminated name, truncated ULEB
+    const struct { const char* what; std::vector<uint8_t> s; } bad[] = {
+        {"dylib ordinal", {0x40, '_', 'a', 0, 0x11, 0x72, 0, 0x90, 0}},
+        {"threaded", {0xd0, 0}},
+        {"bind before symbol", {0x72, 0, 0x90, 0}},
+        {"bind before segment", {0x40, '_', 'a', 0, 0x90, 0}},
+        {"bind type 2", {0x40, '_', 'a', 0, 0x52, 0x72, 0, 0x90, 0}},
+        {"segment 99", {0x40, '_', 'a', 0, 0x51, 0x7f, 0, 0x90, 0}},
+        {"offset past the segment", {0x40, '_', 'a', 0, 0x51, 0x72, 0xff, 0xff, 0xff, 0x7f, 0x90, 0}},
+        {"unterminated name", {0x40, '_', 'a'}},
+        {"truncated uleb", {0x40, '_', 'a', 0, 0x72, 0x80}},
+        {"unknown opcode", {0xe0, 0}},
+    };
+    for (auto& b : bad) {
+        auto r = dyld::decode_weak_bind_stream(ByteView(b.s), segs);
+        if (r.ok()) report_failure(__FILE__, __LINE__, std::string("accepted: ") + b.what);
+    }
+    dyld::FixupLimits lim;
+    lim.max_fixups = 2;
+    CHECK(!dyld::decode_weak_bind_stream(ByteView(good), segs, lim).ok());           // 3 sites > limit
+}
+
 ORVYN_TEST(dependency_cycles_are_detected_and_tolerated_like_dyld) {
     auto l = link_scenario("cycle");
     REQUIRE(l.program != nullptr);

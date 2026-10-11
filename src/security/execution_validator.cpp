@@ -36,8 +36,7 @@ ValidationReport validate_for_execution(const macho::Image& img, const Validator
     } else if (img.entry->kind != macho::EntryPoint::Kind::Main) {
         add(r, K::Unsupported, "LC_UNIXTHREAD entry protocol is not supported (only LC_MAIN)");
     }
-    if (img.dyld_info && img.dyld_info->weak_bind.size)
-        add(r, K::Unsupported, "weak binding information is not supported yet");
+    // weak binding (dyld_info.weak_bind) is supported: the linker coalesces the weak definitions across the loaded images
 
     for (const auto& s : img.segments) {
         for (const auto& sec : s.sections) {

@@ -58,7 +58,7 @@ struct ImageRecord {
         uint64_t descriptors = 0;                                      // number of TLV descriptors
         bool present() const noexcept { return tmpl_size != 0 || descriptors != 0; }
     } tls;
-    size_t rebases = 0, binds = 0;
+    size_t rebases = 0, binds = 0, weak_binds = 0;
 };
 
 struct LinkOptions {

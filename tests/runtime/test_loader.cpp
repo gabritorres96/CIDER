@@ -208,7 +208,7 @@ ORVYN_TEST(validator_rejects_features_the_runtime_cannot_honour) {
     i = synthetic();
     i.dyld_info = macho::DyldInfo{};
     i.dyld_info->weak_bind.size = 8;
-    CHECK(!validate_for_execution(i).ok());
+    CHECK(validate_for_execution(i).ok());                                         // weak binding is supported since 0.6 (the linker coalesces it)
 }
 
 ORVYN_TEST(real_chained_fixups_binary_loads_since_0_3_5) {

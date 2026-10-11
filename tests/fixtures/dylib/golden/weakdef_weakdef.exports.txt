@@ -1,0 +1,7 @@
+bin\weakdef\weakdef:
+
+Exports trie:
+0x100000550  _main
+0x100000000  __mh_execute_header
+0x100000540  _orvyn_wfn [weak_def]
+0x100002018  _orvyn_wval [weak_def]

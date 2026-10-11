@@ -1,0 +1,3 @@
+bin\weakdef2\weakdef2:
+dyld information:
+segment section address pointer            type   addend dylib symbol/vm address

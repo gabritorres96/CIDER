@@ -218,12 +218,16 @@ ORVYN_TEST(chained_fixups_are_decoded_since_0_3_5) {
     CHECK_EQ(names[1], std::string("_puts"));
 }
 
-ORVYN_TEST(weak_bind_streams_are_refused_by_the_decoder) {
+ORVYN_TEST(weak_bind_streams_are_decoded_separately_and_bounds_checked) {
     auto bytes = exec_fixture("hello");
     auto file = macho::parse_file(ByteView(bytes)).value();
     macho::Image img = *file.slices[0].image;
+    img.dyld_info->weak_bind.offset = 0x7fffffff;                  // weak-bind range outside the file
     img.dyld_info->weak_bind.size = 8;
-    CHECK_ERR(decode_fixups(img, ByteView(bytes)), ErrorCode::Unsupported);
+    CHECK(decode_fixups(img, ByteView(bytes)).ok());               // rebase/bind/lazy streams do not include the weak-binding stream
+    CHECK_ERR(decode_weak_binds(img, ByteView(bytes)), ErrorCode::OutOfBounds);
+    img.dyld_info->weak_bind.size = 0;
+    CHECK(decode_weak_binds(img, ByteView(bytes)).ok());           // no weak-binding stream: nothing to do
     img = *file.slices[0].image;
     img.dyld_info->bind.offset = 0x7fffffff;                       // stream outside the file
     img.dyld_info->bind.size = 16;

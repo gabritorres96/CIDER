@@ -1,0 +1,9 @@
+bin\weakdef\libwdef.dylib:
+
+SYMBOL TABLE:
+0000000000000450  w    F __TEXT,__text _orvyn_wfn
+0000000000000460 g     F __TEXT,__text _orvyn_lib_wval
+0000000000000470 g     F __TEXT,__text _orvyn_lib_wfn
+0000000000000480 g     F __TEXT,__text _orvyn_lib_wptr
+0000000000002008  w    O __DATA,__data _orvyn_wval
+0000000000000000         *UND* dyld_stub_binder

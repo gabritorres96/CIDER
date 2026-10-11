@@ -1,0 +1,5 @@
+bin\weakdef2\libwb.dylib:
+
+Exports trie:
+0x000003B0  _orvyn_b_get
+0x00002000  _orvyn_shared [weak_def]

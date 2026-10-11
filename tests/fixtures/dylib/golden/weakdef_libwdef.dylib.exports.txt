@@ -1,0 +1,8 @@
+bin\weakdef\libwdef.dylib:
+
+Exports trie:
+0x00002008  _orvyn_wval [weak_def]
+0x00000450  _orvyn_wfn [weak_def]
+0x00000480  _orvyn_lib_wptr
+0x00000470  _orvyn_lib_wfn
+0x00000460  _orvyn_lib_wval

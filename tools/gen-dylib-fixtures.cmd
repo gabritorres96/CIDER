@@ -18,7 +18,7 @@ set "LD=ld64.lld -arch x86_64 -platform_version macos 10.15.0 12.0.0 -syslibroot
 
 rem ---- compile every source once --------------------------------------------------------------------
 for %%f in (src\*.c) do (
-  clang %CFLAGS% %%f -o obj\%%~nf.o || exit /b 1
+  if /i not "%%~nf"=="wdef2_lib" clang %CFLAGS% %%f -o obj\%%~nf.o || exit /b 1
 )
 
 rem Initializer fixtures use -O0: at -O1 LLVM's GlobalOpt evaluates a static constructor at compile time and the
@@ -95,6 +95,19 @@ mkdir bin\weak
 %LD% -dylib -install_name @rpath/libopt.dylib -o bin\weak\libopt.dylib obj\opt.o -lSystem || exit /b 1
 %LD% -rpath @executable_path -Lbin\weak -weak-lopt -o bin\weak\weak obj\weak_main.o -lSystem || exit /b 1
 del bin\weak\libopt.dylib
+
+rem ---- weakdef: weak definitions in the executable AND a dylib, coalesced through the weak-binding table (ORVYN 0.6) -----------------
+mkdir bin\weakdef
+%LD% -dylib -install_name @rpath/libwdef.dylib -o bin\weakdef\libwdef.dylib obj\wdef_lib.o -lSystem || exit /b 1
+%LD% -rpath @executable_path -Lbin\weakdef -lwdef -o bin\weakdef\weakdef obj\wdef_main.o -lSystem || exit /b 1
+
+rem ---- weakdef2: the same weak variable in two dylibs, none in the executable: first library in load order wins ----------------------
+clang %CFLAGS% -DVAL=7 -DGET=orvyn_a_get src\wdef2_lib.c -o obj\wdef2_a.o || exit /b 1
+clang %CFLAGS% -DVAL=9 -DGET=orvyn_b_get src\wdef2_lib.c -o obj\wdef2_b.o || exit /b 1
+mkdir bin\weakdef2
+%LD% -dylib -install_name @rpath/libwa.dylib -o bin\weakdef2\libwa.dylib obj\wdef2_a.o -lSystem || exit /b 1
+%LD% -dylib -install_name @rpath/libwb.dylib -o bin\weakdef2\libwb.dylib obj\wdef2_b.o -lSystem || exit /b 1
+%LD% -rpath @executable_path -Lbin\weakdef2 -lwa -lwb -o bin\weakdef2\weakdef2 obj\wdef2_main.o -lSystem || exit /b 1
 
 rem ---- initexit / initcrash: failing initializers -------------------------------------------------------------------------
 mkdir bin\initexit

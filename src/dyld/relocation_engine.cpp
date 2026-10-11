@@ -22,7 +22,7 @@ constexpr uint8_t BIND_DONE = 0x00, BIND_SET_DYLIB_ORDINAL_IMM = 0x10, BIND_SET_
                   BIND_DO_BIND = 0x90, BIND_DO_BIND_ADD_ADDR_ULEB = 0xA0, BIND_DO_BIND_ADD_ADDR_IMM_SCALED = 0xB0,
                   BIND_DO_BIND_ULEB_TIMES_SKIPPING_ULEB = 0xC0, BIND_THREADED = 0xD0;
 constexpr uint8_t kBindTypePointer = 1;
-constexpr uint8_t kBindFlagWeakImport = 0x1;
+constexpr uint8_t kBindFlagWeakImport = 0x1, kBindFlagNonWeakDefinition = 0x8;
 
 Error bad(std::string m) { return Error{ErrorCode::Malformed, std::move(m)}; }
 
@@ -232,6 +232,81 @@ Result<std::vector<Fixup>> decode_bind_stream(ByteView stream, const std::vector
     return out;
 }
 
+Result<WeakBindInfo> decode_weak_bind_stream(ByteView stream, const std::vector<macho::Segment>& segs, const FixupLimits& lim) {
+    WeakBindInfo out;
+    Reader r{stream};
+    int64_t addend = 0;
+    std::string symbol;
+    bool have_symbol = false, have_seg = false;
+    uint8_t type = kBindTypePointer;
+    uint64_t seg = 0, off = 0;
+    constexpr const char* what = "weak bind";
+    auto emit = [&]() -> Status {
+        if (!have_seg) return bad("weak bind: DO_BIND before SET_SEGMENT_AND_OFFSET");
+        if (!have_symbol) return bad("weak bind: DO_BIND before a symbol name");
+        if (type != kBindTypePointer) return Error{ErrorCode::Unsupported, std::format("weak bind: bind type {} is not supported (only pointers)", type)};
+        ORVYN_CHECK(check_slot(segs, seg, off, what));
+        if (out.sites.size() >= lim.max_fixups) return Error{ErrorCode::LimitExceeded, "too many weak bind sites"};
+        Fixup f;
+        f.kind = Fixup::Kind::Bind;
+        f.segment = static_cast<uint32_t>(seg);
+        f.offset = off;
+        f.symbol = symbol;
+        f.addend = addend;
+        out.sites.push_back(std::move(f));
+        return {};
+    };
+    auto advance = [&](uint64_t n) { off = off + n; };           // wraps like dyld's; check_slot validates every use
+    while (!r.done()) {
+        ORVYN_TRY(b, r.byte());
+        uint8_t op = b & kOpMask, imm = b & kImmMask;
+        switch (op) {
+            case BIND_DONE: return out;
+            case BIND_SET_TYPE_IMM: type = imm; break;
+            case BIND_SET_SYMBOL_TRAILING_FLAGS_IMM: {
+                ORVYN_TRY(name, r.cstring());
+                symbol = name;
+                have_symbol = true;
+                if (imm & kBindFlagNonWeakDefinition) {          // "this image defines the symbol strongly": a statement, not a binding
+                    if (out.definitions.size() >= lim.max_fixups) return Error{ErrorCode::LimitExceeded, "too many weak bind definitions"};
+                    out.definitions.push_back(name);
+                }
+                break;
+            }
+            case BIND_SET_ADDEND_SLEB: { ORVYN_TRY(v, r.sleb()); addend = v; break; }
+            case BIND_SET_SEGMENT_AND_OFFSET_ULEB: {
+                ORVYN_TRY(o, r.uleb());
+                seg = imm; off = o; have_seg = true;
+                break;
+            }
+            case BIND_ADD_ADDR_ULEB: { ORVYN_TRY(v, r.uleb()); advance(v); break; }
+            case BIND_DO_BIND: ORVYN_CHECK(emit()); advance(8); break;
+            case BIND_DO_BIND_ADD_ADDR_ULEB: { ORVYN_TRY(v, r.uleb()); ORVYN_CHECK(emit()); advance(v); advance(8); break; }
+            case BIND_DO_BIND_ADD_ADDR_IMM_SCALED: ORVYN_CHECK(emit()); advance(static_cast<uint64_t>(imm) * 8 + 8); break;
+            case BIND_DO_BIND_ULEB_TIMES_SKIPPING_ULEB: {
+                ORVYN_TRY(n, r.uleb());
+                ORVYN_TRY(skip, r.uleb());
+                if (n > lim.max_fixups) return Error{ErrorCode::LimitExceeded, "weak bind: repeat count too large"};
+                for (uint64_t i = 0; i < n; ++i) { ORVYN_CHECK(emit()); advance(8); advance(skip); }
+                break;
+            }
+            case BIND_SET_DYLIB_ORDINAL_IMM:
+            case BIND_SET_DYLIB_ORDINAL_ULEB:
+            case BIND_SET_DYLIB_SPECIAL_IMM: return bad("weak bind: library ordinals do not belong in the weak-binding stream");
+            case BIND_THREADED: return Error{ErrorCode::Unsupported, "weak bind: threaded binds are not supported"};
+            default: return Error{ErrorCode::Unsupported, std::format("unknown weak bind opcode {:#x}", b)};
+        }
+    }
+    return out;     // dyld also accepts a stream that ends without BIND_OPCODE_DONE (the range is padded)
+}
+
+Result<WeakBindInfo> decode_weak_binds(const macho::Image& img, ByteView slice, const FixupLimits& lim) {
+    if (!img.dyld_info || img.dyld_info->weak_bind.size == 0) return WeakBindInfo{};
+    auto s = slice.slice(img.dyld_info->weak_bind.offset, img.dyld_info->weak_bind.size);
+    if (!s.ok()) return Error{ErrorCode::OutOfBounds, "weak bind stream outside the file"};
+    return decode_weak_bind_stream(s.value(), img.segments, lim);
+}
+
 Result<std::vector<Fixup>> decode_fixups(const macho::Image& img, ByteView slice, const FixupLimits& lim) {
     if (img.chained_fixups) {
         if (img.dyld_info) return Error{ErrorCode::Malformed, "image has both LC_DYLD_CHAINED_FIXUPS and LC_DYLD_INFO(_ONLY)"};
@@ -240,7 +315,7 @@ Result<std::vector<Fixup>> decode_fixups(const macho::Image& img, ByteView slice
     std::vector<Fixup> all;
     if (!img.dyld_info) return all;  // nothing to fix up
     const auto& di = *img.dyld_info;
-    if (di.weak_bind.size != 0) return Error{ErrorCode::Unsupported, "weak-binding information (weak_bind) is not supported yet"};
+    // di.weak_bind is decoded separately (decode_weak_binds): it needs every loaded image to coalesce against
 
     auto stream = [&](const macho::LinkeditRange& rg, const char* what) -> Result<ByteView> {
         if (rg.size == 0) return ByteView();

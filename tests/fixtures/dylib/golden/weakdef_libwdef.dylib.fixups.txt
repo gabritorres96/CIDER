@@ -1,0 +1,12 @@
+bin\weakdef\libwdef.dylib:
+
+Rebase table:
+segment  section            address     type
+__DATA_CONST __got              0x00001000  pointer
+__DATA   __la_symbol_ptr    0x00002000  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+
+Lazy bind table:
+segment  section            address     dylib            symbol
