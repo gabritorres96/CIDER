@@ -32,7 +32,10 @@ inline constexpr const char* kCoreGraphicsInstallName = "/System/Library/Framewo
 inline constexpr const char* kAppKitInstallName = "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit";
 inline constexpr const char* kCoreFoundationInstallName = "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation";
 // Which provided library a symbol belongs to. CoreFoundation and Foundation are one group: ORVYN's Foundation subset serves both.
-enum class Lib : uint8_t { System = 0, Objc = 1, Foundation = 2, CoreFoundation = 3, CoreGraphics = 4, AppKit = 5 };
+// Cocoa is an umbrella; the last five are recognised but NOT implemented (their few callable symbols are honest stubs, see frameworks.hpp).
+enum class Lib : uint8_t { System = 0, Objc = 1, Foundation = 2, CoreFoundation = 3, CoreGraphics = 4, AppKit = 5, Cocoa = 6, ApplicationServices = 7, Carbon = 8, IOKit = 9, CoreServices = 10,
+                           Security = 11, ServiceManagement = 12 };
+inline constexpr size_t kLibCount = 13;
 
 // A file descriptor of the guest. These are NOT Windows handles and NOT the host's CRT descriptors: the guest sees a
 // small integer table starting at 0 (stdin), 1 (stdout), 2 (stderr), like a Darwin process.
@@ -139,6 +142,8 @@ public:
     static Result<std::unique_ptr<LibSystemProvider>> create();
     std::optional<dyld::ResolvedSymbol> lookup(std::string_view library, std::string_view symbol) override;
     bool provides_library(std::string_view install_name) const override;
+    // True when `symbol` resolves to a stub (a library that is recognised but not implemented), not to behaviour.
+    bool is_stub(std::string_view symbol) const { return stubs_.count(std::string(symbol)) != 0; }
     // Symbols whose addresses only exist at run time (Objective-C classes, empty caches...): looked up after the static tables.
     using DynamicLookup = std::function<std::optional<uint64_t>(std::string_view symbol)>;
     void set_dynamic_data(DynamicLookup f) { dynamic_ = std::move(f); }
@@ -154,6 +159,7 @@ private:
     std::map<std::string, uint64_t, std::less<>> data_index_;
     std::map<std::string, uint64_t, std::less<>> direct_index_;    // name -> address of machine code
     std::map<std::string, Lib, std::less<>> lib_of_;
+    std::set<std::string> stubs_;       // symbols served by frameworks.cpp stubs
     DynamicLookup dynamic_;
     uint64_t files_[3] = {};
 };

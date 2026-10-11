@@ -62,6 +62,7 @@ Result<WeakBindInfo> decode_weak_binds(const macho::Image& img, ByteView slice, 
 struct ResolvedSymbol {
     uint64_t address = 0;
     bool is_function = true;
+    bool stub = false;       // a placeholder that stops the guest when called (library recognised, function not implemented)
 };
 
 class SymbolProvider {
@@ -72,6 +73,11 @@ public:
     virtual std::optional<ResolvedSymbol> lookup(std::string_view library, std::string_view symbol) = 0;
     // True if the provider stands in for this dylib (e.g. "/usr/lib/libSystem.B.dylib").
     virtual bool provides_library(std::string_view install_name) const = 0;
+};
+
+// An import that resolved to a stub: the library is recognised, the function is not implemented (it stops the guest if called).
+struct StubBinding {
+    std::string image, symbol, framework, signature;
 };
 
 struct Unresolved {

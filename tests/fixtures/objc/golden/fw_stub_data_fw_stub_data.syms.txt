@@ -1,0 +1,7 @@
+bin\fw_stub_data\fw_stub_data:
+
+SYMBOL TABLE:
+0000000100000430 g     F __TEXT,__text _main
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* dyld_stub_binder
+0000000000000000         *UND* _kTISPropertyLocalizedName

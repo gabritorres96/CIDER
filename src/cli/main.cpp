@@ -27,6 +27,7 @@ const char* kUsage =
     "  dependencies <program|App.app>   Dynamic library dependencies and their resolution\n"
     "  compatibility <program|App.app>  Static compatibility assessment\n"
     "  run <program|App.app>            Run an x86_64 Mach-O (dylibs, initializers, TLS) in a job-restricted worker\n"
+    "  frameworks [program|App.app]     Recognised Apple libraries; with a program: which of its imports are implemented, stubs or missing\n"
     "  logs [file]                      Show the tail of a ORVYN log file\n"
     "  doctor                           Check the environment\n"
     "\n"
@@ -144,6 +145,7 @@ int main(int argc, char** argv) {
     else if (command == "logs") rc = orvyn::cli::cmd_logs(opt);
     else if (command == "doctor") rc = orvyn::cli::cmd_doctor(opt);
     else if (command == "sdk-scan") rc = orvyn::cli::cmd_sdk_scan(opt);
+    else if (command == "frameworks") rc = orvyn::cli::cmd_frameworks(opt);
     else { std::fprintf(stderr, "error: unknown command '%s' (try --help)\n", command.c_str()); rc = 2; }
     orvyn::log::close_file();
     return rc;

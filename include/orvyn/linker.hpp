@@ -113,6 +113,8 @@ public:
     uint64_t entry_address() const { return main().mapped.entry_address(); }
     const std::vector<std::string>& required_libs() const noexcept { return required_libs_; }
     const std::vector<std::string>& cycles() const noexcept { return cycles_; }
+    // Imports bound to honest stubs (recognised-but-unimplemented libraries): they link, they never run (see frameworks.hpp).
+    const std::vector<dyld::StubBinding>& stub_bindings() const noexcept { return stub_bindings_; }
 
     // Symbol exported by image `image` (following re-exports); nullopt when it is not exported.
     std::optional<uint64_t> find_symbol(size_t image, std::string_view name) const;
@@ -132,6 +134,7 @@ private:
     std::vector<std::unique_ptr<ImageRecord>> images_;
     std::vector<std::string> required_libs_;
     std::vector<std::string> cycles_;
+    std::vector<dyld::StubBinding> stub_bindings_;
     dyld::SymbolProvider* libsystem_ = nullptr;
 
     friend class Linker;

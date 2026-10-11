@@ -81,6 +81,7 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     if (!program) return load_failed(le);   // the supervisor reports the diagnostics (unresolved symbols, library, reason)
 
     out.required_libs = program->required_libs();
+    out.stubs = program->stub_bindings();
     out.entry_address = program->entry_address();
     out.image_base = program->main().mapped.actual_base();
     for (const auto& r : program->images()) {

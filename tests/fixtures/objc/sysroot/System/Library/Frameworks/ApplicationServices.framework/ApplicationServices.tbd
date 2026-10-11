@@ -1,0 +1,13 @@
+--- !tapi-tbd
+tbd-version:     4
+targets:         [ x86_64-macos ]
+uuids:
+  - target:          x86_64-macos
+    value:           00000000-0000-0000-0000-0000000000d2
+install-name:    '/System/Library/Frameworks/ApplicationServices.framework/Versions/A/ApplicationServices'
+current-version: 64
+compatibility-version: 1
+exports:
+  - targets:         [ x86_64-macos ]
+    symbols:         [ _AXIsProcessTrusted, _AXIsProcessTrustedWithOptions, _AXUIElementCreateSystemWide, _AXUIElementPostKeyboardEvent ]
+...

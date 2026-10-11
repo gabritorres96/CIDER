@@ -1,0 +1,32 @@
+bin\fw_cocoa\fw_cocoa:
+
+Rebase table:
+segment  section            address     type
+__DATA_CONST __cfstring         0x100001030  pointer
+__DATA   __la_symbol_ptr    0x100002000  pointer
+__DATA   __la_symbol_ptr    0x100002008  pointer
+__DATA   __la_symbol_ptr    0x100002010  pointer
+__DATA   __la_symbol_ptr    0x100002018  pointer
+__DATA   __la_symbol_ptr    0x100002020  pointer
+__DATA   __objc_selrefs     0x100002038  pointer
+__DATA   __objc_selrefs     0x100002040  pointer
+__DATA   __objc_selrefs     0x100002048  pointer
+__DATA   __objc_selrefs     0x100002050  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100001000 pointer         0 libobjc          _objc_release
+__DATA_CONST __got              0x100001008 pointer         0 libobjc          _objc_msgSend
+__DATA_CONST __got              0x100001010 pointer         0 libobjc          _objc_retain
+__DATA_CONST __got              0x100001018 pointer         0 libSystem        dyld_stub_binder
+__DATA_CONST __cfstring         0x100001020 pointer         0 Cocoa            ___CFConstantStringClassReference
+__DATA   __objc_classrefs   0x100002028 pointer         0 Cocoa            _OBJC_CLASS_$_NSNumber
+__DATA   __objc_classrefs   0x100002030 pointer         0 Cocoa            _OBJC_CLASS_$_NSArray
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100002000 libobjc          _objc_autoreleasePoolPop
+__DATA   __la_symbol_ptr    0x100002008 Cocoa            _NSLog
+__DATA   __la_symbol_ptr    0x100002010 libobjc          _objc_enumerationMutation
+__DATA   __la_symbol_ptr    0x100002018 libobjc          _objc_retainAutoreleasedReturnValue
+__DATA   __la_symbol_ptr    0x100002020 libobjc          _objc_autoreleasePoolPush

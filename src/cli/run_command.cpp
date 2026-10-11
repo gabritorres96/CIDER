@@ -97,6 +97,19 @@ void print_json(const Options& o, const RunReport& r) {
         w.end_object();
     }
     w.end_array();
+    // imports bound to stubs: recognised library, function NOT implemented - calling one stops the program (never a made-up result)
+    w.key("stubbed_imports");
+    w.begin_array();
+    for (auto& s : r.guest.stubs) {
+        w.begin_object();
+        w.field("image", s.image);
+        w.field("symbol", s.symbol);
+        w.field("framework", s.framework);
+        w.field("signature", s.signature);
+        w.field("implemented", false);
+        w.end_object();
+    }
+    w.end_array();
     w.key("unresolved_symbols");
     w.begin_array();
     for (auto& u : r.guest.unresolved) {

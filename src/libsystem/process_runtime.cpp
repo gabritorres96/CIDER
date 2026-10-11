@@ -2,6 +2,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include "internal.hpp"
+#include "orvyn/frameworks.hpp"
 #include "orvyn/libsystem.hpp"
 #include "orvyn/log.hpp"
 
@@ -25,6 +27,13 @@ Result<std::unique_ptr<LibSystemProvider>> LibSystemProvider::create() {
         if (p->index_.count(s.name) || p->direct_index_.count(s.name)) return Error{ErrorCode::Malformed, std::string("duplicate libSystem symbol ") + s.name};
         p->lib_of_[s.name] = s.lib;
         if (s.direct) { p->direct_index_[s.name] = reinterpret_cast<uint64_t>(s.fn); continue; }
+        p->index_[s.name] = specs.size();
+        specs.push_back({s.fn, s.raw, s.preserve_all});
+    }
+    for (const auto& s : detail::stub_host_symbols()) {
+        if (p->index_.count(s.name) || p->direct_index_.count(s.name)) return Error{ErrorCode::Malformed, std::string("stub collides with an implemented symbol: ") + s.name};
+        p->lib_of_[s.name] = s.lib;
+        p->stubs_.insert(s.name);
         p->index_[s.name] = specs.size();
         specs.push_back({s.fn, s.raw, s.preserve_all});
     }
@@ -61,12 +70,7 @@ Result<std::unique_ptr<LibSystemProvider>> LibSystemProvider::create() {
 namespace {
 // Group a library install name belongs to; nullopt when ORVYN does not provide it.
 std::optional<Lib> group_of(std::string_view n) {
-    if (n == kInstallName) return Lib::System;
-    if (n == kObjcInstallName) return Lib::Objc;
-    if (n == kFoundationInstallName || n == "/System/Library/Frameworks/Foundation.framework/Foundation") return Lib::Foundation;
-    if (n == kCoreFoundationInstallName || n == "/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation") return Lib::CoreFoundation;
-    if (n == kCoreGraphicsInstallName) return Lib::CoreGraphics;
-    if (n == kAppKitInstallName || n == "/System/Library/Frameworks/AppKit.framework/AppKit") return Lib::AppKit;
+    if (const FrameworkInfo* f = find_framework(n)) return f->lib;
     return std::nullopt;
 }
 }  // namespace
@@ -81,16 +85,23 @@ std::optional<dyld::ResolvedSymbol> LibSystemProvider::lookup(std::string_view l
         if (!want) return true;
         auto it = lib_of_.find(name);
         const Lib have = it == lib_of_.end() ? Lib::System : it->second;    // data symbols and dynamic ones: resolved below by group
-        // the frameworks re-export each other (AppKit re-exports Foundation, Foundation re-exports CoreFoundation...): a symbol bound to any of them is found in any
-        auto framework = [](Lib l) { return l == Lib::Foundation || l == Lib::CoreFoundation || l == Lib::CoreGraphics || l == Lib::AppKit; };
-        return have == *want || (framework(have) && framework(*want));
+        // the frameworks re-export each other (AppKit re-exports Foundation, Cocoa re-exports AppKit...): see lib_visible
+        return lib_visible(*want, have);
     };
-    if (auto it = index_.find(symbol); it != index_.end()) return owns(symbol) ? std::optional<dyld::ResolvedSymbol>(dyld::ResolvedSymbol{table_.address(it->second), true}) : std::nullopt;
+    if (auto it = index_.find(symbol); it != index_.end()) {
+        if (!owns(symbol)) return std::nullopt;
+        dyld::ResolvedSymbol r{table_.address(it->second), true};
+        r.stub = stubs_.count(std::string(symbol)) != 0;
+        return r;
+    }
     if (auto it = direct_index_.find(symbol); it != direct_index_.end()) return owns(symbol) ? std::optional<dyld::ResolvedSymbol>(dyld::ResolvedSymbol{it->second, true}) : std::nullopt;
     if (auto it = data_index_.find(symbol); it != data_index_.end()) return dyld::ResolvedSymbol{it->second, false};
     if (dynamic_) {
         // Objective-C classes and Foundation data are only visible through libobjc / Foundation, never through libSystem
-        if (!want || *want != Lib::System || symbol.rfind("__NSConcrete", 0) == 0 || symbol.rfind("__dispatch_", 0) == 0)       // block isa and dispatch objects come from libSystem
+        // (ApplicationServices and Carbon re-export CoreGraphics, whose data constants are dynamic; the other recognised-only libraries export none)
+        const bool hosts_dynamic = !want || *want == Lib::Objc || *want == Lib::Foundation || *want == Lib::CoreFoundation || *want == Lib::CoreGraphics || *want == Lib::AppKit ||
+                                   *want == Lib::Cocoa || *want == Lib::ApplicationServices || *want == Lib::Carbon;
+        if (hosts_dynamic || symbol.rfind("__NSConcrete", 0) == 0 || symbol.rfind("__dispatch_", 0) == 0)       // block isa and dispatch objects come from libSystem
             if (auto a = dynamic_(symbol)) return dyld::ResolvedSymbol{*a, false};
     }
     return std::nullopt;

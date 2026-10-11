@@ -41,6 +41,17 @@ for %%n in (foundation_subclass foundation_error blocks_basic blocks_error cf_ba
   %LDF% -o bin\%%n\%%n obj\%%n.o || exit /b 1
 )
 
+rem ---- frameworks (ORVYN 0.6): Cocoa umbrella and recognised-but-unimplemented frameworks (honest stubs) --------------------------------
+clang %COMMON% -fobjc-arc -fno-objc-exceptions src\fw_cocoa.m -o obj\fw_cocoa.o || exit /b 1
+mkdir bin\fw_cocoa
+ld64.lld -arch x86_64 -platform_version macos 10.15.0 12.0.0 -syslibroot sysroot -lSystem -lobjc -framework Cocoa -o bin\fw_cocoa\fw_cocoa obj\fw_cocoa.o || exit /b 1
+set "COMMONC=--target=x86_64-apple-macos10.15 -O1 -ffreestanding -nostdinc -fno-stack-protector -fno-ident -c"
+for %%n in (fw_stub fw_stub_unknown_function fw_stub_data) do (
+  clang %COMMONC% src\%%n.c -o obj\%%n.o || exit /b 1
+  mkdir bin\%%n
+  ld64.lld -arch x86_64 -platform_version macos 10.15.0 12.0.0 -syslibroot sysroot -lSystem -framework ApplicationServices -framework Carbon -o bin\%%n\%%n obj\%%n.o || exit /b 1
+)
+
 rem ---- @try/@catch: compiled WITH Objective-C exceptions; ORVYN must refuse it (no unwinder) -----------------------------------------------
 clang %COMMON% -fobjc-exceptions -fexceptions src\objc_try.m -o obj\objc_try.o || exit /b 1
 mkdir bin\objc_try

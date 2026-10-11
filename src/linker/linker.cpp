@@ -4,6 +4,7 @@
 #include <cstring>
 #include <format>
 
+#include "orvyn/frameworks.hpp"
 #include "orvyn/log.hpp"
 #include "orvyn/util.hpp"
 
@@ -295,8 +296,10 @@ private:
                     continue;
                 }
                 dyld::Unresolved u;
+                last_stub_ = false;
                 auto addr = resolve(*r, f, u);
                 if (addr) {
+                    if (last_stub_) record_stub(*r, f.symbol, f.library_ordinal);
                     p.values[i] = *addr;
                     cache[key] = {true, *addr};
                     log::debug(log::Category::Dyld, "Binding {} in {} -> {:#x}", f.symbol, r->leaf, *addr);
@@ -414,7 +417,7 @@ private:
             if (auto a = prog_.find_symbol_anywhere(f.symbol)) return a;
             for (auto& l : prog_.required_libs_)
                 if (libsystem_.provides_library(l))
-                    if (auto r = libsystem_.lookup(l, f.symbol)) return r->address;
+                    if (auto r = libsystem_.lookup(l, f.symbol)) { last_stub_ = r->stub; return r->address; }
             u.reason = "symbol not found in any loaded image";
             return std::nullopt;
         }
@@ -423,8 +426,19 @@ private:
         return std::nullopt;
     }
 
+    bool last_stub_ = false;           // the last resolve() ended on a stub
+
+    void record_stub(const ImageRecord& rec, const std::string& symbol, int64_t ordinal) {
+        std::string lib = "(flat lookup)";
+        if (ordinal >= 1 && static_cast<size_t>(ordinal) <= rec.info.dylibs.size()) lib = rec.info.dylibs[static_cast<size_t>(ordinal) - 1].path;
+        const libsystem::StubSymbol* st = libsystem::find_stub(symbol);
+        const libsystem::FrameworkInfo* fw = st ? libsystem::framework_of(st->lib) : nullptr;
+        prog_.stub_bindings_.push_back({rec.leaf, symbol, fw ? fw->name : lib, st ? st->signature : ""});
+        log::warn(log::Category::Symbols, "{}: {} is bound to a stub (library {} is not implemented): it stops the program if it is called", rec.leaf, symbol, fw ? fw->name : lib);
+    }
+
     std::optional<uint64_t> provided(const std::string& lib, const std::string& symbol, dyld::Unresolved& u) {
-        if (auto r = libsystem_.lookup(lib, symbol)) return r->address;
+        if (auto r = libsystem_.lookup(lib, symbol)) { last_stub_ = r->stub; return r->address; }
         u.reason = "symbol not implemented by ORVYN";
         return std::nullopt;
     }

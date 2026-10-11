@@ -7,6 +7,7 @@
 
 #include "orvyn/libsystem.hpp"
 #include "orvyn/log.hpp"
+#include "orvyn/frameworks.hpp"
 #include "orvyn/objc.hpp"
 
 namespace orvyn::objc {
@@ -284,6 +285,9 @@ bool Runtime::prepare_image(linker::ImageRecord& image, std::string& error) {
         if (d.path == libsystem::kFoundationInstallName || d.path == libsystem::kCoreFoundationInstallName) foundation_requested = true;
         if (d.path == libsystem::kAppKitInstallName || d.path == libsystem::kCoreGraphicsInstallName) foundation_requested = true;
         if (d.path == libsystem::kAppKitInstallName) appkit_requested = true;
+        // Cocoa is an umbrella of AppKit + Foundation (libsystem::find_framework): asking for it asks for the same host runtime
+        if (const auto* fw = libsystem::find_framework(d.path); fw && fw->lib == libsystem::Lib::Cocoa) foundation_requested = appkit_requested = true;
+        if (const auto* fw = libsystem::find_framework(d.path); fw && (fw->lib == libsystem::Lib::ApplicationServices || fw->lib == libsystem::Lib::Carbon)) foundation_requested = true;   // re-export CoreGraphics
     }
     Parser p{*this, image, {}};
     if (!p.run()) { error = "Objective-C metadata: " + p.err; return false; }

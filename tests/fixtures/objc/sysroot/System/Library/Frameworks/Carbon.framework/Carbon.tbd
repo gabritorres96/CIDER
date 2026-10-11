@@ -1,0 +1,13 @@
+--- !tapi-tbd
+tbd-version:     4
+targets:         [ x86_64-macos ]
+uuids:
+  - target:          x86_64-macos
+    value:           00000000-0000-0000-0000-0000000000d3
+install-name:    '/System/Library/Frameworks/Carbon.framework/Versions/A/Carbon'
+current-version: 164
+compatibility-version: 2
+exports:
+  - targets:         [ x86_64-macos ]
+    symbols:         [ _LMGetKbdType, _TISCopyCurrentKeyboardInputSource, _kTISPropertyLocalizedName ]
+...

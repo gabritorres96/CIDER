@@ -1,0 +1,18 @@
+--- !tapi-tbd
+tbd-version:     4
+targets:         [ x86_64-macos ]
+uuids:
+  - target:          x86_64-macos
+    value:           00000000-0000-0000-0000-0000000000d1
+install-name:    '/System/Library/Frameworks/Cocoa.framework/Versions/A/Cocoa'
+current-version: 24
+compatibility-version: 1
+# The real Cocoa.tbd only RE-EXPORTS AppKit, Foundation and CoreData. ld64.lld cannot bind to an umbrella without also loading the
+# re-exported libraries first (and then binds to those), so for the fixture build only the few symbols fw_cocoa.m uses are listed as
+# exports of Cocoa itself: the resulting binary binds them to Cocoa's install name, which is what ORVYN has to resolve through the
+# umbrella (lib_visible / find_framework).
+exports:
+  - targets:         [ x86_64-macos ]
+    symbols:         [ _NSLog, ___CFConstantStringClassReference ]
+    objc-classes:    [ NSNumber, NSArray ]
+...

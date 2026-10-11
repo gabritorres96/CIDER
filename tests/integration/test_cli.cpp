@@ -224,6 +224,31 @@ ORVYN_TEST(doctor_and_logs) {
     CHECK_EQ(orvyn_run({"logs", path_to_utf8(t.path() / "missing.log")}).code, 1);
 }
 
+// ---- frameworks (ORVYN 0.6) ----------------------------------------------------------------------------------
+ORVYN_TEST(frameworks_lists_the_registry_and_classifies_the_imports_of_a_program) {
+    auto reg = orvyn_run({"frameworks"});
+    CHECK_EQ(reg.code, 0);
+    CHECK(has(reg, "recognised, not implemented"));
+    CHECK(has(reg, "umbrella"));
+    auto rj = orvyn_run({"frameworks", "--json"});
+    CHECK(JsonCheck(json_part(rj.out)).valid());
+    CHECK(has(rj, "\"name\": \"Cocoa\""));
+    const auto objc = fs::path(ORVYN_OBJC_FIXTURES_DIR) / "bin";
+    // stubs: a link that would succeed, with the stubbed imports named and never counted as implemented
+    auto stub = orvyn_run({"frameworks", path_to_utf8(objc / "fw_stub" / "fw_stub"), "--json"});
+    CHECK_EQ(stub.code, 0);
+    CHECK(JsonCheck(json_part(stub.out)).valid());
+    CHECK(has(stub, "\"state\": \"stub\""));
+    CHECK(has(stub, "\"stub\": 3"));
+    CHECK(has(stub, "\"would_link\": true"));
+    // a data import of an unimplemented framework blocks the link
+    auto data = orvyn_run({"frameworks", path_to_utf8(objc / "fw_stub_data" / "fw_stub_data")});
+    CHECK_EQ(data.code, 1);
+    CHECK(has(data, "missing"));
+    CHECK(has(data, "would FAIL"));
+    CHECK_EQ(orvyn_run({"frameworks", path_to_utf8(objc / "does-not-exist")}).code, 1);
+}
+
 // ---- disk images -------------------------------------------------------------------------------
 ORVYN_TEST(dmg_info_works_without_the_backend) {
     TempDir t;

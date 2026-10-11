@@ -52,6 +52,7 @@ struct Outcome {
     loader::LoadFailure load_failure = loader::LoadFailure::None;
     std::vector<std::string> required_libs;
     std::vector<dyld::Unresolved> unresolved;
+    std::vector<dyld::StubBinding> stubs;  // imports bound to honest stubs (recognised-but-unimplemented frameworks): they never run, they stop the guest if called
     uint64_t entry_address = 0;            // where control was transferred (diagnostics)
     uint64_t image_base = 0;
     bool returned_from_main = false;       // false: exit() was called explicitly

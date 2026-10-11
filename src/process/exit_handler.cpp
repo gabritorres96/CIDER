@@ -66,6 +66,7 @@ std::string serialize_result(const Outcome& r) {
     o << "initializers_run=" << r.initializers_run << "\n";
     for (auto& i : r.images) o << "image=" << esc(i.name) << "|" << esc(i.path) << "|" << i.base << "|" << i.initializers << "|" << (i.main ? 1 : 0) << "\n";
     for (auto& l : r.required_libs) o << "lib=" << esc(l) << "\n";
+    for (auto& s : r.stubs) o << "stub=" << esc(s.image) << "|" << esc(s.symbol) << "|" << esc(s.framework) << "|" << esc(s.signature) << "\n";
     for (auto& u : r.unresolved) o << "unresolved=" << esc(u.symbol) << "|" << esc(u.library) << "|" << esc(u.reason) << "|" << (u.weak ? 1 : 0) << "\n";
     o << "end\n";
     return o.str();
@@ -110,6 +111,18 @@ std::optional<Outcome> parse_result(const std::string& text) {
                 }
                 if (parts.size() != 5) return std::nullopt;
                 r.images.push_back({unesc(parts[0]), unesc(parts[1]), std::stoull(parts[2]), std::stoull(parts[3]), parts[4] == "1"});
+            }
+            else if (k == "stub") {
+                std::vector<std::string> parts;
+                size_t st = 0;
+                for (;;) {
+                    size_t b = v.find('|', st);
+                    parts.push_back(v.substr(st, b == std::string::npos ? std::string::npos : b - st));
+                    if (b == std::string::npos) break;
+                    st = b + 1;
+                }
+                if (parts.size() != 4) return std::nullopt;
+                r.stubs.push_back({unesc(parts[0]), unesc(parts[1]), unesc(parts[2]), unesc(parts[3])});
             }
             else if (k == "unresolved") {
                 std::vector<std::string> parts;

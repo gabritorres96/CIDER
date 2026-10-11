@@ -47,7 +47,7 @@ bool read_text(const fs::path& p, std::string& out) {
 int cmd_sdk_scan(const Options& o) {
     if (o.positional.empty()) { std::fprintf(stderr, "usage: orvyn sdk-scan <file.tbd | directory> [--json]\n"); return 2; }
     if (o.positional[0] == "@implemented") {                      // every host symbol ORVYN implements: "<library> TAB <symbol>" (for coverage scripts)
-        static const char* libs[] = {"libSystem", "libobjc", "Foundation", "CoreFoundation", "CoreGraphics", "AppKit"};
+        static const char* libs[libsystem::kLibCount] = {"libSystem", "libobjc", "Foundation", "CoreFoundation", "CoreGraphics", "AppKit", "Cocoa", "ApplicationServices", "Carbon", "IOKit", "CoreServices", "Security", "ServiceManagement"};
         for (const auto& h : libsystem::implemented_symbols()) std::printf("%s\t%s\n", libs[static_cast<int>(h.lib)], h.name);
         for (const auto& d : libsystem::implemented_data_symbols()) std::printf("libSystem\t%s\n", d.name);
         libsystem::RuntimeContext cctx;
