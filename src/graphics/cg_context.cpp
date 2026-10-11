@@ -63,8 +63,13 @@ Rect transformed_bounds(const Rect& r, const Affine& t) {
     return geometry::make_rect(x0, y0, x1 - x0, y1 - y0);
 }
 
+namespace {
+bool finite(Point p) { return std::isfinite(p.x) && std::isfinite(p.y); }
+}  // namespace
+
 // ---- Path ----------------------------------------------------------------------------------------------------------------------------------------------------
 void Path::move_to(Point p) {
+    if (!finite(p)) return;                                              // CoreGraphics ignores NaN / infinite coordinates (with a log); so does the engine
     PathElement e;
     e.type = PathElement::Move;
     e.p[0] = p;
@@ -73,6 +78,7 @@ void Path::move_to(Point p) {
     has_current_ = true;
 }
 void Path::line_to(Point p) {
+    if (!finite(p)) return;
     if (!has_current_) { move_to(p); return; }
     PathElement e;
     e.type = PathElement::Line;
@@ -81,6 +87,7 @@ void Path::line_to(Point p) {
     current_ = p;
 }
 void Path::curve_to(Point c1, Point c2, Point end) {
+    if (!finite(c1) || !finite(c2) || !finite(end)) return;
     if (!has_current_) move_to(c1);
     PathElement e;
     e.type = PathElement::Cubic;
@@ -120,9 +127,10 @@ void Path::add_ellipse(const Rect& r) {
     close();
 }
 void Path::arc(Point c, double radius, double start, double end, bool clockwise) {
+    if (!finite(c) || !std::isfinite(radius) || !std::isfinite(start) || !std::isfinite(end) || std::fabs(radius) > 1e12) return;
     double sweep = end - start;
-    if (clockwise) { while (sweep > 0) sweep -= 2 * kPi; if (sweep < -2 * kPi) sweep = -2 * kPi; }
-    else { while (sweep < 0) sweep += 2 * kPi; if (sweep > 2 * kPi) sweep = 2 * kPi; }
+    if (clockwise) { if (sweep > 0) { sweep = std::fmod(sweep, 2 * kPi); if (sweep > 0) sweep -= 2 * kPi; } if (sweep < -2 * kPi) sweep = -2 * kPi; }
+    else { if (sweep < 0) { sweep = std::fmod(sweep, 2 * kPi); if (sweep < 0) sweep += 2 * kPi; } if (sweep > 2 * kPi) sweep = 2 * kPi; }
     const Point p0{c.x + radius * std::cos(start), c.y + radius * std::sin(start)};
     if (has_current_) line_to(p0); else move_to(p0);
     if (sweep == 0) return;
@@ -138,6 +146,7 @@ void Path::arc(Point c, double radius, double start, double end, bool clockwise)
     }
 }
 void Path::arc_to(Point p1, Point p2, double radius) {
+    if (!finite(p1) || !finite(p2) || !std::isfinite(radius)) return;
     if (!has_current_) { move_to(p1); return; }
     const Point p0 = current_;
     const double ux = p0.x - p1.x, uy = p0.y - p1.y, vx = p2.x - p1.x, vy = p2.y - p1.y;

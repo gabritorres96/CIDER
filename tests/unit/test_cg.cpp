@@ -202,3 +202,17 @@ CIDER_TEST(wic_decode_validates_limits_and_round_trips_png) {
     CHECK(!decode_image(nullptr, 0, DecodeLimits{}, none, fmt, err));
 }
 #endif
+
+CIDER_TEST(non_finite_and_huge_arc_arguments_terminate_and_are_ignored) {          // found by fuzz_cg: an arc with a 1e300 sweep looped for ever
+    Path p;
+    p.arc(Point{0, 0}, 10, 0, 1e300, false);                                          // huge but finite: reduced modulo 2 pi, a full circle at most
+    CHECK(!p.empty());
+    CHECK(p.bounding_box().width() <= 20.0001);
+    Path q;
+    q.arc(Point{0, 0}, 10, 0, INFINITY, true);
+    q.arc(Point{std::nan(""), 0}, 10, 0, 1, true);
+    q.arc_to(Point{INFINITY, 0}, Point{1, 1}, 2);
+    q.move_to(Point{std::nan(""), 1});
+    q.line_to(Point{1, -INFINITY});
+    CHECK(q.empty());                                                                 // nothing was added
+}
