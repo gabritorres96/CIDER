@@ -250,6 +250,11 @@ void Runtime::dispose_instance(Addr obj) {
     auto it = live_.find(obj);
     if (it == live_.end()) return;
     clear_weak_refs_to(obj);
+    if (auto s = sync_.find(obj); s != sync_.end()) {
+        log::warn(log::Category::Objc, "object {:#x} was deallocated while locked by @synchronized: its lock is dropped", obj);
+        sync_.erase(s);
+    }
+    if (!assoc_.empty()) remove_associated(obj);
     live_.erase(it);
     libsystem::detail::guest_free(reinterpret_cast<void*>(obj));
 }

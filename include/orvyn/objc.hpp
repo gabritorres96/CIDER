@@ -176,6 +176,19 @@ public:
     void clear_weak_refs_to(Addr obj);
     void remove_weak_location(Addr* location);
 
+    // ---- @synchronized / associated objects (objc_sync.cpp) ---------------------------------------------------------------------
+    // objc_sync_enter/exit: one recursive lock per object address, created on first use and dropped when its count returns to zero.
+    // Return OBJC_SYNC_SUCCESS (0) or OBJC_SYNC_NOT_OWNING_THREAD_ERROR (-1). nil is accepted and does nothing, like Apple's.
+    int sync_enter(Addr obj);
+    int sync_exit(Addr obj);
+    size_t sync_lock_count() const { return sync_.size(); }
+    // objc_{set,get,remove}AssociatedObject. Policies: ASSIGN 0, RETAIN_NONATOMIC 1, COPY_NONATOMIC 3, RETAIN 0x301, COPY 0x303.
+    // Returns false (nothing changed) for a policy the runtime does not define.
+    bool set_associated(Addr obj, Addr key, Addr value, uint32_t policy);
+    Addr get_associated(Addr obj, Addr key);
+    void remove_associated(Addr obj);
+    size_t associated_count() const;
+
     // ---- diagnostics ---------------------------------------------------------------------------------------------------------------------------
     std::optional<uint64_t> dynamic_symbol(std::string_view name);   // _OBJC_CLASS_$_X, __objc_empty_cache, ___CFConstantStringClassReference
     size_t class_count() const { return classes_.size(); }
@@ -244,6 +257,11 @@ private:
     std::unordered_map<Addr, std::vector<Addr*>> weak_by_object_;
     std::unordered_map<Addr*, Addr> weak_by_location_;
     friend struct Pools;
+    struct SyncLock { uint64_t owner = 0; uint32_t count = 0; };
+    std::unordered_map<Addr, SyncLock> sync_;
+    struct Association { Addr value = 0; uint32_t policy = 0; };
+    std::unordered_map<Addr, std::unordered_map<Addr, Association>> assoc_;
+    void release_association(const Association& a);
 
     Class* make_class(Addr cls_addr, bool meta);
     bool realize(Class* c, std::string& error);
@@ -255,7 +273,8 @@ private:
 
 // Entry points of the libobjc API as host symbols (objc_api.cpp) and the Foundation subset (src/foundation).
 void add_objc_symbols(std::vector<libsystem::HostSymbol>& out);
-void add_objc_memory_symbols(std::vector<libsystem::HostSymbol>& out);   // objc_memory.cpp: retain/release/ARC helpers
+void add_objc_memory_symbols(std::vector<libsystem::HostSymbol>& out);
+void add_objc_sync_symbols(std::vector<libsystem::HostSymbol>& out);     // objc_sync.cpp: objc_sync_enter/exit, associated objects   // objc_memory.cpp: retain/release/ARC helpers
 void add_foundation_symbols(std::vector<libsystem::HostSymbol>& out);
 void install_foundation(Runtime& rt);       // declares NSObject, NSString, ... (foundation/*.cpp)
 

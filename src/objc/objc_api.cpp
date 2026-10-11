@@ -294,6 +294,7 @@ void add_objc_symbols(std::vector<libsystem::HostSymbol>& t) {
     fn("_protocol_getName", addr(w_protocol_getName));
     fn("_class_conformsToProtocol", addr(w_class_conformsToProtocol));
     add_objc_memory_symbols(t);
+    add_objc_sync_symbols(t);
 }
 
 }  // namespace orvyn::objc

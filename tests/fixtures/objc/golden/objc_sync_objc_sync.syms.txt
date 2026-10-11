@@ -1,0 +1,56 @@
+bin\objc_sync\objc_sync:
+
+SYMBOL TABLE:
+00000001000008e0 l     F __TEXT,__text +[Obj newWithTag:]
+0000000100004290 l     O __DATA,__bss _live
+0000000100000900 l     F __TEXT,__text -[Obj retain]
+0000000100000910 l     F __TEXT,__text -[Obj release]
+0000000100000920 l     F __TEXT,__text -[Obj autorelease]
+0000000100000930 l     F __TEXT,__text -[Obj copy]
+0000000100004294 l     O __DATA,__bss _copies
+00000001000040d0 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_
+00000001000040d8 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_
+0000000100000960 l     F __TEXT,__text -[Obj tag]
+0000000100000970 l     F __TEXT,__text -[Obj dealloc]
+0000000100004298 l     O __DATA,__bss _deallocs
+000000010000429c l     O __DATA,__bss _key1
+00000001000042a0 l     O __DATA,__bss _lock_obj
+0000000100001170 l     F __TEXT,__text _worker
+00000001000042a8 l     O __DATA,__bss _violations
+00000001000042ac l     O __DATA,__bss _shared
+00000001000040e0 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.20
+00000001000042b1 l     O __DATA,__bss _key2
+00000001000042b2 l     O __DATA,__bss _key3
+00000001000042b0 l     O __DATA,__bss _inside
+0000000100004230 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Obj
+0000000100004108 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Obj
+00000001000040e8 l     O __DATA,__objc_const __OBJC_$_CLASS_METHODS_Obj
+0000000100004150 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Obj
+00000001000041e8 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_Obj
+0000000100004288 l     O __DATA,__data __dyld_private
+0000000100000990 g     F __TEXT,__text _main
+0000000100004080 g     O __DATA,__objc_data _OBJC_CLASS_$_Obj
+00000001000040a8 g     O __DATA,__objc_data _OBJC_METACLASS_$_Obj
+0000000100004278 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Obj.isa
+0000000100004280 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Obj.tag
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _printf
+0000000000000000         *UND* _pthread_create
+0000000000000000         *UND* _pthread_join
+0000000000000000         *UND* _puts
+0000000000000000         *UND* _sched_yield
+0000000000000000         *UND* dyld_stub_binder
+0000000000000000         *UND* __objc_empty_cache
+0000000000000000         *UND* _class_createInstance
+0000000000000000         *UND* _objc_autorelease
+0000000000000000         *UND* _objc_autoreleasePoolPop
+0000000000000000         *UND* _objc_autoreleasePoolPush
+0000000000000000         *UND* _objc_getAssociatedObject
+0000000000000000         *UND* _objc_msgSend
+0000000000000000         *UND* _objc_release
+0000000000000000         *UND* _objc_removeAssociatedObjects
+0000000000000000         *UND* _objc_retain
+0000000000000000         *UND* _objc_setAssociatedObject
+0000000000000000         *UND* _objc_sync_enter
+0000000000000000         *UND* _objc_sync_exit
+0000000000000000         *UND* _object_dispose

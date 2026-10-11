@@ -361,6 +361,24 @@ ORVYN_TEST(malformed_relative_method_lists_are_refused_before_any_guest_code_run
     }
 }
 
+// ============================== @synchronized and associated objects (ORVYN 0.6) =======================================================
+ORVYN_TEST(synchronized_is_recursive_exclusive_between_guest_threads_and_associations_follow_their_policies) {
+    Run r = run(bin("objc_sync"));
+    expect_exit(r, 42, "objc_sync");
+    CHECK_EQ(r.out, std::string("sync and associations ok\n"));
+}
+ORVYN_TEST(objc_sync_exit_reports_a_lock_the_thread_does_not_own) {
+    Run r = run(bin("objc_sync"), {"unlock"});
+    expect_exit(r, 0, "objc_sync unlock");
+    CHECK_EQ(r.out, std::string("exit=-1\nexit=0\nexit=-1\n"));              // not locked; then enter+exit; then not locked again
+}
+ORVYN_TEST(an_undefined_association_policy_ends_the_program_with_a_diagnostic) {
+    Run r = run(bin("objc_sync"), {"bad_policy"});
+    REQUIRE(r.r.state == guest::State::Faulted);
+    CHECK(r.r.message.find("invalid association policy 2") != std::string::npos);
+    CHECK_EQ(r.out, std::string("before\n"));
+}
+
 // ============================== hostile metadata ===============================================================================================
 namespace {
 struct Patcher {

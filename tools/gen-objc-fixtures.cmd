@@ -17,7 +17,7 @@ set "COMMON=--target=x86_64-apple-macos10.15 -x objective-c -O1 -ffreestanding -
 set "LD=ld64.lld -arch x86_64 -platform_version macos 10.15.0 12.0.0 -syslibroot sysroot -lSystem -lobjc"
 
 rem ---- single-executable programs (manual reference counting unless noted) ----------------------------------------------------
-for %%n in (objc_calc objc_inherit objc_dynamic objc_category objc_relative objc_abi objc_error objc_mrc objc_memory_error) do (
+for %%n in (objc_calc objc_inherit objc_dynamic objc_category objc_relative objc_sync objc_abi objc_error objc_mrc objc_memory_error) do (
   clang %COMMON% src\%%n.m -o obj\%%n.o || exit /b 1
   mkdir bin\%%n
   %LD% -o bin\%%n\%%n obj\%%n.o || exit /b 1

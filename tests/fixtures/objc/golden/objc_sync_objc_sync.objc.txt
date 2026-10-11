@@ -1,0 +1,78 @@
+bin\objc_sync\objc_sync:
+Contents of (__DATA_CONST,__objc_classlist) section
+0000000100003018 0x100004080 _OBJC_CLASS_$_Obj
+           isa 0x1000040a8 _OBJC_METACLASS_$_Obj
+    superclass 0x0
+         cache 0x0
+        vtable 0x0
+          data 0x100004230 (struct class_ro_t *)
+                    flags 0x2 RO_ROOT
+            instanceStart 0
+             instanceSize 12
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x10000132c Obj
+              baseMethods 0x100004150 (struct method_list_t *)
+		   entsize 24
+		     count 6
+		      name 0x1000012fc retain
+		     types 0x10000133b @16@0:8
+		       imp -[Obj retain]
+		      name 0x100001303 release
+		     types 0x100001343 Vv16@0:8
+		       imp -[Obj release]
+		      name 0x10000130b autorelease
+		     types 0x10000133b @16@0:8
+		       imp -[Obj autorelease]
+		      name 0x100001317 copy
+		     types 0x10000133b @16@0:8
+		       imp -[Obj copy]
+		      name 0x10000131c tag
+		     types 0x10000134c i16@0:8
+		       imp -[Obj tag]
+		      name 0x100001320 dealloc
+		     types 0x100001354 v16@0:8
+		       imp -[Obj dealloc]
+            baseProtocols 0x0
+                    ivars 0x1000041e8
+                    entsize 32
+                      count 2
+			   offset 0x100004278 0
+			     name 0x100001328 isa
+			     type 0x10000135c #
+			alignment 3
+			     size 8
+			   offset 0x100004280 8
+			     name 0x10000131c tag
+			     type 0x10000135e i
+			alignment 2
+			     size 4
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x1000040a8 _OBJC_METACLASS_$_Obj
+    superclass 0x100004080 _OBJC_CLASS_$_Obj
+         cache 0x0
+        vtable 0x0
+          data 0x100004108 (struct class_ro_t *)
+                    flags 0x3 RO_META RO_ROOT
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x10000132c Obj
+              baseMethods 0x1000040e8 (struct method_list_t *)
+		   entsize 24
+		     count 1
+		      name 0x1000012f0 newWithTag:
+		     types 0x100001330 @20@0:8i16
+		       imp +[Obj newWithTag:]
+            baseProtocols 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Contents of (__DATA,__objc_classrefs) section
+00000001000040d0 0x100004080 _OBJC_CLASS_$_Obj
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

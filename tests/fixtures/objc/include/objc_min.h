@@ -63,6 +63,18 @@ void objc_release(id);
 id objc_autorelease(id);
 void *objc_autoreleasePoolPush(void);
 void objc_autoreleasePoolPop(void *);
+/* @synchronized and associated objects */
+int objc_sync_enter(id);
+int objc_sync_exit(id);
+typedef unsigned long objc_AssociationPolicy;
+#define OBJC_ASSOCIATION_ASSIGN 0
+#define OBJC_ASSOCIATION_RETAIN_NONATOMIC 1
+#define OBJC_ASSOCIATION_COPY_NONATOMIC 3
+#define OBJC_ASSOCIATION_RETAIN 01401
+#define OBJC_ASSOCIATION_COPY 01403
+void objc_setAssociatedObject(id, const void *, id, objc_AssociationPolicy);
+id objc_getAssociatedObject(id, const void *);
+void objc_removeAssociatedObjects(id);
 id objc_storeWeak(id *, id);
 id objc_loadWeak(id *);
 void objc_destroyWeak(id *);
