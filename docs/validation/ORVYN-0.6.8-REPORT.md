@@ -66,3 +66,12 @@ jq 1.7.1 `jq-macos-amd64`, SHA-256 `4155822b…7443`, unmodified: stages A-F VER
 
 ## Open items
 PENDIENTE: authentic x86_64 relative-method-list sample; protocol method lists; lazy-binding model; formal review of the cooperative scheduler; longer fuzzing; comparing jq output with a real macOS run (NO VERIFICABLE without a Mac); `_CTYPE_*` bits other than A/S and `rand()` bit-exactness against macOS.
+
+## Final run (head of the branch, after all changes)
+
+| Check | Result |
+|---|---|
+| Debug, `ctest -j4` | VERIFICADO: 41/41 suites |
+| Release, `ctest -j1` | VERIFICADO: 41/41 suites (117 s); per-executable totals: 551 tests run, 0 failed, 3 skipped (dmg 1, real_macho 2) with `ORVYN_EXTERNAL_JQ` and `ORVYN_EXE` set; baseline at the start of 0.6: 509 run, 3 skipped |
+| Fresh build in a new directory (`build-fresh`) | VERIFICADO: build rc 0 in 342 s, `ctest -j4` 41/41 |
+| ASan (clang-cl), `ctest -j2` | VERIFICADO: 41/41, including the jq tests |
