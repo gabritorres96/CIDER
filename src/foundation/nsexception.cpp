@@ -1,4 +1,4 @@
-// NSException and objc_exception_throw (CIDER 0.5.4) -- LIMITED: exceptions can be created and thrown, they cannot be caught.
+// NSException and objc_exception_throw (ORVYN 0.5.4) -- LIMITED: exceptions can be created and thrown, they cannot be caught.
 //
 // What exists: NSException objects (+exceptionWithName:reason:userInfo:, +raise:format:, -raise, name/reason/userInfo) and objc_exception_throw. A throw ends the guest
 // with exactly what an UNCAUGHT exception does on macOS: "*** Terminating app due to uncaught exception 'Name', reason: 'Reason'" (the process does not continue).
@@ -7,12 +7,12 @@
 // verified there, so a program that imports those symbols is REFUSED at link time with their names (exit code 12) instead of being run with a half-working catch.
 #include <format>
 
-#include "cider/libsystem.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/objc.hpp"
 #include "../libsystem/internal.hpp"
 #include "foundation_internal.hpp"
 
-namespace cider::foundation {
+namespace orvyn::foundation {
 namespace {
 
 struct ExceptionPayload : Payload { Addr name = 0, reason = 0, userinfo = 0; };
@@ -116,10 +116,10 @@ void install_nsexception(Runtime& r) {
     });
 }
 
-}  // namespace cider::foundation
+}  // namespace orvyn::foundation
 
-namespace cider::objc {
+namespace orvyn::objc {
 void add_exception_symbols(std::vector<libsystem::HostSymbol>& t) {
     t.push_back(libsystem::HostSymbol{"_objc_exception_throw", reinterpret_cast<void*>(&foundation::w_objc_exception_throw), false, false, false, libsystem::Lib::Objc});
 }
-}  // namespace cider::objc
+}  // namespace orvyn::objc

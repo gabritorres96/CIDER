@@ -1,9 +1,9 @@
 // Real-world validation: Mach-O files produced by LLVM (clang + ld64.lld, see
-// tools/gen-real-fixtures.cmd) are parsed by CIDER and the result is compared field by field with
+// tools/gen-real-fixtures.cmd) are parsed by ORVYN and the result is compared field by field with
 // the output of an independent tool, llvm-objdump.
 //
 // * The committed golden snapshots (tests/fixtures/real/golden) are always compared.
-// * When llvm-objdump is available (CIDER_LLVM_BIN or PATH) the live output must also equal the
+// * When llvm-objdump is available (ORVYN_LLVM_BIN or PATH) the live output must also equal the
 //   golden snapshot (detects tool drift); otherwise that check is skipped.
 #include <algorithm>
 #include <cstdlib>
@@ -12,22 +12,22 @@
 #include <map>
 #include <sstream>
 
-#include "cider/analysis.hpp"
-#include "cider/bundle.hpp"
-#include "cider/macho.hpp"
-#include "cider/process.hpp"
-#include "cider/util.hpp"
+#include "orvyn/analysis.hpp"
+#include "orvyn/bundle.hpp"
+#include "orvyn/macho.hpp"
+#include "orvyn/process.hpp"
+#include "orvyn/util.hpp"
 #include "macho_builder.hpp"
 #include "objdump_compare.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 namespace fs = std::filesystem;
 
 namespace {
 
-const fs::path kReal = fs::path(CIDER_REAL_FIXTURES_DIR);
+const fs::path kReal = fs::path(ORVYN_REAL_FIXTURES_DIR);
 
 std::string slurp(const fs::path& p) {
     std::ifstream f(p, std::ios::binary);
@@ -52,13 +52,13 @@ macho::File parse_real(const std::string& name, bool symbols = true) {
     return r.value();
 }
 
-using namespace cider::testing::objdump;
+using namespace orvyn::testing::objdump;
 
 // Is llvm-objdump runnable here?
 std::optional<fs::path> objdump_exe() {
     static std::optional<fs::path> found = []() -> std::optional<fs::path> {
         std::vector<fs::path> dirs;
-        if (const char* b = std::getenv("CIDER_LLVM_BIN")) dirs.push_back(path_from_utf8(b));
+        if (const char* b = std::getenv("ORVYN_LLVM_BIN")) dirs.push_back(path_from_utf8(b));
         if (const char* p = std::getenv("PATH")) {
             std::string s = p;
             size_t st = 0;
@@ -99,9 +99,9 @@ void check_fixture(const std::string& name, bool has_syms = true) {
 
 }  // namespace
 
-CIDER_TEST(real_executable_matches_llvm_objdump) { check_fixture("hello_x86_64"); }
-CIDER_TEST(real_arm64_executable_matches_llvm_objdump) { check_fixture("hello_arm64"); }
-CIDER_TEST(real_adhoc_signed_executable_matches_llvm_objdump) {
+ORVYN_TEST(real_executable_matches_llvm_objdump) { check_fixture("hello_x86_64"); }
+ORVYN_TEST(real_arm64_executable_matches_llvm_objdump) { check_fixture("hello_arm64"); }
+ORVYN_TEST(real_adhoc_signed_executable_matches_llvm_objdump) {
     check_fixture("hello_signed_x86_64");
     auto img = *parse_real("hello_signed_x86_64").slices[0].image;
     REQUIRE(img.code_signature.has_value());
@@ -110,14 +110,14 @@ CIDER_TEST(real_adhoc_signed_executable_matches_llvm_objdump) {
     CHECK_EQ(img.code_signature->identifier, std::string("hello_signed_x86_64"));  // from the SuperBlob, not the path
     CHECK(img.warnings.empty());
 }
-CIDER_TEST(real_chained_fixups_executable_matches_llvm_objdump) {
+ORVYN_TEST(real_chained_fixups_executable_matches_llvm_objdump) {
     check_fixture("hello_chained_x86_64");
     auto img = *parse_real("hello_chained_x86_64").slices[0].image;
     CHECK(img.chained_fixups.has_value());
     CHECK(img.exports_trie.has_value());
     CHECK(!img.dyld_info.has_value());
 }
-CIDER_TEST(real_dylibs_match_llvm_objdump) {
+ORVYN_TEST(real_dylibs_match_llvm_objdump) {
     check_fixture("libfoo.dylib");
     check_fixture("libweak.dylib");
     auto foo = *parse_real("libfoo.dylib").slices[0].image;
@@ -125,14 +125,14 @@ CIDER_TEST(real_dylibs_match_llvm_objdump) {
     CHECK(foo.filetype == macho::kFileDylib);
     CHECK(!foo.entry.has_value());
 }
-CIDER_TEST(real_app_with_rpaths_and_weak_dependency_matches_llvm_objdump) {
+ORVYN_TEST(real_app_with_rpaths_and_weak_dependency_matches_llvm_objdump) {
     check_fixture("app_x86_64");
     auto img = *parse_real("app_x86_64").slices[0].image;
     REQUIRE_EQ(img.dylibs.size(), size_t{3});
     CHECK(img.dylibs[2].kind == macho::DylibKind::Weak);
     REQUIRE_EQ(img.rpaths.size(), size_t{2});
 }
-CIDER_TEST(real_relocatable_object_matches_llvm_objdump) {
+ORVYN_TEST(real_relocatable_object_matches_llvm_objdump) {
     auto file = parse_real("hello_x86_64.o");
     const auto& img = *file.slices[0].image;
     CHECK(img.filetype == macho::kFileObject);
@@ -141,7 +141,7 @@ CIDER_TEST(real_relocatable_object_matches_llvm_objdump) {
     compare_symbols("hello_x86_64.o", slurp(kReal / "golden" / "hello_x86_64.o.syms.txt"), img);
 }
 
-CIDER_TEST(real_universal_binary_matches_llvm_objdump_and_its_thin_slices) {
+ORVYN_TEST(real_universal_binary_matches_llvm_objdump_and_its_thin_slices) {
     auto file = parse_real("hello_universal");
     REQUIRE(file.fat);
     REQUIRE_EQ(file.slices.size(), size_t{2});
@@ -173,8 +173,8 @@ CIDER_TEST(real_universal_binary_matches_llvm_objdump_and_its_thin_slices) {
     CHECK_EQ(file.slices[0].image->entry->file_offset, thin_x.slices[0].image->entry->file_offset);
 }
 
-CIDER_TEST(live_llvm_objdump_still_agrees_with_the_golden_snapshots) {
-    if (!objdump_exe()) SKIP("llvm-objdump not found (set CIDER_LLVM_BIN)");
+ORVYN_TEST(live_llvm_objdump_still_agrees_with_the_golden_snapshots) {
+    if (!objdump_exe()) SKIP("llvm-objdump not found (set ORVYN_LLVM_BIN)");
     for (const char* n : {"hello_x86_64", "app_x86_64", "libfoo.dylib", "hello_signed_x86_64"}) {
         std::string live = live_objdump(n, {"--private-headers"});
         std::string golden = slurp(kReal / "golden" / (std::string(n) + ".private-headers.txt"));
@@ -189,10 +189,10 @@ CIDER_TEST(live_llvm_objdump_still_agrees_with_the_golden_snapshots) {
     }
 }
 
-CIDER_TEST(real_fixtures_dependency_analysis_resolves_a_bundle) {
+ORVYN_TEST(real_fixtures_dependency_analysis_resolves_a_bundle) {
     TempDir t;
     // lay the real files out like an application bundle: rpath @executable_path/../Frameworks
-    t.write("Real.app/Contents/Info.plist", xml_plist({{"CFBundleExecutable", "app"}, {"CFBundleIdentifier", "org.cider.real"}, {"CFBundleName", "Real"}}));
+    t.write("Real.app/Contents/Info.plist", xml_plist({{"CFBundleExecutable", "app"}, {"CFBundleIdentifier", "org.orvyn.real"}, {"CFBundleName", "Real"}}));
     t.write("Real.app/Contents/MacOS/app", bytes_of("app_x86_64"));
     t.write("Real.app/Contents/Frameworks/libfoo.dylib", bytes_of("libfoo.dylib"));
     t.write("Real.app/Contents/Frameworks/libweak.dylib", bytes_of("libweak.dylib"));
@@ -225,7 +225,7 @@ CIDER_TEST(real_fixtures_dependency_analysis_resolves_a_bundle) {
 }
 
 // ---- regression tests for bugs found by real fixtures ---------------------------------------------------------
-CIDER_TEST(real_truncations_and_bitflips_of_real_binaries_never_crash) {
+ORVYN_TEST(real_truncations_and_bitflips_of_real_binaries_never_crash) {
     for (const char* n : {"hello_x86_64", "hello_universal", "app_x86_64", "hello_signed_x86_64"}) {
         auto good = bytes_of(n);
         for (size_t cut = 0; cut < good.size(); cut += 61) {
@@ -248,8 +248,8 @@ CIDER_TEST(real_truncations_and_bitflips_of_real_binaries_never_crash) {
 // Regression for a crash found by libFuzzer (tests/fuzz/fuzz_macho.cpp, 2026-10-10): LC_SYMTAB with
 // strsize == 0 skipped offset validation, then parse_symbols sliced at the unvalidated stroff and
 // threw std::bad_variant_access. The input is the unminimised crashing file.
-CIDER_TEST(regression_fuzz_crash_symtab_zero_strsize) {
-    auto r = read_file(fs::path(CIDER_REAL_FIXTURES_DIR).parent_path() / "regression" / "fuzz-macho-strsize0-bad-variant-access.bin", 1 << 20);
+ORVYN_TEST(regression_fuzz_crash_symtab_zero_strsize) {
+    auto r = read_file(fs::path(ORVYN_REAL_FIXTURES_DIR).parent_path() / "regression" / "fuzz-macho-strsize0-bad-variant-access.bin", 1 << 20);
     REQUIRE(r.ok());
     macho::ParseOptions o;
     o.parse_symbols = true;
@@ -259,8 +259,8 @@ CIDER_TEST(regression_fuzz_crash_symtab_zero_strsize) {
 
 // ---- real-world applications (optional, not downloaded by the test-suite) ----------------------------------------
 // tools/validate-real-dmgs.ps1 downloads official open-source release DMGs, extracts them with
-// `cider extract` and points CIDER_REAL_APPS_DIR at the result. Every Mach-O file found there is
-// parsed by CIDER and compared, slice by slice, with live llvm-objdump output.
+// `orvyn extract` and points ORVYN_REAL_APPS_DIR at the result. Every Mach-O file found there is
+// parsed by ORVYN and compared, slice by slice, with live llvm-objdump output.
 namespace {
 bool looks_macho(const fs::path& p) {
     std::ifstream f(p, std::ios::binary);
@@ -275,10 +275,10 @@ std::string run_objdump(const std::vector<std::string>& args) {
 }
 }  // namespace
 
-CIDER_TEST(real_world_extracted_apps_match_llvm_objdump) {
-    const char* dir = std::getenv("CIDER_REAL_APPS_DIR");
-    if (!dir) SKIP("CIDER_REAL_APPS_DIR not set (see tools/validate-real-dmgs.ps1)");
-    if (!objdump_exe()) SKIP("llvm-objdump not found (set CIDER_LLVM_BIN)");
+ORVYN_TEST(real_world_extracted_apps_match_llvm_objdump) {
+    const char* dir = std::getenv("ORVYN_REAL_APPS_DIR");
+    if (!dir) SKIP("ORVYN_REAL_APPS_DIR not set (see tools/validate-real-dmgs.ps1)");
+    if (!objdump_exe()) SKIP("llvm-objdump not found (set ORVYN_LLVM_BIN)");
     size_t files = 0, slices = 0, sym_checked = 0, failures_before = static_cast<size_t>(failure_count());
     std::error_code ec;
     for (fs::recursive_directory_iterator it(extended_path(path_from_utf8(dir)), ec), end; !ec && it != end; it.increment(ec)) {
@@ -289,7 +289,7 @@ CIDER_TEST(real_world_extracted_apps_match_llvm_objdump) {
         po.parse_symbols = true;
         auto f = macho::parse_file(ByteView(bytes.value()), po);
         std::string label = path_to_utf8(it->path().filename());
-        if (!f.ok()) { report_failure(__FILE__, __LINE__, label + ": CIDER rejected a real file: " + f.error().message); continue; }
+        if (!f.ok()) { report_failure(__FILE__, __LINE__, label + ": ORVYN rejected a real file: " + f.error().message); continue; }
         ++files;
         for (auto& sl : f.value().slices) {
             std::string arch = macho::cpu_name(sl.cputype, sl.cpusubtype);

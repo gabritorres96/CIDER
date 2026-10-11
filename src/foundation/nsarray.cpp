@@ -4,12 +4,12 @@
 #include <cstring>
 #include <format>
 
-#include "cider/libsystem.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/objc.hpp"
 #include "../libsystem/internal.hpp"
 #include "foundation_internal.hpp"
 
-namespace cider::foundation {
+namespace orvyn::foundation {
 namespace {
 
 using abi::GuestRegs;
@@ -390,4 +390,4 @@ void install_nsarray(Runtime& r) {
     });
 }
 
-}  // namespace cider::foundation
+}  // namespace orvyn::foundation

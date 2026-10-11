@@ -1,4 +1,4 @@
-// CoreFoundation subset (CIDER 0.5.5). Design: the CF types CIDER knows are the Foundation objects themselves ("toll-free bridged by
+// CoreFoundation subset (ORVYN 0.5.5). Design: the CF types ORVYN knows are the Foundation objects themselves ("toll-free bridged by
 // construction"): a CFStringRef IS an NSString, a CFArrayRef an NSArray, a CFDictionaryRef an NSDictionary. The functions below are thin,
 // validated wrappers; they only accept objects created by this runtime (a pointer that is not a live object of the expected class is
 // refused). There is no general bridging layer: other CF types (CFData, CFDate, CFURL, CFSet...) do not exist yet.
@@ -13,17 +13,17 @@
 #include <format>
 #include <unordered_map>
 
-#include "cider/abi.hpp"
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
-#include "cider/objc.hpp"
-#include "cider/runloop.hpp"
+#include "orvyn/abi.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/objc.hpp"
+#include "orvyn/runloop.hpp"
 #include "../foundation/foundation_internal.hpp"
 #include "../libsystem/internal.hpp"
 #include "cf_bridge.hpp"
 #include "runloop_internal.hpp"
 
-namespace cider::corefoundation {
+namespace orvyn::corefoundation {
 namespace {
 
 using abi::GuestRegs;
@@ -36,7 +36,7 @@ using libsystem::detail::trap;
 constexpr uint32_t kEncUTF8 = 0x08000100, kEncASCII = 0x0600, kEncLatin1 = 0x0201, kEncMacRoman = 0;
 constexpr double kUnixToAbsolute = 978307200.0;
 
-// CFTypeIDs are small numbers per class family (values are CIDER's own; Apple's change between releases).
+// CFTypeIDs are small numbers per class family (values are ORVYN's own; Apple's change between releases).
 enum TypeId : uint64_t { kTypeNull = 1, kTypeString = 7, kTypeNumber = 22, kTypeArray = 19, kTypeDictionary = 18, kTypeRunLoop = 11, kTypeSource = 12, kTypeTimer = 13, kTypeOther = 99 };
 
 Addr g_array_callbacks = 0, g_dict_key_callbacks = 0, g_dict_value_callbacks = 0, g_runloop = 0;
@@ -436,15 +436,15 @@ uint64_t m_dealloc(Addr self, Addr) {
 template <class F> void* addr(F* f) { return reinterpret_cast<void*>(f); }
 
 }  // namespace
-}  // namespace cider::corefoundation
+}  // namespace orvyn::corefoundation
 
-namespace cider::runloop::cf {
+namespace orvyn::runloop::cf {
 void perform_source(Source& s) {
     if (s.perform_fn && libsystem::is_valid_callback(s.perform_fn)) corefoundation::rt_call(s.perform_fn, s.info);
 }
-}  // namespace cider::runloop::cf
+}  // namespace orvyn::runloop::cf
 
-namespace cider::corefoundation {
+namespace orvyn::corefoundation {
 
 void rt_call(uint64_t fn, uint64_t arg) { foundation::rt().call_imp(fn, {arg}); }
 
@@ -556,4 +556,4 @@ void install(objc::Runtime& rt) {
     });
 }
 
-}  // namespace cider::corefoundation
+}  // namespace orvyn::corefoundation

@@ -1,4 +1,4 @@
-// Grand Central Dispatch subset (CIDER 0.5.2).
+// Grand Central Dispatch subset (ORVYN 0.5.2).
 //
 // Model, in one paragraph: guest threads are cooperative (one runs at a time, switching only at blocking points, see THREADING.md). Queue
 // state is therefore only touched while holding the guest lock and needs no mutex. The *main queue* is drained by the main guest thread
@@ -16,12 +16,12 @@
 #include <memory>
 #include <unordered_map>
 
-#include "cider/dispatch.hpp"
-#include "cider/log.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/dispatch.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/objc.hpp"
 #include "../libsystem/internal.hpp"
 
-namespace cider::dispatch {
+namespace orvyn::dispatch {
 namespace {
 
 using objc::Addr;
@@ -544,11 +544,11 @@ void shutdown() {
     }
 }
 
-}  // namespace cider::dispatch
+}  // namespace orvyn::dispatch
 
-namespace cider::libsystem::detail {
+namespace orvyn::libsystem::detail {
 void add_dispatch_symbols(std::vector<HostSymbol>& t) {
-    using namespace cider::dispatch;
+    using namespace orvyn::dispatch;
     auto fn = [&](const char* name, void* f) { t.push_back(HostSymbol{name, f, false, false, false, Lib::System}); };
     fn("_dispatch_async", addr(w_dispatch_async));
     fn("_dispatch_async_f", addr(w_dispatch_async_f));
@@ -580,4 +580,4 @@ void add_dispatch_symbols(std::vector<HostSymbol>& t) {
     fn("_dispatch_semaphore_signal", addr(w_dispatch_semaphore_signal));
     fn("_dispatch_semaphore_wait", addr(w_dispatch_semaphore_wait));
 }
-}  // namespace cider::libsystem::detail
+}  // namespace orvyn::libsystem::detail

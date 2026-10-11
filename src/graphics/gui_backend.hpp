@@ -15,10 +15,10 @@
 #include <string>
 #include <vector>
 
-#include "cider/cg.hpp"
-#include "cider/geometry.hpp"
+#include "orvyn/cg.hpp"
+#include "orvyn/geometry.hpp"
 
-namespace cider::gui {
+namespace orvyn::gui {
 
 using NativeId = uint64_t;                  // 0 = none; for Win32 the HWND value
 
@@ -96,7 +96,7 @@ public:
     virtual void focus(NativeId native) = 0;
     virtual void destroy(NativeId native) = 0;                                  // a window (and everything inside) or a single child
 
-    // ---- drawing (CIDER 0.6) -----------------------------------------------------------------------------------------------------------------
+    // ---- drawing (ORVYN 0.6) -----------------------------------------------------------------------------------------------------------------
     // A container marked custom-painted gets a Direct2D surface owned by the backend and a `paint` event whenever it must be redrawn.
     virtual void set_custom_paint(NativeId view, bool on) = 0;
     virtual void invalidate(NativeId view) = 0;                                 // request a repaint; never paints synchronously
@@ -120,4 +120,4 @@ std::unique_ptr<Backend> create_win32_backend();
 // "mouse <x> <y>" (left click on the front window content at the point, top-left origin), "key <chars>".
 std::unique_ptr<Backend> create_offscreen_backend(std::vector<std::string> script);
 
-}  // namespace cider::gui
+}  // namespace orvyn::gui

@@ -1,4 +1,4 @@
-// libFuzzer: the CoreGraphics engine (CIDER 0.6.1). Two inputs from one byte stream:
+// libFuzzer: the CoreGraphics engine (ORVYN 0.6.1). Two inputs from one byte stream:
 //   * the first byte selects image decoding: the rest is handed to WIC with tight limits (must reject or decode, never crash, never allocate beyond the limits);
 //   * otherwise the bytes are a program of context operations (paths, arcs, transforms with NaN/inf/huge values, clips, save/restore) run against a checking
 //     device that verifies clips stay strictly nested and balanced when the context dies.
@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "../../src/graphics/d2d_device.hpp"
-#include "cider/cg.hpp"
+#include "orvyn/cg.hpp"
 
 namespace {
 
-using namespace cider::cg;
+using namespace orvyn::cg;
 
 struct CheckDevice : Device {
     int clips = 0;
@@ -64,9 +64,9 @@ void run_ops(const uint8_t* data, size_t size) {
                 case 10: c.fill_current((r.byte() & 1) ? FillRule::EvenOdd : FillRule::NonZero); break;
                 case 11: c.stroke_current(); break;
                 case 12: c.clip_current((r.byte() & 1) ? FillRule::EvenOdd : FillRule::NonZero); break;
-                case 13: c.clip_to_rect(cider::geometry::make_rect(r.num(), r.num(), r.num(), r.num())); break;
-                case 14: c.fill_rect(cider::geometry::make_rect(r.num(), r.num(), r.num(), r.num())); break;
-                case 15: c.stroke_rect(cider::geometry::make_rect(r.num(), r.num(), r.num(), r.num())); break;
+                case 13: c.clip_to_rect(orvyn::geometry::make_rect(r.num(), r.num(), r.num(), r.num())); break;
+                case 14: c.fill_rect(orvyn::geometry::make_rect(r.num(), r.num(), r.num(), r.num())); break;
+                case 15: c.stroke_rect(orvyn::geometry::make_rect(r.num(), r.num(), r.num(), r.num())); break;
                 case 16: { auto& l = c.mutable_state().line; l.width = r.num(); l.dash.assign(r.byte() % 5, std::fabs(r.num())); break; }
                 default: { Path p; p.arc_to({r.num(), r.num()}, {r.num(), r.num()}, r.num()); (void)p.contains({r.num(), r.num()}, FillRule::NonZero); break; }
             }

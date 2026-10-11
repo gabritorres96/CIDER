@@ -4,16 +4,16 @@
 #include <cstring>
 #include <fstream>
 
-#include "cider/libsystem.hpp"
-#include "cider/loader.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/loader.hpp"
 #include "guest_code.hpp"
 #include "macho_builder.hpp"
 #include "objdump_compare.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::loader;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::loader;
+using namespace orvyn::testing;
 
 namespace {
 
@@ -62,7 +62,7 @@ bool range_free(uint64_t addr) { return memory::query_address(reinterpret_cast<v
 }  // namespace
 
 // ---- layout planning ---------------------------------------------------------------------------------
-CIDER_TEST(layout_of_a_valid_image) {
+ORVYN_TEST(layout_of_a_valid_image) {
     auto lay = plan_layout(synthetic());
     REQUIRE(lay.ok());
     const auto& l = lay.value();
@@ -76,7 +76,7 @@ CIDER_TEST(layout_of_a_valid_image) {
     CHECK_EQ(l.stack_size, kDefaultStackSize);
 }
 
-CIDER_TEST(layout_uses_lc_main_stacksize_within_limits) {
+ORVYN_TEST(layout_uses_lc_main_stacksize_within_limits) {
     auto i = synthetic();
     i.entry->stack_size = 1 << 20;
     CHECK_EQ(plan_layout(i).value().stack_size, uint64_t{1 << 20});
@@ -86,7 +86,7 @@ CIDER_TEST(layout_uses_lc_main_stacksize_within_limits) {
     CHECK_ERR(plan_layout(i), ErrorCode::LimitExceeded);
 }
 
-CIDER_TEST(layout_data_const_becomes_read_only_after_fixups) {
+ORVYN_TEST(layout_data_const_becomes_read_only_after_fixups) {
     auto i = synthetic();
     i.segments.insert(i.segments.begin() + 2, seg("__DATA_CONST", 0x100001000ull, 0x1000, 0x1000, 3));
     i.segments[3].vmaddr = 0x100002000ull;                       // __DATA moves up
@@ -99,7 +99,7 @@ CIDER_TEST(layout_data_const_becomes_read_only_after_fixups) {
     CHECK(dc->final_prot == memory::Prot::Read);
 }
 
-CIDER_TEST(layout_rejects_rwx_and_unrepresentable_permissions) {
+ORVYN_TEST(layout_rejects_rwx_and_unrepresentable_permissions) {
     auto i = synthetic();
     i.segments[1].initprot = 7;
     CHECK_ERR(plan_layout(i), ErrorCode::Unsupported);          // W^X
@@ -111,7 +111,7 @@ CIDER_TEST(layout_rejects_rwx_and_unrepresentable_permissions) {
     CHECK_ERR(plan_layout(i), ErrorCode::Malformed);
 }
 
-CIDER_TEST(layout_rejects_bad_geometry) {
+ORVYN_TEST(layout_rejects_bad_geometry) {
     auto i = synthetic();
     i.segments[1].vmaddr = 0x100000010ull;                      // not page aligned
     CHECK_ERR(plan_layout(i), ErrorCode::Malformed);
@@ -132,7 +132,7 @@ CIDER_TEST(layout_rejects_bad_geometry) {
     CHECK_ERR(plan_layout(i), ErrorCode::Unsupported);          // base not 64 KiB aligned
 }
 
-CIDER_TEST(layout_rejects_bad_entry_points) {
+ORVYN_TEST(layout_rejects_bad_entry_points) {
     auto i = synthetic();
     i.entry->vmaddr = 0x200000000ull;
     CHECK_ERR(plan_layout(i), ErrorCode::Malformed);            // outside every segment
@@ -149,7 +149,7 @@ CIDER_TEST(layout_rejects_bad_entry_points) {
 }
 
 // ---- validation ---------------------------------------------------------------------------------------
-CIDER_TEST(validator_accepts_the_real_fixtures) {
+ORVYN_TEST(validator_accepts_the_real_fixtures) {
     for (const char* n : {"ret42", "math", "calls", "globals", "bss", "libcall", "hello", "args", "missing"}) {
         auto bytes = exec_fixture(n);
         auto file = macho::parse_file(ByteView(bytes)).value();
@@ -159,7 +159,7 @@ CIDER_TEST(validator_accepts_the_real_fixtures) {
     }
 }
 
-CIDER_TEST(validator_rejects_wrong_architecture_type_platform_and_encryption) {
+ORVYN_TEST(validator_rejects_wrong_architecture_type_platform_and_encryption) {
     auto i = synthetic();
     i.cputype = macho::kCpuArm64;
     CHECK(!validate_for_execution(i).ok());
@@ -175,7 +175,7 @@ CIDER_TEST(validator_rejects_wrong_architecture_type_platform_and_encryption) {
     CHECK(!validate_for_execution(i).ok());
 }
 
-CIDER_TEST(validator_reports_missing_dependencies_precisely) {
+ORVYN_TEST(validator_reports_missing_dependencies_precisely) {
     auto i = synthetic();
     macho::Dylib d;
     d.path = "@rpath/libfoo.dylib";
@@ -189,7 +189,7 @@ CIDER_TEST(validator_reports_missing_dependencies_precisely) {
     CHECK(validate_for_execution(i).ok());
 }
 
-CIDER_TEST(validator_rejects_features_the_runtime_cannot_honour) {
+ORVYN_TEST(validator_rejects_features_the_runtime_cannot_honour) {
     auto i = synthetic();
     i.chained_fixups = macho::LinkeditRange{0x1000, 16};
     CHECK(validate_for_execution(i).ok());                         // chained fixups are judged by the decoder (test_chained_fixups), not refused up front
@@ -211,9 +211,9 @@ CIDER_TEST(validator_rejects_features_the_runtime_cannot_honour) {
     CHECK(!validate_for_execution(i).ok());
 }
 
-CIDER_TEST(real_chained_fixups_binary_loads_since_0_3_5) {
-    // CIDER 0.2 refused this image; the chained-fixups decoder (DYLD_CHAINED_PTR_64) now maps and binds it.
-    auto bytes = read_file(std::filesystem::path(CIDER_REAL_FIXTURES_DIR) / "bin" / "hello_chained_x86_64", 1 << 20).value();
+ORVYN_TEST(real_chained_fixups_binary_loads_since_0_3_5) {
+    // ORVYN 0.2 refused this image; the chained-fixups decoder (DYLD_CHAINED_PTR_64) now maps and binds it.
+    auto bytes = read_file(std::filesystem::path(ORVYN_REAL_FIXTURES_DIR) / "bin" / "hello_chained_x86_64", 1 << 20).value();
     auto provider = take(libsystem::LibSystemProvider::create());
     auto r = load_macho(ByteView(bytes), *provider);
     REQUIRE(r.ok());
@@ -221,7 +221,7 @@ CIDER_TEST(real_chained_fixups_binary_loads_since_0_3_5) {
 }
 
 // ---- mapping ------------------------------------------------------------------------------------------------
-CIDER_TEST(mapped_segments_contain_the_bytes_of_the_file) {
+ORVYN_TEST(mapped_segments_contain_the_bytes_of_the_file) {
     auto f = fixture("globals");
     auto r = load(f);
     REQUIRE(r.ok());
@@ -246,7 +246,7 @@ CIDER_TEST(mapped_segments_contain_the_bytes_of_the_file) {
     CHECK(found5);
 }
 
-CIDER_TEST(zero_fill_memory_is_zero_and_writable) {
+ORVYN_TEST(zero_fill_memory_is_zero_and_writable) {
     auto f = fixture("bss");
     auto r = load(f);
     REQUIRE(r.ok());
@@ -264,7 +264,7 @@ CIDER_TEST(zero_fill_memory_is_zero_and_writable) {
     const_cast<uint8_t*>(p)[100] = 0x7f;                       // writable: must not fault
 }
 
-CIDER_TEST(final_permissions_follow_w_xor_x_for_every_page) {
+ORVYN_TEST(final_permissions_follow_w_xor_x_for_every_page) {
     for (const char* name : {"calls", "libcall", "hello", "bss"}) {
         auto f = fixture(name);
         auto r = load(f);
@@ -288,7 +288,7 @@ CIDER_TEST(final_permissions_follow_w_xor_x_for_every_page) {
     }
 }
 
-CIDER_TEST(fixups_are_applied_rebases_and_binds) {
+ORVYN_TEST(fixups_are_applied_rebases_and_binds) {
     auto f = fixture("calls");                                   // g_fn = &twice lives in __DATA: one rebase
     auto r = load(f);
     REQUIRE(r.ok());
@@ -308,7 +308,7 @@ CIDER_TEST(fixups_are_applied_rebases_and_binds) {
     CHECK_EQ(r2.report.required_libs.size(), size_t{1});
 }
 
-CIDER_TEST(lazy_binding_stubs_are_resolved_eagerly) {
+ORVYN_TEST(lazy_binding_stubs_are_resolved_eagerly) {
     auto f = fixture("hello");
     auto r = load(f);
     REQUIRE(r.ok());
@@ -324,7 +324,7 @@ CIDER_TEST(lazy_binding_stubs_are_resolved_eagerly) {
 }
 
 // ---- failures and cleanup -----------------------------------------------------------------------------------------
-CIDER_TEST(garbage_and_wrong_files_fail_before_any_memory_is_reserved) {
+ORVYN_TEST(garbage_and_wrong_files_fail_before_any_memory_is_reserved) {
     auto provider = take(libsystem::LibSystemProvider::create());
     std::vector<uint8_t> junk(1000, 0x41);
     auto r = load_macho(ByteView(junk), *provider);
@@ -333,19 +333,19 @@ CIDER_TEST(garbage_and_wrong_files_fail_before_any_memory_is_reserved) {
     CHECK(range_free(0x100000000ull));
     CHECK(!load_macho(ByteView(), *provider).ok());
 
-    auto arm = read_file(std::filesystem::path(CIDER_REAL_FIXTURES_DIR) / "bin" / "hello_arm64", 1 << 20).value();
+    auto arm = read_file(std::filesystem::path(ORVYN_REAL_FIXTURES_DIR) / "bin" / "hello_arm64", 1 << 20).value();
     auto r2 = load_macho(ByteView(arm), *provider);
     REQUIRE(!r2.ok());
     CHECK(r2.error->message.find("no x86_64 slice") != std::string::npos);
 
-    auto dylib = read_file(std::filesystem::path(CIDER_REAL_FIXTURES_DIR) / "bin" / "libfoo.dylib", 1 << 20).value();
+    auto dylib = read_file(std::filesystem::path(ORVYN_REAL_FIXTURES_DIR) / "bin" / "libfoo.dylib", 1 << 20).value();
     auto r3 = load_macho(ByteView(dylib), *provider);
     REQUIRE(!r3.ok());
     CHECK(r3.error->kind == LoadFailure::Incompatible);
     CHECK(range_free(0x100000000ull));
 }
 
-CIDER_TEST(unresolved_symbols_are_reported_and_nothing_stays_mapped) {
+ORVYN_TEST(unresolved_symbols_are_reported_and_nothing_stays_mapped) {
     auto f = fixture("missing");
     auto r = load(f);
     REQUIRE(!r.ok());
@@ -356,7 +356,7 @@ CIDER_TEST(unresolved_symbols_are_reported_and_nothing_stays_mapped) {
     CHECK(range_free(0x100000000ull));          // resolution happens before mapping
 }
 
-CIDER_TEST(memory_is_released_when_a_loaded_image_goes_out_of_scope) {
+ORVYN_TEST(memory_is_released_when_a_loaded_image_goes_out_of_scope) {
     uint64_t base;
     {
         auto f = fixture("hello");
@@ -368,7 +368,7 @@ CIDER_TEST(memory_is_released_when_a_loaded_image_goes_out_of_scope) {
     CHECK(range_free(base));
 }
 
-CIDER_TEST(synthetic_builder_image_loads_and_validates_end_to_end) {
+ORVYN_TEST(synthetic_builder_image_loads_and_validates_end_to_end) {
     auto built = build_macho({});
     auto provider = take(libsystem::LibSystemProvider::create());
     auto r = load_macho(ByteView(built.bytes), *provider);
@@ -383,7 +383,7 @@ CIDER_TEST(synthetic_builder_image_loads_and_validates_end_to_end) {
     CHECK(r2.error->message.find("RWX") != std::string::npos);
 }
 
-CIDER_TEST(mutated_executables_either_load_cleanly_or_fail_cleanly) {
+ORVYN_TEST(mutated_executables_either_load_cleanly_or_fail_cleanly) {
     // Loading (not executing) mutated copies of real fixtures: no crash, no leaked reservation.
     auto provider = take(libsystem::LibSystemProvider::create());
     uint64_t seed = 0x9E3779B97F4A7C15ull;
@@ -404,8 +404,8 @@ CIDER_TEST(mutated_executables_either_load_cleanly_or_fail_cleanly) {
     (void)loaded;
 }
 
-// ---- the fixtures themselves are real Mach-O: CIDER's parse equals llvm-objdump's ----------------------------------------------------------
-CIDER_TEST(execution_fixtures_metadata_matches_llvm_objdump_snapshots) {
+// ---- the fixtures themselves are real Mach-O: ORVYN's parse equals llvm-objdump's ----------------------------------------------------------
+ORVYN_TEST(execution_fixtures_metadata_matches_llvm_objdump_snapshots) {
     auto slurp = [](const std::filesystem::path& p) {
         std::ifstream f(p, std::ios::binary);
         std::stringstream ss;
@@ -427,8 +427,8 @@ CIDER_TEST(execution_fixtures_metadata_matches_llvm_objdump_snapshots) {
     }
 }
 
-CIDER_TEST(execution_fixtures_machine_code_matches_the_llvm_objdump_disassembly) {
-    // ret42's main, as disassembled by llvm-objdump when the fixture was built, is exactly the code CIDER maps and runs.
+ORVYN_TEST(execution_fixtures_machine_code_matches_the_llvm_objdump_disassembly) {
+    // ret42's main, as disassembled by llvm-objdump when the fixture was built, is exactly the code ORVYN maps and runs.
     std::ifstream f(kExecFixtures / "golden" / "ret42.disasm.txt");
     std::stringstream ss;
     ss << f.rdbuf();

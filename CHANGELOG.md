@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased (0.6 in progress; the version number is still 0.5.0)
+
+### Changed
+- **The project is now called ORVYN** (it was CIDER, "Cider Is Darwin Executable Runtime"). Executable `cider.exe` → `orvyn.exe`, namespace `cider` → `orvyn`, headers `include/cider` → `include/orvyn`, CMake options and macros `CIDER_*` → `ORVYN_*`, log prefix `[CIDER]` → `[ORVYN]`.
+  `CIDER_LOG_FILE`, `CIDER_TEMP_DIR` and `CIDER_7Z` are still accepted as a temporary alias of `ORVYN_LOG_FILE`, `ORVYN_TEMP_DIR` and `ORVYN_7Z`. The entries below this one are history and keep the old name.
+  Details, residual references and how to rename the repository folder: [docs/research/CIDER-TO-ORVYN-MIGRATION.md](docs/research/CIDER-TO-ORVYN-MIGRATION.md).
+
+### Added (0.6.1 - 0.6.2)
+- **CoreGraphics drawing** for guests: ~100 `CG*` functions (contexts, colors, paths, affine transforms), Direct2D device, handle validation ([docs/COREGRAPHICS-RENDERING.md](docs/COREGRAPHICS-RENDERING.md)).
+- **`NSView -drawRect:`**: `WM_PAINT` → `-drawRect:` in the Mach-O → Direct2D, `NSGraphicsContext`, `setNeedsDisplay:`/`display`/`displayIfNeeded` ([docs/APPKIT-DRAWING.md](docs/APPKIT-DRAWING.md)).
+- Fixtures `cg_draw_test`, `cg_abi_test`, `cg_lifecycle`, `cg_unimplemented`; suites `test_cg`, `test_cg_abi`, `test_cg_rendering`; fuzzer `fuzz_cg` (found and fixed a hang in arc sweeps).
+
 ## 0.5.0 — AppKit, Native Windows GUI & Apple SDK Research (experimental, 2026-10-11)
 
 Controlled fixtures only; no macOS application runs; no Cocoa; no Swift.

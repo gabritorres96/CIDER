@@ -1,6 +1,6 @@
-/* Hand-written declarations of the CoreGraphics geometry subset CIDER implements (see docs/COREGRAPHICS.md). Not the Apple header. */
-#ifndef CIDER_COREGRAPHICS_H
-#define CIDER_COREGRAPHICS_H
+/* Hand-written declarations of the CoreGraphics geometry subset ORVYN implements (see docs/COREGRAPHICS.md). Not the Apple header. */
+#ifndef ORVYN_COREGRAPHICS_H
+#define ORVYN_COREGRAPHICS_H
 typedef double CGFloat;
 typedef struct CGPoint { CGFloat x, y; } CGPoint;
 typedef struct CGSize { CGFloat width, height; } CGSize;
@@ -23,7 +23,7 @@ CGRect CGRectInset(CGRect r, CGFloat dx, CGFloat dy); CGRect CGRectOffset(CGRect
 CGRect CGRectUnion(CGRect a, CGRect b); CGRect CGRectIntersection(CGRect a, CGRect b);
 void CGRectDivide(CGRect r, CGRect *slice, CGRect *remainder, CGFloat amount, CGRectEdge edge);
 
-/* ---- drawing (CIDER 0.6.1): hand-written declarations of the CoreGraphics subset implemented by cider/src/graphics/cg_api.cpp ---- */
+/* ---- drawing (ORVYN 0.6.1): hand-written declarations of the CoreGraphics subset implemented by orvyn/src/graphics/cg_api.cpp ---- */
 typedef struct CGAffineTransform { CGFloat a, b, c, d, tx, ty; } CGAffineTransform;
 extern const CGAffineTransform CGAffineTransformIdentity;
 typedef struct CGContext *CGContextRef;
@@ -141,7 +141,7 @@ CGAffineTransform CGContextGetCTM(CGContextRef c);
 void CGContextDrawImage(CGContextRef c, CGRect rect, CGImageRef image);
 void CGContextFlush(CGContextRef c);
 void CGContextSynchronize(CGContextRef c);
-/* Exported by the real CoreGraphics but NOT implemented by CIDER (a program that imports them is refused at load time; see docs/COREGRAPHICS-RENDERING.md). */
+/* Exported by the real CoreGraphics but NOT implemented by ORVYN (a program that imports them is refused at load time; see docs/COREGRAPHICS-RENDERING.md). */
 typedef struct CGGradient *CGGradientRef;
 void CGContextDrawLinearGradient(CGContextRef c, CGGradientRef gradient, CGPoint startPoint, CGPoint endPoint, unsigned int options);
 CGContextRef CGBitmapContextCreate(void *data, unsigned long width, unsigned long height, unsigned long bitsPerComponent, unsigned long bytesPerRow, CGColorSpaceRef space, unsigned int bitmapInfo);

@@ -4,14 +4,14 @@
 #include <set>
 #include <sstream>
 
-#include "cider/fixups.hpp"
-#include "cider/libsystem.hpp"
+#include "orvyn/fixups.hpp"
+#include "orvyn/libsystem.hpp"
 #include "guest_code.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::dyld;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::dyld;
+using namespace orvyn::testing;
 
 namespace {
 
@@ -31,7 +31,7 @@ void name(std::vector<uint8_t>& s, const char* n) { s.insert(s.end(), n, n + std
 }  // namespace
 
 // ---- rebase streams -----------------------------------------------------------------------------------
-CIDER_TEST(rebase_opcodes_decode_to_the_documented_addresses) {
+ORVYN_TEST(rebase_opcodes_decode_to_the_documented_addresses) {
     std::vector<uint8_t> s = {0x11,              // SET_TYPE_IMM pointer
                               0x22, 0x10,        // SET_SEGMENT_AND_OFFSET_ULEB seg 2, offset 0x10
                               0x53,              // DO_REBASE_IMM_TIMES 3        -> 0x10 0x18 0x20
@@ -45,7 +45,7 @@ CIDER_TEST(rebase_opcodes_decode_to_the_documented_addresses) {
     CHECK((offs == std::vector<uint64_t>{0x10, 0x18, 0x20, 0x38, 0x40}));
 }
 
-CIDER_TEST(rebase_add_and_skip_opcodes) {
+ORVYN_TEST(rebase_add_and_skip_opcodes) {
     // DO_REBASE_ADD_ADDR_ULEB: rebase at 0, then +0x10+8; DO_REBASE_ULEB_TIMES_SKIPPING_ULEB: 3 times, skip 8 -> stride 16
     std::vector<uint8_t> s = {0x11, 0x22, 0x00, 0x70, 0x10, 0x80, 0x03, 0x08, 0x30, 0x08, 0x00};
     auto r = decode_rebase_stream(bv(s), segs4());
@@ -55,7 +55,7 @@ CIDER_TEST(rebase_add_and_skip_opcodes) {
     CHECK((offs == std::vector<uint64_t>{0x0, 0x18, 0x28, 0x38}));
 }
 
-CIDER_TEST(rebase_malformed_streams_are_rejected) {
+ORVYN_TEST(rebase_malformed_streams_are_rejected) {
     auto segs = segs4();
     CHECK_ERR(decode_rebase_stream(bv({0x11, 0x22}), segs), ErrorCode::Malformed);                        // truncated ULEB
     CHECK_ERR(decode_rebase_stream(bv({0x11, 0x51}), segs), ErrorCode::Malformed);                        // rebase before segment
@@ -76,7 +76,7 @@ CIDER_TEST(rebase_malformed_streams_are_rejected) {
 }
 
 // ---- bind streams ---------------------------------------------------------------------------------------------
-CIDER_TEST(bind_opcodes_decode_symbols_ordinals_addends_and_weak_flags) {
+ORVYN_TEST(bind_opcodes_decode_symbols_ordinals_addends_and_weak_flags) {
     std::vector<uint8_t> s = {0x11};                  // ordinal 1
     s.push_back(0x40); name(s, "_puts");              // SET_SYMBOL_TRAILING_FLAGS_IMM 0
     s.insert(s.end(), {0x51, 0x72, 0x00, 0x90});      // type pointer, segment 2 offset 0, DO_BIND            -> bind at 0
@@ -98,7 +98,7 @@ CIDER_TEST(bind_opcodes_decode_symbols_ordinals_addends_and_weak_flags) {
     CHECK(!v[0].lazy);
 }
 
-CIDER_TEST(bind_times_skipping_and_uleb_ordinals) {
+ORVYN_TEST(bind_times_skipping_and_uleb_ordinals) {
     std::vector<uint8_t> s = {0x20, 0x81, 0x01};      // ordinal ULEB 129
     s.push_back(0x40); name(s, "_x");
     s.insert(s.end(), {0x51, 0x72, 0x00, 0xC0, 0x03, 0x08, 0x00});   // 3 binds, skipping 8 bytes each -> 0, 16, 32
@@ -109,7 +109,7 @@ CIDER_TEST(bind_times_skipping_and_uleb_ordinals) {
     CHECK_EQ(r.value()[0].library_ordinal, int64_t{129});
 }
 
-CIDER_TEST(lazy_bind_streams_separate_entries_with_done) {
+ORVYN_TEST(lazy_bind_streams_separate_entries_with_done) {
     std::vector<uint8_t> s;
     for (int i = 0; i < 3; ++i) {
         s.insert(s.end(), {0x72, static_cast<uint8_t>(i * 8), 0x11});   // segment 2, offset, ordinal 1
@@ -124,7 +124,7 @@ CIDER_TEST(lazy_bind_streams_separate_entries_with_done) {
     CHECK_EQ(r.value()[2].offset, uint64_t{16});
 }
 
-CIDER_TEST(bind_malformed_streams_are_rejected) {
+ORVYN_TEST(bind_malformed_streams_are_rejected) {
     auto segs = segs4();
     CHECK_ERR(decode_bind_stream(bv({0x11, 0x90}), segs, false), ErrorCode::Malformed);                    // bind before symbol/segment
     std::vector<uint8_t> a = {0x40}; name(a, "_x"); a.push_back(0x90);
@@ -176,7 +176,7 @@ Golden read_golden(const std::string& name) {
 }
 }  // namespace
 
-CIDER_TEST(decoded_fixups_equal_llvm_objdump_for_every_execution_fixture) {
+ORVYN_TEST(decoded_fixups_equal_llvm_objdump_for_every_execution_fixture) {
     for (const char* n : {"ret42", "ret7", "ret99", "math", "stack", "calls", "globals", "bss", "libcall", "hello", "args", "missing", "exitcall",
                           "crash", "spin", "malloc", "fmath"}) {
         auto bytes = exec_fixture(n);
@@ -206,8 +206,8 @@ CIDER_TEST(decoded_fixups_equal_llvm_objdump_for_every_execution_fixture) {
     }
 }
 
-CIDER_TEST(chained_fixups_are_decoded_since_0_3_5) {
-    auto bytes = read_file(std::filesystem::path(CIDER_REAL_FIXTURES_DIR) / "bin" / "hello_chained_x86_64", 1 << 20).value();
+ORVYN_TEST(chained_fixups_are_decoded_since_0_3_5) {
+    auto bytes = read_file(std::filesystem::path(ORVYN_REAL_FIXTURES_DIR) / "bin" / "hello_chained_x86_64", 1 << 20).value();
     auto file = macho::parse_file(ByteView(bytes)).value();
     auto fx = take(decode_fixups(*file.slices[0].image, ByteView(bytes)));
     std::vector<std::string> names;
@@ -218,7 +218,7 @@ CIDER_TEST(chained_fixups_are_decoded_since_0_3_5) {
     CHECK_EQ(names[1], std::string("_puts"));
 }
 
-CIDER_TEST(weak_bind_streams_are_refused_by_the_decoder) {
+ORVYN_TEST(weak_bind_streams_are_refused_by_the_decoder) {
     auto bytes = exec_fixture("hello");
     auto file = macho::parse_file(ByteView(bytes)).value();
     macho::Image img = *file.slices[0].image;
@@ -255,7 +255,7 @@ Fixup bind(const char* sym, int64_t ord, bool weak = false) {
 }
 }  // namespace
 
-CIDER_TEST(resolver_collects_every_problem_in_one_pass) {
+ORVYN_TEST(resolver_collects_every_problem_in_one_pass) {
     macho::Image img;
     macho::Dylib x, y;
     x.path = "/lib/x.dylib";
@@ -284,7 +284,7 @@ CIDER_TEST(resolver_collects_every_problem_in_one_pass) {
     CHECK_EQ(a_calls, size_t{1});
 }
 
-CIDER_TEST(libsystem_provider_resolves_known_symbols_to_executable_thunks) {
+ORVYN_TEST(libsystem_provider_resolves_known_symbols_to_executable_thunks) {
     auto p = take(libsystem::LibSystemProvider::create());
     CHECK(p->provides_library("/usr/lib/libSystem.B.dylib"));
     CHECK(!p->provides_library("/usr/lib/libc++.1.dylib"));
@@ -303,7 +303,7 @@ CIDER_TEST(libsystem_provider_resolves_known_symbols_to_executable_thunks) {
     CHECK(a != b);
 }
 
-CIDER_TEST(every_execution_fixture_but_the_missing_symbol_one_resolves_completely) {
+ORVYN_TEST(every_execution_fixture_but_the_missing_symbol_one_resolves_completely) {
     auto p = take(libsystem::LibSystemProvider::create());
     for (const char* n : {"ret42", "math", "stack", "calls", "globals", "bss", "libcall", "hello", "args", "exitcall", "crash", "spin", "malloc", "fmath"}) {
         auto bytes = exec_fixture(n);

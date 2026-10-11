@@ -1,4 +1,4 @@
 C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\initexit\libinitexit.dylib:
 
 Exports trie:
-0x00002008  _cider_dummy_exit
+0x00002008  _orvyn_dummy_exit

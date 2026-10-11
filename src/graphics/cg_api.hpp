@@ -1,5 +1,5 @@
 #pragma once
-// Guest-visible CoreGraphics objects and functions (CIDER 0.6.1). See docs/COREGRAPHICS-RENDERING.md.
+// Guest-visible CoreGraphics objects and functions (ORVYN 0.6.1). See docs/COREGRAPHICS-RENDERING.md.
 //
 // Object model: CGContextRef, CGColorRef, CGColorSpaceRef, CGPathRef / CGMutablePathRef and CGImageRef are ordinary Objective-C objects of private native classes
 // (like the Foundation classes, "toll-free bridged by construction"), so CFRetain / CFRelease and the CG*Retain / CG*Release functions are the runtime's
@@ -7,11 +7,11 @@
 #include <cstdint>
 #include <vector>
 
-#include "cider/cg.hpp"
-#include "cider/libsystem.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/cg.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/objc.hpp"
 
-namespace cider::graphics {
+namespace orvyn::graphics {
 
 void add_cg_api_symbols(std::vector<libsystem::HostSymbol>& table);
 void install_cg_api(objc::Runtime& rt);                               // classes and the CGAffineTransformIdentity constant
@@ -28,4 +28,4 @@ const cg::Image* cg_image_pixels(objc::Addr image);
 uint64_t cg_invalid_handle_events();                                  // calls refused because of a nil, dead or wrong-class handle, or a stale context
 size_t cg_live_objects();                                              // CG objects currently alive (contexts, colors, spaces, paths, images)
 
-}  // namespace cider::graphics
+}  // namespace orvyn::graphics

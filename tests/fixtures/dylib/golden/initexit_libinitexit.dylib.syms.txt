@@ -3,6 +3,6 @@ C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\initexit\libinitexit.d
 SYMBOL TABLE:
 00000000000004f0 l     F __TEXT,__text _die
 0000000000002010 l     O __DATA,__data __dyld_private
-0000000000002008 g     O __DATA,__data _cider_dummy_exit
+0000000000002008 g     O __DATA,__data _orvyn_dummy_exit
 0000000000000000         *UND* _exit
 0000000000000000         *UND* dyld_stub_binder

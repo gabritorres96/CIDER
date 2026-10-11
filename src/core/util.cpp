@@ -1,10 +1,11 @@
-#include "cider/util.hpp"
+#include <cstdlib>
+#include "orvyn/util.hpp"
 
 #include <algorithm>
 #include <fstream>
 #include <system_error>
 
-namespace cider {
+namespace orvyn {
 
 std::string hex(uint64_t v) { return std::format("{:#x}", v); }
 
@@ -50,6 +51,12 @@ bool starts_with(std::string_view s, std::string_view p) noexcept {
 bool ends_with_icase(std::string_view s, std::string_view suf) noexcept {
     if (s.size() < suf.size()) return false;
     return to_lower_ascii(s.substr(s.size() - suf.size())) == to_lower_ascii(suf);
+}
+
+const char* getenv_compat(const char* name, const char* legacy_name) {
+    if (const char* v = std::getenv(name); v && *v) return v;
+    if (legacy_name) if (const char* v = std::getenv(legacy_name); v && *v) return v;
+    return nullptr;
 }
 
 std::filesystem::path path_from_utf8(std::string_view s) {
@@ -112,4 +119,4 @@ bool is_inside(const std::filesystem::path& root, const std::filesystem::path& c
     return first != ".." && !rel.is_absolute();
 }
 
-}  // namespace cider
+}  // namespace orvyn

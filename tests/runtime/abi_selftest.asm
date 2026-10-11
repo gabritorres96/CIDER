@@ -1,15 +1,15 @@
-; ABI self-test helper: proves that cider_enter_guest preserves every register Windows x64 requires.
+; ABI self-test helper: proves that orvyn_enter_guest preserves every register Windows x64 requires.
 ;
-; uint64_t cider_abi_selftest(GuestCall* rcx, RegSnapshot* rdx)
+; uint64_t orvyn_abi_selftest(GuestCall* rcx, RegSnapshot* rdx)
 ;   RegSnapshot { uint64 gpr[8] (rbx rbp rdi rsi r12 r13 r14 r15); uint8 xmm[10][16] (xmm6..xmm15) }
-; Loads the snapshot into the callee-saved registers, calls cider_enter_guest(rcx), then writes the
+; Loads the snapshot into the callee-saved registers, calls orvyn_enter_guest(rcx), then writes the
 ; register values found AFTER the call back into the snapshot so the caller can compare them.
 OPTION CASEMAP:NONE
 
-EXTERN cider_enter_guest:PROC
+EXTERN orvyn_enter_guest:PROC
 
 .code
-cider_abi_selftest PROC
+orvyn_abi_selftest PROC
     push rbx
     push rbp
     push rdi
@@ -40,7 +40,7 @@ cider_abi_selftest PROC
     movups xmm14, xmmword ptr [rdx+192]
     movups xmm15, xmmword ptr [rdx+208]
 
-    call cider_enter_guest                ; rcx = GuestCall* is still intact
+    call orvyn_enter_guest                ; rcx = GuestCall* is still intact
 
     mov rdx, qword ptr [rsp+32]
     mov qword ptr [rdx+0], rbx
@@ -72,6 +72,6 @@ cider_abi_selftest PROC
     pop rbp
     pop rbx
     ret
-cider_abi_selftest ENDP
+orvyn_abi_selftest ENDP
 
 END

@@ -1,20 +1,20 @@
-// Foundation subset (CIDER 0.4.6): real Objective-C Mach-O programs compiled by clang against the hand-written Foundation declarations are
+// Foundation subset (ORVYN 0.4.6): real Objective-C Mach-O programs compiled by clang against the hand-written Foundation declarations are
 // executed through the runtime. The checks live in the guest programs (they exit with the number of failed checks); this file asserts exit
 // codes, exact NSLog output, leak counts and the diagnoses of misuse. Nothing is interpreted or precomputed on the host.
 #include <cstring>
 
-#include "cider/guest.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/guest.hpp"
+#include "orvyn/objc.hpp"
 #include "guest_code.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 namespace fs = std::filesystem;
 
 namespace {
 
-const fs::path kObjc = fs::path(CIDER_OBJC_FIXTURES_DIR);
+const fs::path kObjc = fs::path(ORVYN_OBJC_FIXTURES_DIR);
 fs::path bin(const std::string& scenario) { return kObjc / "bin" / scenario / scenario; }
 
 struct Run {
@@ -40,15 +40,15 @@ void expect_exit(const Run& r, int code, const char* what) {
 
 }  // namespace
 
-CIDER_TEST(the_foundation_reference_program_logs_cider_result_42_and_returns_42) {
+ORVYN_TEST(the_foundation_reference_program_logs_orvyn_result_42_and_returns_42) {
     Run r = run(bin("foundation_hello"));
     expect_exit(r, 42, "foundation_hello");
-    CHECK_EQ(r.err, std::string("CIDER result: 42\n"));           // NSLog writes the bare message to stderr (no timestamp prefix)
+    CHECK_EQ(r.err, std::string("ORVYN result: 42\n"));           // NSLog writes the bare message to stderr (no timestamp prefix)
     CHECK_EQ(r.out, std::string());
     CHECK_EQ(r.r.objc_live_objects, uint64_t{0});                  // the pool released everything the literals created
 }
 
-CIDER_TEST(nsstring_behaviour_is_checked_by_guest_code) {
+ORVYN_TEST(nsstring_behaviour_is_checked_by_guest_code) {
     Run r = run(bin("foundation_string"));
     expect_exit(r, 0, "foundation_string");
     CHECK(r.err.find("FAIL") == std::string::npos);
@@ -57,7 +57,7 @@ CIDER_TEST(nsstring_behaviour_is_checked_by_guest_code) {
     CHECK_EQ(r.r.objc_live_objects, uint64_t{0});
 }
 
-CIDER_TEST(collections_and_numbers_are_checked_by_guest_code) {
+ORVYN_TEST(collections_and_numbers_are_checked_by_guest_code) {
     Run r = run(bin("foundation_collections"));
     expect_exit(r, 0, "foundation_collections");
     CHECK(r.err.find("FAIL") == std::string::npos);
@@ -65,7 +65,7 @@ CIDER_TEST(collections_and_numbers_are_checked_by_guest_code) {
     CHECK_EQ(r.r.objc_live_objects, uint64_t{0});
 }
 
-CIDER_TEST(guest_subclasses_of_nsobject_balance_retains_and_pools) {
+ORVYN_TEST(guest_subclasses_of_nsobject_balance_retains_and_pools) {
     Run r = run(bin("foundation_subclass"));
     expect_exit(r, 0, "foundation_subclass");
     CHECK(r.err.find("FAIL") == std::string::npos);
@@ -73,7 +73,7 @@ CIDER_TEST(guest_subclasses_of_nsobject_balance_retains_and_pools) {
     CHECK_EQ(r.r.objc_live_objects, uint64_t{0});
 }
 
-CIDER_TEST(foundation_misuse_ends_the_guest_with_an_exception_style_diagnosis) {
+ORVYN_TEST(foundation_misuse_ends_the_guest_with_an_exception_style_diagnosis) {
     const struct { const char* mode; const char* needle; } cases[] = {
         {"a", "'NSRangeException', reason: '*** -[NSArray objectAtIndex:]: index 5 beyond bounds [0 .. 1]'"},
         {"n", "'NSInvalidArgumentException', reason: '*** -[NSMutableArray addObject:]: object cannot be nil'"},
@@ -93,7 +93,7 @@ CIDER_TEST(foundation_misuse_ends_the_guest_with_an_exception_style_diagnosis) {
     }
 }
 
-CIDER_TEST(the_foundation_fixture_is_a_real_macho_linked_against_the_foundation_framework) {
+ORVYN_TEST(the_foundation_fixture_is_a_real_macho_linked_against_the_foundation_framework) {
     // The fixture is the compiler/linker output, not a host-side stand-in: it carries the Foundation load command.
     auto bytes = read_file(bin("foundation_hello"), 32u << 20);
     CHECK(bytes.ok());
@@ -102,16 +102,16 @@ CIDER_TEST(the_foundation_fixture_is_a_real_macho_linked_against_the_foundation_
     CHECK(text.find("Foundation.framework/Versions/C/Foundation") != std::string::npos);     // really linked against Foundation
 }
 
-CIDER_TEST(patching_the_literal_in_the_macho_changes_what_nslog_prints) {
-    // The text and the numbers come from the compiled file: change the bytes of the @"CIDER" literal in a copy and the output follows.
+ORVYN_TEST(patching_the_literal_in_the_macho_changes_what_nslog_prints) {
+    // The text and the numbers come from the compiled file: change the bytes of the @"ORVYN" literal in a copy and the output follows.
     auto b = read_file(bin("foundation_hello"), 32u << 20);
     CHECK(b.ok());
     if (!b.ok()) return;
     std::vector<uint8_t> bytes = b.value();
-    const char needle[] = "CIDER";                              // the C string behind the constant string object (also inside "CIDER result")
+    const char needle[] = "ORVYN";                              // the C string behind the constant string object (also inside "ORVYN result")
     size_t hits = 0;
     for (size_t i = 0; i + sizeof(needle) <= bytes.size(); ++i)
-        if (std::memcmp(bytes.data() + i, needle, sizeof(needle)) == 0) { bytes[i] = 'S'; ++hits; }   // "CIDER\0" with the terminator: only the literal
+        if (std::memcmp(bytes.data() + i, needle, sizeof(needle)) == 0) { bytes[i] = 'S'; ++hits; }   // "ORVYN\0" with the terminator: only the literal
     CHECK(hits >= 1);
     guest::GuestConfig cfg;
     cfg.args = {"foundation_hello"};
@@ -121,5 +121,5 @@ CIDER_TEST(patching_the_literal_in_the_macho_changes_what_nslog_prints) {
     auto out = guest::run_in_process(ByteView(bytes), cfg);
     CHECK_EQ(out.state, guest::State::Exited);
     CHECK_EQ(out.exit_code, 42);
-    CHECK_EQ(err, std::string("SIDER result: 42\n"));
+    CHECK_EQ(err, std::string("SRVYN result: 42\n"));
 }

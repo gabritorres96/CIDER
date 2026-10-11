@@ -1,4 +1,4 @@
 C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\two\libscale.dylib:
 
 Exports trie:
-0x00000280  _cider_scale
+0x00000280  _orvyn_scale

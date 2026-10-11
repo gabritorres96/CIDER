@@ -1,4 +1,4 @@
-# libdispatch subset (CIDER 0.5.2)
+# libdispatch subset (ORVYN 0.5.2)
 
 Implemented in `src/dispatch/dispatch.cpp`. A controlled subset of Grand Central Dispatch, **not** libdispatch: no sources, I/O channels, data objects, workloops, QoS overrides,
 target queues, suspend/resume.

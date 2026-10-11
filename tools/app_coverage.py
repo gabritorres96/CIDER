@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-"""Static coverage of a macOS application against what CIDER implements. Nothing is executed: llvm-objdump reads the Mach-O file.
+"""Static coverage of a macOS application against what ORVYN implements. Nothing is executed: llvm-objdump reads the Mach-O file.
 
-usage: python -I tools/app_coverage.py <App.app | executable> --cider <cider.exe> --objdump <llvm-objdump.exe> [--json out.json]
+usage: python -I tools/app_coverage.py <App.app | executable> --orvyn <orvyn.exe> --objdump <llvm-objdump.exe> [--json out.json]
 
-Reports: architecture slices, linked libraries (and which of them CIDER provides), Swift usage, and per library the imported symbols / classes that CIDER
+Reports: architecture slices, linked libraries (and which of them ORVYN provides), Swift usage, and per library the imported symbols / classes that ORVYN
 implements versus the ones it does not. "Implemented" means a host function or class exists, not that its behaviour matches Apple's.
 """
 import argparse, collections, json, os, plistlib, re, subprocess, sys
@@ -42,14 +42,14 @@ def imports(objdump, exe):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("app")
-    ap.add_argument("--cider", required=True)
+    ap.add_argument("--orvyn", required=True)
     ap.add_argument("--objdump", required=True)
     ap.add_argument("--json")
     a = ap.parse_args()
     exe = main_executable(a.app)
     implemented = collections.defaultdict(set)
     classes = set()
-    for line in run([a.cider, "sdk-scan", "@implemented"]).splitlines():
+    for line in run([a.orvyn, "sdk-scan", "@implemented"]).splitlines():
         if "\t" in line:
             lib, name = line.split("\t", 1)
             (classes if lib == "class" else implemented[lib]).add(name)
@@ -72,7 +72,7 @@ def main():
         total_ok += len(ok)
         report["libraries"][lib] = {"imported": len(syms), "implemented": len(ok), "missing": len(missing), "missing_sample": missing[:12], "implemented_names": ok}
     report["implemented_total"] = total_ok
-    print(f"{report['executable']}: {len(imps)} imported symbols, {total_ok} implemented by CIDER; Swift libraries linked: {len(report['swift_libraries'])}")
+    print(f"{report['executable']}: {len(imps)} imported symbols, {total_ok} implemented by ORVYN; Swift libraries linked: {len(report['swift_libraries'])}")
     for lib, r in sorted(report["libraries"].items(), key=lambda kv: -kv[1]["imported"]):
         print(f"  {lib:34s} imported {r['imported']:5d}  implemented {r['implemented']:4d}")
     if a.json:

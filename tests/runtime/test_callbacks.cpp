@@ -1,17 +1,17 @@
-// Host -> guest callbacks (CIDER 0.4.0). ABI-level tests use hand-assembled System V code and test host functions, so the
+// Host -> guest callbacks (ORVYN 0.4.0). ABI-level tests use hand-assembled System V code and test host functions, so the
 // bridge is verified without any compiler; the libSystem-level tests (qsort, bsearch, atexit) run real Mach-O fixtures whose
 // comparators and handlers are machine code of the guest program.
 #include <cmath>
 #include <cstring>
 #include <functional>
 
-#include "cider/abi.hpp"
-#include "cider/guest.hpp"
+#include "orvyn/abi.hpp"
+#include "orvyn/guest.hpp"
 #include "guest_code.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 
 namespace {
 
@@ -125,7 +125,7 @@ const Code kPair = {0xB8, 0x14, 0, 0, 0, 0xBA, 0x16, 0, 0, 0, 0xC3};         // 
 
 }  // namespace
 
-CIDER_TEST(callback_returns_an_integer_computed_by_guest_code) {
+ORVYN_TEST(callback_returns_an_integer_computed_by_guest_code) {
     Fixture f;
     CodePage add(kAdd);
     Validator v;
@@ -143,7 +143,7 @@ CIDER_TEST(callback_returns_an_integer_computed_by_guest_code) {
     CHECK_EQ(static_cast<int32_t>(run_code(framed(body)).value), 42);
 }
 
-CIDER_TEST(callback_with_double_arguments_and_result) {
+ORVYN_TEST(callback_with_double_arguments_and_result) {
     Fixture f;
     CodePage add(kAddD);
     Validator v;
@@ -159,7 +159,7 @@ CIDER_TEST(callback_with_double_arguments_and_result) {
     CHECK_EQ(from_bits(run_code(framed(body)).value), 41.75);
 }
 
-CIDER_TEST(callback_with_mixed_integer_and_double_arguments) {
+ORVYN_TEST(callback_with_mixed_integer_and_double_arguments) {
     Fixture f;
     CodePage cb(kMixed);
     Validator v;
@@ -171,7 +171,7 @@ CIDER_TEST(callback_with_mixed_integer_and_double_arguments) {
     CHECK_EQ(from_bits(run_code(framed(body)).value), 14.5);                   // 2.5 + 5 + 7
 }
 
-CIDER_TEST(callback_with_eight_integer_arguments_uses_the_guest_stack) {
+ORVYN_TEST(callback_with_eight_integer_arguments_uses_the_guest_stack) {
     Fixture f;
     CodePage cb(kStackSum);
     Validator v;
@@ -182,7 +182,7 @@ CIDER_TEST(callback_with_eight_integer_arguments_uses_the_guest_stack) {
     CHECK_EQ(run_code(framed(body)).value, uint64_t{70 + 80});                  // the 7th and 8th arguments
 }
 
-CIDER_TEST(callback_returns_a_two_register_aggregate) {
+ORVYN_TEST(callback_returns_a_two_register_aggregate) {
     Fixture f;
     CodePage cb(kPair);
     Validator v;
@@ -193,7 +193,7 @@ CIDER_TEST(callback_returns_a_two_register_aggregate) {
     CHECK_EQ(run_code(framed(body)).value, uint64_t{42});                      // rax (20) + rdx (22)
 }
 
-CIDER_TEST(nested_callbacks_guest_to_host_to_guest_to_host_to_guest) {
+ORVYN_TEST(nested_callbacks_guest_to_host_to_guest_to_host_to_guest) {
     Fixture f;
     CodePage add(kAdd);
     // outer(a, b) = host_apply(add, a, b) + 1     -- the outer function is itself a callback target
@@ -215,7 +215,7 @@ CIDER_TEST(nested_callbacks_guest_to_host_to_guest_to_host_to_guest) {
     CHECK_EQ(static_cast<int32_t>(run_code(framed(body)).value), 42);           // 20 + 21 + 1
 }
 
-CIDER_TEST(callback_depth_is_limited_and_the_guest_survives_the_refusal) {
+ORVYN_TEST(callback_depth_is_limited_and_the_guest_survives_the_refusal) {
     Fixture f;
     // rec(x): if x == 0 return 0 ; return host_apply(rec, x-1, 0) + 1.  It finds its own address with a RIP-relative lea.
     Code rec = {0x85, 0xFF,                                  // 0:  test edi, edi
@@ -242,7 +242,7 @@ CIDER_TEST(callback_depth_is_limited_and_the_guest_survives_the_refusal) {
     CHECK_EQ(abi::callback_depth(), 0u);                                          // the counter unwound completely
 }
 
-CIDER_TEST(invalid_callback_targets_are_refused_and_nothing_runs) {
+ORVYN_TEST(invalid_callback_targets_are_refused_and_nothing_runs) {
     Fixture f;
     CodePage add(kAdd);
     Validator v;
@@ -261,7 +261,7 @@ CIDER_TEST(invalid_callback_targets_are_refused_and_nothing_runs) {
     CHECK(r.refused);
 }
 
-CIDER_TEST(exit_inside_a_nested_callback_unwinds_every_host_frame) {
+ORVYN_TEST(exit_inside_a_nested_callback_unwinds_every_host_frame) {
     Fixture f;
     // callee: calls the raw exit function. outer: host_apply(callee) ; mov eax, 5 (must not run)
     Code callee;
@@ -281,7 +281,7 @@ CIDER_TEST(exit_inside_a_nested_callback_unwinds_every_host_frame) {
     CHECK_EQ(abi::callback_depth(), 0u);
 }
 
-CIDER_TEST(the_interrupted_frame_red_zone_survives_a_callback_that_uses_a_lot_of_stack) {
+ORVYN_TEST(the_interrupted_frame_red_zone_survives_a_callback_that_uses_a_lot_of_stack) {
     Fixture f;
     // callee: sub rsp,4096 ; write 0xEE over the whole area ; add rsp,4096 ; xor eax,eax ; ret
     Code callee = {0x48, 0x81, 0xEC, 0x00, 0x10, 0x00, 0x00,                     // sub rsp,4096
@@ -321,55 +321,55 @@ Run run_fixture(const std::string& name, std::vector<std::string> args = {}) {
 }
 }  // namespace
 
-CIDER_TEST(qsort_calls_a_mach_o_comparator_and_sorts_the_array) {
+ORVYN_TEST(qsort_calls_a_mach_o_comparator_and_sorts_the_array) {
     Run r = run_fixture("qsort_ints");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 42);               // 42 only if the comparator ran (calls > 0) and the array is sorted
     CHECK_EQ(r.out, std::string("0 1 2 3 4 5 6 7 8 9 \ncomparisons>0: 1\n"));
 }
 
-CIDER_TEST(qsort_of_strings_records_and_bsearch) {
+ORVYN_TEST(qsort_of_strings_records_and_bsearch) {
     Run r = run_fixture("qsort_records");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 42);
     CHECK_EQ(r.out, std::string("apple banana cherry fig pear \n1:1 1:4 2:3 3:0 3:2 3:5 \n"));   // strcmp from libSystem; stable records
 }
 
-CIDER_TEST(a_comparator_may_call_qsort_itself) {
+ORVYN_TEST(a_comparator_may_call_qsort_itself) {
     Run r = run_fixture("qsort_nested");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 42);
 }
 
-CIDER_TEST(atexit_handlers_run_in_reverse_order_after_main) {
+ORVYN_TEST(atexit_handlers_run_in_reverse_order_after_main) {
     Run r = run_fixture("atexit_order");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 5);                                                   // main's value is kept
     CHECK_EQ(r.out, std::string("main\nhandler 3\nhandler 1\nhandler 2\nhandler 1\n"));
 }
 
-CIDER_TEST(exit_in_an_atexit_handler_replaces_the_exit_code) {
+ORVYN_TEST(exit_in_an_atexit_handler_replaces_the_exit_code) {
     Run r = run_fixture("atexit_exit");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 9);
     CHECK_EQ(r.out, std::string("quitter\n"));                                    // "first" never runs
 }
 
-CIDER_TEST(underscore_exit_skips_atexit_handlers) {
+ORVYN_TEST(underscore_exit_skips_atexit_handlers) {
     Run r = run_fixture("atexit_skipped");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 3);
     CHECK_EQ(r.out, std::string("main\n"));
 }
 
-CIDER_TEST(exit_in_a_qsort_comparator_stops_the_sort_and_runs_atexit) {
+ORVYN_TEST(exit_in_a_qsort_comparator_stops_the_sort_and_runs_atexit) {
     Run r = run_fixture("qsort_exit");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 11);
     CHECK_EQ(r.out, std::string("comparing\nbye\n"));
 }
 
-CIDER_TEST(qsort_with_an_invalid_comparator_traps_the_guest) {
+ORVYN_TEST(qsort_with_an_invalid_comparator_traps_the_guest) {
     for (const char* arg : {"n", "d", "l", "h"}) {
         Run r = run_fixture("qsort_bad", {arg});
         if (r.r.state != guest::State::Faulted) { report_failure(__FILE__, __LINE__, std::string("not faulted for ") + arg); continue; }

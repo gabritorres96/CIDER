@@ -1,5 +1,5 @@
 @echo off
-rem Builds the CIDER 0.5 AppKit fixtures: real Mach-O x86_64 Objective-C programs (clang + ld64.lld) that create windows through the AppKit subset.
+rem Builds the ORVYN 0.5 AppKit fixtures: real Mach-O x86_64 Objective-C programs (clang + ld64.lld) that create windows through the AppKit subset.
 rem The hand-written headers and the framework stubs are shared with the Objective-C fixtures (tests\fixtures\objc\include and \sysroot).
 rem     tools\llvm-env.cmd tools\gen-appkit-fixtures.cmd
 setlocal enabledelayedexpansion

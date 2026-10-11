@@ -2,7 +2,7 @@
 // Synthetic DMG fixtures: a minimal ISO 9660 + Joliet writer (the filesystem hdiutil produces for
 // "hybrid" images) wrapped in a UDIF container (raw or zlib-"stored" chunks).
 //
-// These are NOT produced by Apple tools. They exercise CIDER's UDIF parser and the 7-Zip backend;
+// These are NOT produced by Apple tools. They exercise ORVYN's UDIF parser and the 7-Zip backend;
 // they say nothing about HFS+/APFS support (no HFS+/APFS writer exists in this project).
 #include <algorithm>
 #include <cstdint>
@@ -12,7 +12,7 @@
 
 #include "macho_builder.hpp"
 
-namespace cider::testing {
+namespace orvyn::testing {
 
 struct FsNode {
     std::string name;
@@ -121,7 +121,7 @@ inline void volume_descriptor(Buf& b, uint8_t type, const std::string& volume, u
     both32(b, path_size);
     b.u32(l_lba); b.u32(0); b.be32(m_lba); b.be32(0);
     record(b, std::string(1, '\0'), joliet ? root.jol_lba : root.iso_lba, joliet ? root.jol_size : root.iso_size, true);
-    fixed_text(b, "", 128); fixed_text(b, "", 128); fixed_text(b, "", 128); fixed_text(b, "CIDER TEST FIXTURE", 128);
+    fixed_text(b, "", 128); fixed_text(b, "", 128); fixed_text(b, "", 128); fixed_text(b, "ORVYN TEST FIXTURE", 128);
     fixed_text(b, "", 37); fixed_text(b, "", 37); fixed_text(b, "", 37);
     for (int i = 0; i < 4; ++i) { fixed_text(b, "2024010100000000", 16, '0'); b.u8(0); }
     b.u8(1); b.u8(0);
@@ -130,7 +130,7 @@ inline void volume_descriptor(Buf& b, uint8_t type, const std::string& volume, u
 
 }  // namespace detail
 
-inline std::vector<uint8_t> build_iso(const FsNode& root_node, const std::string& volume = "CIDERTEST") {
+inline std::vector<uint8_t> build_iso(const FsNode& root_node, const std::string& volume = "ORVYNTEST") {
     using namespace detail;
     std::vector<N> n;
     std::vector<int> bfs;
@@ -187,7 +187,7 @@ struct DmgOptions {
     DmgCorrupt corrupt = DmgCorrupt::None;
     bool real_layout = false;  // add the metadata partitions hdiutil writes (MBR, GPT header, free space)
     DmgCodec codec = DmgCodec::Raw;
-    std::string partition_name = "disk image (CIDER_ISO : 1)";
+    std::string partition_name = "disk image (ORVYN_ISO : 1)";
     uint32_t chunk_sectors = 2048;
     uint32_t version = 4;
     uint32_t header_size = 512;
@@ -361,4 +361,4 @@ inline FsNode example_app_tree(const std::vector<uint8_t>& exe = build_macho({})
     });
 }
 
-}  // namespace cider::testing
+}  // namespace orvyn::testing

@@ -1,4 +1,4 @@
-// Interactive GUI tests (CIDER 0.5.11): the REAL cider.exe runs hello_window; this controller process finds its window by enumerating top-level windows of the
+// Interactive GUI tests (ORVYN 0.5.11): the REAL orvyn.exe runs hello_window; this controller process finds its window by enumerating top-level windows of the
 // worker, reads and drives the controls with ordinary window messages (BM_CLICK, WM_GETTEXT, WM_CLOSE) and checks the program's reaction. Nothing in the runtime
 // knows about the test. They need an interactive Windows desktop: without one (service session, CI) they are skipped.
 //
@@ -16,17 +16,17 @@
 #include <thread>
 #include <vector>
 
-#include "cider/util.hpp"
+#include "orvyn/util.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-#define REQUIRE_MSG(cond, msg) do { if (!(cond)) { cider::testing::report_failure(__FILE__, __LINE__, msg); throw cider::testing::AbortTest{}; } } while (0)
+using namespace orvyn;
+#define REQUIRE_MSG(cond, msg) do { if (!(cond)) { orvyn::testing::report_failure(__FILE__, __LINE__, msg); throw orvyn::testing::AbortTest{}; } } while (0)
 namespace fs = std::filesystem;
 
 namespace {
 
 bool desktop_available() {
-    if (std::getenv("CIDER_NO_GUI_TESTS")) return false;
+    if (std::getenv("ORVYN_NO_GUI_TESTS")) return false;
     HDESK d = OpenInputDesktop(0, FALSE, DESKTOP_SWITCHDESKTOP);
     if (!d) return false;
     CloseDesktop(d);
@@ -60,13 +60,13 @@ struct Controls {
     HWND click_me = nullptr, close = nullptr, counter = nullptr, hello = nullptr, subtitle = nullptr;
 };
 
-// the program under test: cider.exe run <fixture>, with stdout/stderr going to files
+// the program under test: orvyn.exe run <fixture>, with stdout/stderr going to files
 class Program {
 public:
     explicit Program(const fs::path& fixture, const std::string& extra = "--timeout 90") {
-        const char* exe = std::getenv("CIDER_EXE");
-        REQUIRE_MSG(exe != nullptr, "CIDER_EXE is not set");
-        out_ = fs::temp_directory_path() / ("cider-gui-test-" + std::to_string(GetCurrentProcessId()) + ".log");
+        const char* exe = std::getenv("ORVYN_EXE");
+        REQUIRE_MSG(exe != nullptr, "ORVYN_EXE is not set");
+        out_ = fs::temp_directory_path() / ("orvyn-gui-test-" + std::to_string(GetCurrentProcessId()) + ".log");
         SECURITY_ATTRIBUTES sa{sizeof sa, nullptr, TRUE};
         HANDLE f = CreateFileW(out_.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, &sa, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
         STARTUPINFOW si{sizeof si};
@@ -77,7 +77,7 @@ public:
         PROCESS_INFORMATION pi{};
         const BOOL ok = CreateProcessW(nullptr, cmd.data(), nullptr, nullptr, TRUE, 0, nullptr, nullptr, &si, &pi);
         CloseHandle(f);
-        REQUIRE_MSG(ok != 0, "cannot start cider.exe");
+        REQUIRE_MSG(ok != 0, "cannot start orvyn.exe");
         process_ = pi.hProcess;
         pid_ = pi.dwProcessId;
         CloseHandle(pi.hThread);
@@ -94,14 +94,14 @@ public:
         for (int depth = 0; pid && depth < 6; ++depth, pid = parent_of(pid)) if (pid == pid_) return true;
         return false;
     }
-    // waits for the program's top-level CIDERWindow
+    // waits for the program's top-level ORVYNWindow
     HWND find_window(int timeout_ms) {
         struct Ctx { const Program* p; HWND found; } ctx{this, nullptr};
         const auto end = std::chrono::steady_clock::now() + std::chrono::milliseconds(timeout_ms);
         while (std::chrono::steady_clock::now() < end) {
             EnumWindows([](HWND h, LPARAM l) -> BOOL {
                 auto* c = reinterpret_cast<Ctx*>(l);
-                if (class_of(h) != L"CIDERWindow" || !IsWindowVisible(h)) return TRUE;
+                if (class_of(h) != L"ORVYNWindow" || !IsWindowVisible(h)) return TRUE;
                 DWORD pid = 0;
                 GetWindowThreadProcessId(h, &pid);
                 if (c->p->is_descendant(pid)) { c->found = h; return FALSE; }
@@ -138,7 +138,7 @@ Controls inspect(HWND window) {
         else if (cls == L"Button" && t == L"Close") c->close = h;
         else if (cls == L"Static" && t.rfind(L"Clicks:", 0) == 0) c->counter = h;
         else if (cls == L"Static" && t == L"Hello from macOS!") c->hello = h;
-        else if (cls == L"Static" && t == L"Running through CIDER 0.5") c->subtitle = h;
+        else if (cls == L"Static" && t == L"Running through ORVYN 0.5") c->subtitle = h;
         return TRUE;
     }, reinterpret_cast<LPARAM>(&c));
     return c;
@@ -155,15 +155,15 @@ bool wait_for_text(HWND h, const std::wstring& expected, int timeout_ms) {
 
 }  // namespace
 
-CIDER_TEST(hello_window_creates_a_real_window_with_the_program_controls_and_reacts_to_button_clicks) {
+ORVYN_TEST(hello_window_creates_a_real_window_with_the_program_controls_and_reacts_to_button_clicks) {
     if (!desktop_available()) SKIP("no interactive desktop");
-    Program program(fs::path(CIDER_APPKIT_FIXTURES_DIR) / "bin" / "hello_window" / "hello_window");
+    Program program(fs::path(ORVYN_APPKIT_FIXTURES_DIR) / "bin" / "hello_window" / "hello_window");
     HWND w = program.find_window(20000);
     REQUIRE_MSG(w != nullptr, "the program did not create its window");
 
     // the window the Objective-C code described
-    CHECK(text_of(w) == L"CIDER — Hello from macOS");
-    CHECK(class_of(w) == L"CIDERWindow" && IsWindowVisible(w));
+    CHECK(text_of(w) == L"ORVYN — Hello from macOS");
+    CHECK(class_of(w) == L"ORVYNWindow" && IsWindowVisible(w));
     Controls c = inspect(w);
     CHECK(c.click_me != nullptr && c.close != nullptr && c.counter != nullptr && c.hello != nullptr && c.subtitle != nullptr);
     if (!c.click_me || !c.close || !c.counter) return;
@@ -192,9 +192,9 @@ CIDER_TEST(hello_window_creates_a_real_window_with_the_program_controls_and_reac
     CHECK(log.find("Application terminating\n") != std::string::npos && log.find("Guest exit code: 0") != std::string::npos);
 }
 
-CIDER_TEST(closing_the_window_with_the_title_bar_button_ends_the_program_cleanly) {
+ORVYN_TEST(closing_the_window_with_the_title_bar_button_ends_the_program_cleanly) {
     if (!desktop_available()) SKIP("no interactive desktop");
-    Program program(fs::path(CIDER_APPKIT_FIXTURES_DIR) / "bin" / "hello_window" / "hello_window");
+    Program program(fs::path(ORVYN_APPKIT_FIXTURES_DIR) / "bin" / "hello_window" / "hello_window");
     HWND w = program.find_window(20000);
     REQUIRE_MSG(w != nullptr, "the program did not create its window");
     PostMessageW(w, WM_CLOSE, 0, 0);                              // what the X button sends
@@ -204,10 +204,10 @@ CIDER_TEST(closing_the_window_with_the_title_bar_button_ends_the_program_cleanly
     CHECK(program.output().find("Window closing after 0 click(s)\n") != std::string::npos);
 }
 
-CIDER_TEST(two_runs_in_a_row_leave_no_windows_behind) {
+ORVYN_TEST(two_runs_in_a_row_leave_no_windows_behind) {
     if (!desktop_available()) SKIP("no interactive desktop");
     for (int i = 0; i < 2; ++i) {
-        Program program(fs::path(CIDER_APPKIT_FIXTURES_DIR) / "bin" / "hello_window" / "hello_window");
+        Program program(fs::path(ORVYN_APPKIT_FIXTURES_DIR) / "bin" / "hello_window" / "hello_window");
         HWND w = program.find_window(20000);
         REQUIRE_MSG(w != nullptr, "the program did not create its window");
         PostMessageW(w, WM_CLOSE, 0, 0);
@@ -217,7 +217,7 @@ CIDER_TEST(two_runs_in_a_row_leave_no_windows_behind) {
     }
 }
 
-// ---- CoreGraphics drawing on a real window (CIDER 0.6) ----------------------------------------------------------------------------------------------------------
+// ---- CoreGraphics drawing on a real window (ORVYN 0.6) ----------------------------------------------------------------------------------------------------------
 namespace {
 
 struct Capture {
@@ -283,12 +283,12 @@ HWND find_child_text(HWND parent, const wchar_t* cls, const wchar_t* text) {
 
 }  // namespace
 
-CIDER_TEST(cg_draw_test_paints_real_pixels_through_wm_paint_and_the_redraw_button_repaints) {
+ORVYN_TEST(cg_draw_test_paints_real_pixels_through_wm_paint_and_the_redraw_button_repaints) {
     if (!desktop_available()) SKIP("no interactive desktop");
-    Program program(fs::path(CIDER_APPKIT_FIXTURES_DIR) / "bin" / "cg_draw_test" / "cg_draw_test");
+    Program program(fs::path(ORVYN_APPKIT_FIXTURES_DIR) / "bin" / "cg_draw_test" / "cg_draw_test");
     HWND w = program.find_window(20000);
     REQUIRE_MSG(w != nullptr, "the program did not create its window");
-    CHECK(text_of(w) == L"CIDER — CoreGraphics Drawing");
+    CHECK(text_of(w) == L"ORVYN — CoreGraphics Drawing");
     HWND redraw = find_child_text(w, L"Button", L"Redraw");
     REQUIRE_MSG(redraw != nullptr, "the Redraw button does not exist");
     const double k = GetDpiForWindow(w) / 96.0;

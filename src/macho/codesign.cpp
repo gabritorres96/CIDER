@@ -2,7 +2,7 @@
 
 #include <format>
 
-namespace cider::macho {
+namespace orvyn::macho {
 namespace {
 constexpr uint32_t kSuperBlob = 0xfade0cc0, kCodeDirectory = 0xfade0c02, kRequirements = 0xfade0c01,
                    kEntitlements = 0xfade7171, kDerEntitlements = 0xfade7172, kCms = 0xfade0b01;
@@ -61,4 +61,4 @@ void parse_code_signature(ByteView blob, CodeSignature& out, std::vector<std::st
     if (!out.has_code_directory) warnings.emplace_back("code signature: no CodeDirectory found");
 }
 
-}  // namespace cider::macho
+}  // namespace orvyn::macho

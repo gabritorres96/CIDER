@@ -1,9 +1,9 @@
 #include <format>
 #include <optional>
 
-#include "cider/memory.hpp"
+#include "orvyn/memory.hpp"
 
-namespace cider::memory {
+namespace orvyn::memory {
 
 const char* to_string(Prot p) noexcept {
     switch (p) {
@@ -39,4 +39,4 @@ std::optional<uint64_t> align_up(uint64_t v, uint64_t align) noexcept {
     return v + (align - rem);
 }
 
-}  // namespace cider::memory
+}  // namespace orvyn::memory

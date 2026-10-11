@@ -1,5 +1,5 @@
 @echo off
-rem Builds the CIDER 0.4 Objective-C fixtures: real Mach-O x86_64 programs whose classes, selectors and messages are compiled by
+rem Builds the ORVYN 0.4 Objective-C fixtures: real Mach-O x86_64 programs whose classes, selectors and messages are compiled by
 rem clang (Apple objc2 ABI metadata, objc_msgSend calls) and linked by ld64.lld against hand-written stubs (tests\fixtures\objc\sysroot),
 rem plus llvm-objdump snapshots (headers, symbols, rebase/bind). There is no Apple SDK: the headers in tests\fixtures\objc\include declare
 rem only what the fixtures use.
@@ -28,7 +28,7 @@ clang %COMMON% -fobjc-arc -fno-objc-exceptions src\objc_arc.m -o obj\objc_arc.o 
 mkdir bin\objc_arc
 %LD% -o bin\objc_arc\objc_arc obj\objc_arc.o || exit /b 1
 
-rem ---- Foundation subset (CIDER 0.4.6): ARC programs and MRC programs, linked against the hand-written Foundation.tbd -----------------
+rem ---- Foundation subset (ORVYN 0.4.6): ARC programs and MRC programs, linked against the hand-written Foundation.tbd -----------------
 set "LDF=ld64.lld -arch x86_64 -platform_version macos 10.15.0 12.0.0 -syslibroot sysroot -lSystem -lobjc -framework Foundation -framework CoreFoundation -framework CoreGraphics"
 for %%n in (foundation_hello foundation_string foundation_collections dispatch_basic dispatch_error foundation_extra) do (
   clang %COMMON% -fobjc-arc -fno-objc-exceptions src\%%n.m -o obj\%%n.o || exit /b 1
@@ -41,7 +41,7 @@ for %%n in (foundation_subclass foundation_error blocks_basic blocks_error cf_ba
   %LDF% -o bin\%%n\%%n obj\%%n.o || exit /b 1
 )
 
-rem ---- @try/@catch: compiled WITH Objective-C exceptions; CIDER must refuse it (no unwinder) -----------------------------------------------
+rem ---- @try/@catch: compiled WITH Objective-C exceptions; ORVYN must refuse it (no unwinder) -----------------------------------------------
 clang %COMMON% -fobjc-exceptions -fexceptions src\objc_try.m -o obj\objc_try.o || exit /b 1
 mkdir bin\objc_try
 %LDF% -o bin\objc_try\objc_try obj\objc_try.o || exit /b 1

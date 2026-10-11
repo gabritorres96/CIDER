@@ -1,1 +1,1 @@
-int cider_scale(int v, int f) { return v * f; }
+int orvyn_scale(int v, int f) { return v * f; }

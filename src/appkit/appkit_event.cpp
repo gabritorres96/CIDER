@@ -2,7 +2,7 @@
 #include "appkit_internal.hpp"
 #include "appkit_install.hpp"
 
-namespace cider::appkit {
+namespace orvyn::appkit {
 namespace {
 
 using abi::GuestRegs;
@@ -63,4 +63,4 @@ void install_event_classes(objc::Runtime& r) {
     });
 }
 
-}  // namespace cider::appkit
+}  // namespace orvyn::appkit

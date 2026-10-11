@@ -1,4 +1,4 @@
-/* CIDER 0.6 drawing life cycle, from the guest side. Three scenarios in one process, no event loop (drawing is forced with -display):
+/* ORVYN 0.6 drawing life cycle, from the guest side. Three scenarios in one process, no event loop (drawing is forced with -display):
      A  40 windows are created, drawn three times each and closed: no object, native window or surface may survive them.
      B  a view closes its own window from inside -drawRect: (the surface and the window disappear in the middle of a repaint).
      C  a view asks for a repaint from inside -drawRect: (must not loop), and a CGContext kept after -drawRect: returned is used (must be refused, not crash).

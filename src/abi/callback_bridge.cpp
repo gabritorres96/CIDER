@@ -1,6 +1,6 @@
 // Calls INTO guest code: the top-level entry (main, initializers, atexit handlers) and host -> guest callbacks (qsort
-// comparators, bsearch, Objective-C method implementations...). Both use cider_enter_guest with a fresh GuestCall record;
-// a nested call simply nests the records: cider_current_call always points to the innermost one, so the thunks of any guest
+// comparators, bsearch, Objective-C method implementations...). Both use orvyn_enter_guest with a fresh GuestCall record;
+// a nested call simply nests the records: orvyn_current_call always points to the innermost one, so the thunks of any guest
 // code that runs inside a callback switch to the host stack of THAT call (below the interrupted host frames).
 //
 // Security / robustness rules enforced here:
@@ -11,10 +11,10 @@
 #include <cstring>
 #include <format>
 
-#include "cider/abi.hpp"
-#include "cider/log.hpp"
+#include "orvyn/abi.hpp"
+#include "orvyn/log.hpp"
 
-namespace cider::abi {
+namespace orvyn::abi {
 namespace {
 
 CallbackValidator g_validator = nullptr;
@@ -67,9 +67,9 @@ GuestCallArgs& GuestCallArgs::push_float(float f) {
 }
 
 void set_callback_validator(CallbackValidator v) { g_validator = v; }
-AbiThreadState save_thread_state() { return {cider_current_call, g_depth, g_stack_lo}; }
+AbiThreadState save_thread_state() { return {orvyn_current_call, g_depth, g_stack_lo}; }
 void restore_thread_state(const AbiThreadState& s) {
-    cider_current_call = s.current;
+    orvyn_current_call = s.current;
     g_depth = s.depth;
     g_stack_lo = s.stack_lo;
 }
@@ -81,10 +81,10 @@ CallOutcome call_guest_args(uint64_t fn, const GuestStack& stack, uint64_t initi
     prepare(call, args, initial_sp & ~uint64_t{15});
     const uint64_t saved_lo = g_stack_lo;
     g_stack_lo = reinterpret_cast<uint64_t>(stack.base()) + 2 * memory::page_size();
-    GuestCall* prev = cider_current_call;
+    GuestCall* prev = orvyn_current_call;
     log::debug(log::Category::Abi, "entering guest function {:#x} (rsp {:#x})", fn, call.stack_top);
-    cider_enter_guest(&call);
-    cider_current_call = prev;
+    orvyn_enter_guest(&call);
+    orvyn_current_call = prev;
     g_stack_lo = saved_lo;
     return finish(call);
 }
@@ -98,7 +98,7 @@ CallOutcome call_guest(uint64_t fn, const GuestStack& stack, uint64_t initial_sp
 CallOutcome call_guest_nested(uint64_t fn, const GuestCallArgs& args) {
     CallOutcome refused;
     refused.refused = true;
-    GuestCall* parent = cider_current_call;
+    GuestCall* parent = orvyn_current_call;
     if (!parent) { refused.refusal = "no guest call is active"; return refused; }
     if (g_depth >= kMaxCallbackDepth) { refused.refusal = std::format("callback nesting deeper than {}", kMaxCallbackDepth); return refused; }
     if (!g_validator || !g_validator(fn)) { refused.refusal = std::format("{:#x} is not executable guest code", fn); return refused; }
@@ -111,9 +111,9 @@ CallOutcome call_guest_nested(uint64_t fn, const GuestCallArgs& args) {
     call.fn = reinterpret_cast<void*>(fn);
     prepare(call, args, top);
     ++g_depth;
-    cider_enter_guest(&call);
+    orvyn_enter_guest(&call);
     --g_depth;
-    cider_current_call = parent;
+    orvyn_current_call = parent;
     if (call.exited) {                       // propagate exit() to the interrupted call: its thunk will unwind
         parent->exit_code = call.exit_code;
         parent->exited = 1;
@@ -121,4 +121,4 @@ CallOutcome call_guest_nested(uint64_t fn, const GuestCallArgs& args) {
     return finish(call);
 }
 
-}  // namespace cider::abi
+}  // namespace orvyn::abi

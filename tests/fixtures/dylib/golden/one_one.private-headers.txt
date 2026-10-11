@@ -192,7 +192,7 @@ Load command 9
 Load command 10
      cmd LC_UUID
  cmdsize 24
-    uuid 4C4C44C7-5555-3144-A1CE-274EDBF19028
+    uuid 4C4C44C3-5555-3144-A118-4938DEBCBB9F
 Load command 11
        cmd LC_BUILD_VERSION
    cmdsize 32

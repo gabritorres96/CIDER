@@ -1,4 +1,4 @@
-// Objective-C runtime (CIDER 0.4.3-0.4.5): metadata parsing checked against llvm-objdump --objc-meta-data, real Apple-ABI programs built by clang
+// Objective-C runtime (ORVYN 0.4.3-0.4.5): metadata parsing checked against llvm-objdump --objc-meta-data, real Apple-ABI programs built by clang
 // and executed through objc_msgSend, runtime construction, categories/+load, ABI return classes, non-fragile layout, error traps and a
 // malformed-metadata matrix. The programs are compiled Objective-C: nothing here interprets source code or fakes a result.
 #include <algorithm>
@@ -8,20 +8,20 @@
 #include <regex>
 #include <sstream>
 
-#include "cider/guest.hpp"
-#include "cider/linker.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/guest.hpp"
+#include "orvyn/linker.hpp"
+#include "orvyn/objc.hpp"
 #include "guest_code.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 namespace fs = std::filesystem;
 
 namespace {
 
-const fs::path kObjc = fs::path(CIDER_OBJC_FIXTURES_DIR);
+const fs::path kObjc = fs::path(ORVYN_OBJC_FIXTURES_DIR);
 
 fs::path bin(const std::string& scenario, const std::string& file = {}) { return kObjc / "bin" / scenario / (file.empty() ? scenario : file); }
 std::vector<uint8_t> load(const fs::path& p) {
@@ -140,12 +140,12 @@ Golden read_golden(const std::string& key) {
 }  // namespace
 
 // ============================== the reference program ==========================================================================
-CIDER_TEST(objective_c_calculator_returns_42_from_a_method_running_in_the_runtime) {
+ORVYN_TEST(objective_c_calculator_returns_42_from_a_method_running_in_the_runtime) {
     Run r = run(bin("objc_calc"));
     expect_exit(r, 42, "objc_calc");
 }
 
-CIDER_TEST(the_result_changes_when_the_method_machine_code_changes) {
+ORVYN_TEST(the_result_changes_when_the_method_machine_code_changes) {
     // patch `lea eax,[rdx+rcx]` (a + b) in -[Calculator add:to:] to `mov eax,edx ; nop` (just a): the guest returns 20
     auto b = load(bin("objc_calc"));
     const std::vector<uint8_t> lea = {0x8d, 0x04, 0x0a};         // leal (%rdx,%rcx), %eax
@@ -156,7 +156,7 @@ CIDER_TEST(the_result_changes_when_the_method_machine_code_changes) {
     expect_exit(r, 20, "patched objc_calc");
 }
 
-CIDER_TEST(runtime_state_after_loading_the_calculator) {
+ORVYN_TEST(runtime_state_after_loading_the_calculator) {
     auto l = prepare(bin("objc_calc"));
     REQUIRE(l->ok);
     objc::Runtime& rt = *l->rt();
@@ -191,7 +191,7 @@ CIDER_TEST(runtime_state_after_loading_the_calculator) {
 }
 
 // ============================== metadata against llvm-objdump ====================================================================
-CIDER_TEST(parsed_metadata_equals_llvm_objdump) {
+ORVYN_TEST(parsed_metadata_equals_llvm_objdump) {
     struct Case { const char* scenario; const char* file; const char* key; };
     for (Case c : {Case{"objc_calc", "objc_calc", "objc_calc_objc_calc"}, Case{"objc_inherit", "objc_inherit", "objc_inherit_objc_inherit"},
                    Case{"objc_category", "objc_category", "objc_category_objc_category"}, Case{"objc_abi", "objc_abi", "objc_abi_objc_abi"},
@@ -227,23 +227,23 @@ CIDER_TEST(parsed_metadata_equals_llvm_objdump) {
 }
 
 // ============================== features ==============================================================================================
-CIDER_TEST(inheritance_super_calls_class_methods_and_layout) { expect_exit(run(bin("objc_inherit")), 42, "objc_inherit"); }
-CIDER_TEST(runtime_api_builds_and_uses_a_class_at_run_time) {
+ORVYN_TEST(inheritance_super_calls_class_methods_and_layout) { expect_exit(run(bin("objc_inherit")), 42, "objc_inherit"); }
+ORVYN_TEST(runtime_api_builds_and_uses_a_class_at_run_time) {
     Run r = run(bin("objc_dynamic"));
     expect_exit(r, 42, "objc_dynamic");
     CHECK_EQ(r.out, std::string("dynamic classes ok\n"));
 }
-CIDER_TEST(categories_load_methods_and_protocol_conformance) {
+ORVYN_TEST(categories_load_methods_and_protocol_conformance) {
     Run r = run(bin("objc_category"));
     expect_exit(r, 42, "objc_category");
     CHECK_EQ(r.out, std::string("loads=2\n"));
 }
-CIDER_TEST(message_abi_covers_every_return_class_nil_receivers_varargs_and_stack_arguments) {
+ORVYN_TEST(message_abi_covers_every_return_class_nil_receivers_varargs_and_stack_arguments) {
     Run r = run(bin("objc_abi"));
     expect_exit(r, 42, "objc_abi");
     CHECK_EQ(r.out, std::string("abi ok\n"));
 }
-CIDER_TEST(non_fragile_layout_slides_instance_variables_of_a_subclass) {
+ORVYN_TEST(non_fragile_layout_slides_instance_variables_of_a_subclass) {
     Run r = run(bin("slide"));
     expect_exit(r, 42, "slide");
     CHECK_EQ(r.out, std::string("area=42 side=5 extra=99 size=32\n"));
@@ -258,7 +258,7 @@ CIDER_TEST(non_fragile_layout_slides_instance_variables_of_a_subclass) {
     CHECK_EQ(in_memory, 24u);                                // the offset VARIABLE in the image was rewritten, as the ABI requires
 }
 
-CIDER_TEST(runtime_errors_end_the_guest_with_a_precise_diagnosis) {
+ORVYN_TEST(runtime_errors_end_the_guest_with_a_precise_diagnosis) {
     const struct { const char* mode; const char* needle; } cases[] = {
         {"u", "-[Thing notImplemented]: unrecognized selector sent to instance"},
         {"c", "+[Thing alsoMissing]: unrecognized selector sent to class"},
@@ -300,7 +300,7 @@ void expect_refused(const std::vector<uint8_t>& bytes, const char* needle, const
 }
 }  // namespace
 
-CIDER_TEST(malformed_objective_c_metadata_is_refused_before_any_guest_code_runs) {
+ORVYN_TEST(malformed_objective_c_metadata_is_refused_before_any_guest_code_runs) {
     const fs::path exe = bin("objc_calc");
     {   // class_ro_t.name -> unmapped address
         Patcher p(exe);
@@ -364,7 +364,7 @@ CIDER_TEST(malformed_objective_c_metadata_is_refused_before_any_guest_code_runs)
     }
 }
 
-CIDER_TEST(mutated_objective_c_images_never_crash_the_runtime_loader) {
+ORVYN_TEST(mutated_objective_c_images_never_crash_the_runtime_loader) {
     const std::vector<std::pair<std::string, std::string>> targets = {{"objc_category", "objc_category"}, {"objc_inherit", "objc_inherit"}, {"slide", "libshape.dylib"}};
     std::mt19937 rng(0x0B1EC7C);
     size_t refused = 0, total = 0;
@@ -402,27 +402,27 @@ CIDER_TEST(mutated_objective_c_images_never_crash_the_runtime_loader) {
 }
 
 // ============================== memory management (0.4.5) ==================================================================
-CIDER_TEST(manual_reference_counting_pools_and_dealloc_chains) {
+ORVYN_TEST(manual_reference_counting_pools_and_dealloc_chains) {
     Run r = run(bin("objc_mrc"));
     expect_exit(r, 42, "objc_mrc");
     CHECK_EQ(r.out, std::string("mrc ok\n"));
     CHECK_EQ(r.r.objc_live_objects, uint64_t{0});                // every object the program created was released and freed
 }
 
-CIDER_TEST(automatic_reference_counting_strong_weak_and_autoreleased_returns) {
+ORVYN_TEST(automatic_reference_counting_strong_weak_and_autoreleased_returns) {
     Run r = run(bin("objc_arc"));
     expect_exit(r, 42, "objc_arc");
     CHECK_EQ(r.out, std::string("arc ok\n"));
     CHECK_EQ(r.r.objc_live_objects, uint64_t{0});
 }
 
-CIDER_TEST(a_program_that_does_not_release_its_object_is_seen_as_leaking_it) {
+ORVYN_TEST(a_program_that_does_not_release_its_object_is_seen_as_leaking_it) {
     Run r = run(bin("objc_calc"));
     expect_exit(r, 42, "objc_calc");
     CHECK_EQ(r.r.objc_live_objects, uint64_t{1});                // the Calculator is never freed by that program
 }
 
-CIDER_TEST(memory_management_errors_end_the_guest_with_a_diagnosis) {
+ORVYN_TEST(memory_management_errors_end_the_guest_with_a_diagnosis) {
     const struct { const char* mode; const char* needle; } cases[] = {
         {"o", "release of"}, {"r", "retain of"}, {"p", "invalid token"}};
     for (auto& c : cases) {

@@ -1,15 +1,15 @@
 // libSystem functions that call BACK into guest code: qsort, bsearch, atexit. The comparator of qsort is a real Mach-O function
-// of the guest (or a libSystem thunk such as strcmp); CIDER's host code never substitutes its own comparison. Every callback
+// of the guest (or a libSystem thunk such as strcmp); ORVYN's host code never substitutes its own comparison. Every callback
 // target is validated first: it must lie in an executable segment of a loaded image or in the libSystem thunk table.
 #include <algorithm>
 #include <cstring>
 #include <numeric>
 #include <vector>
 
-#include "cider/libsystem.hpp"
+#include "orvyn/libsystem.hpp"
 #include "internal.hpp"
 
-namespace cider::libsystem {
+namespace orvyn::libsystem {
 
 bool is_valid_callback(uint64_t fn) {
     RuntimeContext* c = context();
@@ -103,4 +103,4 @@ void add_callback_symbols(std::vector<HostSymbol>& t) {
 }
 }  // namespace detail
 
-}  // namespace cider::libsystem
+}  // namespace orvyn::libsystem

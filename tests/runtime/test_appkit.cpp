@@ -1,14 +1,14 @@
-// AppKit subset (CIDER 0.5.7 - 0.5.11) on the offscreen GUI backend: real Mach-O programs create windows, views and controls; scripted input travels
+// AppKit subset (ORVYN 0.5.7 - 0.5.11) on the offscreen GUI backend: real Mach-O programs create windows, views and controls; scripted input travels
 // the same backend callbacks as Win32 window messages; the Objective-C methods that react are the ones compiled into the program.
 #include "fixture_run.hpp"
 
-using namespace cider::testing;
+using namespace orvyn::testing;
 
 namespace {
 const std::vector<std::string> kScript = {"wait 10", "click Add", "click Add", "click Toggle", "click Disabled", "type abc", "mouse 60 240", "key z", "close", "close"};
 }
 
-CIDER_TEST(appkit_classes_target_action_responders_resize_and_close_behave_inside_the_guest) {
+ORVYN_TEST(appkit_classes_target_action_responders_resize_and_close_behave_inside_the_guest) {
     FixtureOptions o;
     o.gui_backend = "offscreen";
     o.gui_script = kScript;
@@ -21,7 +21,7 @@ CIDER_TEST(appkit_classes_target_action_responders_resize_and_close_behave_insid
     CHECK_EQ(r.r.objc_live_objects, uint64_t{0});                 // views, controls, window and delegate were all released
 }
 
-CIDER_TEST(hello_window_runs_headless_counts_clicks_in_guest_code_and_exits_cleanly) {
+ORVYN_TEST(hello_window_runs_headless_counts_clicks_in_guest_code_and_exits_cleanly) {
     FixtureOptions o;
     o.gui_backend = "offscreen";
     o.gui_script = {"wait 10", "click Click me", "click Click me", "click Click me", "click Close"};
@@ -33,7 +33,7 @@ CIDER_TEST(hello_window_runs_headless_counts_clicks_in_guest_code_and_exits_clea
     CHECK_EQ(r.r.gui_native_objects_after, uint64_t{0});
 }
 
-CIDER_TEST(a_window_left_open_when_the_program_ends_is_destroyed_by_the_runtime) {
+ORVYN_TEST(a_window_left_open_when_the_program_ends_is_destroyed_by_the_runtime) {
     FixtureOptions o;
     o.gui_backend = "offscreen";
     o.gui_script = {"wait 10", "click Click me"};                 // never closes: the script ends, the loop would run forever, so the process is stopped by exit
@@ -41,6 +41,6 @@ CIDER_TEST(a_window_left_open_when_the_program_ends_is_destroyed_by_the_runtime)
     // and an app that terminates by itself: appkit_basic stops its run loop after the second close; here we only check the open-window accounting.
     o.gui_script = {"wait 10", "click Add", "close", "close"};
     FixtureRun r = run_fixture_file(appkit_fixture("appkit_basic"), o);
-    CHECK(r.r.state == cider::guest::State::Exited);
+    CHECK(r.r.state == orvyn::guest::State::Exited);
     CHECK_EQ(r.r.gui_native_objects_after, uint64_t{0});
 }

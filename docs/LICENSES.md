@@ -1,6 +1,6 @@
 # Licences and third-party material
 
-CIDER itself: **MIT** (see `LICENSE`). Chosen as a permissive default; change it deliberately if
+ORVYN itself: **MIT** (see `LICENSE`). Chosen as a permissive default; change it deliberately if
 the project later integrates copyleft components.
 
 ## Build/runtime dependencies
@@ -9,7 +9,7 @@ the project later integrates copyleft components.
 | --- | --- | --- | --- |
 | C++ standard library / MSVC runtime | everything | Microsoft redistributable terms | linked normally |
 | CMake, Visual Studio | build | their own | tools only |
-| **7-Zip** (optional) | `.dmg` extraction | GNU LGPL, with BSD-3-Clause parts and an *unRAR licence restriction* (see <https://www.7-zip.org/license.txt>) | **not bundled, not linked, not redistributed**: CIDER runs an installed `7z.exe` as a separate process. If a future release ships 7-Zip, its licence text must ship with it |
+| **7-Zip** (optional) | `.dmg` extraction | GNU LGPL, with BSD-3-Clause parts and an *unRAR licence restriction* (see <https://www.7-zip.org/license.txt>) | **not bundled, not linked, not redistributed**: ORVYN runs an installed `7z.exe` as a separate process. If a future release ships 7-Zip, its licence text must ship with it |
 
 No third-party code is vendored in the repository. Development-only material that is **not** committed
 (`.toolchain/`, `.validation/`, git-ignored):
@@ -36,6 +36,6 @@ hand-written libSystem `.tbd` stub; they contain no Apple code.
 
 ## Icon
 
-`assets/cider-icon.svg` is a vector re-creation of the project icon (wine-glass outline) supplied
+`assets/orvyn-icon.svg` is a vector re-creation of the project icon (wine-glass outline) supplied
 by the project owner in chat; it was redrawn because the original file was not available to the
 tooling. Replace it with the original artwork if exact fidelity matters.

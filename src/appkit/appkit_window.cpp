@@ -1,13 +1,13 @@
-// NSWindow (CIDER 0.5.7). The native window is created lazily, the first time the window is ordered front (or needs a native handle).
+// NSWindow (ORVYN 0.5.7). The native window is created lazily, the first time the window is ordered front (or needs a native handle).
 // Frames are in AppKit screen space (origin bottom-left of the primary display, y up); the backend converts to Win32 pixels.
 #include <algorithm>
 
-#include "cider/libsystem.hpp"
+#include "orvyn/libsystem.hpp"
 #include "../libsystem/internal.hpp"
 #include "appkit_internal.hpp"
 #include "appkit_install.hpp"
 
-namespace cider::appkit {
+namespace orvyn::appkit {
 namespace {
 
 using abi::GuestRegs;
@@ -343,4 +343,4 @@ void install_window_class(objc::Runtime& r) {
     });
 }
 
-}  // namespace cider::appkit
+}  // namespace orvyn::appkit

@@ -1,16 +1,16 @@
-// stdio subset of CIDER's libSystem. FILE is OPAQUE: only stdin, stdout and stderr exist (their addresses are the
+// stdio subset of ORVYN's libSystem. FILE is OPAQUE: only stdin, stdout and stderr exist (their addresses are the
 // values of the variables ___stdinp/___stdoutp/___stderrp the guest binds to), there is no fopen and no buffering:
 // every call is written straight through, so fflush has nothing to do and output order between stdout and stderr is
-// exactly the call order. printf-family arguments are read with CIDER's own formatter (printf_format.hpp).
+// exactly the call order. printf-family arguments are read with ORVYN's own formatter (printf_format.hpp).
 #include <algorithm>
 #include <cstring>
 
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
-#include "cider/printf_format.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/printf_format.hpp"
 #include "internal.hpp"
 
-namespace cider::libsystem {
+namespace orvyn::libsystem {
 namespace {
 
 using abi::GuestRegs;
@@ -61,7 +61,7 @@ uint64_t w_fwrite(const void* p, uint64_t size, uint64_t count, uint64_t f) {
 }
 int w_fflush(uint64_t f) {
     if (f != 0 && stream_of(f) < 0) return static_cast<int>(fail_errno(detail::kEBADF));
-    return 0;   // output is never buffered by CIDER: everything already reached the sink
+    return 0;   // output is never buffered by ORVYN: everything already reached the sink
 }
 
 // ---- variadic and va_list functions (raw thunks) -----------------------------------------------------------------------
@@ -189,4 +189,4 @@ const std::vector<DataSymbol>& implemented_data_symbols() {
     return table;
 }
 
-}  // namespace cider::libsystem
+}  // namespace orvyn::libsystem

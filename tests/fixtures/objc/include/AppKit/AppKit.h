@@ -1,6 +1,6 @@
-/* Hand-written declarations of the AppKit subset CIDER implements (see docs/APPKIT.md). Not Apple's AppKit.h: the Apple SDK is not redistributed. */
-#ifndef CIDER_APPKIT_H
-#define CIDER_APPKIT_H
+/* Hand-written declarations of the AppKit subset ORVYN implements (see docs/APPKIT.md). Not Apple's AppKit.h: the Apple SDK is not redistributed. */
+#ifndef ORVYN_APPKIT_H
+#define ORVYN_APPKIT_H
 #include "../Foundation/Foundation.h"
 
 enum { NSWindowStyleMaskBorderless = 0, NSWindowStyleMaskTitled = 1, NSWindowStyleMaskClosable = 2, NSWindowStyleMaskMiniaturizable = 4, NSWindowStyleMaskResizable = 8 };

@@ -1,14 +1,14 @@
-// CIDER 0.3 Darwin runtime: the printf formatter, stdio, the file-descriptor layer, time and process identity,
+// ORVYN 0.3 Darwin runtime: the printf formatter, stdio, the file-descriptor layer, time and process identity,
 // exercised both directly (formatter with fake argument readers) and through real Mach-O fixtures that were compiled
-// by clang and call the functions through CIDER's thunks. Output is compared byte for byte.
+// by clang and call the functions through ORVYN's thunks. Output is compared byte for byte.
 #include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <deque>
 #include <fstream>
 
-#include "cider/guest.hpp"
-#include "cider/printf_format.hpp"
+#include "orvyn/guest.hpp"
+#include "orvyn/printf_format.hpp"
 #include "guest_code.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
@@ -18,8 +18,8 @@
 #include <windows.h>
 #endif
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 namespace fs = std::filesystem;
 
 namespace {
@@ -70,7 +70,7 @@ void expect_exited(const Run& r, int code, const char* what) {
 }
 
 // The reference text comes from the HOST printf with the same format and values, an implementation independent of
-// CIDER's argument handling (it only validates the numeric rendering).
+// ORVYN's argument handling (it only validates the numeric rendering).
 std::string host_f(const char* f, double v) {
     char b[128];
     std::snprintf(b, sizeof b, f, v);
@@ -80,13 +80,13 @@ std::string host_f(const char* f, double v) {
 }  // namespace
 
 // ============================== formatter ===================================================================================
-CIDER_TEST(format_plain_text_and_percent) {
+ORVYN_TEST(format_plain_text_and_percent) {
     CHECK_EQ(fmt("no conversions").text, std::string("no conversions"));
     CHECK_EQ(fmt("100%% sure").text, std::string("100% sure"));
     CHECK_EQ(fmt("").text, std::string(""));
 }
 
-CIDER_TEST(format_signed_and_unsigned_integers) {
+ORVYN_TEST(format_signed_and_unsigned_integers) {
     CHECK_EQ(fmt("%d", {I(-5)}).text, std::string("-5"));
     CHECK_EQ(fmt("%i", {I(42)}).text, std::string("42"));
     CHECK_EQ(fmt("[%5d][%-5d][%05d][%+d][% d]", {I(42), I(42), I(42), I(42), I(42)}).text, std::string("[   42][42   ][00042][+42][ 42]"));
@@ -101,7 +101,7 @@ CIDER_TEST(format_signed_and_unsigned_integers) {
     CHECK_EQ(fmt("%d", {I(-2147483647 - 1)}).text, std::string("-2147483648"));
 }
 
-CIDER_TEST(format_star_width_and_precision) {
+ORVYN_TEST(format_star_width_and_precision) {
     CHECK_EQ(fmt("[%*d]", {6, 7}).text, std::string("[     7]"));
     CHECK_EQ(fmt("[%*d]", {I(-6), 7}).text, std::string("[7     ]"));                  // negative width = left justify
     CHECK_EQ(fmt("[%.*d]", {4, 7}).text, std::string("[0007]"));
@@ -110,10 +110,10 @@ CIDER_TEST(format_star_width_and_precision) {
     CHECK_EQ(fmt("[%-*s]", {6, P("ab")}).text, std::string("[ab    ]"));
 }
 
-CIDER_TEST(format_characters_and_strings) {
+ORVYN_TEST(format_characters_and_strings) {
     CHECK_EQ(fmt("%c%c", {'o', 'k'}).text, std::string("ok"));
     CHECK_EQ(fmt("[%3c][%-3c]", {'B', 'C'}).text, std::string("[  B][C  ]"));
-    CHECK_EQ(fmt("Text: %s", {P("CIDER")}).text, std::string("Text: CIDER"));
+    CHECK_EQ(fmt("Text: %s", {P("ORVYN")}).text, std::string("Text: ORVYN"));
     CHECK_EQ(fmt("[%10s][%-10s][%.3s][%10.2s]", {P("hello"), P("hello"), P("hello"), P("hello")}).text, std::string("[     hello][hello     ][hel][        he]"));
     CHECK_EQ(fmt("[%s][%8s]", {0, 0}).text, std::string("[(null)][  (null)]"));
     const char with_nul[] = {'a', 0, 'b'};
@@ -122,13 +122,13 @@ CIDER_TEST(format_characters_and_strings) {
     CHECK_EQ(fmt("%.0s|", {P(zero_prec)}).text, std::string("|"));
 }
 
-CIDER_TEST(format_pointers_use_the_darwin_spelling) {
+ORVYN_TEST(format_pointers_use_the_darwin_spelling) {
     CHECK_EQ(fmt("%p", {0x1234}).text, std::string("0x1234"));
     CHECK_EQ(fmt("%p", {0}).text, std::string("0x0"));
     CHECK_EQ(fmt("[%10p][%-10p]", {0x1f, 0x1f}).text, std::string("[      0x1f][0x1f      ]"));
 }
 
-CIDER_TEST(format_doubles_match_the_host_rendering) {
+ORVYN_TEST(format_doubles_match_the_host_rendering) {
     CHECK_EQ(fmt("Float: %.2f", {}, {3.14}).text, std::string("Float: 3.14"));
     for (double v : {0.0, 0.5, -0.5, 3.14159, 12345.6789, 1e-5, 1e15, 123456789.125, -2.5e-8}) {
         for (const char* f : {"%f", "%.3f", "%10.2f", "%-10.1f|", "%+f", "%e", "%.2E", "%g", "%G", "%.10g", "%#g", "%08.2f"}) {
@@ -141,21 +141,21 @@ CIDER_TEST(format_doubles_match_the_host_rendering) {
     CHECK_EQ(fmt("%.0f", {}, {3.5}).text, std::string("4"));
 }
 
-CIDER_TEST(format_infinities_and_nan_are_spelled_like_darwin) {
+ORVYN_TEST(format_infinities_and_nan_are_spelled_like_darwin) {
     const double inf = INFINITY, nan = std::nan("");
     CHECK_EQ(fmt("%f %f %F %E %G", {}, {inf, -inf, inf, inf, inf}).text, std::string("inf -inf INF INF INF"));
     CHECK_EQ(fmt("[%5.1f][%-6f][%+f][% f]", {}, {nan, nan, inf, inf}).text, std::string("[  nan][nan   ][+inf][ inf]"));
     CHECK_EQ(fmt("%08f", {}, {inf}).text, std::string("     inf"));                       // the 0 flag is ignored for inf/nan
 }
 
-CIDER_TEST(format_mixed_arguments_pull_from_the_right_class) {
+ORVYN_TEST(format_mixed_arguments_pull_from_the_right_class) {
     // int, double, string, long, double, char: integers and doubles are consumed from their own queues
     auto r = fmt("%d %f %s %ld %f %c", {1, P("two"), 3, '5'}, {1.5, 4.25});
     CHECK(r.ok);
     CHECK_EQ(r.text, std::string("1 1.500000 two 3 4.250000 5"));
 }
 
-CIDER_TEST(format_refuses_what_it_does_not_support) {
+ORVYN_TEST(format_refuses_what_it_does_not_support) {
     struct Case { const char* fmt; const char* needle; };
     const Case cases[] = {
         {"%n", "%n"}, {"%a", "hexadecimal"}, {"%A", "hexadecimal"}, {"%Lf", "long double"}, {"%ls", "wide"}, {"%lc", "wide"}, {"%C", "wide"}, {"%S", "wide"},
@@ -170,7 +170,7 @@ CIDER_TEST(format_refuses_what_it_does_not_support) {
     CHECK(!fmt(nullptr).ok);
 }
 
-CIDER_TEST(format_output_and_string_limits) {
+ORVYN_TEST(format_output_and_string_limits) {
     FakeArgs a;
     a.ints = {P("0123456789")};
     std::string out;
@@ -183,14 +183,14 @@ CIDER_TEST(format_output_and_string_limits) {
 }
 
 // ============================== stdio through real Mach-O fixtures ============================================================
-CIDER_TEST(hello_prints_exactly_the_bytes_the_macho_emits) {
+ORVYN_TEST(hello_prints_exactly_the_bytes_the_macho_emits) {
     Run r = run_fixture("hello");
     expect_exited(r, 0, "hello");
     CHECK_EQ(r.out, std::string("Hello from macOS!\nsecond line via write\n"));
     CHECK_EQ(r.err, std::string(""));
 }
 
-CIDER_TEST(printf_with_integers) {
+ORVYN_TEST(printf_with_integers) {
     Run r = run_fixture("printf_int");
     expect_exited(r, 4, "printf_int");
     CHECK_EQ(r.out,
@@ -204,7 +204,7 @@ CIDER_TEST(printf_with_integers) {
                          "end\n"));
 }
 
-CIDER_TEST(printf_with_doubles) {
+ORVYN_TEST(printf_with_doubles) {
     Run r = run_fixture("printf_double");
     expect_exited(r, 0, "printf_double");
     CHECK_EQ(r.out,
@@ -215,18 +215,18 @@ CIDER_TEST(printf_with_doubles) {
                          "1 2 3 4 5 6 7 8 9 10.5\n"));
 }
 
-CIDER_TEST(printf_with_strings) {
+ORVYN_TEST(printf_with_strings) {
     Run r = run_fixture("printf_str");
     expect_exited(r, 0, "printf_str");
     CHECK_EQ(r.out,
-             std::string("Text: CIDER\n"
+             std::string("Text: ORVYN\n"
                          "[     hello][hello     ][hel][        he]\n"
                          "[(null)][  (null)]\n"
                          "a b c d e f g\n"
                          "ok !\n"));
 }
 
-CIDER_TEST(printf_with_mixed_arguments_stack_arguments_and_va_list) {
+ORVYN_TEST(printf_with_mixed_arguments_stack_arguments_and_va_list) {
     Run r = run_fixture("printf_mixed");
     // the third line is produced by vsnprintf over a va_list built by clang (register save area + overflow area)
     const std::string line3 = "1 2 3 4 5 6 7 8 | 0.500000 1.500000 2.500000 3.500000 4.500000 5.500000 6.500000 7.500000 8.500000 9.500000 | tail";
@@ -237,20 +237,20 @@ CIDER_TEST(printf_with_mixed_arguments_stack_arguments_and_va_list) {
                  "va_list printf: 7 2.5 ok\n");
 }
 
-CIDER_TEST(snprintf_truncates_and_reports_the_full_length) {
+ORVYN_TEST(snprintf_truncates_and_reports_the_full_length) {
     Run r = run_fixture("snprintf");
     expect_exited(r, 17, "snprintf");
     CHECK_EQ(r.out, std::string("[abcdef-] 12\n6\n00042:x:2.2 11\n"));
 }
 
-CIDER_TEST(stdout_and_stderr_carry_exactly_the_bytes_written) {
+ORVYN_TEST(stdout_and_stderr_carry_exactly_the_bytes_written) {
     Run r = run_fixture("stdio_out");
     expect_exited(r, 3, "stdio_out");
     CHECK_EQ(r.out, std::string("out-1\nA\nfw\nw1\nZ\nend ok\n"));
     CHECK_EQ(r.err, std::string("err-1\nerr-2\nw2\n"));
 }
 
-CIDER_TEST(unsupported_printf_conversions_trap_instead_of_printing_something_wrong) {
+ORVYN_TEST(unsupported_printf_conversions_trap_instead_of_printing_something_wrong) {
     const struct { const char* arg; const char* needle; } cases[] = {
         {"n", "%n"}, {"a", "hexadecimal"}, {"L", "long double"}, {"w", "wide"}, {"q", "thousands"}};
     for (auto& c : cases) {
@@ -261,14 +261,14 @@ CIDER_TEST(unsupported_printf_conversions_trap_instead_of_printing_something_wro
     }
 }
 
-CIDER_TEST(aggregate_returns_and_mixed_signatures_work_in_real_code) {
+ORVYN_TEST(aggregate_returns_and_mixed_signatures_work_in_real_code) {
     Run r = run_fixture("abi_ret");
     expect_exited(r, 17, "abi_ret");
     CHECK_EQ(r.out, std::string("9 2 -14285714285 -5 48.0 0.75 6 1.5\n"));
 }
 
 // ============================== files ======================================================================================
-CIDER_TEST(reading_files_through_the_guest_descriptor_table) {
+ORVYN_TEST(reading_files_through_the_guest_descriptor_table) {
     TempDir t;
     t.write("input.txt", std::string("hello, world!\n"));
     Run r = run_fixture("files_read", {}, t.path());
@@ -276,14 +276,14 @@ CIDER_TEST(reading_files_through_the_guest_descriptor_table) {
     CHECK_EQ(r.out, std::string("size=14 word=world\n"));
 }
 
-CIDER_TEST(without_a_root_the_guest_cannot_open_files) {
+ORVYN_TEST(without_a_root_the_guest_cannot_open_files) {
     TempDir t;
     t.write("input.txt", std::string("hello, world!\n"));
     Run r = run_fixture("files_read", {}, {});                // no root: EACCES, the fixture reports step 10
     expect_exited(r, 10, "files_read without root");
 }
 
-CIDER_TEST(writing_files_appears_on_the_host_with_the_exact_bytes) {
+ORVYN_TEST(writing_files_appears_on_the_host_with_the_exact_bytes) {
     TempDir t;
     fs::create_directories(t.path() / "root");
     Run r = run_fixture("files_write", {}, t.path() / "root");
@@ -300,7 +300,7 @@ CIDER_TEST(writing_files_appears_on_the_host_with_the_exact_bytes) {
     CHECK(!fs::exists(t.path().parent_path() / "escape.txt"));
 }
 
-CIDER_TEST(guest_paths_cannot_leave_the_root_not_even_through_a_junction) {
+ORVYN_TEST(guest_paths_cannot_leave_the_root_not_even_through_a_junction) {
     TempDir t;
     fs::create_directories(t.path() / "root");
     fs::create_directories(t.path() / "outside");
@@ -328,7 +328,7 @@ CIDER_TEST(guest_paths_cannot_leave_the_root_not_even_through_a_junction) {
     else std::printf("    (junction escape not tested: mklink /J unavailable)\n");
 }
 
-CIDER_TEST(guest_files_and_handles_do_not_leak_into_the_host_process) {
+ORVYN_TEST(guest_files_and_handles_do_not_leak_into_the_host_process) {
     TempDir t;
     fs::create_directories(t.path() / "root");
     run_fixture("files_write", {}, t.path() / "root");        // warm up
@@ -344,7 +344,7 @@ CIDER_TEST(guest_files_and_handles_do_not_leak_into_the_host_process) {
 }
 
 // ============================== time and process identity ===================================================================
-CIDER_TEST(time_clock_and_nanosleep_follow_the_darwin_contract) {
+ORVYN_TEST(time_clock_and_nanosleep_follow_the_darwin_contract) {
     Run r = run_fixture("time_clock");
     expect_exited(r, 0, "time_clock");
     // the printed time is the real wall-clock time
@@ -354,7 +354,7 @@ CIDER_TEST(time_clock_and_nanosleep_follow_the_darwin_contract) {
     CHECK(std::llabs(now - printed) <= 5);
 }
 
-CIDER_TEST(process_ids_are_the_real_ones) {
+ORVYN_TEST(process_ids_are_the_real_ones) {
     Run r = run_fixture("ids");
     expect_exited(r, 0, "ids");
     int pid = 0, ppid = 0;
@@ -364,7 +364,7 @@ CIDER_TEST(process_ids_are_the_real_ones) {
     CHECK(ppid != pid);
 }
 
-CIDER_TEST(errno_values_are_darwin_values_not_windows_or_linux) {
+ORVYN_TEST(errno_values_are_darwin_values_not_windows_or_linux) {
     // files_read checks ENOENT == 2 and EBADF == 9 inside the guest with Darwin's own numbering, EEXIST == 17 and EINVAL == 22 in files_write
     TempDir t;
     t.write("input.txt", std::string("hello, world!\n"));

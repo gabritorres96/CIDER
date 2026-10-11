@@ -1,18 +1,18 @@
-// `cider run` (supervisor side) and the internal `cider __worker` (loader + guest side).
+// `orvyn run` (supervisor side) and the internal `orvyn __worker` (loader + guest side).
 #include <chrono>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
 
-#include "cider/bundle.hpp"
-#include "cider/guest.hpp"
-#include "cider/json.hpp"
-#include "cider/loader.hpp"
-#include "cider/log.hpp"
-#include "cider/macho.hpp"
-#include "cider/process.hpp"
-#include "cider/util.hpp"
+#include "orvyn/bundle.hpp"
+#include "orvyn/guest.hpp"
+#include "orvyn/json.hpp"
+#include "orvyn/loader.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/macho.hpp"
+#include "orvyn/process.hpp"
+#include "orvyn/util.hpp"
 #include "commands.hpp"
 
 #ifdef _WIN32
@@ -22,14 +22,14 @@
 
 namespace fs = std::filesystem;
 
-namespace cider::cli {
+namespace orvyn::cli {
 namespace {
 
 using guest::SupervisorResult;
 
-// Exit codes of `cider run` (distinct from the guest's own exit code, which is reported separately):
+// Exit codes of `orvyn run` (distinct from the guest's own exit code, which is reported separately):
 //   0  the guest ran to completion (its exit code is printed / in the JSON "guest" object)
-//   10 internal CIDER error      11 file incompatible/unsupported     12 dependency or symbol not available
+//   10 internal ORVYN error      11 file incompatible/unsupported     12 dependency or symbol not available
 //   13 load failure              14 guest failure (crash, runtime trap, timeout)
 constexpr int kOk = 0, kInternal = 10, kIncompatible = 11, kDependency = 12, kLoadFailure = 13, kGuestFailure = 14;
 
@@ -56,11 +56,11 @@ std::vector<std::string> split_lines(const std::string& s) {
 void print_json(const Options& o, const RunReport& r) {
     JsonWriter w;
     w.begin_object();
-    w.field("tool", "cider");
+    w.field("tool", "orvyn");
     w.field("version", kVersion);
     w.field("command", "run");
     w.field("path", o.positional.empty() ? std::string() : o.positional[0]);
-    w.field("cider_exit_code", r.exit_code);
+    w.field("orvyn_exit_code", r.exit_code);
     w.key("runtime");
     w.begin_object();
     w.field("status", r.status);
@@ -135,7 +135,7 @@ int finish(const Options& o, RunReport r) {
     } else if (r.exit_code == kOk) {
         std::printf("\nGuest exit code: %d\n", r.guest.exit_code);
     } else {
-        std::fprintf(stderr, "[CIDER][ERROR] Execution aborted\n");
+        std::fprintf(stderr, "[ORVYN][ERROR] Execution aborted\n");
     }
     return r.exit_code;
 }
@@ -153,7 +153,7 @@ RunReport failed(int code, std::string status, std::string message) {
 
 int cmd_run(const Options& o) {
     if (o.positional.empty()) {
-        std::fprintf(stderr, "usage: cider run <program|App.app> [--json] [--verbose] [--timeout <seconds>] [-- args...]\n");
+        std::fprintf(stderr, "usage: orvyn run <program|App.app> [--json] [--verbose] [--timeout <seconds>] [-- args...]\n");
         return 2;
     }
     fs::path target = path_from_utf8(o.positional[0]);
@@ -176,7 +176,7 @@ int cmd_run(const Options& o) {
     if (!sl || !sl->image) {
         std::string have;
         for (auto& s : parsed.value().slices) have += (have.empty() ? "" : ", ") + macho::cpu_name(s.cputype, s.cpusubtype);
-        return finish(o, failed(kIncompatible, "incompatible", "no usable x86_64 slice (found: " + have + "); CIDER 0.2 executes x86_64 only"));
+        return finish(o, failed(kIncompatible, "incompatible", "no usable x86_64 slice (found: " + have + "); ORVYN 0.2 executes x86_64 only"));
     }
     loader::ValidatorOptions vopts;
     vopts.linker_resolves_dependencies = true;   // the worker's dynamic linker searches, loads and checks the dylibs
@@ -199,10 +199,10 @@ int cmd_run(const Options& o) {
     // ---- execution in a worker process ---------------------------------------------------------------------
     guest::SupervisorOptions so;
     so.worker_exe = current_executable();
-    if (so.worker_exe.empty()) return finish(o, failed(kInternal, "internal-error", "cannot locate the cider executable to start the worker"));
+    if (so.worker_exe.empty()) return finish(o, failed(kInternal, "internal-error", "cannot locate the orvyn executable to start the worker"));
     so.image = target;
     so.guest_args = o.guest_args;
-    // The guest's "/" is --root, or the directory cider was started in. Always an existing absolute directory.
+    // The guest's "/" is --root, or the directory orvyn was started in. Always an existing absolute directory.
     {
         std::error_code rec;
         fs::path root = o.root.empty() ? fs::current_path(rec) : fs::absolute(path_from_utf8(o.root), rec);
@@ -221,7 +221,7 @@ int cmd_run(const Options& o) {
     for (auto& c : so.log_level) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
     fs::path log_tmp;
     if (o.json) {
-        log_tmp = fs::temp_directory_path(ec) / ("cider-worker-" + std::to_string(GetCurrentProcessId()) + ".log");
+        log_tmp = fs::temp_directory_path(ec) / ("orvyn-worker-" + std::to_string(GetCurrentProcessId()) + ".log");
         fs::remove(log_tmp, ec);
         so.log_file = log_tmp;
     }
@@ -269,4 +269,4 @@ int cmd_worker(const Options& o) {
                               o.root.empty() ? fs::path() : path_from_utf8(o.root));
 }
 
-}  // namespace cider::cli
+}  // namespace orvyn::cli

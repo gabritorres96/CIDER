@@ -1,7 +1,7 @@
-# CoreGraphics geometry and coordinate conversion (CIDER 0.5.6)
+# CoreGraphics geometry and coordinate conversion (ORVYN 0.5.6)
 
 Scope: **geometry only**. There is no drawing (`CGContext`, paths, colours, images, fonts): custom views are containers without paint (`drawRect:` is never called).
-Code: `include/cider/geometry.hpp` + `src/graphics/geometry.cpp` (pure, tested by `tests/unit/test_geometry.cpp`), the guest-visible functions in `src/graphics/cg_bridge.cpp`.
+Code: `include/orvyn/geometry.hpp` + `src/graphics/geometry.cpp` (pure, tested by `tests/unit/test_geometry.cpp`), the guest-visible functions in `src/graphics/cg_bridge.cpp`.
 
 ## The two coordinate systems are not the same
 
@@ -13,7 +13,7 @@ Code: `include/cider/geometry.hpp` + `src/graphics/geometry.cpp` (pure, tested b
 | units | points (logical) | device pixels |
 | view origin | bottom-left of the view unless `isFlipped` | top-left of the client area |
 
-CIDER converts explicitly at the backend boundary (`gui_backend.hpp` documents which space each argument is in):
+ORVYN converts explicitly at the backend boundary (`gui_backend.hpp` documents which space each argument is in):
 
 * `screen_to_win32(rect, scale, primary_height_px)`: `top = H - max_y*scale`, `bottom = H - min_y*scale` (the flip pivots on the primary display height, which is also how macOS defines global
   coordinates, so multiple monitors keep their relative placement).

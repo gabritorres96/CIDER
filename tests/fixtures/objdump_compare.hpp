@@ -1,5 +1,5 @@
 #pragma once
-// Parsing of llvm-objdump output (--private-headers, --syms) and field-by-field comparison with CIDER's
+// Parsing of llvm-objdump output (--private-headers, --syms) and field-by-field comparison with ORVYN's
 // Mach-O parser. Shared by the real-fixture, real-world and execution-fixture tests.
 #include <algorithm>
 #include <cstring>
@@ -8,13 +8,13 @@
 #include <string>
 #include <vector>
 
-#include "cider/macho.hpp"
-#include "cider/util.hpp"
+#include "orvyn/macho.hpp"
+#include "orvyn/util.hpp"
 #include "test_framework.hpp"
 
-namespace cider::testing::objdump {
+namespace orvyn::testing::objdump {
 
-using namespace cider;
+using namespace orvyn;
 
 // ---- llvm-objdump --macho --private-headers parser ------------------------------------------------
 struct Cmd {
@@ -89,7 +89,7 @@ uint32_t lc_id(const std::string& n) {
     return it == t.end() ? 0 : it->second;
 }
 
-// Compares everything the objdump dump says about one Mach-O slice against CIDER's parse.
+// Compares everything the objdump dump says about one Mach-O slice against ORVYN's parse.
 void compare_image(const std::string& label, const Dump& d, const macho::Image& img, bool strict = true) {
     auto at = [&](const std::string& m) { return label + ": " + m; };
     CHECK_EQ(d.ncmds, img.ncmds);
@@ -248,4 +248,4 @@ void compare_symbols(const std::string& label, const std::string& syms_text, con
 }
 
 
-}  // namespace cider::testing::objdump
+}  // namespace orvyn::testing::objdump

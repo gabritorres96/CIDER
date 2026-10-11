@@ -1,15 +1,15 @@
 // Deterministic mutation fuzzing: random corruptions of valid fixtures must never crash,
-// hang or read out of bounds (run under CIDER_SANITIZE=ON for ASan coverage).
+// hang or read out of bounds (run under ORVYN_SANITIZE=ON for ASan coverage).
 #include <cstdint>
 #include <random>
 
-#include "cider/macho.hpp"
-#include "cider/plist.hpp"
+#include "orvyn/macho.hpp"
+#include "orvyn/plist.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 
 namespace {
 void mutate(std::vector<uint8_t>& b, std::mt19937_64& rng) {
@@ -26,7 +26,7 @@ void mutate(std::vector<uint8_t>& b, std::mt19937_64& rng) {
 }
 }  // namespace
 
-CIDER_TEST(mutated_macho_never_crashes) {
+ORVYN_TEST(mutated_macho_never_crashes) {
     MachoSpec s;
     s.code_signature = true;
     s.rpaths = {"@loader_path/x"};
@@ -50,7 +50,7 @@ CIDER_TEST(mutated_macho_never_crashes) {
     CHECK(accepted > 0);
 }
 
-CIDER_TEST(mutated_plists_never_crash) {
+ORVYN_TEST(mutated_plists_never_crash) {
     auto xml = xml_plist({{"CFBundleExecutable", "Example"}, {"CFBundleName", "A &amp; B"}});
     std::vector<uint8_t> x(xml.begin(), xml.end());
     auto bin = binary_plist({{"Name", "Example"}, {"Id", "com.x"}});
@@ -63,7 +63,7 @@ CIDER_TEST(mutated_plists_never_crash) {
     CHECK(true);
 }
 
-CIDER_TEST(random_garbage_never_crashes) {
+ORVYN_TEST(random_garbage_never_crashes) {
     std::mt19937_64 rng(7);
     for (int iter = 0; iter < 5000; ++iter) {
         std::vector<uint8_t> b(1 + rng() % 256);
@@ -76,7 +76,7 @@ CIDER_TEST(random_garbage_never_crashes) {
 }
 
 // Regression: ncmds*8 vs sizeofcmds overflow check must use 64-bit math.
-CIDER_TEST(regression_ncmds_times_eight_does_not_wrap) {
+ORVYN_TEST(regression_ncmds_times_eight_does_not_wrap) {
     auto b = build_macho({}).bytes;
     patch32(b, 16, 0x20000000);  // 0x20000000 * 8 wraps in 32-bit arithmetic
     patch32(b, 20, 64);

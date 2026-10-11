@@ -1,12 +1,12 @@
 // NSObject: the root class of the Foundation subset. Native methods; guest classes subclass it normally (instance layout: isa only).
 #include <format>
 
-#include "cider/libsystem.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/objc.hpp"
 #include "../libsystem/internal.hpp"
 #include "foundation_internal.hpp"
 
-namespace cider::foundation {
+namespace orvyn::foundation {
 namespace {
 
 Class* cls_of(Addr cls) { return rt().class_at(cls); }
@@ -137,4 +137,4 @@ void install_nsobject(Runtime& r) {
     });
 }
 
-}  // namespace cider::foundation
+}  // namespace orvyn::foundation

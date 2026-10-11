@@ -1,13 +1,13 @@
-#include "cider/log.hpp"
+#include "orvyn/log.hpp"
 
 #include <atomic>
 #include <cstdio>
 #include <fstream>
 #include <mutex>
 
-#include "cider/util.hpp"
+#include "orvyn/util.hpp"
 
-namespace cider::log {
+namespace orvyn::log {
 namespace {
 std::atomic<Level> g_level{Level::Warn};
 std::atomic<bool> g_stderr{true};
@@ -73,8 +73,8 @@ const char* category_name(Category c) noexcept {
 void write(Category c, Level l, std::string_view message) {
     if (c == Category::None) { write(l, message); return; }
     if (l == Level::Off) return;
-    std::string line = l == Level::Info ? std::format("[CIDER][{}] {}", category_name(c), sanitize_utf8(message))
-                                        : std::format("[CIDER][{}][{}] {}", category_name(c), level_name(l), sanitize_utf8(message));
+    std::string line = l == Level::Info ? std::format("[ORVYN][{}] {}", category_name(c), sanitize_utf8(message))
+                                        : std::format("[ORVYN][{}][{}] {}", category_name(c), level_name(l), sanitize_utf8(message));
     std::lock_guard<std::mutex> lock(g_mutex);
     if (g_stderr.load()) {
         std::fwrite(line.data(), 1, line.size(), stderr);
@@ -88,7 +88,7 @@ void write(Category c, Level l, std::string_view message) {
 
 void write(Level l, std::string_view message) {
     if (l == Level::Off) return;
-    std::string line = std::format("[CIDER][{}] {}", level_name(l), sanitize_utf8(message));
+    std::string line = std::format("[ORVYN][{}] {}", level_name(l), sanitize_utf8(message));
     std::lock_guard<std::mutex> lock(g_mutex);
     if (g_stderr.load()) {
         std::fwrite(line.data(), 1, line.size(), stderr);
@@ -100,4 +100,4 @@ void write(Level l, std::string_view message) {
     }
 }
 
-}  // namespace cider::log
+}  // namespace orvyn::log

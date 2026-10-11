@@ -1,6 +1,6 @@
-/* Hand-written declarations of the libdispatch subset CIDER implements (see docs/LIBDISPATCH.md). Not Apple's <dispatch/dispatch.h>. */
-#ifndef CIDER_DISPATCH_H
-#define CIDER_DISPATCH_H
+/* Hand-written declarations of the libdispatch subset ORVYN implements (see docs/LIBDISPATCH.md). Not Apple's <dispatch/dispatch.h>. */
+#ifndef ORVYN_DISPATCH_H
+#define ORVYN_DISPATCH_H
 #include "../Foundation/Foundation.h"
 
 @interface OS_dispatch_queue : NSObject

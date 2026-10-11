@@ -1,4 +1,4 @@
-/* Foundation misuse that must end the guest with an exception-style diagnosis (Apple raises NSException; CIDER has no exceptions).
+/* Foundation misuse that must end the guest with an exception-style diagnosis (Apple raises NSException; ORVYN has no exceptions).
    argv[1]: 'a' index out of range, 'n' nil in addObject:, 'k' nil key, 'v' nil value, 's' substring out of range, 'u' unrecognized selector,
             'l' nil in an array literal, 'f' invalid NSLog format, 'c' character index out of range, 'r' remove on an empty array. */
 #include "Foundation/Foundation.h"

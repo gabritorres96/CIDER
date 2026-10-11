@@ -1,4 +1,4 @@
-// CIDER 0.3 dynamic linker: export tries, dependency search, loading several real Mach-O images, symbol
+// ORVYN 0.3 dynamic linker: export tries, dependency search, loading several real Mach-O images, symbol
 // resolution between them, re-exports, cycles, initializers, failures and unloading.
 // Fixtures: tests/fixtures/dylib (clang + ld64.lld; gen-dylib-fixtures.cmd).
 #include <algorithm>
@@ -7,21 +7,21 @@
 #include <random>
 #include <sstream>
 
-#include "cider/dyld.hpp"
-#include "cider/exports.hpp"
-#include "cider/guest.hpp"
-#include "cider/linker.hpp"
+#include "orvyn/dyld.hpp"
+#include "orvyn/exports.hpp"
+#include "orvyn/guest.hpp"
+#include "orvyn/linker.hpp"
 #include "guest_code.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 namespace fs = std::filesystem;
 
 namespace {
 
-const fs::path kDylibFixtures = fs::path(CIDER_DYLIB_FIXTURES_DIR);
+const fs::path kDylibFixtures = fs::path(ORVYN_DYLIB_FIXTURES_DIR);
 
 fs::path dy(const std::string& scenario, const std::string& rel = {}) {
     return kDylibFixtures / "bin" / scenario / (rel.empty() ? scenario : rel);
@@ -102,7 +102,7 @@ std::map<std::string, uint64_t> golden_exports(const std::string& key) {
 }  // namespace
 
 // ============================== export trie ==============================================================================
-CIDER_TEST(export_trie_matches_llvm_objdump_for_real_dylibs) {
+ORVYN_TEST(export_trie_matches_llvm_objdump_for_real_dylibs) {
     struct Case { const char* scenario; const char* file; const char* key; };
     const Case cases[] = {{"one", "libmath.dylib", "one_libmath.dylib"},       {"init", "libinitbase.dylib", "init_libinitbase.dylib"},
                           {"glob", "libglob.dylib", "glob_libglob.dylib"},     {"trans", "libtransa.dylib", "trans_libtransa.dylib"},
@@ -124,7 +124,7 @@ CIDER_TEST(export_trie_matches_llvm_objdump_for_real_dylibs) {
     }
 }
 
-CIDER_TEST(export_trie_hand_made_valid_trie) {
+ORVYN_TEST(export_trie_hand_made_valid_trie) {
     std::vector<uint8_t> t = {0, 1, '_', 'a', 0, 6, 2, 0, 0x10, 0};
     auto ex = take(dyld::parse_export_trie(ByteView(t)));
     REQUIRE_EQ(ex.size(), size_t{1});
@@ -134,7 +134,7 @@ CIDER_TEST(export_trie_hand_made_valid_trie) {
     CHECK(take(dyld::parse_export_trie(ByteView())).empty());
 }
 
-CIDER_TEST(export_trie_reexport_entries_are_decoded) {
+ORVYN_TEST(export_trie_reexport_entries_are_decoded) {
     // root -> "_r" -> terminal: flags REEXPORT, ordinal 2, import name "_real"
     std::vector<uint8_t> t = {0, 1, '_', 'r', 0, 6};
     std::vector<uint8_t> term;
@@ -152,7 +152,7 @@ CIDER_TEST(export_trie_reexport_entries_are_decoded) {
     CHECK_EQ(ex[0].reexport_name, std::string("_real"));
 }
 
-CIDER_TEST(export_trie_rejects_malformed_input) {
+ORVYN_TEST(export_trie_rejects_malformed_input) {
     struct Case { const char* what; std::vector<uint8_t> trie; };
     std::vector<Case> cases = {
         {"child offset outside the trie", {0, 1, '_', 'a', 0, 0x40}},
@@ -172,7 +172,7 @@ CIDER_TEST(export_trie_rejects_malformed_input) {
     }
 }
 
-CIDER_TEST(export_trie_limits_stop_hostile_tries) {
+ORVYN_TEST(export_trie_limits_stop_hostile_tries) {
     // a chain of 600 single-edge nodes (each 6 bytes, offsets encoded with a redundant 2-byte ULEB): depth limit 512 refuses it
     std::vector<uint8_t> t;
     const size_t n = 600;
@@ -192,7 +192,7 @@ CIDER_TEST(export_trie_limits_stop_hostile_tries) {
 }
 
 // ============================== dependency search ==============================================================================
-CIDER_TEST(search_candidates_follow_dyld_rules) {
+ORVYN_TEST(search_candidates_follow_dyld_rules) {
     const fs::path exe_dir = "C:/app/bin", loader_dir = "C:/app/lib/sub";
     auto c = dyld::search_candidates("@executable_path/../lib/x.dylib", exe_dir, loader_dir, {});
     REQUIRE_EQ(c.size(), size_t{1});
@@ -215,7 +215,7 @@ CIDER_TEST(search_candidates_follow_dyld_rules) {
 }
 
 // ============================== loading real dylibs ==============================================================================
-CIDER_TEST(one_executable_and_one_dylib_return_42_from_the_dylib) {
+ORVYN_TEST(one_executable_and_one_dylib_return_42_from_the_dylib) {
     auto l = link_scenario("one");
     REQUIRE(l.program != nullptr);
     REQUIRE_EQ(l.program->images().size(), size_t{2});
@@ -223,17 +223,17 @@ CIDER_TEST(one_executable_and_one_dylib_return_42_from_the_dylib) {
     CHECK_EQ(l.program->images()[1]->name, std::string("@rpath/libmath.dylib"));
     CHECK_EQ(l.program->images()[1]->leaf, std::string("libmath.dylib"));
     CHECK(l.program->images()[1]->info.filetype == macho::kFileDylib);
-    auto add = l.program->find_symbol(1, "_cider_add");
+    auto add = l.program->find_symbol(1, "_orvyn_add");
     REQUIRE(add.has_value());
     // The address is inside the dylib's own executable mapping, not inside the executable and not a libSystem thunk.
     const auto& lib = *l.program->images()[1];
     CHECK(*add > lib.header && *add < lib.header + lib.mapped.layout.span);
-    CHECK(!l.program->find_symbol(0, "_cider_add").has_value());
+    CHECK(!l.program->find_symbol(0, "_orvyn_add").has_value());
     expect_exit("one", 42);
 }
 
-CIDER_TEST(the_42_really_comes_from_the_dylib_machine_code) {
-    // Patch `lea eax,[rdi+rsi]` (cider_add's body) in a COPY of the library: the executable's result changes.
+ORVYN_TEST(the_42_really_comes_from_the_dylib_machine_code) {
+    // Patch `lea eax,[rdi+rsi]` (orvyn_add's body) in a COPY of the library: the executable's result changes.
     TempDir t;
     for (auto f : {"one", "libmath.dylib"}) t.write(f, file_bytes(dy("one", f)));
     auto lib = file_bytes(dy("one", "libmath.dylib"));
@@ -248,14 +248,14 @@ CIDER_TEST(the_42_really_comes_from_the_dylib_machine_code) {
     CHECK_EQ(r.r.exit_code, 22);
 }
 
-CIDER_TEST(two_dylibs_are_loaded_and_both_contribute) {
+ORVYN_TEST(two_dylibs_are_loaded_and_both_contribute) {
     auto l = link_scenario("two");
     REQUIRE(l.program != nullptr);
     CHECK_EQ(l.program->images().size(), size_t{3});
     expect_exit("two", 42);
 }
 
-CIDER_TEST(transitive_dependency_is_found_through_the_first_dylib) {
+ORVYN_TEST(transitive_dependency_is_found_through_the_first_dylib) {
     auto l = link_scenario("trans");
     REQUIRE(l.program != nullptr);
     REQUIRE_EQ(l.program->images().size(), size_t{3});
@@ -265,7 +265,7 @@ CIDER_TEST(transitive_dependency_is_found_through_the_first_dylib) {
     expect_exit("trans", 42);
 }
 
-CIDER_TEST(a_shared_dependency_is_loaded_exactly_once) {
+ORVYN_TEST(a_shared_dependency_is_loaded_exactly_once) {
     // init: the executable needs base and top, top needs base again.
     auto l = link_scenario("init");
     REQUIRE(l.program != nullptr);
@@ -275,7 +275,7 @@ CIDER_TEST(a_shared_dependency_is_loaded_exactly_once) {
     CHECK_EQ(base_count, size_t{1});
 }
 
-CIDER_TEST(initializers_run_dependencies_first_exactly_once) {
+ORVYN_TEST(initializers_run_dependencies_first_exactly_once) {
     auto l = link_scenario("init");
     REQUIRE(l.program != nullptr);
     auto order = l.program->initialization_order();
@@ -298,7 +298,7 @@ CIDER_TEST(initializers_run_dependencies_first_exactly_once) {
     CHECK(seen.empty());
 }
 
-CIDER_TEST(an_initializer_modifies_a_global_and_the_executable_observes_it) {
+ORVYN_TEST(an_initializer_modifies_a_global_and_the_executable_observes_it) {
     // init_main returns 1 if base_init did not run, 2 if top ran first, 3/4 on wrong count/order, 42 when all is right.
     Run r = run_scenario("init");
     REQUIRE(r.r.state == guest::State::Exited);
@@ -306,7 +306,7 @@ CIDER_TEST(an_initializer_modifies_a_global_and_the_executable_observes_it) {
     CHECK_EQ(r.r.initializers_run, uint64_t{3});
 }
 
-CIDER_TEST(init_func_offsets_section_is_supported) {
+ORVYN_TEST(init_func_offsets_section_is_supported) {
     auto l = link_scenario("initoff");
     REQUIRE(l.program != nullptr);
     CHECK_EQ(l.program->images()[1]->initializers.size(), size_t{1});
@@ -316,16 +316,16 @@ CIDER_TEST(init_func_offsets_section_is_supported) {
     expect_exit("initoff", 42);
 }
 
-CIDER_TEST(exported_data_symbols_are_shared_in_both_directions) { expect_exit("glob", 42); }
+ORVYN_TEST(exported_data_symbols_are_shared_in_both_directions) { expect_exit("glob", 42); }
 
-CIDER_TEST(rpath_resolves_through_a_subdirectory) {
+ORVYN_TEST(rpath_resolves_through_a_subdirectory) {
     auto l = link_scenario("rpath");
     REQUIRE(l.program != nullptr);
     CHECK(l.program->images()[1]->path.generic_string().find("/rpath/lib/librp.dylib") != std::string::npos);
     expect_exit("rpath", 42);
 }
 
-CIDER_TEST(loader_path_is_relative_to_the_loading_library) {
+ORVYN_TEST(loader_path_is_relative_to_the_loading_library) {
     auto l = link_scenario("loaderpath");
     REQUIRE(l.program != nullptr);
     REQUIRE_EQ(l.program->images().size(), size_t{3});
@@ -334,7 +334,7 @@ CIDER_TEST(loader_path_is_relative_to_the_loading_library) {
     expect_exit("loaderpath", 42);
 }
 
-CIDER_TEST(executable_path_is_relative_to_the_executable_not_the_cwd) {
+ORVYN_TEST(executable_path_is_relative_to_the_executable_not_the_cwd) {
     // the same scenario copied elsewhere still resolves: nothing depends on the working directory or the original location
     TempDir t;
     for (auto f : {"one", "libmath.dylib"}) t.write(std::string("moved/") + f, file_bytes(dy("one", f)));
@@ -343,7 +343,7 @@ CIDER_TEST(executable_path_is_relative_to_the_executable_not_the_cwd) {
     CHECK_EQ(r.r.exit_code, 42);
 }
 
-CIDER_TEST(reexported_symbols_are_found_through_the_facade) {
+ORVYN_TEST(reexported_symbols_are_found_through_the_facade) {
     auto l = link_scenario("reexport");
     REQUIRE(l.program != nullptr);
     REQUIRE_EQ(l.program->images().size(), size_t{3});
@@ -358,14 +358,14 @@ CIDER_TEST(reexported_symbols_are_found_through_the_facade) {
     expect_exit("reexport", 42);
 }
 
-CIDER_TEST(a_missing_weak_library_binds_to_null) {
+ORVYN_TEST(a_missing_weak_library_binds_to_null) {
     Run r = run_scenario("weak");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 7);
 }
 
 // ============================== cycles ======================================================================================
-CIDER_TEST(dependency_cycles_are_detected_and_tolerated_like_dyld) {
+ORVYN_TEST(dependency_cycles_are_detected_and_tolerated_like_dyld) {
     auto l = link_scenario("cycle");
     REQUIRE(l.program != nullptr);
     CHECK_EQ(l.program->images().size(), size_t{3});           // each library is mapped once
@@ -375,7 +375,7 @@ CIDER_TEST(dependency_cycles_are_detected_and_tolerated_like_dyld) {
     expect_exit("cycle", 42);
 }
 
-CIDER_TEST(dependency_cycles_can_be_refused) {
+ORVYN_TEST(dependency_cycles_can_be_refused) {
     auto l = link_scenario("cycle", [](linker::LinkOptions& o) { o.reject_cycles = true; });
     CHECK(l.program == nullptr);
     CHECK(l.error.kind == loader::LoadFailure::Incompatible);
@@ -385,7 +385,7 @@ CIDER_TEST(dependency_cycles_can_be_refused) {
     CHECK(is_free(0x100000000ull));                              // the partial load left nothing behind
 }
 
-CIDER_TEST(initialization_order_ignores_back_edges_of_a_cycle) {
+ORVYN_TEST(initialization_order_ignores_back_edges_of_a_cycle) {
     auto l = link_scenario("cycle");
     REQUIRE(l.program != nullptr);
     auto order = l.program->initialization_order();
@@ -397,7 +397,7 @@ CIDER_TEST(initialization_order_ignores_back_edges_of_a_cycle) {
 }
 
 // ============================== failures ====================================================================================
-CIDER_TEST(missing_library_is_reported_by_install_name_and_nothing_stays_mapped) {
+ORVYN_TEST(missing_library_is_reported_by_install_name_and_nothing_stays_mapped) {
     auto l = link_scenario("missing");
     CHECK(l.program == nullptr);
     CHECK(l.error.kind == loader::LoadFailure::MissingDependency);
@@ -411,7 +411,7 @@ CIDER_TEST(missing_library_is_reported_by_install_name_and_nothing_stays_mapped)
     CHECK_EQ(r.r.entry_address, uint64_t{0});                      // control was never transferred
 }
 
-CIDER_TEST(incompatible_library_version_is_refused) {
+ORVYN_TEST(incompatible_library_version_is_refused) {
     auto l = link_scenario("badver");
     CHECK(l.program == nullptr);
     CHECK(l.error.kind == loader::LoadFailure::Incompatible);
@@ -419,8 +419,8 @@ CIDER_TEST(incompatible_library_version_is_refused) {
     CHECK(l.error.message.find("1.0.0") != std::string::npos);
 }
 
-CIDER_TEST(system_libraries_are_never_loaded_or_substituted) {
-    // The executable asks for libz; CIDER must not look for it anywhere, least of all among Windows DLLs.
+ORVYN_TEST(system_libraries_are_never_loaded_or_substituted) {
+    // The executable asks for libz; ORVYN must not look for it anywhere, least of all among Windows DLLs.
     MachoSpec s;
     s.dylibs = {"/usr/lib/libSystem.B.dylib", "/usr/lib/libz.1.dylib", "/System/Library/Frameworks/SceneKit.framework/Versions/A/SceneKit"};
     auto b = build_macho(s).bytes;
@@ -435,7 +435,7 @@ CIDER_TEST(system_libraries_are_never_loaded_or_substituted) {
     CHECK_EQ(err.required_libs.size(), size_t{3});
 }
 
-CIDER_TEST(tampered_dependency_files_are_rejected_not_loaded) {
+ORVYN_TEST(tampered_dependency_files_are_rejected_not_loaded) {
     struct Case { const char* what; std::vector<uint8_t> bytes; const char* needle; };
     auto good_exe = file_bytes(dy("one", "one"));
     std::vector<uint8_t> pe = {'M', 'Z', 0x90, 0, 3, 0, 0, 0, 4, 0, 0, 0, 0xff, 0xff};      // a Windows PE header, not Mach-O
@@ -460,7 +460,7 @@ CIDER_TEST(tampered_dependency_files_are_rejected_not_loaded) {
     CHECK(is_free(0x100000000ull));
 }
 
-CIDER_TEST(a_directory_or_a_dangling_name_is_not_a_library) {
+ORVYN_TEST(a_directory_or_a_dangling_name_is_not_a_library) {
     TempDir t;
     t.write("one", file_bytes(dy("one", "one")));
     fs::create_directories(t.path() / "libmath.dylib");              // a directory named like the dependency
@@ -469,19 +469,19 @@ CIDER_TEST(a_directory_or_a_dangling_name_is_not_a_library) {
     CHECK(l.error.kind == loader::LoadFailure::MissingDependency);
 }
 
-CIDER_TEST(unresolved_symbols_in_a_dylib_are_reported_with_the_library) {
-    // libmath without cider_add: the executable's bind cannot be resolved
+ORVYN_TEST(unresolved_symbols_in_a_dylib_are_reported_with_the_library) {
+    // libmath without orvyn_add: the executable's bind cannot be resolved
     TempDir t;
     t.write("one", file_bytes(dy("one", "one")));
     t.write("libmath.dylib", file_bytes(dy("one", "libmath.dylib")));
     auto lib = file_bytes(t.path() / "libmath.dylib");
-    // rename the exported symbol in the string table: "_cider_add" -> "_cider_sub"
-    const std::string from = "_cider_add", to = "_cider_sub";
+    // rename the exported symbol in the string table: "_orvyn_add" -> "_orvyn_sub"
+    const std::string from = "_orvyn_add", to = "_orvyn_sub";
     auto it = std::search(lib.begin(), lib.end(), from.begin(), from.end());
     REQUIRE(it != lib.end());
     std::copy(to.begin(), to.end(), it);
-    // the export trie stores the label too (patch every occurrence of the label bytes "cider_add")
-    const std::string lf = "cider_add", lt = "cider_sub";
+    // the export trie stores the label too (patch every occurrence of the label bytes "orvyn_add")
+    const std::string lf = "orvyn_add", lt = "orvyn_sub";
     for (auto jt = std::search(lib.begin(), lib.end(), lf.begin(), lf.end()); jt != lib.end(); jt = std::search(jt, lib.end(), lf.begin(), lf.end()))
         std::copy(lt.begin(), lt.end(), jt);
     t.write("libmath.dylib", lib);
@@ -489,12 +489,12 @@ CIDER_TEST(unresolved_symbols_in_a_dylib_are_reported_with_the_library) {
     CHECK(l.program == nullptr);
     CHECK(l.error.kind == loader::LoadFailure::UnresolvedSymbol);
     REQUIRE_EQ(l.error.unresolved.size(), size_t{1});
-    CHECK_EQ(l.error.unresolved[0].symbol, std::string("_cider_add"));
+    CHECK_EQ(l.error.unresolved[0].symbol, std::string("_orvyn_add"));
     CHECK_EQ(l.error.unresolved[0].library, std::string("@rpath/libmath.dylib"));
     CHECK(l.error.unresolved[0].reason.find("not exported") != std::string::npos);
 }
 
-CIDER_TEST(image_count_depth_and_file_size_limits_are_enforced) {
+ORVYN_TEST(image_count_depth_and_file_size_limits_are_enforced) {
     CHECK(link_scenario("two", [](linker::LinkOptions& o) { o.max_images = 2; }).program == nullptr);
     CHECK(link_scenario("trans", [](linker::LinkOptions& o) { o.max_depth = 1; }).program == nullptr);
     auto big = link_scenario("one", [](linker::LinkOptions& o) { o.max_file_size = 100; });
@@ -503,7 +503,7 @@ CIDER_TEST(image_count_depth_and_file_size_limits_are_enforced) {
     CHECK(link_scenario("one").program != nullptr);                  // the defaults are fine
 }
 
-CIDER_TEST(failing_initializer_exit_stops_before_main) {
+ORVYN_TEST(failing_initializer_exit_stops_before_main) {
     Run r = run_scenario("initexit");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 7);                                      // main would have returned 42
@@ -512,13 +512,13 @@ CIDER_TEST(failing_initializer_exit_stops_before_main) {
     CHECK(r.r.message.find("initializer called exit(7)") != std::string::npos);
 }
 
-CIDER_TEST(initializers_are_not_executed_when_symbols_are_unresolved) {
+ORVYN_TEST(initializers_are_not_executed_when_symbols_are_unresolved) {
     // initialisation happens only after every relocation succeeded: a failed link never runs initializers
     TempDir t;
     t.write("initexit", file_bytes(dy("initexit", "initexit")));
     t.write("libinitexit.dylib", file_bytes(dy("initexit", "libinitexit.dylib")));
     auto exe = file_bytes(t.path() / "initexit");
-    const std::string from = "cider_dummy_exit", to = "cider_dummy_exlt";
+    const std::string from = "orvyn_dummy_exit", to = "orvyn_dummy_exlt";
     for (auto jt = std::search(exe.begin(), exe.end(), from.begin(), from.end()); jt != exe.end(); jt = std::search(jt, exe.end(), from.begin(), from.end()))
         std::copy(to.begin(), to.end(), jt);
     t.write("initexit", exe);
@@ -528,7 +528,7 @@ CIDER_TEST(initializers_are_not_executed_when_symbols_are_unresolved) {
 }
 
 // ============================== memory ======================================================================================
-CIDER_TEST(every_image_has_wx_clean_protections) {
+ORVYN_TEST(every_image_has_wx_clean_protections) {
     auto l = link_scenario("init");
     REQUIRE(l.program != nullptr);
     for (auto& r : l.program->images()) {
@@ -543,7 +543,7 @@ CIDER_TEST(every_image_has_wx_clean_protections) {
     }
 }
 
-CIDER_TEST(unloading_releases_every_image) {
+ORVYN_TEST(unloading_releases_every_image) {
     std::vector<uint64_t> bases;
     {
         auto l = link_scenario("two");
@@ -559,7 +559,7 @@ CIDER_TEST(unloading_releases_every_image) {
     for (auto b : bases) CHECK(is_free(b));
 }
 
-CIDER_TEST(repeated_load_and_unload_does_not_leak_address_space) {
+ORVYN_TEST(repeated_load_and_unload_does_not_leak_address_space) {
     for (int i = 0; i < 40; ++i) {
         auto l = link_scenario("trans");
         REQUIRE(l.program != nullptr);
@@ -568,7 +568,7 @@ CIDER_TEST(repeated_load_and_unload_does_not_leak_address_space) {
 }
 
 // ============================== robustness ==================================================================================
-CIDER_TEST(mutated_dylibs_never_crash_the_linker) {
+ORVYN_TEST(mutated_dylibs_never_crash_the_linker) {
     // Link-only (guest code is never executed): 600 random byte mutations of a real dylib, each with its dependants.
     const auto original = file_bytes(dy("trans", "libtransa.dylib"));
     const auto exe = file_bytes(dy("trans", "trans"));
@@ -598,7 +598,7 @@ CIDER_TEST(mutated_dylibs_never_crash_the_linker) {
     CHECK(is_free(0x100000000ull));
 }
 
-CIDER_TEST(windows_paths_and_dlls_are_never_accepted_as_install_names) {
+ORVYN_TEST(windows_paths_and_dlls_are_never_accepted_as_install_names) {
     auto prov = take(libsystem::LibSystemProvider::create());
     for (const char* name : {"C:\\Windows\\System32\\kernel32.dll","/C:/Windows/System32/user32.dll", "//server/share/x.dylib", "/tmp/a*.dylib", "/tmp/x.dylib:stream"}) {
         MachoSpec s;

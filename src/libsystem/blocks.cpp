@@ -1,4 +1,4 @@
-// Apple Blocks ABI subset (CIDER 0.5.1): _Block_copy, _Block_release, _Block_object_assign/_dispose and the three concrete block classes.
+// Apple Blocks ABI subset (ORVYN 0.5.1): _Block_copy, _Block_release, _Block_object_assign/_dispose and the three concrete block classes.
 //
 // A block literal emitted by clang is { isa, flags, reserved, invoke, descriptor, captures... }. The runtime never calls `invoke` for the
 // guest (compiled code does); it only copies stack blocks to the heap, keeps heap blocks' reference counts, and runs the copy/dispose
@@ -9,10 +9,10 @@
 #include <format>
 #include <unordered_set>
 
-#include "cider/objc.hpp"
+#include "orvyn/objc.hpp"
 #include "internal.hpp"
 
-namespace cider::libsystem::detail {
+namespace orvyn::libsystem::detail {
 namespace {
 
 constexpr int32_t kRefcountMask = 0xfffe, kNeedsFree = 1 << 24, kHasCopyDispose = 1 << 25, kIsGlobal = 1 << 28, kDeallocating = 0x0001;
@@ -221,4 +221,4 @@ void add_block_symbols(std::vector<HostSymbol>& t) {
     fn("__Block_object_dispose", addr(w_block_object_dispose));
 }
 
-}  // namespace cider::libsystem::detail
+}  // namespace orvyn::libsystem::detail

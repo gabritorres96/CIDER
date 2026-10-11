@@ -1,4 +1,4 @@
-/* CIDER 0.6 reference drawing program: a window "CIDER — CoreGraphics Drawing" whose custom view (DrawingView) draws a deterministic scene with CoreGraphics
+/* ORVYN 0.6 reference drawing program: a window "ORVYN — CoreGraphics Drawing" whose custom view (DrawingView) draws a deterministic scene with CoreGraphics
    from -drawRect:. All drawing decisions are made here, in the Mach-O; the host only provides CoreGraphics, the graphics context and the window.
 
    Scene, in the DrawingView's own coordinates (400 x 300, origin bottom-left unless run with the argument "flipped"):
@@ -135,7 +135,7 @@ static NSInteger g_redraw_clicks = 0;
                                          styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable
                                            backing:NSBackingStoreBuffered
                                              defer:NO];
-    [window setTitle:@"CIDER — CoreGraphics Drawing"];
+    [window setTitle:@"ORVYN — CoreGraphics Drawing"];
     [window setDelegate:self];
     NSView *content = [window contentView];
     /* the drawing view fills the area above the button strip and follows the window size */

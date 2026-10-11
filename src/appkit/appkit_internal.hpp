@@ -9,13 +9,13 @@
 #include <unordered_map>
 #include <vector>
 
-#include "cider/geometry.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/geometry.hpp"
+#include "orvyn/objc.hpp"
 #include "../foundation/foundation_internal.hpp"
 #include "../graphics/gui_backend.hpp"
 #include "../graphics/sysv_args.hpp"
 
-namespace cider::appkit {
+namespace orvyn::appkit {
 
 using geometry::Point;
 using geometry::Rect;
@@ -23,7 +23,7 @@ using geometry::Size;
 using objc::Addr;
 using objc::Class;
 using objc::Runtime;
-namespace fnd = cider::foundation;
+namespace fnd = orvyn::foundation;
 
 struct ViewPayload : fnd::Payload {
     Rect frame;
@@ -141,4 +141,4 @@ Addr make_event(int64_t type, Point loc_window, Addr window);   // autoreleased
 bool responds(Addr obj, Addr sel);
 Addr sel(const char* name);
 
-}  // namespace cider::appkit
+}  // namespace orvyn::appkit

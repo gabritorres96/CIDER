@@ -1,4 +1,4 @@
-// Foundation, second batch (CIDER 0.5.3): NSMutableString, NSData/NSMutableData, NSDate, NSURL, NSError, NSFileManager.
+// Foundation, second batch (ORVYN 0.5.3): NSMutableString, NSData/NSMutableData, NSDate, NSURL, NSError, NSFileManager.
 // Only what the fixtures and the AppKit layer use. All file access goes through the guest root (--root): a guest path is resolved lexically,
 // re-checked after link resolution and refused outside the root; without --root every file operation fails with EACCES, like fopen.
 // Not implemented: NSCalendar/NSDateFormatter/time zones (descriptions are UTC), NSURLComponents/relative URLs/percent-encoding of input,
@@ -14,15 +14,15 @@
 #include <format>
 #include <fstream>
 
-#include "cider/libsystem.hpp"
-#include "cider/objc.hpp"
-#include "cider/util.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/objc.hpp"
+#include "orvyn/util.hpp"
 #include "../libsystem/internal.hpp"
 #include "foundation_internal.hpp"
 
 namespace fs = std::filesystem;
 
-namespace cider::foundation {
+namespace orvyn::foundation {
 namespace {
 
 using abi::GuestRegs;
@@ -828,4 +828,4 @@ void install_nsextras(Runtime& r) {
     install_constants(r);
 }
 
-}  // namespace cider::foundation
+}  // namespace orvyn::foundation

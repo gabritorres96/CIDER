@@ -64,9 +64,9 @@ static void phase_a(void) {
     main_thread = pthread_self();
 
     /* serial queue: FIFO, a worker thread for async work, sync runs on the caller after earlier async blocks */
-    dispatch_queue_t serial = dispatch_queue_create("com.cider.test.serial", DISPATCH_QUEUE_SERIAL);
+    dispatch_queue_t serial = dispatch_queue_create("com.orvyn.test.serial", DISPATCH_QUEUE_SERIAL);
     CHECK(serial != nil);
-    CHECK(__builtin_strcmp(dispatch_queue_get_label(serial), "com.cider.test.serial") == 0);
+    CHECK(__builtin_strcmp(dispatch_queue_get_label(serial), "com.orvyn.test.serial") == 0);
     for (int i = 0; i < 3; i++) {
         NSString *tag = [NSString stringWithFormat:@"s%d", i];                 /* ObjC object captured by the block (retained by the copy) */
         dispatch_async(serial, ^{

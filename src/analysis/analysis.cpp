@@ -1,15 +1,15 @@
-#include "cider/analysis.hpp"
+#include "orvyn/analysis.hpp"
 
 #include <deque>
 #include <set>
 
-#include "cider/dyld.hpp"
-#include "cider/log.hpp"
-#include "cider/util.hpp"
+#include "orvyn/dyld.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/util.hpp"
 
 namespace fs = std::filesystem;
 
-namespace cider::analysis {
+namespace orvyn::analysis {
 
 const char* to_string(DepClass c) noexcept {
     switch (c) {
@@ -175,10 +175,10 @@ CompatReport assess(const macho::File& file, const DependencyReport* deps, const
             r.reasons.push_back(std::format("{} required dependenc{} could not be resolved", missing, missing == 1 ? "y" : "ies"));
         }
         if (deps->count(DepClass::System))
-            r.reasons.push_back("system libraries (libSystem, frameworks) are not provided by CIDER yet");
+            r.reasons.push_back("system libraries (libSystem, frameworks) are not provided by ORVYN yet");
     }
     r.reasons.emplace_back("static analysis only: execution is not confirmed (no runtime in this release)");
     return r;
 }
 
-}  // namespace cider::analysis
+}  // namespace orvyn::analysis

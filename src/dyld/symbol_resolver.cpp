@@ -1,9 +1,9 @@
 #include <algorithm>
 
-#include "cider/fixups.hpp"
-#include "cider/log.hpp"
+#include "orvyn/fixups.hpp"
+#include "orvyn/log.hpp"
 
-namespace cider::dyld {
+namespace orvyn::dyld {
 
 ResolutionReport resolve_symbols(const macho::Image& img, const std::vector<Fixup>& fixups, SymbolProvider& provider) {
     ResolutionReport rep;
@@ -30,12 +30,12 @@ ResolutionReport resolve_symbols(const macho::Image& img, const std::vector<Fixu
                 library = img.dylibs[idx].path;
                 fail.library = library;
                 note_library(library);
-                if (!provider.provides_library(library)) fail.reason = "library not available in CIDER";
+                if (!provider.provides_library(library)) fail.reason = "library not available in ORVYN";
                 else ok = true;
             }
         } else if (f.library_ordinal == -2) {
             fail.library = "(flat lookup)";
-            ok = true;  // searched by name only, in the libraries CIDER provides
+            ok = true;  // searched by name only, in the libraries ORVYN provides
         } else {
             fail.library = f.library_ordinal == 0 ? "(self)" : "(main executable)";
             fail.reason = "binding to the image itself is not supported yet";
@@ -47,7 +47,7 @@ ResolutionReport resolve_symbols(const macho::Image& img, const std::vector<Fixu
                 log::debug(log::Category::Symbols, "resolved {} -> {:#x}", f.symbol, r->address);
                 continue;
             }
-            fail.reason = "symbol not implemented by CIDER";
+            fail.reason = "symbol not implemented by ORVYN";
         }
         if (f.weak_import) {
             rep.weak_missing.push_back(f.symbol);
@@ -60,4 +60,4 @@ ResolutionReport resolve_symbols(const macho::Image& img, const std::vector<Fixu
     return rep;
 }
 
-}  // namespace cider::dyld
+}  // namespace orvyn::dyld

@@ -1,4 +1,4 @@
-/* Fixture: printf conversions CIDER refuses. The guest ends with a runtime trap, never with guessed output. */
+/* Fixture: printf conversions ORVYN refuses. The guest ends with a runtime trap, never with guessed output. */
 #include "darwin.h"
 
 int main(int argc, char **argv) {

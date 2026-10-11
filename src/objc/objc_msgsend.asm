@@ -8,10 +8,10 @@
 OPTION CASEMAP:NONE
 
 .data
-PUBLIC cider_objc_lookup_thunk
-PUBLIC cider_objc_lookup_super_thunk
-cider_objc_lookup_thunk QWORD 0           ; thunk of Runtime::lookup_for_message(self, sel)
-cider_objc_lookup_super_thunk QWORD 0     ; thunk of Runtime::lookup_for_super(super*, sel, mode)
+PUBLIC orvyn_objc_lookup_thunk
+PUBLIC orvyn_objc_lookup_super_thunk
+orvyn_objc_lookup_thunk QWORD 0           ; thunk of Runtime::lookup_for_message(self, sel)
+orvyn_objc_lookup_super_thunk QWORD 0     ; thunk of Runtime::lookup_for_super(super*, sel, mode)
 
 .code
 
@@ -56,35 +56,35 @@ RESTORE_ARGS MACRO
 ENDM
 
 ; ---- IMP returned for a nil receiver: returns zero in every return register ------------------------------------------------
-cider_objc_nil_return PROC
+orvyn_objc_nil_return PROC
     xor eax, eax
     xor edx, edx
     xorps xmm0, xmm0
     xorps xmm1, xmm1
     ret
-cider_objc_nil_return ENDP
+orvyn_objc_nil_return ENDP
 
 ; id objc_msgSend(id self, SEL op, ...)
-cider_objc_msgSend PROC
+orvyn_objc_msgSend PROC
     test rdi, rdi
-    jz cider_objc_nil_return             ; messages to nil return 0 / 0.0 / zeroed registers
+    jz orvyn_objc_nil_return             ; messages to nil return 0 / 0.0 / zeroed registers
     SAVE_ARGS
-    mov rax, cider_objc_lookup_thunk     ; rdi = self, rsi = op are already the two arguments
+    mov rax, orvyn_objc_lookup_thunk     ; rdi = self, rsi = op are already the two arguments
     call rax
     mov r11, rax                         ; IMP
     RESTORE_ARGS
     leave
     jmp r11
-cider_objc_msgSend ENDP
+orvyn_objc_msgSend ENDP
 
 ; void objc_msgSend_stret(void* ret, id self, SEL op, ...)   -- methods returning a large struct: hidden pointer in rdi
-cider_objc_msgSend_stret PROC
+orvyn_objc_msgSend_stret PROC
     test rsi, rsi
     jz nil_stret
     SAVE_ARGS
     mov rdi, rsi                         ; lookup(self, op)
     mov rsi, rdx
-    mov rax, cider_objc_lookup_thunk
+    mov rax, orvyn_objc_lookup_thunk
     call rax
     mov r11, rax
     RESTORE_ARGS
@@ -93,32 +93,32 @@ cider_objc_msgSend_stret PROC
 nil_stret:
     mov rax, rdi
     ret
-cider_objc_msgSend_stret ENDP
+orvyn_objc_msgSend_stret ENDP
 
 ; id objc_msgSendSuper(struct objc_super* super, SEL op, ...)        super = { receiver, class whose METHOD LIST search starts }
-cider_objc_msgSendSuper PROC
+orvyn_objc_msgSendSuper PROC
     SAVE_ARGS
     mov edx, 1
-    mov rax, cider_objc_lookup_super_thunk
+    mov rax, orvyn_objc_lookup_super_thunk
     call rax
     mov r11, rax
     RESTORE_ARGS
     mov rdi, qword ptr [rdi]             ; the receiver becomes `self`
     leave
     jmp r11
-cider_objc_msgSendSuper ENDP
+orvyn_objc_msgSendSuper ENDP
 
 ; id objc_msgSendSuper2(struct objc_super* super, SEL op, ...)       super = { receiver, class containing the calling method }
-cider_objc_msgSendSuper2 PROC
+orvyn_objc_msgSendSuper2 PROC
     SAVE_ARGS
     mov edx, 2
-    mov rax, cider_objc_lookup_super_thunk
+    mov rax, orvyn_objc_lookup_super_thunk
     call rax
     mov r11, rax
     RESTORE_ARGS
     mov rdi, qword ptr [rdi]
     leave
     jmp r11
-cider_objc_msgSendSuper2 ENDP
+orvyn_objc_msgSendSuper2 ENDP
 
 END

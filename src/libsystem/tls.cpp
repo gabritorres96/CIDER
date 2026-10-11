@@ -4,17 +4,17 @@
 //     movq  _x@TLVP(%rip), %rdi        ; address of the variable's DESCRIPTOR {thunk, key, offset}
 //     callq *(%rdi)                    ; call descriptor->thunk(descriptor) -> rax = address of this thread's x
 // The guest never reads %gs itself. On macOS, dyld replaces `thunk` (bound to _tlv_bootstrap) by libdyld's
-// tlv_get_addr, which does use %gs. CIDER binds the thunk to the function below instead: it keeps one lazily created
+// tlv_get_addr, which does use %gs. ORVYN binds the thunk to the function below instead: it keeps one lazily created
 // block per image (copy of the image's __thread_data template + zeroed __thread_bss) in the guest heap and returns
 // block + descriptor->offset. The Windows TEB, %gs, TlsAlloc slots and the host's thread_local data are never read,
 // written or replaced. There is exactly one guest thread, so "per thread" and "per process" coincide.
 #include <cstring>
 
-#include "cider/guest_threads.hpp"
-#include "cider/libsystem.hpp"
+#include "orvyn/guest_threads.hpp"
+#include "orvyn/libsystem.hpp"
 #include "internal.hpp"
 
-namespace cider::libsystem {
+namespace orvyn::libsystem {
 namespace {
 
 void* w_tlv_get_addr(const uint64_t* descriptor) {
@@ -63,4 +63,4 @@ void add_tls_symbols(std::vector<HostSymbol>& t) {
 }
 }  // namespace detail
 
-}  // namespace cider::libsystem
+}  // namespace orvyn::libsystem

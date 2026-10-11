@@ -1,17 +1,17 @@
 // Host implementations of the libSystem subset. Every function here is a normal Windows x64 function;
-// guest code reaches it through cider_guest_thunk (see abi.hpp), which converts the calling convention.
+// guest code reaches it through orvyn_guest_thunk (see abi.hpp), which converts the calling convention.
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <set>
 
-#include "cider/abi.hpp"
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
-#include "cider/guest_threads.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/abi.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/guest_threads.hpp"
+#include "orvyn/objc.hpp"
 #include "internal.hpp"
-namespace cider::objc { void add_exception_symbols(std::vector<libsystem::HostSymbol>& t); }
+namespace orvyn::objc { void add_exception_symbols(std::vector<libsystem::HostSymbol>& t); }
 #include "../graphics/cg_bridge.hpp"
 #include "../corefoundation/cf_bridge.hpp"
 
@@ -20,7 +20,7 @@ namespace cider::objc { void add_exception_symbols(std::vector<libsystem::HostSy
 #include <windows.h>
 #endif
 
-namespace cider::libsystem {
+namespace orvyn::libsystem {
 namespace {
 
 void emit(int fd, const char* data, size_t n) { console_write(fd, data, n); }
@@ -204,4 +204,4 @@ bool is_implemented(std::string_view s) {
     return false;
 }
 
-}  // namespace cider::libsystem
+}  // namespace orvyn::libsystem

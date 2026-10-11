@@ -1,10 +1,10 @@
 hello_x86_64.o:
 
 SYMBOL TABLE:
-0000000000000000 g     F __TEXT,__text _cider_add
 000000000000006c g     O __DATA,__data _g_initialized
 0000000000000070 g     O __DATA,__common _g_zero
 0000000000000050 g     O __TEXT,__const _kGreeting
 0000000000000010 g     F __TEXT,__text _main
+0000000000000000 g     F __TEXT,__text _orvyn_add
 0000000000000000         *UND* _exit
 0000000000000000         *UND* _puts

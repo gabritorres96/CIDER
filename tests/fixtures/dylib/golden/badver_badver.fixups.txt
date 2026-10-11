@@ -10,4 +10,4 @@ __DATA_CONST __got              0x100001000 pointer         0 libSystem        d
 
 Lazy bind table:
 segment  section            address     dylib            symbol
-__DATA   __la_symbol_ptr    0x100002000 libmath          _cider_add
+__DATA   __la_symbol_ptr    0x100002000 libmath          _orvyn_add

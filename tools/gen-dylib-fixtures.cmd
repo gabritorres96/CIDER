@@ -1,5 +1,5 @@
 @echo off
-rem Builds the CIDER 0.3 dynamic-linking fixtures: real Mach-O x86_64 executables AND dylibs (clang + ld64.lld),
+rem Builds the ORVYN 0.3 dynamic-linking fixtures: real Mach-O x86_64 executables AND dylibs (clang + ld64.lld),
 rem plus llvm-objdump snapshots (headers, exports trie, symbols, rebase/bind tables).
 rem     tools\llvm-env.cmd tools\gen-dylib-fixtures.cmd
 rem Relative paths only, so no user path ends up in the binaries. Every scenario lives in tests\fixtures\dylib\bin\<name>.

@@ -1,17 +1,17 @@
-// cider-dmg: structure parsing, validation, process runner and (when 7-Zip is installed) extraction.
+// orvyn-dmg: structure parsing, validation, process runner and (when 7-Zip is installed) extraction.
 #include <algorithm>
 #include <cstdlib>
 #include <optional>
 #include <random>
 
-#include "cider/dmg.hpp"
-#include "cider/process.hpp"
-#include "cider/util.hpp"
+#include "orvyn/dmg.hpp"
+#include "orvyn/process.hpp"
+#include "orvyn/util.hpp"
 #include "dmg_builder.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 namespace fs = std::filesystem;
 
 namespace {
@@ -55,7 +55,7 @@ size_t count_entries(const fs::path& p) {
 }  // namespace
 
 // ---- detection & UDIF structure -------------------------------------------------------------
-CIDER_TEST(udif_raw_image_is_parsed) {
+ORVYN_TEST(udif_raw_image_is_parsed) {
     TempDir t;
     auto info = inspect_bytes(t, build_dmg(iso_image()).bytes);
     CHECK(info.kind == dmg::Kind::Udif);
@@ -64,7 +64,7 @@ CIDER_TEST(udif_raw_image_is_parsed) {
     CHECK(info.udif->flattened());
     CHECK_EQ(info.udif->sector_count, uint64_t{200});
     REQUIRE_EQ(info.partitions.size(), size_t{1});
-    CHECK_EQ(info.partitions[0].declared_type, std::string("CIDER_ISO"));
+    CHECK_EQ(info.partitions[0].declared_type, std::string("ORVYN_ISO"));
     REQUIRE_EQ(info.compressions.size(), size_t{1});
     CHECK(info.compressions[0] == dmg::Compression::Raw);
     CHECK_EQ(info.partitions[0].filesystem, std::string("ISO 9660 + Joliet"));
@@ -72,18 +72,18 @@ CIDER_TEST(udif_raw_image_is_parsed) {
     CHECK(info.warnings.empty());
 }
 
-CIDER_TEST(udif_zlib_image_reports_compression_and_no_verified_fs) {
+ORVYN_TEST(udif_zlib_image_reports_compression_and_no_verified_fs) {
     TempDir t;
     DmgOptions o;
     o.codec = DmgCodec::ZlibStored;
     auto info = inspect_bytes(t, build_dmg(iso_image(), o).bytes);
     REQUIRE_EQ(info.compressions.size(), size_t{1});
     CHECK(info.compressions[0] == dmg::Compression::Zlib);
-    CHECK(info.partitions[0].filesystem.empty());  // compressed data is not decompressed by CIDER
+    CHECK(info.partitions[0].filesystem.empty());  // compressed data is not decompressed by ORVYN
     CHECK(!info.partitions[0].filesystem_verified);
 }
 
-CIDER_TEST(filesystem_inferred_from_partition_name_is_marked_as_inferred) {
+ORVYN_TEST(filesystem_inferred_from_partition_name_is_marked_as_inferred) {
     TempDir t;
     for (auto [name, expect] : {std::pair{"disk image (Apple_HFS : 1)", "HFS+"}, std::pair{"disk image (Apple_APFS : 1)", "APFS"},
                                 std::pair{"hfsx (Apple_HFSX : 2)", "HFSX"}}) {
@@ -97,7 +97,7 @@ CIDER_TEST(filesystem_inferred_from_partition_name_is_marked_as_inferred) {
     }
 }
 
-CIDER_TEST(detection_is_by_content_not_extension) {
+ORVYN_TEST(detection_is_by_content_not_extension) {
     TempDir t;
     auto dmgbytes = build_dmg(iso_image()).bytes;
     CHECK(inspect_bytes(t, dmgbytes, "renamed.txt").kind == dmg::Kind::Udif);
@@ -106,7 +106,7 @@ CIDER_TEST(detection_is_by_content_not_extension) {
     CHECK(inspect_bytes(t, junk, "fake.dmg").kind == dmg::Kind::Unknown);
 }
 
-CIDER_TEST(encrypted_sparse_and_raw_images) {
+ORVYN_TEST(encrypted_sparse_and_raw_images) {
     TempDir t;
     std::vector<uint8_t> enc(4096, 0);
     std::copy_n("encrcdsa", 8, enc.begin());
@@ -132,7 +132,7 @@ CIDER_TEST(encrypted_sparse_and_raw_images) {
     CHECK_EQ(inspect_bytes(t, gpt).raw_description, std::string("GPT partition table"));
 }
 
-CIDER_TEST(filesystem_signature_scan) {
+ORVYN_TEST(filesystem_signature_scan) {
     std::vector<uint8_t> v(40000, 0);
     CHECK(dmg::detect_filesystem(v.data(), v.size()).empty());
     std::copy_n("NTFS    ", 8, v.begin() + 3);
@@ -142,14 +142,14 @@ CIDER_TEST(filesystem_signature_scan) {
 }
 
 // ---- malformed images -----------------------------------------------------------------------
-CIDER_TEST(empty_and_tiny_files) {
+ORVYN_TEST(empty_and_tiny_files) {
     TempDir t;
     CHECK_ERR(try_inspect(t, {}), ErrorCode::Truncated);
     CHECK(inspect_bytes(t, {1, 2, 3}).kind == dmg::Kind::Unknown);
     CHECK_ERR(dmg::inspect_file(t.path() / "missing.dmg"), ErrorCode::NotFound);
 }
 
-CIDER_TEST(bad_koly_fields_rejected) {
+ORVYN_TEST(bad_koly_fields_rejected) {
     TempDir t;
     auto good = build_dmg(iso_image()).bytes;
     auto b = good;
@@ -180,7 +180,7 @@ CIDER_TEST(bad_koly_fields_rejected) {
     CHECK_ERR(try_inspect(t, b), ErrorCode::LimitExceeded);
 }
 
-CIDER_TEST(garbage_xml_and_missing_blkx_rejected) {
+ORVYN_TEST(garbage_xml_and_missing_blkx_rejected) {
     TempDir t;
     auto good = build_dmg(iso_image());
     auto b = good.bytes;
@@ -202,7 +202,7 @@ CIDER_TEST(garbage_xml_and_missing_blkx_rejected) {
     CHECK(none.partitions.empty());
 }
 
-CIDER_TEST(corrupt_block_tables_rejected) {
+ORVYN_TEST(corrupt_block_tables_rejected) {
     TempDir t;
     struct { DmgCorrupt c; ErrorCode e; } cases[] = {
         {DmgCorrupt::BadMishMagic, ErrorCode::Malformed},
@@ -220,7 +220,7 @@ CIDER_TEST(corrupt_block_tables_rejected) {
     }
 }
 
-CIDER_TEST(truncated_dmg_never_crashes) {
+ORVYN_TEST(truncated_dmg_never_crashes) {
     TempDir t;
     auto good = build_dmg(iso_image()).bytes;
     for (size_t cut = 0; cut < good.size(); cut += 4099) {
@@ -233,7 +233,7 @@ CIDER_TEST(truncated_dmg_never_crashes) {
     CHECK(try_inspect(t, nohead).ok() ? try_inspect(t, nohead).value().kind != dmg::Kind::Udif : true);
 }
 
-CIDER_TEST(mutated_dmg_trailer_and_plist_never_crash) {
+ORVYN_TEST(mutated_dmg_trailer_and_plist_never_crash) {
     TempDir t;
     auto g = build_dmg(iso_image());
     std::mt19937_64 rng(99);
@@ -250,7 +250,7 @@ CIDER_TEST(mutated_dmg_trailer_and_plist_never_crash) {
 }
 
 // ---- path & listing validation ------------------------------------------------------------------
-CIDER_TEST(item_path_validation) {
+ORVYN_TEST(item_path_validation) {
     for (const char* ok : {"a", "dir/file.txt", "dir\\file.txt", "Example.app/Contents/MacOS/Example", "a/./b", "dir/", "..hidden", "a..b",
                            "file."})
         CHECK(dmg::validate_item_path(ok).ok());
@@ -260,7 +260,7 @@ CIDER_TEST(item_path_validation) {
     CHECK(!dmg::validate_item_path(std::string("a\0b", 3)).ok());
 }
 
-CIDER_TEST(listing_limits_and_encryption) {
+ORVYN_TEST(listing_limits_and_encryption) {
     dmg::ExtractLimits lim;
     lim.max_total_bytes = 1000;
     lim.max_files = 3;
@@ -273,7 +273,7 @@ CIDER_TEST(listing_limits_and_encryption) {
     CHECK_ERR(dmg::validate_listing({{"ok", false, false, 1}, {"../evil", false, false, 1}}, lim), ErrorCode::Malformed);
 }
 
-CIDER_TEST(find_apps_locates_bundles_without_descending_into_them) {
+ORVYN_TEST(find_apps_locates_bundles_without_descending_into_them) {
     TempDir t;
     t.write("vol/Applications/One.app/Contents/Info.plist", std::string("x"));
     t.write("vol/Applications/One.app/Contents/Frameworks/Nested.app/Contents/Info.plist", std::string("x"));
@@ -287,7 +287,7 @@ CIDER_TEST(find_apps_locates_bundles_without_descending_into_them) {
     CHECK(dmg::find_apps(t.path() / "missing").empty());
 }
 
-CIDER_TEST(tempdir_is_private_and_removed_even_with_readonly_files) {
+ORVYN_TEST(tempdir_is_private_and_removed_even_with_readonly_files) {
     fs::path where;
     {
         dmg::TempDir d;
@@ -305,7 +305,7 @@ CIDER_TEST(tempdir_is_private_and_removed_even_with_readonly_files) {
 }
 
 // ---- process runner ---------------------------------------------------------------------------------
-CIDER_TEST(windows_argument_quoting) {
+ORVYN_TEST(windows_argument_quoting) {
     CHECK_EQ(quote_windows_arg("plain"), std::string("plain"));
     CHECK_EQ(quote_windows_arg("a b"), std::string("\"a b\""));
     CHECK_EQ(quote_windows_arg(""), std::string("\"\""));
@@ -319,7 +319,7 @@ static fs::path system_exe(const char* name) {
     return fs::path(root ? root : "C:\\Windows") / "System32" / name;
 }
 
-CIDER_TEST(process_runner_captures_output_and_exit_code) {
+ORVYN_TEST(process_runner_captures_output_and_exit_code) {
     auto r = run_process(system_exe("cmd.exe"), {"/c", "echo hello & exit 7"}, std::chrono::seconds(20));
     REQUIRE(r.ok());
     if (r.value().exit_code != 7) std::printf("    cmd output: [%s]\n", r.value().output.c_str());
@@ -328,7 +328,7 @@ CIDER_TEST(process_runner_captures_output_and_exit_code) {
     CHECK(!r.value().timed_out);
 }
 
-CIDER_TEST(process_runner_enforces_timeout_and_absolute_path) {
+ORVYN_TEST(process_runner_enforces_timeout_and_absolute_path) {
     auto r = run_process(system_exe("ping.exe"), {"-n", "30", "127.0.0.1"}, std::chrono::milliseconds(400));
     REQUIRE(r.ok());
     CHECK(r.value().timed_out);
@@ -336,14 +336,14 @@ CIDER_TEST(process_runner_enforces_timeout_and_absolute_path) {
     CHECK(!run_process(system_exe("does-not-exist.exe"), {}, std::chrono::seconds(5)).ok());
 }
 
-CIDER_TEST(process_runner_caps_output) {
+ORVYN_TEST(process_runner_caps_output) {
     auto r = run_process(system_exe("cmd.exe"), {"/c", "for /l %i in (1,1,5000) do @echo line %i"}, std::chrono::seconds(30), 1024);
     CHECK_ERR(r, ErrorCode::LimitExceeded);
 }
 #endif
 
 // ---- 7-Zip backend --------------------------------------------------------------------------------------
-CIDER_TEST(backend_rejects_non_7zip_and_relative_paths) {
+ORVYN_TEST(backend_rejects_non_7zip_and_relative_paths) {
 #ifdef _WIN32
     CHECK(!dmg::locate_7zip(system_exe("ping.exe")).ok());
 #endif
@@ -352,7 +352,7 @@ CIDER_TEST(backend_rejects_non_7zip_and_relative_paths) {
     CHECK_ERR(dmg::locate_7zip(t.path() / "missing-7z.exe"), ErrorCode::NotFound);
 }
 
-CIDER_TEST(backend_located_and_lists_the_image) {
+ORVYN_TEST(backend_located_and_lists_the_image) {
     NEED_7ZIP();
     CHECK(backend()->major >= 9);
     TempDir t;
@@ -364,7 +364,7 @@ CIDER_TEST(backend_located_and_lists_the_image) {
     CHECK(dmg::list_archive(*backend(), t.path() / "missing.dmg").ok() == false);
 }
 
-CIDER_TEST(extract_raw_dmg_finds_and_exposes_the_app) {
+ORVYN_TEST(extract_raw_dmg_finds_and_exposes_the_app) {
     NEED_7ZIP();
     TempDir t;
     auto img = t.write("raw.dmg", build_dmg(iso_image()).bytes);
@@ -379,11 +379,11 @@ CIDER_TEST(extract_raw_dmg_finds_and_exposes_the_app) {
     // no intermediate work directories are left in the temp base
     size_t leftovers = 0;
     for (auto& e : fs::directory_iterator(t.path()))
-        if (path_to_utf8(e.path().filename()).rfind("cider-", 0) == 0) ++leftovers;
+        if (path_to_utf8(e.path().filename()).rfind("orvyn-", 0) == 0) ++leftovers;
     CHECK_EQ(leftovers, size_t{0});
 }
 
-CIDER_TEST(extract_zlib_dmg_works) {
+ORVYN_TEST(extract_zlib_dmg_works) {
     NEED_7ZIP();
     TempDir t;
     DmgOptions o;
@@ -394,7 +394,7 @@ CIDER_TEST(extract_zlib_dmg_works) {
     CHECK_EQ(rep.value().apps.size(), size_t{1});
 }
 
-CIDER_TEST(extract_raw_iso_without_udif_wrapper) {
+ORVYN_TEST(extract_raw_iso_without_udif_wrapper) {
     NEED_7ZIP();
     TempDir t;
     auto img = t.write("plain.iso", iso_image());
@@ -403,7 +403,7 @@ CIDER_TEST(extract_raw_iso_without_udif_wrapper) {
     CHECK_EQ(rep.value().apps.size(), size_t{1});
 }
 
-CIDER_TEST(extract_respects_size_limit_and_cleans_up) {
+ORVYN_TEST(extract_respects_size_limit_and_cleans_up) {
     NEED_7ZIP();
     TempDir t;
     auto img = t.write("big.dmg", build_dmg(iso_image()).bytes);
@@ -412,7 +412,7 @@ CIDER_TEST(extract_respects_size_limit_and_cleans_up) {
     auto rep = dmg::extract_image(*backend(), img, t.path() / "out", o);
     CHECK_ERR(rep, ErrorCode::LimitExceeded);
     CHECK(!fs::exists(t.path() / "out"));
-    for (auto& e : fs::directory_iterator(t.path())) CHECK(path_to_utf8(e.path().filename()).rfind("cider-", 0) != 0);
+    for (auto& e : fs::directory_iterator(t.path())) CHECK(path_to_utf8(e.path().filename()).rfind("orvyn-", 0) != 0);
 
     auto o2 = opts_in(t);
     o2.limits.max_files = 3;
@@ -420,7 +420,7 @@ CIDER_TEST(extract_respects_size_limit_and_cleans_up) {
     CHECK(!fs::exists(t.path() / "out2"));
 }
 
-CIDER_TEST(extract_refuses_non_empty_output_and_keeps_it_untouched) {
+ORVYN_TEST(extract_refuses_non_empty_output_and_keeps_it_untouched) {
     NEED_7ZIP();
     TempDir t;
     auto img = t.write("a.dmg", build_dmg(iso_image()).bytes);
@@ -431,7 +431,7 @@ CIDER_TEST(extract_refuses_non_empty_output_and_keeps_it_untouched) {
     CHECK_ERR(dmg::extract_image(*backend(), img, t.path() / "file-not-dir", opts_in(t)), ErrorCode::InvalidArgument);
 }
 
-CIDER_TEST(extract_into_existing_empty_output_dir_and_failure_keeps_dir) {
+ORVYN_TEST(extract_into_existing_empty_output_dir_and_failure_keeps_dir) {
     NEED_7ZIP();
     TempDir t;
     auto img = t.write("a.dmg", build_dmg(iso_image()).bytes);
@@ -447,7 +447,7 @@ CIDER_TEST(extract_into_existing_empty_output_dir_and_failure_keeps_dir) {
     CHECK_EQ(count_entries(t.path() / "empty-out2"), size_t{0});  // ...but emptied
 }
 
-CIDER_TEST(corrupt_payload_with_valid_trailer_fails_cleanly) {
+ORVYN_TEST(corrupt_payload_with_valid_trailer_fails_cleanly) {
     NEED_7ZIP();
     TempDir t;
     auto good = build_dmg(iso_image()).bytes;
@@ -456,10 +456,10 @@ CIDER_TEST(corrupt_payload_with_valid_trailer_fails_cleanly) {
     auto rep = dmg::extract_image(*backend(), img, t.path() / "out", opts_in(t));
     // Either 7-Zip reports an error or the damaged region simply holds no .app: never a crash/hang.
     if (rep.ok()) CHECK(rep.value().apps.size() <= 1);
-    for (auto& e : fs::directory_iterator(t.path())) CHECK(path_to_utf8(e.path().filename()).rfind("cider-", 0) != 0);
+    for (auto& e : fs::directory_iterator(t.path())) CHECK(path_to_utf8(e.path().filename()).rfind("orvyn-", 0) != 0);
 }
 
-CIDER_TEST(garbage_with_dmg_extension_is_not_extracted) {
+ORVYN_TEST(garbage_with_dmg_extension_is_not_extracted) {
     NEED_7ZIP();
     TempDir t;
     auto img = t.write("junk.dmg", std::vector<uint8_t>(10000, 0x55));
@@ -468,7 +468,7 @@ CIDER_TEST(garbage_with_dmg_extension_is_not_extracted) {
     CHECK(!fs::exists(t.path() / "out"));
 }
 
-CIDER_TEST(path_traversal_names_never_escape_the_output_directory) {
+ORVYN_TEST(path_traversal_names_never_escape_the_output_directory) {
     NEED_7ZIP();
     TempDir t;
     FsNode root = dir("", {file("..\\..\\evil.txt", "pwned"), file("../escape2.txt", "pwned"), file("ok.txt", "fine"),
@@ -476,7 +476,7 @@ CIDER_TEST(path_traversal_names_never_escape_the_output_directory) {
     DmgOptions o;
     auto img = t.write("evil.dmg", build_dmg(build_iso(root), o).bytes);
     auto rep = dmg::extract_image(*backend(), img, t.path() / "deep" / "out", opts_in(t));
-    // Whether CIDER rejects the image or 7-Zip neutralises the names, nothing may land outside.
+    // Whether ORVYN rejects the image or 7-Zip neutralises the names, nothing may land outside.
     for (const char* leak : {"evil.txt", "escape2.txt", "up.txt"}) {
         CHECK(!fs::exists(t.path() / leak));
         CHECK(!fs::exists(t.path() / "deep" / leak));
@@ -487,10 +487,10 @@ CIDER_TEST(path_traversal_names_never_escape_the_output_directory) {
     }
 }
 
-// ---- regressions from validating real hdiutil images (CIDER 0.1.1) -------------------------------------------------
+// ---- regressions from validating real hdiutil images (ORVYN 0.1.1) -------------------------------------------------
 // Real images wrap the filesystem in an MBR + GPT header/table + free-space partitions. Extracting
 // those as "filesystems" made 7-Zip fail ("Unexpected end of data").
-CIDER_TEST(regression_real_layout_with_gpt_metadata_partitions_extracts_cleanly) {
+ORVYN_TEST(regression_real_layout_with_gpt_metadata_partitions_extracts_cleanly) {
     TempDir t;
     DmgOptions o;
     o.real_layout = true;
@@ -510,8 +510,8 @@ CIDER_TEST(regression_real_layout_with_gpt_metadata_partitions_extracts_cleanly)
 }
 
 // Real apps nest deeper than MAX_PATH (260) once extracted (MonitorControl.app failed with
-// "cannot stat extracted entry"): CIDER now uses extended-length paths for its own file operations.
-CIDER_TEST(regression_extraction_deeper_than_max_path) {
+// "cannot stat extracted entry"): ORVYN now uses extended-length paths for its own file operations.
+ORVYN_TEST(regression_extraction_deeper_than_max_path) {
     NEED_7ZIP();
     TempDir t;
     // Deep.app nested under six 60-character directories (> 360 characters before the app name)
@@ -528,7 +528,7 @@ CIDER_TEST(regression_extraction_deeper_than_max_path) {
     CHECK(fs::exists(extended_path(out) / path_from_utf8(rep.value().apps[0]) / "Contents" / "Info.plist"));
 }
 
-CIDER_TEST(extended_path_helper) {
+ORVYN_TEST(extended_path_helper) {
 #ifdef _WIN32
     auto e = extended_path("C:\\Windows");
     CHECK_EQ(path_to_utf8(e), std::string("C:/Windows"));       // prefix is stripped for display / external tools
@@ -541,7 +541,7 @@ CIDER_TEST(extended_path_helper) {
 
 // Real images contain symlinks (the /Applications alias, framework Versions/Current). They are removed,
 // never followed, and the target stays untouched.
-CIDER_TEST(regression_verify_removes_links_without_touching_their_targets) {
+ORVYN_TEST(regression_verify_removes_links_without_touching_their_targets) {
     TempDir t;
     t.write("tree/keep.txt", std::string("data"));
     t.write("outside/precious.txt", std::string("precious"));
@@ -565,11 +565,11 @@ CIDER_TEST(regression_verify_removes_links_without_touching_their_targets) {
 }
 
 // ---- real-world images (optional) ------------------------------------------------------------------------------
-// Set CIDER_REAL_DMG_DIR to a directory with genuine DMGs (tools/validate-real-dmgs.ps1 downloads
+// Set ORVYN_REAL_DMG_DIR to a directory with genuine DMGs (tools/validate-real-dmgs.ps1 downloads
 // three official open-source releases there). Nothing is downloaded or executed by the test-suite.
-CIDER_TEST(real_world_dmgs_are_parsed_and_extracted) {
-    const char* dirp = std::getenv("CIDER_REAL_DMG_DIR");
-    if (!dirp) SKIP("CIDER_REAL_DMG_DIR not set");
+ORVYN_TEST(real_world_dmgs_are_parsed_and_extracted) {
+    const char* dirp = std::getenv("ORVYN_REAL_DMG_DIR");
+    if (!dirp) SKIP("ORVYN_REAL_DMG_DIR not set");
     size_t seen = 0;
     for (auto& e : fs::directory_iterator(path_from_utf8(dirp))) {
         if (!e.is_regular_file() || !ends_with_icase(path_to_utf8(e.path()), ".dmg")) continue;

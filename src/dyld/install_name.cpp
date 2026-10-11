@@ -1,10 +1,10 @@
-#include "cider/dyld.hpp"
+#include "orvyn/dyld.hpp"
 
 #include <optional>
 
-#include "cider/util.hpp"
+#include "orvyn/util.hpp"
 
-namespace cider::dyld {
+namespace orvyn::dyld {
 namespace {
 constexpr std::string_view kExec = "@executable_path", kLoader = "@loader_path", kRpath = "@rpath";
 
@@ -65,4 +65,4 @@ std::vector<std::filesystem::path> search_candidates(std::string_view n, const s
     return out;
 }
 
-}  // namespace cider::dyld
+}  // namespace orvyn::dyld

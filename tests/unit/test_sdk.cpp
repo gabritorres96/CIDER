@@ -1,10 +1,10 @@
-// TAPI text stub reader (cider::sdk): the v4 subset, multi-document files, multi-line lists, x86_64 filtering, limits and hostile input.
+// TAPI text stub reader (orvyn::sdk): the v4 subset, multi-document files, multi-line lists, x86_64 filtering, limits and hostile input.
 #include <random>
 
-#include "cider/sdk.hpp"
+#include "orvyn/sdk.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
+using namespace orvyn;
 
 namespace {
 const char* kSample = R"(--- !tapi-tbd
@@ -37,7 +37,7 @@ exports:
 )";
 }
 
-CIDER_TEST(tbd_v4_documents_symbols_classes_and_targets_are_read) {
+ORVYN_TEST(tbd_v4_documents_symbols_classes_and_targets_are_read) {
     auto r = sdk::parse_tbd(kSample);
     CHECK(r.error.empty());
     CHECK_EQ(r.libraries.size(), size_t{2});
@@ -54,13 +54,13 @@ CIDER_TEST(tbd_v4_documents_symbols_classes_and_targets_are_read) {
     CHECK(!r.libraries[1].has_x86_64 && r.libraries[1].symbols.empty());
 }
 
-CIDER_TEST(library_families_follow_install_names) {
+ORVYN_TEST(library_families_follow_install_names) {
     CHECK_EQ(sdk::library_family("/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit"), std::string("AppKit"));
     CHECK_EQ(sdk::library_family("/usr/lib/libobjc.A.dylib"), std::string("libobjc"));
     CHECK_EQ(sdk::library_family("/usr/lib/system/libdispatch.dylib"), std::string("libdispatch"));
 }
 
-CIDER_TEST(malformed_tbd_input_is_an_error_not_a_crash) {
+ORVYN_TEST(malformed_tbd_input_is_an_error_not_a_crash) {
     CHECK(!sdk::parse_tbd("").error.empty());
     CHECK(!sdk::parse_tbd("not yaml at all\n").error.empty());
     CHECK(!sdk::parse_tbd("--- !tapi-tbd\ntargets: [ x86_64-macos\n").error.empty());     // unterminated list, no install name
@@ -70,7 +70,7 @@ CIDER_TEST(malformed_tbd_input_is_an_error_not_a_crash) {
     CHECK(!sdk::parse_tbd(big).error.empty());                  // over the input limit
 }
 
-CIDER_TEST(random_mutations_of_a_tbd_never_crash) {
+ORVYN_TEST(random_mutations_of_a_tbd_never_crash) {
     std::mt19937 rng(7);
     std::string base = kSample;
     for (int i = 0; i < 20000; ++i) {

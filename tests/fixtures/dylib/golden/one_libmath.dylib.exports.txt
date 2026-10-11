@@ -1,4 +1,4 @@
 C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\one\libmath.dylib:
 
 Exports trie:
-0x00000280  _cider_add
+0x00000280  _orvyn_add

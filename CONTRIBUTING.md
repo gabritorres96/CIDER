@@ -1,4 +1,4 @@
-# Contributing to CIDER
+# Contributing to ORVYN
 
 ## Ground rules
 
@@ -7,7 +7,7 @@
 3. Keep modules separate: analysis (`macho`, `corefoundation`, `bundle`, `dmg`, `analysis`) must
    never depend on a loader/runtime, and nothing in analysis may execute untrusted code.
 4. Mach-O files, plists and disk images are **untrusted input**: bounds-check everything, use the
-   overflow-safe helpers in `cider/bytes.hpp` (`checked_add`, `checked_mul`, `ByteView`).
+   overflow-safe helpers in `orvyn/bytes.hpp` (`checked_add`, `checked_mul`, `ByteView`).
 5. Do not copy code from Wine, Darling, GNUstep, 7-Zip or Apple sources without checking the
    licence first (see [docs/LICENSES.md](docs/LICENSES.md)). Never add Apple proprietary
    frameworks or headers to the repository.
@@ -30,7 +30,7 @@ ctest --test-dir build -C Debug --output-on-failure
 
 1. Add the constant and parser in `src/macho/macho.cpp` with a minimum-size check.
 2. Validate every offset/size against the slice (`check_range` / `check_table`).
-3. Add the field to `include/cider/macho.hpp`, to the builder in `tests/fixtures/macho_builder.hpp`,
+3. Add the field to `include/orvyn/macho.hpp`, to the builder in `tests/fixtures/macho_builder.hpp`,
    a positive test in `tests/unit/test_macho*.cpp` and negative cases in `test_malformed.cpp`.
 4. Document it in `docs/MACHO.md`.
 

@@ -6,9 +6,9 @@ __DATA_CONST __mod_init_func    0x00001018  pointer
 
 Bind table:
 segment  section            address    type       addend dylib            symbol
-__DATA_CONST __got              0x00001000 pointer         0 libinitbase      _cider_order
-__DATA_CONST __got              0x00001008 pointer         0 libinitbase      _cider_order_n
-__DATA_CONST __got              0x00001010 pointer         0 libinitbase      _cider_base_ready
+__DATA_CONST __got              0x00001000 pointer         0 libinitbase      _orvyn_order
+__DATA_CONST __got              0x00001008 pointer         0 libinitbase      _orvyn_order_n
+__DATA_CONST __got              0x00001010 pointer         0 libinitbase      _orvyn_base_ready
 
 Lazy bind table:
 segment  section            address     dylib            symbol

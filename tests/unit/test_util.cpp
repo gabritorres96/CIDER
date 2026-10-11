@@ -1,23 +1,24 @@
+#include <cstdlib>
 #include <string>
 
-#include "cider/bytes.hpp"
-#include "cider/json.hpp"
-#include "cider/log.hpp"
-#include "cider/util.hpp"
+#include "orvyn/bytes.hpp"
+#include "orvyn/json.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/util.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 
-CIDER_TEST(checked_arithmetic) {
+ORVYN_TEST(checked_arithmetic) {
     CHECK(checked_add(1, 2).value() == 3);
     CHECK(!checked_add(UINT64_MAX, 1).has_value());
     CHECK(checked_mul(0, UINT64_MAX).value() == 0);
     CHECK(!checked_mul(UINT64_MAX, 2).has_value());
 }
 
-CIDER_TEST(byteview_bounds) {
+ORVYN_TEST(byteview_bounds) {
     std::vector<uint8_t> d{1, 2, 3, 4, 5, 6, 7, 8};
     ByteView v(d);
     CHECK(v.contains(0, 8));
@@ -33,7 +34,7 @@ CIDER_TEST(byteview_bounds) {
     CHECK_EQ(v.peek_u32(100), 0u);
 }
 
-CIDER_TEST(byteview_strings) {
+ORVYN_TEST(byteview_strings) {
     std::vector<uint8_t> d{'a', 'b', 0, 'c', 'd'};
     ByteView v(d);
     CHECK_EQ(v.cstring(0, 5).value(), std::string("ab"));
@@ -46,13 +47,13 @@ CIDER_TEST(byteview_strings) {
     CHECK_EQ(v.fixed_string(4, 10), std::string(""));
 }
 
-CIDER_TEST(version_and_hex_formatting) {
+ORVYN_TEST(version_and_hex_formatting) {
     CHECK_EQ(version_string(0x000a0f00), std::string("10.15"));
     CHECK_EQ(version_string(0x000b0203), std::string("11.2.3"));
     CHECK_EQ(hex(255), std::string("0xff"));
 }
 
-CIDER_TEST(utf8_sanitising) {
+ORVYN_TEST(utf8_sanitising) {
     CHECK_EQ(sanitize_utf8("plain"), std::string("plain"));
     CHECK_EQ(sanitize_utf8("caf\xC3\xA9"), std::string("caf\xC3\xA9"));
     CHECK_EQ(sanitize_utf8("a\xFF" "b"), std::string("a\xEF\xBF\xBD" "b"));
@@ -60,7 +61,7 @@ CIDER_TEST(utf8_sanitising) {
     CHECK_EQ(sanitize_utf8("\xED\xA0\x80"), std::string("\xEF\xBF\xBD\xEF\xBF\xBD\xEF\xBF\xBD"));  // surrogate
 }
 
-CIDER_TEST(json_writer_escapes_and_nests) {
+ORVYN_TEST(json_writer_escapes_and_nests) {
     JsonWriter w;
     w.begin_object();
     w.field("s", "a\"b\\c\n\x01");
@@ -78,7 +79,7 @@ CIDER_TEST(json_writer_escapes_and_nests) {
     CHECK(s.find('\xFF') == std::string::npos);  // invalid UTF-8 never leaks into JSON
 }
 
-CIDER_TEST(log_levels_and_file_sink) {
+ORVYN_TEST(log_levels_and_file_sink) {
     log::Level l;
     CHECK(log::parse_level("DEBUG", l) && l == log::Level::Debug);
     CHECK(!log::parse_level("loud", l));
@@ -95,12 +96,12 @@ CIDER_TEST(log_levels_and_file_sink) {
     log::set_level(log::Level::Off);
     auto bytes = read_file(t.path() / "x.log", 1 << 20).value();
     std::string text(bytes.begin(), bytes.end());
-    CHECK(text.find("[CIDER][INFO] hello 42") != std::string::npos);
-    CHECK(text.find("[CIDER][ERROR] bad") != std::string::npos);
+    CHECK(text.find("[ORVYN][INFO] hello 42") != std::string::npos);
+    CHECK(text.find("[ORVYN][ERROR] bad") != std::string::npos);
     CHECK(text.find("hidden") == std::string::npos);
 }
 
-CIDER_TEST(read_file_limits) {
+ORVYN_TEST(read_file_limits) {
     TempDir t;
     t.write("f.bin", std::vector<uint8_t>(100, 7));
     CHECK(read_file(t.path() / "f.bin", 100).ok());
@@ -109,10 +110,22 @@ CIDER_TEST(read_file_limits) {
     CHECK_ERR(read_file(t.path(), 100), ErrorCode::InvalidArgument);
 }
 
-CIDER_TEST(is_inside_detects_escape) {
+ORVYN_TEST(is_inside_detects_escape) {
     TempDir t;
     std::filesystem::create_directories(t.path() / "a/b");
     CHECK(is_inside(t.path() / "a", t.path() / "a/b/c.txt"));
     CHECK(!is_inside(t.path() / "a", t.path() / "a/../x"));
     CHECK(is_inside(t.path() / "a", t.path() / "a"));  // the root itself counts as inside
+}
+
+ORVYN_TEST(getenv_compat_prefers_the_new_name_and_falls_back_to_the_legacy_one) {
+    _putenv_s("ORVYN_TEST_COMPAT", "");
+    _putenv_s("CIDER_TEST_COMPAT", "");
+    CHECK(orvyn::getenv_compat("ORVYN_TEST_COMPAT", "CIDER_TEST_COMPAT") == nullptr);
+    _putenv_s("CIDER_TEST_COMPAT", "legacy");
+    CHECK(std::string(orvyn::getenv_compat("ORVYN_TEST_COMPAT", "CIDER_TEST_COMPAT")) == "legacy");
+    _putenv_s("ORVYN_TEST_COMPAT", "new");
+    CHECK(std::string(orvyn::getenv_compat("ORVYN_TEST_COMPAT", "CIDER_TEST_COMPAT")) == "new");     // the new name wins
+    _putenv_s("ORVYN_TEST_COMPAT", "");
+    _putenv_s("CIDER_TEST_COMPAT", "");
 }

@@ -2,10 +2,10 @@
 #include <map>
 #include <sstream>
 
-#include "cider/guest.hpp"
-#include "cider/util.hpp"
+#include "orvyn/guest.hpp"
+#include "orvyn/util.hpp"
 
-namespace cider::guest {
+namespace orvyn::guest {
 namespace {
 
 std::string esc(const std::string& s) {
@@ -54,7 +54,7 @@ loader::LoadFailure failure_from(const std::string& s) {
 
 std::string serialize_result(const Outcome& r) {
     std::ostringstream o;
-    o << "cider-result=1\n";
+    o << "orvyn-result=1\n";
     o << "state=" << to_string(r.state) << "\n";
     o << "exit_code=" << r.exit_code << "\n";
     o << "returned_from_main=" << (r.returned_from_main ? 1 : 0) << "\n";
@@ -74,7 +74,7 @@ std::string serialize_result(const Outcome& r) {
 std::optional<Outcome> parse_result(const std::string& text) {
     std::istringstream in(text);
     std::string line;
-    if (!std::getline(in, line) || line != "cider-result=1") return std::nullopt;
+    if (!std::getline(in, line) || line != "orvyn-result=1") return std::nullopt;
     Outcome r;
     bool end = false, have_state = false;
     while (std::getline(in, line)) {
@@ -145,4 +145,4 @@ bool write_result_file(const std::filesystem::path& p, const Outcome& r) {
     return !ec;
 }
 
-}  // namespace cider::guest
+}  // namespace orvyn::guest

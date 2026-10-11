@@ -1,9 +1,9 @@
-# Thread-local storage (CIDER 0.3.6)
+# Thread-local storage (ORVYN 0.3.6)
 
 ## Why Windows and Darwin TLS collide
 
 On Windows x64 `gs` points at the TEB; `gs:[0x58]` is `ThreadLocalStoragePointer`, `gs:[0x1480]`… hold TLS slots/FLS. Overwriting
-`gs` (or the TEB) to emulate Darwin would corrupt the host's thread state (exceptions, stack limits, CRT). **CIDER never writes
+`gs` (or the TEB) to emulate Darwin would corrupt the host's thread state (exceptions, stack limits, CRT). **ORVYN never writes
 `gs`, the TEB, TlsAlloc slots or host `thread_local` data.**
 
 ## What clang actually emits on Darwin x86_64
@@ -25,13 +25,13 @@ The guest does **not** touch `gs`: only dyld's `tlv_get_addr` does. Mach-O piece
 
 ## Design (implemented)
 
-`__tlv_bootstrap` / `_tlv_get_addr` resolve to a CIDER host function (`src/libsystem/tls.cpp`). On first use per image it
+`__tlv_bootstrap` / `_tlv_get_addr` resolve to a ORVYN host function (`src/libsystem/tls.cpp`). On first use per image it
 allocates a block in the guest heap (template size + alignment), copies the `__thread_data` bytes, leaves `__thread_bss` zero and
 returns `block + descriptor->offset`. There is one guest thread, so one block per image.
 
 Darwin's TLV convention preserves **every register except `rax`** across the call (compilers keep `edx`, `rcx`, xmm values live).
 A normal Windows-ABI thunk would clobber them (this was a real bug found while building the fixture: the guest read the wrong
-value). `cider_guest_thunk_tlv` therefore saves/restores `rcx rdx rsi rdi r8-r10 xmm0-5` around the host call.
+value). `orvyn_guest_thunk_tlv` therefore saves/restores `rcx rdx rsi rdi r8-r10 xmm0-5` around the host call.
 
 At link time the linker validates the template (size ≤ 16 MiB, alignment ≤ 4096, inside the mapping), that descriptor tables are whole
 24-byte records, that every `thunk` equals `__tlv_bootstrap` and every `offset` lies inside the template.

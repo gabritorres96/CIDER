@@ -2,19 +2,19 @@
 // tables; invalid arguments yield nil/NULL/NO (never a fake success). Signatures follow <objc/runtime.h> of the Apple runtime.
 #include <cstring>
 
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/objc.hpp"
 #include "../libsystem/internal.hpp"
 
 extern "C" {
-void cider_objc_msgSend();
-void cider_objc_msgSend_stret();
-void cider_objc_msgSendSuper();
-void cider_objc_msgSendSuper2();
+void orvyn_objc_msgSend();
+void orvyn_objc_msgSend_stret();
+void orvyn_objc_msgSendSuper();
+void orvyn_objc_msgSendSuper2();
 }
 
-namespace cider::objc {
+namespace orvyn::objc {
 namespace {
 
 Runtime* RT() { return Runtime::current(); }
@@ -246,11 +246,11 @@ void add_objc_symbols(std::vector<libsystem::HostSymbol>& t) {
     using libsystem::Lib;
     auto fn = [&](const char* name, void* f) { t.push_back(HostSymbol{name, f, false, false, false, Lib::Objc}); };
     auto direct = [&](const char* name, void (*f)()) { t.push_back(HostSymbol{name, reinterpret_cast<void*>(f), false, false, true, Lib::Objc}); };
-    direct("_objc_msgSend", &cider_objc_msgSend);
-    direct("_objc_msgSend_fpret", &cider_objc_msgSend);          // long double returns (x87) are not supported; double results travel in xmm0 like any other
-    direct("_objc_msgSend_stret", &cider_objc_msgSend_stret);
-    direct("_objc_msgSendSuper", &cider_objc_msgSendSuper);
-    direct("_objc_msgSendSuper2", &cider_objc_msgSendSuper2);
+    direct("_objc_msgSend", &orvyn_objc_msgSend);
+    direct("_objc_msgSend_fpret", &orvyn_objc_msgSend);          // long double returns (x87) are not supported; double results travel in xmm0 like any other
+    direct("_objc_msgSend_stret", &orvyn_objc_msgSend_stret);
+    direct("_objc_msgSendSuper", &orvyn_objc_msgSendSuper);
+    direct("_objc_msgSendSuper2", &orvyn_objc_msgSendSuper2);
     fn("_objc_getClass", addr(w_objc_getClass));
     fn("_objc_lookUpClass", addr(w_objc_getClass));
     fn("_objc_getMetaClass", addr(w_objc_getMetaClass));
@@ -296,4 +296,4 @@ void add_objc_symbols(std::vector<libsystem::HostSymbol>& t) {
     add_objc_memory_symbols(t);
 }
 
-}  // namespace cider::objc
+}  // namespace orvyn::objc

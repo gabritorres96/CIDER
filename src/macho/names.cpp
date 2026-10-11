@@ -1,7 +1,7 @@
-#include "cider/macho.hpp"
-#include "cider/util.hpp"
+#include "orvyn/macho.hpp"
+#include "orvyn/util.hpp"
 
-namespace cider::macho {
+namespace orvyn::macho {
 
 std::string cpu_name(uint32_t cputype, uint32_t cpusubtype) {
     uint32_t sub = cpusubtype & 0x00ffffffu;  // top byte holds capability bits (e.g. LIB64)
@@ -105,4 +105,4 @@ const Slice* File::find_slice(uint32_t cputype) const {
     return nullptr;
 }
 
-}  // namespace cider::macho
+}  // namespace orvyn::macho

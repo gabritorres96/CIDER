@@ -1,6 +1,6 @@
-#include "cider/bytes.hpp"
+#include "orvyn/bytes.hpp"
 
-namespace cider {
+namespace orvyn {
 
 const char* to_string(ErrorCode c) noexcept {
     switch (c) {
@@ -89,4 +89,4 @@ std::string ByteView::fixed_string(uint64_t off, uint64_t len) const {
     return std::string(reinterpret_cast<const char*>(data_ + off), n);
 }
 
-}  // namespace cider
+}  // namespace orvyn

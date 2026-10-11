@@ -1,7 +1,7 @@
-# AppKit subset (CIDER 0.5, experimental)
+# AppKit subset (ORVYN 0.5, experimental)
 
-A small, host-implemented AppKit: Objective-C classes registered in CIDER's runtime that create **real Windows windows** through a GUI backend ([GUI-BACKEND.md](GUI-BACKEND.md)). It is not Apple's AppKit
-(no Apple code, written from public behaviour), it covers only what is listed here, and **CIDER makes no claim of AppKit, Cocoa or macOS application compatibility**. Verified with clang-built Mach-O
+A small, host-implemented AppKit: Objective-C classes registered in ORVYN's runtime that create **real Windows windows** through a GUI backend ([GUI-BACKEND.md](GUI-BACKEND.md)). It is not Apple's AppKit
+(no Apple code, written from public behaviour), it covers only what is listed here, and **ORVYN makes no claim of AppKit, Cocoa or macOS application compatibility**. Verified with clang-built Mach-O
 fixtures (`tests/fixtures/appkit`), the headless `offscreen` backend, and a controller that drives the real Win32 window with window messages.
 
 Status legend: **T** = exercised by a compiled fixture, **P** = partial (documented), **-** = absent.
@@ -60,6 +60,6 @@ semantics, key equivalents, input methods.
 
 ```
 tools\llvm-env.cmd tools\gen-appkit-fixtures.cmd
-build\bin\Release\cider.exe run tests\fixtures\appkit\bin\hello_window\hello_window
+build\bin\Release\orvyn.exe run tests\fixtures\appkit\bin\hello_window\hello_window
 ```
-A window "CIDER — Hello from macOS" appears with two labels, a counter ("Clicks: 0"), and the buttons "Click me" and "Close"; see `docs/EXECUTION.md`.
+A window "ORVYN — Hello from macOS" appears with two labels, a counter ("Clicks: 0"), and the buttons "Click me" and "Close"; see `docs/EXECUTION.md`.

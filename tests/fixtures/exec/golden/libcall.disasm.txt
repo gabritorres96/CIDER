@@ -18,7 +18,7 @@ _main:
 100000570:	4c 89 f7	movq	%r14, %rdi
 100000573:	48 89 de	movq	%rbx, %rsi
 100000576:	e8 45 00 00 00	callq	0x1000005c0 ## symbol stub for: _memcpy
-10000057b:	48 8d 3d 82 00 00 00	leaq	0x82(%rip), %rdi ## literal pool for: "CIDER runtime"
+10000057b:	48 8d 3d 82 00 00 00	leaq	0x82(%rip), %rdi ## literal pool for: "ORVYN runtime"
 100000582:	e8 2d 00 00 00	callq	0x1000005b4 ## symbol stub for: _strlen
 100000587:	48 89 c3	movq	%rax, %rbx
 10000058a:	bf e2 ff ff ff	movl	$0xffffffe2, %edi

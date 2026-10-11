@@ -1,8 +1,8 @@
-// FILE streams (CIDER 0.4.1) exercised by real Mach-O programs; every file is compared byte for byte on the host.
+// FILE streams (ORVYN 0.4.1) exercised by real Mach-O programs; every file is compared byte for byte on the host.
 #include <cstring>
 #include <fstream>
 
-#include "cider/guest.hpp"
+#include "orvyn/guest.hpp"
 #include "guest_code.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
@@ -12,8 +12,8 @@
 #include <windows.h>
 #endif
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 namespace fs = std::filesystem;
 
 namespace {
@@ -40,7 +40,7 @@ std::string str(const std::vector<uint8_t>& v) { return std::string(v.begin(), v
 
 }  // namespace
 
-CIDER_TEST(fwrite_writes_exactly_the_bytes_without_text_mode_translation) {
+ORVYN_TEST(fwrite_writes_exactly_the_bytes_without_text_mode_translation) {
     TempDir t;
     Run r = run_fixture("streams_write", t.path());
     REQUIRE(r.r.state == guest::State::Exited);
@@ -54,7 +54,7 @@ CIDER_TEST(fwrite_writes_exactly_the_bytes_without_text_mode_translation) {
     CHECK(!fs::exists(t.path() / "a.bin"));                                                           // the invalid mode created nothing
 }
 
-CIDER_TEST(fread_fseek_ftell_feof_ferror_and_fgets_follow_the_c_contract) {
+ORVYN_TEST(fread_fseek_ftell_feof_ferror_and_fgets_follow_the_c_contract) {
     TempDir t;
     std::vector<uint8_t> all(256);
     for (int i = 0; i < 256; ++i) all[static_cast<size_t>(i)] = static_cast<uint8_t>(i);
@@ -66,7 +66,7 @@ CIDER_TEST(fread_fseek_ftell_feof_ferror_and_fgets_follow_the_c_contract) {
     CHECK_EQ(r.out, std::string("streams read ok\n"));
 }
 
-CIDER_TEST(streams_cannot_leave_the_root) {
+ORVYN_TEST(streams_cannot_leave_the_root) {
     TempDir t;
     fs::create_directories(t.path() / "root");
     t.write("outside.bin", std::string("secret"));
@@ -79,13 +79,13 @@ CIDER_TEST(streams_cannot_leave_the_root) {
     CHECK(r.r.exit_code != 40);
 }
 
-CIDER_TEST(without_a_root_fopen_fails_with_eacces) {
+ORVYN_TEST(without_a_root_fopen_fails_with_eacces) {
     Run r = run_fixture("streams_write", {});
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 10);                                     // fopen returned NULL: EACCES
 }
 
-CIDER_TEST(the_stream_pool_is_finite_slots_are_reusable_and_forged_pointers_are_refused) {
+ORVYN_TEST(the_stream_pool_is_finite_slots_are_reusable_and_forged_pointers_are_refused) {
     TempDir t;
     Run r = run_fixture("streams_limit", t.path());
     REQUIRE(r.r.state == guest::State::Exited);
@@ -93,7 +93,7 @@ CIDER_TEST(the_stream_pool_is_finite_slots_are_reusable_and_forged_pointers_are_
     CHECK_EQ(r.out, std::string("opened=61 errno=24\n"));            // 64 slots - stdin/stdout/stderr, then EMFILE (24 on Darwin)
 }
 
-CIDER_TEST(open_streams_are_closed_when_the_guest_exits) {
+ORVYN_TEST(open_streams_are_closed_when_the_guest_exits) {
     TempDir t;
     const DWORD start = [] { DWORD h = 0; GetProcessHandleCount(GetCurrentProcess(), &h); return h; }();
     for (int i = 0; i < 6; ++i) {

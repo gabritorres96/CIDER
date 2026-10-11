@@ -2,12 +2,12 @@
 #include <fstream>
 #include <sstream>
 
-#include "cider/guest.hpp"
+#include "orvyn/guest.hpp"
 #include "guest_code.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 
 namespace {
 
@@ -44,7 +44,7 @@ const uint8_t* at(const abi::GuestStack& st, uint64_t addr) {
 }  // namespace
 
 // ---- LC_MAIN contract ---------------------------------------------------------------------------------------
-CIDER_TEST(lc_main_entry_is_the_address_of_main_in_every_fixture) {
+ORVYN_TEST(lc_main_entry_is_the_address_of_main_in_every_fixture) {
     for (const char* n : {"ret42", "math", "stack", "calls", "globals", "bss", "libcall", "hello", "args", "missing", "exitcall", "crash", "spin"}) {
         auto bytes = exec_fixture(n);
         auto file = macho::parse_file(ByteView(bytes)).value();
@@ -58,7 +58,7 @@ CIDER_TEST(lc_main_entry_is_the_address_of_main_in_every_fixture) {
     }
 }
 
-CIDER_TEST(entry_contract_is_main_called_with_argc_argv_envp_apple_and_its_value_goes_to_exit) {
+ORVYN_TEST(entry_contract_is_main_called_with_argc_argv_envp_apple_and_its_value_goes_to_exit) {
     // Documented contract (docs/EXECUTION.md): the guest function at LC_MAIN is main(); when it returns,
     // its eax is passed to exit(), exactly like dyld does. ret42 shows the returned value becomes the exit code
     // with returned_from_main == true, exitcall shows an explicit exit() with returned_from_main == false.
@@ -73,7 +73,7 @@ CIDER_TEST(entry_contract_is_main_called_with_argc_argv_envp_apple_and_its_value
 }
 
 // ---- stack builder ------------------------------------------------------------------------------------------
-CIDER_TEST(guest_args_block_layout_and_alignment) {
+ORVYN_TEST(guest_args_block_layout_and_alignment) {
     auto st = make_stack();
     auto g = abi::build_guest_args(st, {"prog", "a b", "caf\xC3\xA9"}, {"A=1", "B=2"}, {"executable_path=prog"});
     REQUIRE(g.ok());
@@ -98,7 +98,7 @@ CIDER_TEST(guest_args_block_layout_and_alignment) {
     CHECK_EQ(a.apple, a.envp + 3 * 8);
 }
 
-CIDER_TEST(guest_args_accept_empty_vectors) {
+ORVYN_TEST(guest_args_accept_empty_vectors) {
     auto st = make_stack();
     auto g = abi::build_guest_args(st, {}, {}, {});
     REQUIRE(g.ok());
@@ -107,7 +107,7 @@ CIDER_TEST(guest_args_accept_empty_vectors) {
     CHECK_EQ(g.value().initial_sp % 16, uint64_t{0});
 }
 
-CIDER_TEST(guest_args_that_do_not_fit_are_rejected) {
+ORVYN_TEST(guest_args_that_do_not_fit_are_rejected) {
     auto st = make_stack(64 * 1024);
     std::string huge(100 * 1024, 'x');
     CHECK_ERR(abi::build_guest_args(st, {"p", huge}, {}, {}), ErrorCode::LimitExceeded);
@@ -117,7 +117,7 @@ CIDER_TEST(guest_args_that_do_not_fit_are_rejected) {
     CHECK(abi::build_guest_args(st, {"ok"}, {}, {}).ok());
 }
 
-CIDER_TEST(guest_function_can_use_stack_space_below_the_args_block) {
+ORVYN_TEST(guest_function_can_use_stack_space_below_the_args_block) {
     auto st = make_stack();
     auto g = abi::build_guest_args(st, {"prog"}, {}, {}).value();
     // push/pop 200 values: mov ecx,200 ; L: push rcx ; loop L ; add rsp,1600 ; mov eax, 7 ; ret
@@ -126,7 +126,7 @@ CIDER_TEST(guest_function_can_use_stack_space_below_the_args_block) {
     CHECK_EQ(static_cast<uint32_t>(o.value), 7u);
 }
 
-CIDER_TEST(guest_receives_argc_argv_envp_apple_in_the_system_v_registers) {
+ORVYN_TEST(guest_receives_argc_argv_envp_apple_in_the_system_v_registers) {
     auto st = make_stack();
     auto g = abi::build_guest_args(st, {"p", "q"}, {"E=1"}, {"A=2"}).value();
     // return argc*1000 + (argv!=0) + (envp!=0)*10 + (apple!=0)*100  using rdi,rsi,rdx,rcx
@@ -140,7 +140,7 @@ CIDER_TEST(guest_receives_argc_argv_envp_apple_in_the_system_v_registers) {
 }
 
 // ---- real Mach-O programs using the protocol -----------------------------------------------------------------------------------
-CIDER_TEST(fixture_args_sees_the_command_line) {
+ORVYN_TEST(fixture_args_sees_the_command_line) {
     std::string out;
     auto r = run_fixture("args", {"prog", "first", "second"}, &out);
     CHECK(r.state == guest::State::Exited);
@@ -155,7 +155,7 @@ CIDER_TEST(fixture_args_sees_the_command_line) {
     CHECK_EQ(out, std::string("b\n"));
 }
 
-CIDER_TEST(unicode_and_spaces_in_arguments_reach_the_guest_unchanged) {
+ORVYN_TEST(unicode_and_spaces_in_arguments_reach_the_guest_unchanged) {
     std::string out;
     run_fixture("args", {"prog", "h\xC3\xA9llo w\xC3\xB6rld"}, &out);
     CHECK_EQ(out, std::string("h\xC3\xA9llo w\xC3\xB6rld\n"));

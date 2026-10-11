@@ -1,13 +1,13 @@
-#include "cider/guest.hpp"
-#include "cider/log.hpp"
-#include "cider/util.hpp"
+#include "orvyn/guest.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/util.hpp"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 
-namespace cider::guest {
+namespace orvyn::guest {
 
 int worker_main(const std::filesystem::path& image, const std::vector<std::string>& guest_args, const std::filesystem::path& result_file,
                 const std::filesystem::path& root) {
@@ -26,7 +26,7 @@ int worker_main(const std::filesystem::path& image, const std::vector<std::strin
         GuestConfig cfg;
         cfg.args.push_back(path_to_utf8(image));
         cfg.args.insert(cfg.args.end(), guest_args.begin(), guest_args.end());
-        cfg.env = {"CIDER_RUNTIME=1"};
+        cfg.env = {"ORVYN_RUNTIME=1"};
         cfg.image_path = image;
         cfg.root = root;
         out = run_in_process(ByteView(bytes.value()), cfg);
@@ -40,4 +40,4 @@ int worker_main(const std::filesystem::path& image, const std::vector<std::strin
     return 0;
 }
 
-}  // namespace cider::guest
+}  // namespace orvyn::guest

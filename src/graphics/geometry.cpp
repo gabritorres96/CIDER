@@ -1,8 +1,8 @@
-#include "cider/geometry.hpp"
+#include "orvyn/geometry.hpp"
 
 #include <algorithm>
 
-namespace cider::geometry {
+namespace orvyn::geometry {
 
 bool is_null(const Rect& r) { return std::isinf(r.origin.x) || std::isinf(r.origin.y); }
 bool is_infinite(const Rect& r) {
@@ -119,4 +119,4 @@ Rect autoresize(const Rect& frame, const Size& old_size, const Size& new_size, u
     return r;
 }
 
-}  // namespace cider::geometry
+}  // namespace orvyn::geometry

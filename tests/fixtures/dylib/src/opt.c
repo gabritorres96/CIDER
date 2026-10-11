@@ -1,1 +1,1 @@
-int cider_opt(void) { return 1; }
+int orvyn_opt(void) { return 1; }

@@ -1,4 +1,4 @@
-/* malloc/calloc/realloc/free provided by CIDER. Expected exit code: 4950 % 251 = 181. */
+/* malloc/calloc/realloc/free provided by ORVYN. Expected exit code: 4950 % 251 = 181. */
 extern void *malloc(unsigned long n);
 extern void *calloc(unsigned long a, unsigned long b);
 extern void *realloc(void *p, unsigned long n);

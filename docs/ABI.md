@@ -1,6 +1,6 @@
 # ABI notes: System V AMD64 (macOS) vs Windows x64
 
-Reference table of the ABI differences; the implemented part is described at the end of this file (CIDER 0.2).
+Reference table of the ABI differences; the implemented part is described at the end of this file (ORVYN 0.2).
 Running x86_64 instructions natively does not make a macOS binary compatible: the ABI, the
 libraries and the system calls all differ.
 
@@ -21,9 +21,9 @@ libraries and the system calls all differ.
 | Syscalls | `syscall` with class bits in `rax` (BSD class `0x2000000`); programs normally go through libSystem | NT system calls are private and unstable |
 | Address space | `__PAGEZERO` makes the lower 4 GiB invalid; images at `0x100000000` | low 64 KiB reserved; lower 4 GiB usable by other allocations |
 
-Consequences for CIDER (to design and test, not yet built):
+Consequences for ORVYN (to design and test, not yet built):
 
-* every call from Darwin code into CIDER-provided functions needs a System V → Win64 trampoline
+* every call from Darwin code into ORVYN-provided functions needs a System V → Win64 trampoline
   (move argument registers, create shadow space, preserve `rsi/rdi/xmm6–15`, align the stack);
   callbacks from Windows code into Darwin code need the reverse;
 * variadic functions (`printf` family) need `al`-aware thunks;
@@ -33,29 +33,29 @@ Consequences for CIDER (to design and test, not yet built):
   the cheaper scenario (native execution; ABIs still differ: Apple deviates from AAPCS64 in
   variadic and `x18` handling).
 
-## What CIDER 0.2 implements (src/abi, tests in test_abi / test_execution)
+## What ORVYN 0.2 implements (src/abi, tests in test_abi / test_execution)
 
 | Concern | Implementation | Verified by |
 | --- | --- | --- |
-| Entering System V code from Windows x64 | `cider_enter_guest` (MASM): saves rbx rbp rdi rsi r12-r15 xmm6-xmm15, switches rsp to the guest stack, loads rdi/rsi/rdx/rcx, `cld`, `call` | guest clobbers all of those registers; host values compared afterwards |
+| Entering System V code from Windows x64 | `orvyn_enter_guest` (MASM): saves rbx rbp rdi rsi r12-r15 xmm6-xmm15, switches rsp to the guest stack, loads rdi/rsi/rdx/rcx, `cld`, `call` | guest clobbers all of those registers; host values compared afterwards |
 | Argument registers | System V integer arguments: rdi, rsi, rdx, rcx (entry) and rdi..r9 (thunks) | machine code with `imul` per register |
 | Stack alignment | initial rsp 16-byte aligned before the `call`, so the callee sees rsp % 16 == 8 | guest returns `rsp & 15` == 8 |
 | Red zone | guest runs on a host-allocated stack with room below rsp | guest leaf code writes 128 bytes below rsp |
-| Calls guest → host | per-symbol stub (`mov r10, fn; jmp thunk`) → `cider_guest_thunk`: rdi,rsi,rdx,rcx → rcx,rdx,r8,r9; r8,r9 → Windows stack slots 5/6; 32-byte shadow space; runs on the **host** stack | 2-, 4- and 6-argument host functions called from guest code |
+| Calls guest → host | per-symbol stub (`mov r10, fn; jmp thunk`) → `orvyn_guest_thunk`: rdi,rsi,rdx,rcx → rcx,rdx,r8,r9; r8,r9 → Windows stack slots 5/6; 32-byte shadow space; runs on the **host** stack | 2-, 4- and 6-argument host functions called from guest code |
 | Return values | `eax`/`rax` and `xmm0` pass through untouched | int, 64-bit, pointer and `double` results |
 | `double` arguments | xmm0/xmm1 identical on both ABIs when they are the first/second *positional* argument | `sqrt`, `pow`, `floor`, ... called from a real Mach-O (fixture `fmath`) |
 | `exit()` | host function sets `GuestCall::exited`; the thunk returns to the host epilogue instead of the guest | code after `exit` never runs |
 | Unwinding | none: an exception inside guest code terminates the worker | `crash`, `recurse`, `ud2` tests |
 
-## What CIDER 0.3 adds (tests: `test_abi_raw`, `test_darwin_runtime`, `test_tls`)
+## What ORVYN 0.3 adds (tests: `test_abi_raw`, `test_darwin_runtime`, `test_tls`)
 
 Three thunk kinds (`abi::ThunkSpec`), chosen per libSystem symbol:
 
 | Kind | Entry | Use |
 | --- | --- | --- |
-| positional (`cider_guest_thunk`) | rdi,rsi,rdx,rcx → rcx,rdx,r8,r9; r8/r9 → stack slots | plain integer / all-double signatures (0.2 behaviour) |
-| raw (`cider_guest_thunk_raw`) | host function receives `GuestRegs*`: rdi..r9, AL (rax), xmm0-7 (low qword), address of the stack-argument area; results go in `ret_rax/ret_rdx/ret_xmm0/ret_xmm1` | mixed int/double, >6 integer args, stack args, **variadics**, aggregate returns |
-| TLV (`cider_guest_thunk_tlv`) | Darwin TLV convention: descriptor in rdi, result rax, **every other register preserved** | `tlv_get_addr` only |
+| positional (`orvyn_guest_thunk`) | rdi,rsi,rdx,rcx → rcx,rdx,r8,r9; r8/r9 → stack slots | plain integer / all-double signatures (0.2 behaviour) |
+| raw (`orvyn_guest_thunk_raw`) | host function receives `GuestRegs*`: rdi..r9, AL (rax), xmm0-7 (low qword), address of the stack-argument area; results go in `ret_rax/ret_rdx/ret_xmm0/ret_xmm1` | mixed int/double, >6 integer args, stack args, **variadics**, aggregate returns |
+| TLV (`orvyn_guest_thunk_tlv`) | Darwin TLV convention: descriptor in rdi, result rax, **every other register preserved** | `tlv_get_addr` only |
 
 * `RegsReader` walks the psABI: INTEGER class rdi..r9 then 8-byte stack slots, SSE class xmm0-7 then stack slots; both classes share the
   stack slots in call order (tested with 8 ints + 10 doubles). `VaListReader` reads a Darwin `va_list` in guest memory

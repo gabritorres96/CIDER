@@ -1,4 +1,4 @@
-// Message forwarding (CIDER 0.5.4): +resolveInstanceMethod: / +resolveClassMethod:, -forwardingTargetForSelector:, -forwardInvocation: with NSMethodSignature and NSInvocation.
+// Message forwarding (ORVYN 0.5.4): +resolveInstanceMethod: / +resolveClassMethod:, -forwardingTargetForSelector:, -forwardInvocation: with NSMethodSignature and NSInvocation.
 //
 // When a message finds no method, the dispatch stub jumps to objc_forward_message (a RAW thunk: it receives every argument register and the stack-argument area):
 //   1. -forwardingTargetForSelector: returns another receiver: the call is replayed on it with the original registers (and stack arguments);
@@ -10,17 +10,17 @@
 #include <cstring>
 #include <format>
 
-#include "cider/abi.hpp"
-#include "cider/libsystem.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/abi.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/objc.hpp"
 #include "../libsystem/internal.hpp"
 #include "foundation_internal.hpp"
 
-namespace cider::objc {
+namespace orvyn::objc {
 void objc_forward_message(abi::GuestRegs* r);      // referenced by the Runtime constructor
 }
 
-namespace cider::foundation {
+namespace orvyn::foundation {
 namespace {
 
 using abi::GuestRegs;
@@ -360,9 +360,9 @@ void install_nsinvocation(Runtime& r) {
     });
 }
 
-}  // namespace cider::foundation
+}  // namespace orvyn::foundation
 
-namespace cider::objc {
+namespace orvyn::objc {
 
 // The raw thunk behind forward_imp_: see the file comment.
 void objc_forward_message(abi::GuestRegs* r) {
@@ -451,4 +451,4 @@ void objc_forward_message(abi::GuestRegs* r) {
     finish_trap();                                              // 3.
 }
 
-}  // namespace cider::objc
+}  // namespace orvyn::objc

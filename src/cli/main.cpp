@@ -9,16 +9,16 @@
 #include <shellapi.h>
 #endif
 
-#include "cider/log.hpp"
-#include "cider/util.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/util.hpp"
 #include "commands.hpp"
 
 namespace {
 
 const char* kUsage =
-    "CIDER - Darwin Executable Runtime " "0.2.0\n"
+    "ORVYN - Darwin Executable Runtime " "0.2.0\n"
     "\n"
-    "Usage: cider <command> [options]\n"
+    "Usage: orvyn <command> [options]\n"
     "\n"
     "Commands:\n"
     "  inspect <program|App.app|x.dmg>  Static Mach-O / bundle / disk image inspection (auto-detected)\n"
@@ -27,7 +27,7 @@ const char* kUsage =
     "  dependencies <program|App.app>   Dynamic library dependencies and their resolution\n"
     "  compatibility <program|App.app>  Static compatibility assessment\n"
     "  run <program|App.app>            Run an x86_64 Mach-O (dylibs, initializers, TLS) in a job-restricted worker\n"
-    "  logs [file]                      Show the tail of a CIDER log file\n"
+    "  logs [file]                      Show the tail of a ORVYN log file\n"
     "  doctor                           Check the environment\n"
     "\n"
     "Options:\n"
@@ -36,7 +36,7 @@ const char* kUsage =
     "  --timeout <seconds>    run: kill the guest after this many seconds (default 60)\n"
     "  --root <dir>           run: host directory the guest sees as \"/\" (default: current directory)\n"
     "  -o, --output <dir>    Output directory (extract; must not exist or be empty)\n"
-    "  --7z <path>            Absolute path of 7z.exe (default: $CIDER_7Z, PATH, Program Files)\n"
+    "  --7z <path>            Absolute path of 7z.exe (default: $ORVYN_7Z, PATH, Program Files)\n"
     "  --max-size <MiB>       Maximum unpacked size accepted when extracting (default 8192)\n"
     "  --temp-dir <dir>       Where private temporary work directories are created\n"
     "  --log-level <level>    trace|debug|info|warn|error|fatal|off (default: warn)\n"
@@ -70,23 +70,23 @@ int main(int argc, char** argv) {
     SetConsoleOutputCP(CP_UTF8);
 #endif
     auto args = utf8_args(argc, argv);
-    cider::cli::Options opt;
+    orvyn::cli::Options opt;
     std::string command;
     std::string log_file;
-    cider::log::Level level = cider::log::Level::Warn;
+    orvyn::log::Level level = orvyn::log::Level::Warn;
     bool level_set = false;
 
     for (size_t i = 1; i < args.size(); ++i) {
         const std::string& a = args[i];
-        if (a == "--") {  // everything after is passed to the guest program (cider run <program> -- args...)
+        if (a == "--") {  // everything after is passed to the guest program (orvyn run <program> -- args...)
             opt.guest_args.assign(args.begin() + static_cast<std::ptrdiff_t>(i) + 1, args.end());
             break;
         }
-        if (a == "--version" || a == "-V") { std::printf("cider %s\n", cider::kVersion); return 0; }
+        if (a == "--version" || a == "-V") { std::printf("orvyn %s\n", orvyn::kVersion); return 0; }
         if (a == "--help" || a == "-h") { std::fputs(kUsage, stdout); return 0; }
         if (a == "--json") opt.json = true;
         else if (a == "--symbols") opt.symbols = true;
-        else if (a == "--verbose" || a == "-v") { level = cider::log::Level::Debug; level_set = true; }
+        else if (a == "--verbose" || a == "-v") { level = orvyn::log::Level::Debug; level_set = true; }
         else if (a == "--output" || a == "-o" || a == "--7z" || a == "--temp-dir" || a == "--max-size" || a == "--timeout" || a == "--result-file" || a == "--root") {
             if (i + 1 >= args.size()) { std::fprintf(stderr, "error: %s needs a value\n", a.c_str()); return 2; }
             const std::string& v = args[++i];
@@ -115,7 +115,7 @@ int main(int argc, char** argv) {
             if (i + 1 >= args.size()) { std::fprintf(stderr, "error: %s needs a value\n", a.c_str()); return 2; }
             const std::string& v = args[++i];
             if (a == "--log-file") log_file = v;
-            else if (!cider::log::parse_level(v, level)) { std::fprintf(stderr, "error: unknown log level '%s'\n", v.c_str()); return 2; }
+            else if (!orvyn::log::parse_level(v, level)) { std::fprintf(stderr, "error: unknown log level '%s'\n", v.c_str()); return 2; }
             else level_set = true;
         } else if (a.size() > 1 && a[0] == '-' && a != "-") {
             std::fprintf(stderr, "error: unknown option '%s' (try --help)\n", a.c_str());
@@ -124,27 +124,27 @@ int main(int argc, char** argv) {
         else opt.positional.push_back(a);
     }
 
-    if (command == "run" && !level_set && !opt.json) level = cider::log::Level::Info;  // run shows what the runtime does
-    cider::log::set_level(level);
-    if (log_file.empty()) if (const char* e = std::getenv("CIDER_LOG_FILE")) log_file = e;
-    if (!log_file.empty() && command != "logs" && !cider::log::set_file(log_file))
+    if (command == "run" && !level_set && !opt.json) level = orvyn::log::Level::Info;  // run shows what the runtime does
+    orvyn::log::set_level(level);
+    if (log_file.empty()) if (const char* e = orvyn::getenv_compat("ORVYN_LOG_FILE", "CIDER_LOG_FILE")) log_file = e;
+    if (!log_file.empty() && command != "logs" && !orvyn::log::set_file(log_file))
         std::fprintf(stderr, "warning: cannot open log file '%s'\n", log_file.c_str());
     // The worker's stderr belongs to the guest: runtime log lines go to the log file only.
-    if (command == "__worker" && !log_file.empty()) cider::log::set_stderr_enabled(false);
+    if (command == "__worker" && !log_file.empty()) orvyn::log::set_stderr_enabled(false);
 
     if (command.empty()) { std::fputs(kUsage, stderr); return 2; }
     int rc;
-    if (command == "inspect") rc = cider::cli::cmd_inspect(opt);
-    else if (command == "dmg-info") rc = cider::cli::cmd_dmg_info(opt);
-    else if (command == "extract") rc = cider::cli::cmd_extract(opt);
-    else if (command == "dependencies") rc = cider::cli::cmd_dependencies(opt);
-    else if (command == "compatibility") rc = cider::cli::cmd_compatibility(opt);
-    else if (command == "run") rc = cider::cli::cmd_run(opt);
-    else if (command == "__worker") rc = cider::cli::cmd_worker(opt);  // internal: started by `cider run`
-    else if (command == "logs") rc = cider::cli::cmd_logs(opt);
-    else if (command == "doctor") rc = cider::cli::cmd_doctor(opt);
-    else if (command == "sdk-scan") rc = cider::cli::cmd_sdk_scan(opt);
+    if (command == "inspect") rc = orvyn::cli::cmd_inspect(opt);
+    else if (command == "dmg-info") rc = orvyn::cli::cmd_dmg_info(opt);
+    else if (command == "extract") rc = orvyn::cli::cmd_extract(opt);
+    else if (command == "dependencies") rc = orvyn::cli::cmd_dependencies(opt);
+    else if (command == "compatibility") rc = orvyn::cli::cmd_compatibility(opt);
+    else if (command == "run") rc = orvyn::cli::cmd_run(opt);
+    else if (command == "__worker") rc = orvyn::cli::cmd_worker(opt);  // internal: started by `orvyn run`
+    else if (command == "logs") rc = orvyn::cli::cmd_logs(opt);
+    else if (command == "doctor") rc = orvyn::cli::cmd_doctor(opt);
+    else if (command == "sdk-scan") rc = orvyn::cli::cmd_sdk_scan(opt);
     else { std::fprintf(stderr, "error: unknown command '%s' (try --help)\n", command.c_str()); rc = 2; }
-    cider::log::close_file();
+    orvyn::log::close_file();
     return rc;
 }

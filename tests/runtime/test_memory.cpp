@@ -1,14 +1,14 @@
-#include "cider/memory.hpp"
+#include "orvyn/memory.hpp"
 #include "guest_code.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::memory;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::memory;
+using namespace orvyn::testing;
 
 static PageInfo::State info_state(const Region& r, size_t off) { return r.info(off).value().state; }
 
-CIDER_TEST(page_sizes_and_alignment_helpers) {
+ORVYN_TEST(page_sizes_and_alignment_helpers) {
     CHECK_EQ(page_size(), size_t{4096});
     CHECK_EQ(allocation_granularity(), size_t{65536});
     CHECK(is_aligned(0x1000, 0x1000));
@@ -20,7 +20,7 @@ CIDER_TEST(page_sizes_and_alignment_helpers) {
     CHECK(!align_up(1, 0).has_value());
 }
 
-CIDER_TEST(mach_o_protections_map_to_wx_safe_prots) {
+ORVYN_TEST(mach_o_protections_map_to_wx_safe_prots) {
     CHECK(from_mach_prot(0).value() == Prot::None);
     CHECK(from_mach_prot(1).value() == Prot::Read);
     CHECK(from_mach_prot(3).value() == Prot::ReadWrite);
@@ -33,7 +33,7 @@ CIDER_TEST(mach_o_protections_map_to_wx_safe_prots) {
     CHECK_ERR(from_mach_prot(-1), ErrorCode::Malformed);
 }
 
-CIDER_TEST(reserve_commit_protect_query_cycle) {
+ORVYN_TEST(reserve_commit_protect_query_cycle) {
     auto r = Region::reserve(0, 3 * 4096, false);
     REQUIRE(r.ok());
     Region reg = std::move(r.value());
@@ -60,7 +60,7 @@ CIDER_TEST(reserve_commit_protect_query_cycle) {
     CHECK(reg.info(0).value().prot == Prot::None);
 }
 
-CIDER_TEST(invalid_ranges_are_rejected_without_side_effects) {
+ORVYN_TEST(invalid_ranges_are_rejected_without_side_effects) {
     auto reg = take(Region::reserve(0, 4 * 4096, false));
     CHECK_ERR(reg.commit(1, 4096), ErrorCode::InvalidArgument);          // unaligned offset
     CHECK_ERR(reg.commit(0, 100), ErrorCode::InvalidArgument);           // unaligned length
@@ -78,7 +78,7 @@ CIDER_TEST(invalid_ranges_are_rejected_without_side_effects) {
     CHECK_ERR(empty.info(0), ErrorCode::OutOfBounds);
 }
 
-CIDER_TEST(region_contains_is_overflow_safe) {
+ORVYN_TEST(region_contains_is_overflow_safe) {
     auto reg = take(Region::reserve(0, 8192, false));
     uintptr_t b = reinterpret_cast<uintptr_t>(reg.base());
     CHECK(reg.contains(b, 8192));
@@ -90,7 +90,7 @@ CIDER_TEST(region_contains_is_overflow_safe) {
     CHECK(!reg.contains(b, SIZE_MAX));
 }
 
-CIDER_TEST(destruction_releases_the_address_range) {
+ORVYN_TEST(destruction_releases_the_address_range) {
     uint8_t* base = nullptr;
     {
         auto reg = take(Region::reserve(0, 4096, false));
@@ -101,7 +101,7 @@ CIDER_TEST(destruction_releases_the_address_range) {
     CHECK(query_address(base).state == PageInfo::State::Free);   // MEM_RELEASE ran
 }
 
-CIDER_TEST(move_semantics_transfer_ownership) {
+ORVYN_TEST(move_semantics_transfer_ownership) {
     auto a = take(Region::reserve(0, 4096, false));
     uint8_t* base = a.base();
     Region b = std::move(a);
@@ -117,7 +117,7 @@ CIDER_TEST(move_semantics_transfer_ownership) {
     c.release();   // idempotent
 }
 
-CIDER_TEST(preferred_address_taken_relocates_only_when_allowed) {
+ORVYN_TEST(preferred_address_taken_relocates_only_when_allowed) {
     auto first = Region::reserve(0x200000000ull, 0x10000, false);
     if (!first.ok()) SKIP("0x200000000 is not available in this process");
     CHECK_ERR(Region::reserve(0x200000000ull, 0x10000, false), ErrorCode::Io);          // taken, no relocation
@@ -126,7 +126,7 @@ CIDER_TEST(preferred_address_taken_relocates_only_when_allowed) {
     CHECK(reinterpret_cast<uintptr_t>(moved.value().base()) != 0x200000000ull);
 }
 
-CIDER_TEST(executable_pages_run_and_data_pages_do_not_execute) {
+ORVYN_TEST(executable_pages_run_and_data_pages_do_not_execute) {
     // A page with `mov eax, 123 ; ret` becomes executable only through protect(): RW -> RX.
     CodePage page({0xB8, 0x7B, 0x00, 0x00, 0x00, 0xC3});
     auto info = query_address(reinterpret_cast<void*>(page.address()));
@@ -135,7 +135,7 @@ CIDER_TEST(executable_pages_run_and_data_pages_do_not_execute) {
     CHECK_EQ(static_cast<uint32_t>(o.value), 123u);
 }
 
-CIDER_TEST(guest_stack_has_a_guard_page_and_writable_body) {
+ORVYN_TEST(guest_stack_has_a_guard_page_and_writable_body) {
     auto st = make_stack(64 * 1024);
     auto guard = st.region().info(0).value();
     CHECK(guard.prot == Prot::None);                        // committed but inaccessible

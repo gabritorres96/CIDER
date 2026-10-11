@@ -2,14 +2,14 @@
 #include <cstdio>
 #include <cstring>
 
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
 
-namespace cider::libsystem {
+namespace orvyn::libsystem {
 namespace {
 RuntimeContext* g_ctx = nullptr;
 
-constexpr uint64_t kFileMagic = 0x43494445522d4649ull;   // "CIDER-FI"
+constexpr uint64_t kFileMagic = 0x43494445522d4649ull;   // "ORVYN-FI"
 }  // namespace
 
 void set_context(RuntimeContext* ctx) {
@@ -59,7 +59,7 @@ Result<std::unique_ptr<LibSystemProvider>> LibSystemProvider::create() {
 }
 
 namespace {
-// Group a library install name belongs to; nullopt when CIDER does not provide it.
+// Group a library install name belongs to; nullopt when ORVYN does not provide it.
 std::optional<Lib> group_of(std::string_view n) {
     if (n == kInstallName) return Lib::System;
     if (n == kObjcInstallName) return Lib::Objc;
@@ -119,4 +119,4 @@ bool is_implemented_data(std::string_view s) {
     return false;
 }
 
-}  // namespace cider::libsystem
+}  // namespace orvyn::libsystem

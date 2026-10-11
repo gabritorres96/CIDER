@@ -3,15 +3,15 @@
 #include <format>
 #include <fstream>
 
-#include "cider/bytes.hpp"
-#include "cider/dmg.hpp"
-#include "cider/log.hpp"
-#include "cider/plist.hpp"
-#include "cider/util.hpp"
+#include "orvyn/bytes.hpp"
+#include "orvyn/dmg.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/plist.hpp"
+#include "orvyn/util.hpp"
 
 namespace fs = std::filesystem;
 
-namespace cider::dmg {
+namespace orvyn::dmg {
 namespace {
 
 constexpr uint64_t kKolySize = 512;
@@ -301,4 +301,4 @@ Result<Info> inspect_file(const fs::path& image, const InspectLimits& lim) {
     return info;
 }
 
-}  // namespace cider::dmg
+}  // namespace orvyn::dmg

@@ -1,15 +1,15 @@
-// Darwin pthreads on top of CIDER's cooperative guest threads (guest_threads.hpp). pthread_t is an opaque number; pthread_mutex_t,
+// Darwin pthreads on top of ORVYN's cooperative guest threads (guest_threads.hpp). pthread_t is an opaque number; pthread_mutex_t,
 // pthread_cond_t, pthread_once_t, pthread_attr_t only keep a signature plus a small index in the guest's own storage, laid out like
 // Darwin's (mutex 64 bytes, cond 48, attr 64, mutexattr/once 16): the real state lives in host tables. Nothing here is a Windows
 // object, and Windows' own objects are never handed to the guest.
 #include <chrono>
 #include <cstring>
 
-#include "cider/guest_threads.hpp"
-#include "cider/libsystem.hpp"
+#include "orvyn/guest_threads.hpp"
+#include "orvyn/libsystem.hpp"
 #include "internal.hpp"
 
-namespace cider::libsystem {
+namespace orvyn::libsystem {
 namespace {
 
 using detail::kEINVAL;
@@ -361,4 +361,4 @@ void add_pthread_symbols(std::vector<HostSymbol>& t) {
 }
 }  // namespace detail
 
-}  // namespace cider::libsystem
+}  // namespace orvyn::libsystem

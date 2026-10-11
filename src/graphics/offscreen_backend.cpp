@@ -1,4 +1,4 @@
-// Offscreen GUI backend (CIDER 0.5.11): the same native-object model as the Win32 backend, kept in memory, with scripted input. It exists so the
+// Offscreen GUI backend (ORVYN 0.5.11): the same native-object model as the Win32 backend, kept in memory, with scripted input. It exists so the
 // AppKit layer can be tested without a desktop (CI, services). Input enters through the same Events callbacks the Win32 window procedures use.
 #include <algorithm>
 #include <chrono>
@@ -13,7 +13,7 @@
 #include "d2d_device.hpp"
 #include "gui_backend.hpp"
 
-namespace cider::gui {
+namespace orvyn::gui {
 namespace {
 
 using geometry::Point;
@@ -354,4 +354,4 @@ private:
 
 std::unique_ptr<Backend> create_offscreen_backend(std::vector<std::string> script) { return std::make_unique<OffscreenBackend>(std::move(script)); }
 
-}  // namespace cider::gui
+}  // namespace orvyn::gui

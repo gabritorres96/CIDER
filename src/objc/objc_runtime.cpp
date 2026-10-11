@@ -4,18 +4,18 @@
 #include <format>
 #include <functional>
 
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/objc.hpp"
 #include "../libsystem/internal.hpp"
 
 extern "C" {
-extern uint64_t cider_objc_lookup_thunk;
-extern uint64_t cider_objc_lookup_super_thunk;
-void cider_objc_nil_return();
+extern uint64_t orvyn_objc_lookup_thunk;
+extern uint64_t orvyn_objc_lookup_super_thunk;
+void orvyn_objc_nil_return();
 }
 
-namespace cider::objc {
+namespace orvyn::objc {
 namespace {
 Runtime* g_runtime = nullptr;
 constexpr size_t kArenaSize = 4u << 20;
@@ -42,14 +42,14 @@ Runtime::Runtime(libsystem::RuntimeContext& ctx) : ctx_(ctx) {
     lookup_thunk_ = core_table_.address(0);
     lookup_super_thunk_ = core_table_.address(1);
     forward_imp_ = core_table_.address(2);
-    nil_imp_ = reinterpret_cast<Addr>(&cider_objc_nil_return);
-    cider_objc_lookup_thunk = lookup_thunk_;
-    cider_objc_lookup_super_thunk = lookup_super_thunk_;
+    nil_imp_ = reinterpret_cast<Addr>(&orvyn_objc_nil_return);
+    orvyn_objc_lookup_thunk = lookup_thunk_;
+    orvyn_objc_lookup_super_thunk = lookup_super_thunk_;
 }
 
 Runtime::~Runtime() {
-    cider_objc_lookup_thunk = 0;
-    cider_objc_lookup_super_thunk = 0;
+    orvyn_objc_lookup_thunk = 0;
+    orvyn_objc_lookup_super_thunk = 0;
     if (g_runtime == this) g_runtime = nullptr;
 }
 
@@ -410,7 +410,7 @@ uint64_t Runtime::call_imp(Addr imp, std::initializer_list<uint64_t> args) {
     abi::GuestCallArgs a;
     for (uint64_t v : args) a.push_int(v);
     abi::CallOutcome o;
-    if (abi::cider_current_call) {
+    if (abi::orvyn_current_call) {
         o = abi::call_guest_nested(imp, a);
     } else if (libsystem::ThreadState* ts = libsystem::GuestThreads::current(); ts && !ts->is_main && ts->stack) {
         o = abi::call_guest_args(imp, *ts->stack, ts->stack->top() - 64, a);          // host-implemented thread (dispatch worker): its own stack
@@ -440,7 +440,7 @@ uint64_t Runtime::send(Addr self, Addr s, std::initializer_list<uint64_t> args) 
     abi::GuestCallArgs a;
     for (uint64_t v : all) a.push_int(v);
     abi::CallOutcome o;
-    if (abi::cider_current_call) o = abi::call_guest_nested(imp, a);
+    if (abi::orvyn_current_call) o = abi::call_guest_nested(imp, a);
     else if (top_stack_) o = abi::call_guest_args(imp, *top_stack_, top_sp_, a);
     else { libsystem::detail::trap("objc: no guest stack available for a message"); return 0; }
     if (o.refused) { libsystem::detail::trap("objc: message refused: " + o.refusal); return 0; }
@@ -450,9 +450,9 @@ uint64_t Runtime::send(Addr self, Addr s, std::initializer_list<uint64_t> args) 
 uint64_t Runtime::send(Addr self, std::string_view selector, std::initializer_list<uint64_t> args) { return send(self, sel(selector), args); }
 
 
-}  // namespace cider::objc
+}  // namespace orvyn::objc
 
-namespace cider::objc {
+namespace orvyn::objc {
 std::vector<std::string> Runtime::native_class_names(const std::string& owner) const {
     std::vector<std::string> out;
     for (const auto& c : classes_) {
@@ -462,4 +462,4 @@ std::vector<std::string> Runtime::native_class_names(const std::string& owner) c
     }
     return out;
 }
-}  // namespace cider::objc
+}  // namespace orvyn::objc

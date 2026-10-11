@@ -2,17 +2,17 @@
 #include <fstream>
 #include <sstream>
 
-#include "cider/guest.hpp"
-#include "cider/log.hpp"
-#include "cider/process.hpp"
-#include "cider/util.hpp"
+#include "orvyn/guest.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/process.hpp"
+#include "orvyn/util.hpp"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
 
-namespace cider::guest {
+namespace orvyn::guest {
 namespace {
 
 // Private temporary directory for the result file (removed on destruction).
@@ -23,7 +23,7 @@ public:
         auto base = std::filesystem::temp_directory_path(ec);
         if (ec) return;
         for (int i = 0; i < 16; ++i) {
-            auto p = base / std::format("cider-run-{:08x}{:08x}", static_cast<unsigned>(GetTickCount64() & 0xffffffff) + i, static_cast<unsigned>(GetCurrentProcessId()));
+            auto p = base / std::format("orvyn-run-{:08x}{:08x}", static_cast<unsigned>(GetTickCount64() & 0xffffffff) + i, static_cast<unsigned>(GetCurrentProcessId()));
             if (std::filesystem::create_directory(p, ec) && !ec) { path_ = p; return; }
         }
     }
@@ -132,4 +132,4 @@ SupervisorResult run_supervised(const SupervisorOptions& opts) {
     return res;
 }
 
-}  // namespace cider::guest
+}  // namespace orvyn::guest

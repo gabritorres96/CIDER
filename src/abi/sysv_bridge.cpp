@@ -2,10 +2,10 @@
 #include <cstring>
 #include <format>
 
-#include "cider/abi.hpp"
-#include "cider/log.hpp"
+#include "orvyn/abi.hpp"
+#include "orvyn/log.hpp"
 
-namespace cider::abi {
+namespace orvyn::abi {
 
 Result<ThunkTable> ThunkTable::build(const std::vector<void*>& fns) {
     std::vector<ThunkSpec> specs;
@@ -24,9 +24,9 @@ Result<ThunkTable> ThunkTable::build_specs(const std::vector<ThunkSpec>& fns) {
     t.region_ = std::move(region.value());
     if (auto c = t.region_.commit(0, t.region_.size()); !c.ok()) return c.error();  // RW while writing: never RWX
 
-    const uint64_t positional = reinterpret_cast<uint64_t>(&cider_guest_thunk);
-    const uint64_t raw = reinterpret_cast<uint64_t>(&cider_guest_thunk_raw);
-    const uint64_t tlv = reinterpret_cast<uint64_t>(&cider_guest_thunk_tlv);
+    const uint64_t positional = reinterpret_cast<uint64_t>(&orvyn_guest_thunk);
+    const uint64_t raw = reinterpret_cast<uint64_t>(&orvyn_guest_thunk_raw);
+    const uint64_t tlv = reinterpret_cast<uint64_t>(&orvyn_guest_thunk_tlv);
     uint8_t* p = t.region_.base();
     for (size_t i = 0; i < fns.size(); ++i, p += kStride) {
         std::memset(p, 0xCC, kStride);                       // int3 padding
@@ -35,7 +35,7 @@ Result<ThunkTable> ThunkTable::build_specs(const std::vector<ThunkSpec>& fns) {
         p[0] = 0x49; p[1] = fns[i].preserve_all ? 0xBB : 0xBA;   // mov r10, imm64  (r11 for the TLV thunk: r10 belongs to the guest there)
         std::memcpy(p + 2, &target, 8);
         p[10] = 0xFF; p[11] = 0x25; p[12] = p[13] = p[14] = p[15] = 0;   // jmp qword ptr [rip+0]
-        std::memcpy(p + 16, &common, 8);                     // ... -> cider_guest_thunk
+        std::memcpy(p + 16, &common, 8);                     // ... -> orvyn_guest_thunk
     }
     if (auto pr = t.region_.protect(0, t.region_.size(), memory::Prot::ReadExecute); !pr.ok()) return pr.error();
     t.base_ = reinterpret_cast<uint64_t>(t.region_.base());
@@ -91,10 +91,10 @@ double VaListReader::next_double() {
 }
 
 void request_guest_exit(uint64_t code) {
-    if (cider_current_call) {
-        cider_current_call->exit_code = code;
-        cider_current_call->exited = 1;
+    if (orvyn_current_call) {
+        orvyn_current_call->exit_code = code;
+        orvyn_current_call->exited = 1;
     }
 }
 
-}  // namespace cider::abi
+}  // namespace orvyn::abi

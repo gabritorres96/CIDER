@@ -1,5 +1,5 @@
 @echo off
-rem Builds the CIDER 0.2 execution fixtures: real Mach-O x86_64 executables (clang + ld64.lld, linked
+rem Builds the ORVYN 0.2 execution fixtures: real Mach-O x86_64 executables (clang + ld64.lld, linked
 rem against the hand-written libSystem stub in tests\fixtures\exec\sysroot) plus llvm-objdump snapshots.
 rem     tools\llvm-env.cmd tools\gen-exec-fixtures.cmd
 rem Every executable uses the LC_MAIN protocol: main(argc, argv, envp, apple), return value -> exit().

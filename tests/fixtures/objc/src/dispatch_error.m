@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     switch (mode) {
         case 's': dispatch_sync(dispatch_get_main_queue(), ^{ NSLog(@"never"); }); break;
         case 'q': {
-            dispatch_queue_t q = dispatch_queue_create("cider.q", DISPATCH_QUEUE_SERIAL);
+            dispatch_queue_t q = dispatch_queue_create("orvyn.q", DISPATCH_QUEUE_SERIAL);
             dispatch_sync(q, ^{ dispatch_sync(q, ^{ NSLog(@"never"); }); });
             break;
         }
@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
         case 'o': dispatch_once((dispatch_once_t *)16, ^{ NSLog(@"never"); }); break;
         case 'g': dispatch_group_leave(dispatch_group_create()); break;
         case 'x': {
-            dispatch_queue_t q = dispatch_queue_create("cider.x", DISPATCH_QUEUE_SERIAL);
+            dispatch_queue_t q = dispatch_queue_create("orvyn.x", DISPATCH_QUEUE_SERIAL);
             dispatch_async(q, ^{ exit(33); });
             dispatch_semaphore_wait(dispatch_semaphore_create(0), DISPATCH_TIME_FOREVER);     /* never signalled: only exit() ends the process */
             break;

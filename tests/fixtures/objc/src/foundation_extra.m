@@ -85,9 +85,9 @@ int main(void) {
         CHECK([f isEqual:[NSURL fileURLWithPath:@"/tmp/some dir/x.txt"]] && ![f isEqual:u]);
 
         /* ---- NSError ---- */
-        NSError *e = [NSError errorWithDomain:@"CIDERDomain" code:7 userInfo:@{NSLocalizedDescriptionKey: @"it broke"}];
-        CHECK([[e domain] isEqualToString:@"CIDERDomain"] && [e code] == 7 && [[e localizedDescription] isEqualToString:@"it broke"]);
-        CHECK([[e description] hasPrefix:@"Error Domain=CIDERDomain Code=7"]);
+        NSError *e = [NSError errorWithDomain:@"ORVYNDomain" code:7 userInfo:@{NSLocalizedDescriptionKey: @"it broke"}];
+        CHECK([[e domain] isEqualToString:@"ORVYNDomain"] && [e code] == 7 && [[e localizedDescription] isEqualToString:@"it broke"]);
+        CHECK([[e description] hasPrefix:@"Error Domain=ORVYNDomain Code=7"]);
         NSError *plain = [[NSError alloc] initWithDomain:NSPOSIXErrorDomain code:2 userInfo:nil];
         CHECK([[plain domain] isEqualToString:@"NSPOSIXErrorDomain"] && [plain userInfo] == nil && [[plain localizedDescription] length] > 0);
 

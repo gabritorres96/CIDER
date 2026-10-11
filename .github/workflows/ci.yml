@@ -24,7 +24,7 @@ jobs:
         # 7-Zip is preinstalled on GitHub's Windows images; backend tests are reported as [SKIP] when
         # it is missing. The real LLVM-built fixtures and llvm-objdump goldens are committed
         # (tests/fixtures/real), so the real-Mach-O comparison needs no LLVM on the runner; the *live*
-        # llvm-objdump test is skipped unless CIDER_LLVM_BIN points at an LLVM install.
+        # llvm-objdump test is skipped unless ORVYN_LLVM_BIN points at an LLVM install.
         run: ctest --test-dir build -C ${{ matrix.config }} --output-on-failure
 
   # Experimental: AddressSanitizer with the runner's clang-cl. Not validated on GitHub yet, hence
@@ -40,7 +40,7 @@ jobs:
         run: |
           $llvm = "C:\Program Files\LLVM\bin"
           $env:PATH = "$llvm;$env:PATH"
-          cmake -S . -B build-asan -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_LINKER_TYPE=LLD -DCIDER_SANITIZE=ON
+          cmake -S . -B build-asan -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_LINKER_TYPE=LLD -DORVYN_SANITIZE=ON
       - name: Build
         shell: pwsh
         run: |

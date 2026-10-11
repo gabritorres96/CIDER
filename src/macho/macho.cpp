@@ -1,13 +1,13 @@
-#include "cider/macho.hpp"
+#include "orvyn/macho.hpp"
 
 #include <algorithm>
 #include <format>
 
-#include "cider/log.hpp"
-#include "cider/util.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/util.hpp"
 #include "codesign.hpp"
 
-namespace cider::macho {
+namespace orvyn::macho {
 namespace {
 
 constexpr uint32_t MH_MAGIC_64 = 0xfeedfacf, MH_CIGAM_64 = 0xcffaedfe, MH_MAGIC = 0xfeedface, MH_CIGAM = 0xcefaedfe;
@@ -95,7 +95,7 @@ Status parse_segment(ByteView cmd, ByteView slice, Image& img) {
                     return oob(std::format("section {},{}: file range outside its segment", s.name, sec.name));
             }
         }
-        CIDER_CHECK(check_table(slice, "section relocations", sec.reloff, sec.nreloc, 8));
+        ORVYN_CHECK(check_table(slice, "section relocations", sec.reloff, sec.nreloc, 8));
         s.sections.push_back(std::move(sec));
     }
     img.segments.push_back(std::move(s));
@@ -130,8 +130,8 @@ Status parse_dylib(ByteView cmd, uint32_t id, Image& img) {
 Status parse_symtab(ByteView cmd, ByteView slice, Image& img) {
     if (cmd.size() < 24) return malformed("LC_SYMTAB: cmdsize < 24");
     SymtabInfo s{cmd.peek_u32(8), cmd.peek_u32(12), cmd.peek_u32(16), cmd.peek_u32(20)};
-    CIDER_CHECK(check_table(slice, "symbol table", s.symoff, s.nsyms, 16));
-    CIDER_CHECK(check_range(slice, "string table", s.stroff, s.strsize));
+    ORVYN_CHECK(check_table(slice, "symbol table", s.symoff, s.nsyms, 16));
+    ORVYN_CHECK(check_range(slice, "string table", s.stroff, s.strsize));
     img.symtab = s;
     return {};
 }
@@ -146,12 +146,12 @@ Status parse_dysymtab(ByteView cmd, ByteView slice, Image& img) {
     d.iundefsym = cmd.peek_u32(24);
     d.nundefsym = cmd.peek_u32(28);
     d.nindirectsyms = cmd.peek_u32(60);
-    CIDER_CHECK(check_table(slice, "table of contents", cmd.peek_u32(32), cmd.peek_u32(36), 8));
-    CIDER_CHECK(check_table(slice, "module table", cmd.peek_u32(40), cmd.peek_u32(44), 56));
-    CIDER_CHECK(check_table(slice, "external reference table", cmd.peek_u32(48), cmd.peek_u32(52), 4));
-    CIDER_CHECK(check_table(slice, "indirect symbol table", cmd.peek_u32(56), d.nindirectsyms, 4));
-    CIDER_CHECK(check_table(slice, "external relocations", cmd.peek_u32(64), cmd.peek_u32(68), 8));
-    CIDER_CHECK(check_table(slice, "local relocations", cmd.peek_u32(72), cmd.peek_u32(76), 8));
+    ORVYN_CHECK(check_table(slice, "table of contents", cmd.peek_u32(32), cmd.peek_u32(36), 8));
+    ORVYN_CHECK(check_table(slice, "module table", cmd.peek_u32(40), cmd.peek_u32(44), 56));
+    ORVYN_CHECK(check_table(slice, "external reference table", cmd.peek_u32(48), cmd.peek_u32(52), 4));
+    ORVYN_CHECK(check_table(slice, "indirect symbol table", cmd.peek_u32(56), d.nindirectsyms, 4));
+    ORVYN_CHECK(check_table(slice, "external relocations", cmd.peek_u32(64), cmd.peek_u32(68), 8));
+    ORVYN_CHECK(check_table(slice, "local relocations", cmd.peek_u32(72), cmd.peek_u32(76), 8));
     img.dysymtab = d;
     return {};
 }
@@ -165,7 +165,7 @@ Status parse_dyld_info(ByteView cmd, ByteView slice, uint32_t id, Image& img) {
     for (int i = 0; i < 5; ++i) {
         r[i]->offset = cmd.peek_u32(8 + 8 * i);
         r[i]->size = cmd.peek_u32(12 + 8 * i);
-        CIDER_CHECK(check_range(slice, names[i], r[i]->offset, r[i]->size));
+        ORVYN_CHECK(check_range(slice, names[i], r[i]->offset, r[i]->size));
     }
     img.dyld_info = d;
     return {};
@@ -320,12 +320,12 @@ Result<Image> parse_image(ByteView data, const ParseOptions& opts) {
         log::trace("load command #{}: {:#x} size {}", i, id, size);
 
         switch (id) {
-            case LC_SEGMENT_64: CIDER_CHECK(parse_segment(cmd, data, img)); break;
+            case LC_SEGMENT_64: ORVYN_CHECK(parse_segment(cmd, data, img)); break;
             case LC_LOAD_DYLIB: case LC_LOAD_WEAK_DYLIB: case LC_REEXPORT_DYLIB: case LC_LAZY_LOAD_DYLIB:
-            case LC_LOAD_UPWARD_DYLIB: CIDER_CHECK(parse_dylib(cmd, id, img)); break;
+            case LC_LOAD_UPWARD_DYLIB: ORVYN_CHECK(parse_dylib(cmd, id, img)); break;
             case LC_ID_DYLIB:
-                CIDER_CHECK(ensure_unique(img.id_dylib, "LC_ID_DYLIB"));
-                CIDER_CHECK(parse_dylib(cmd, id, img));
+                ORVYN_CHECK(ensure_unique(img.id_dylib, "LC_ID_DYLIB"));
+                ORVYN_CHECK(parse_dylib(cmd, id, img));
                 break;
             case LC_RPATH: {
                 if (cmd.size() < 12) return malformed("LC_RPATH: cmdsize < 12");
@@ -360,21 +360,21 @@ Result<Image> parse_image(ByteView data, const ParseOptions& opts) {
                     img.warnings.emplace_back("LC_UNIXTHREAD present but its thread state is not x86_THREAD_STATE64");
                 break;
             case LC_SYMTAB:
-                CIDER_CHECK(ensure_unique(img.symtab, "LC_SYMTAB"));
-                CIDER_CHECK(parse_symtab(cmd, data, img));
+                ORVYN_CHECK(ensure_unique(img.symtab, "LC_SYMTAB"));
+                ORVYN_CHECK(parse_symtab(cmd, data, img));
                 break;
             case LC_DYSYMTAB:
-                CIDER_CHECK(ensure_unique(img.dysymtab, "LC_DYSYMTAB"));
-                CIDER_CHECK(parse_dysymtab(cmd, data, img));
+                ORVYN_CHECK(ensure_unique(img.dysymtab, "LC_DYSYMTAB"));
+                ORVYN_CHECK(parse_dysymtab(cmd, data, img));
                 break;
             case LC_DYLD_INFO: case LC_DYLD_INFO_ONLY:
-                CIDER_CHECK(ensure_unique(img.dyld_info, "LC_DYLD_INFO"));
-                CIDER_CHECK(parse_dyld_info(cmd, data, id, img));
+                ORVYN_CHECK(ensure_unique(img.dyld_info, "LC_DYLD_INFO"));
+                ORVYN_CHECK(parse_dyld_info(cmd, data, id, img));
                 break;
             case LC_CODE_SIGNATURE: {
-                CIDER_CHECK(ensure_unique(img.code_signature, "LC_CODE_SIGNATURE"));
+                ORVYN_CHECK(ensure_unique(img.code_signature, "LC_CODE_SIGNATURE"));
                 LinkeditRange r;
-                CIDER_CHECK(parse_linkedit_data(cmd, data, "code signature", r));
+                ORVYN_CHECK(parse_linkedit_data(cmd, data, "code signature", r));
                 CodeSignature cs;
                 cs.dataoff = r.offset;
                 cs.datasize = r.size;
@@ -384,25 +384,25 @@ Result<Image> parse_image(ByteView data, const ParseOptions& opts) {
             }
             case LC_FUNCTION_STARTS: {
                 LinkeditRange r;
-                CIDER_CHECK(parse_linkedit_data(cmd, data, "function starts", r));
+                ORVYN_CHECK(parse_linkedit_data(cmd, data, "function starts", r));
                 img.function_starts = r;
                 break;
             }
             case LC_DYLD_EXPORTS_TRIE: {
                 LinkeditRange r;
-                CIDER_CHECK(parse_linkedit_data(cmd, data, "exports trie", r));
+                ORVYN_CHECK(parse_linkedit_data(cmd, data, "exports trie", r));
                 img.exports_trie = r;
                 break;
             }
             case LC_DYLD_CHAINED_FIXUPS: {
                 LinkeditRange r;
-                CIDER_CHECK(parse_linkedit_data(cmd, data, "chained fixups", r));
+                ORVYN_CHECK(parse_linkedit_data(cmd, data, "chained fixups", r));
                 img.chained_fixups = r;
                 break;
             }
-            case LC_BUILD_VERSION: CIDER_CHECK(parse_build_version(cmd, img)); break;
+            case LC_BUILD_VERSION: ORVYN_CHECK(parse_build_version(cmd, img)); break;
             case LC_VERSION_MIN_MACOSX: case LC_VERSION_MIN_IPHONEOS: case LC_VERSION_MIN_TVOS:
-            case LC_VERSION_MIN_WATCHOS: CIDER_CHECK(parse_version_min(cmd, id, img)); break;
+            case LC_VERSION_MIN_WATCHOS: ORVYN_CHECK(parse_version_min(cmd, id, img)); break;
             case LC_UUID:
                 if (have_uuid) return malformed("duplicate LC_UUID load command");
                 if (cmd.size() < 24) return malformed("LC_UUID: cmdsize < 24");
@@ -411,7 +411,7 @@ Result<Image> parse_image(ByteView data, const ParseOptions& opts) {
                 break;
             case LC_ENCRYPTION_INFO_64:
                 if (cmd.size() < 24) return malformed("LC_ENCRYPTION_INFO_64: cmdsize < 24");
-                CIDER_CHECK(check_range(data, "encrypted range", cmd.peek_u32(8), cmd.peek_u32(12)));
+                ORVYN_CHECK(check_range(data, "encrypted range", cmd.peek_u32(8), cmd.peek_u32(12)));
                 if (cmd.peek_u32(16) != 0) img.encrypted = true;
                 break;
             default: break;  // recognised by size only; contents ignored
@@ -468,7 +468,7 @@ Result<Image> parse_image(ByteView data, const ParseOptions& opts) {
         img.warnings.emplace_back("executable has no LC_MAIN/LC_UNIXTHREAD entry point");
     }
 
-    if (opts.parse_symbols) CIDER_CHECK(parse_symbols(data, opts, img));
+    if (opts.parse_symbols) ORVYN_CHECK(parse_symbols(data, opts, img));
     return img;
 }
 
@@ -478,7 +478,7 @@ Result<File> parse_file(ByteView data, const ParseOptions& opts) {
     Format fmt = identify(data);
 
     if (fmt != Format::Fat && fmt != Format::Fat64) {
-        CIDER_TRY(img, parse_image(data, opts));
+        ORVYN_TRY(img, parse_image(data, opts));
         Slice s;
         s.cputype = img.cputype;
         s.cpusubtype = img.cpusubtype;
@@ -546,4 +546,4 @@ Result<File> parse_file(ByteView data, const ParseOptions& opts) {
     return f;
 }
 
-}  // namespace cider::macho
+}  // namespace orvyn::macho

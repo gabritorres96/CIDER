@@ -1,4 +1,4 @@
-// Thread-local storage (CIDER 0.3.6): the Mach-O TLV protocol served by CIDER's own tlv_get_addr, with proof that the
+// Thread-local storage (ORVYN 0.3.6): the Mach-O TLV protocol served by ORVYN's own tlv_get_addr, with proof that the
 // host's Windows TLS state (%gs / TEB, TlsAlloc slots, C++ thread_local) is never touched, and the explicit refusal of
 // the thread-local features that are not implemented.
 #include <algorithm>
@@ -7,8 +7,8 @@
 #include <intrin.h>
 #include <sstream>
 
-#include "cider/guest.hpp"
-#include "cider/linker.hpp"
+#include "orvyn/guest.hpp"
+#include "orvyn/linker.hpp"
 #include "guest_code.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
@@ -18,13 +18,13 @@
 #include <windows.h>
 #endif
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 namespace fs = std::filesystem;
 
 namespace {
 
-const fs::path kDylib = fs::path(CIDER_DYLIB_FIXTURES_DIR);
+const fs::path kDylib = fs::path(ORVYN_DYLIB_FIXTURES_DIR);
 thread_local int g_host_tls = 1234;      // a C++ thread_local of the HOST: it must survive a guest run untouched
 
 std::vector<uint8_t> load(const fs::path& p) {
@@ -115,21 +115,21 @@ HostTlsState capture(DWORD slot) {
 
 }  // namespace
 
-CIDER_TEST(thread_local_variables_in_an_executable_work) {
+ORVYN_TEST(thread_local_variables_in_an_executable_work) {
     Run r = run_file(kDylib / "bin/tlsexe/tlsexe");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 42);
     CHECK_EQ(r.out, std::string("tls-name\n"));              // a pointer inside the template, relocated before use
 }
 
-CIDER_TEST(each_image_has_its_own_thread_local_storage_and_exports_work_across_images) {
+ORVYN_TEST(each_image_has_its_own_thread_local_storage_and_exports_work_across_images) {
     Run r = run_file(kDylib / "bin/tlslib/tlslib");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 42);
     CHECK_EQ(r.r.images.size(), size_t{2});
 }
 
-CIDER_TEST(running_twice_starts_from_the_template_again) {
+ORVYN_TEST(running_twice_starts_from_the_template_again) {
     for (int i = 0; i < 3; ++i) {
         Run r = run_file(kDylib / "bin/tlsexe/tlsexe");
         REQUIRE(r.r.state == guest::State::Exited);
@@ -137,7 +137,7 @@ CIDER_TEST(running_twice_starts_from_the_template_again) {
     }
 }
 
-CIDER_TEST(the_hosts_windows_tls_state_is_never_touched) {
+ORVYN_TEST(the_hosts_windows_tls_state_is_never_touched) {
     const DWORD slot = TlsAlloc();
     REQUIRE(slot != TLS_OUT_OF_INDEXES);
     int marker = 99;
@@ -155,7 +155,7 @@ CIDER_TEST(the_hosts_windows_tls_state_is_never_touched) {
     TlsFree(slot);
 }
 
-CIDER_TEST(template_layout_matches_llvm_objdump_symbols) {
+ORVYN_TEST(template_layout_matches_llvm_objdump_symbols) {
     auto bytes = load(kDylib / "bin/tlsexe/tlsexe");
     auto syms = golden_syms("tlsexe_tlsexe");
     auto prov = take(libsystem::LibSystemProvider::create());
@@ -184,7 +184,7 @@ CIDER_TEST(template_layout_matches_llvm_objdump_symbols) {
     }
 }
 
-CIDER_TEST(the_initial_values_really_come_from_the_macho_template) {
+ORVYN_TEST(the_initial_values_really_come_from_the_macho_template) {
     // change `static __thread long local_tls = 7` to 8 inside the file: the guest's own initial-value check now fails (exit 2)
     auto bytes = load(kDylib / "bin/tlsexe/tlsexe");
     auto syms = golden_syms("tlsexe_tlsexe");
@@ -202,7 +202,7 @@ CIDER_TEST(the_initial_values_really_come_from_the_macho_template) {
 }
 
 // ---- the TLV calling convention preserves every register but rax ------------------------------------------------------------------
-CIDER_TEST(the_tlv_thunk_preserves_all_registers_except_rax) {
+ORVYN_TEST(the_tlv_thunk_preserves_all_registers_except_rax) {
     // Fake image: a heap block acts as "mapped image" holding a descriptor and a template.
     alignas(64) static uint8_t image[4096] = {};
     uint64_t* desc = reinterpret_cast<uint64_t*>(image + 64);           // {thunk, key, offset}
@@ -271,7 +271,7 @@ CIDER_TEST(the_tlv_thunk_preserves_all_registers_except_rax) {
     c.insert(c.end(), {0x4C, 0x89, 0xE8});                               // mov rax, r13
     c.insert(c.end(), {0x4C, 0x89, 0x1C, 0x24});                         // mov [rsp], r11   (pointer saved at [rsp])
     c.insert(c.end(), {0x48, 0x83, 0xC4, 0x08, 0xC3});                   // add rsp, 8 ; ret
-    // The code clobbers r12/r13 (callee-saved): cider_enter_guest saves and restores them.
+    // The code clobbers r12/r13 (callee-saved): orvyn_enter_guest saves and restores them.
     auto o = run_code(c);
     libsystem::set_context(nullptr);
     CHECK_EQ(o.value, uint64_t{0});                                       // every register and xmm0-5 survived the call
@@ -281,7 +281,7 @@ CIDER_TEST(the_tlv_thunk_preserves_all_registers_except_rax) {
     CHECK_EQ(seen, init);                                                 // the block was initialised from the template
 }
 
-CIDER_TEST(a_descriptor_outside_every_tls_image_traps_the_guest) {
+ORVYN_TEST(a_descriptor_outside_every_tls_image_traps_the_guest) {
     auto prov = take(libsystem::LibSystemProvider::create());
     libsystem::RuntimeContext ctx;
     libsystem::set_context(&ctx);
@@ -305,7 +305,7 @@ void expect_refused(const std::vector<uint8_t>& bytes, loader::LoadFailure kind,
 }
 }  // namespace
 
-CIDER_TEST(thread_local_initialisation_functions_are_refused) {
+ORVYN_TEST(thread_local_initialisation_functions_are_refused) {
     auto bytes = load(kDylib / "bin/tlsexe/tlsexe");
     const uint64_t sh = section_header(bytes, "__thread_vars");
     REQUIRE(sh != 0);
@@ -316,7 +316,7 @@ CIDER_TEST(thread_local_initialisation_functions_are_refused) {
     expect_refused(bytes, loader::LoadFailure::Unsupported, "initialisation functions", "type 0x15");
 }
 
-CIDER_TEST(malformed_thread_local_metadata_is_refused) {
+ORVYN_TEST(malformed_thread_local_metadata_is_refused) {
     {   // __thread_vars size not a multiple of 24
         auto bytes = load(kDylib / "bin/tlsexe/tlsexe");
         const uint64_t sh = section_header(bytes, "__thread_vars");
@@ -350,7 +350,7 @@ CIDER_TEST(malformed_thread_local_metadata_is_refused) {
     }
 }
 
-CIDER_TEST(the_default_validator_still_refuses_tls_unless_the_linker_serves_it) {
+ORVYN_TEST(the_default_validator_still_refuses_tls_unless_the_linker_serves_it) {
     // 0.2 behaviour is intact for callers that do not enable TLS support
     auto bytes = load(kDylib / "bin/tlsexe/tlsexe");
     auto file = take(macho::parse_file(ByteView(bytes)));

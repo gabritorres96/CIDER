@@ -1,9 +1,9 @@
-#include "cider/macho.hpp"
+#include "orvyn/macho.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 
 static std::vector<uint8_t> x64() { return build_macho({}).bytes; }
 static std::vector<uint8_t> arm64() {
@@ -13,7 +13,7 @@ static std::vector<uint8_t> arm64() {
     return build_macho(s).bytes;
 }
 
-CIDER_TEST(fat_two_architectures) {
+ORVYN_TEST(fat_two_architectures) {
     auto fat = build_fat({{macho::kCpuX86_64, 3, x64()}, {macho::kCpuArm64, 0, arm64()}});
     CHECK(macho::identify(ByteView(fat)) == macho::Format::Fat);
     auto r = macho::parse_file(ByteView(fat));
@@ -28,7 +28,7 @@ CIDER_TEST(fat_two_architectures) {
     CHECK(f.warnings.empty());
 }
 
-CIDER_TEST(fat64_container) {
+ORVYN_TEST(fat64_container) {
     auto fat = build_fat({{macho::kCpuX86_64, 3, x64()}}, true);
     CHECK(macho::identify(ByteView(fat)) == macho::Format::Fat64);
     auto r = macho::parse_file(ByteView(fat));
@@ -37,7 +37,7 @@ CIDER_TEST(fat64_container) {
     CHECK(r.value().slices[0].image.has_value());
 }
 
-CIDER_TEST(fat_slice_error_is_isolated) {
+ORVYN_TEST(fat_slice_error_is_isolated) {
     auto bad = x64();
     patch32(bad, 12, 99);  // invalid filetype
     auto fat = build_fat({{macho::kCpuX86_64, 3, x64()}, {macho::kCpuArm64, 0, bad}});
@@ -48,14 +48,14 @@ CIDER_TEST(fat_slice_error_is_isolated) {
     REQUIRE(r.value().slices[1].error.has_value());
 }
 
-CIDER_TEST(fat_header_cputype_disagrees_with_slice) {
+ORVYN_TEST(fat_header_cputype_disagrees_with_slice) {
     auto fat = build_fat({{macho::kCpuArm64, 0, x64()}});
     auto r = macho::parse_file(ByteView(fat));
     REQUIRE(r.ok());
     CHECK(!r.value().slices[0].image.has_value());
 }
 
-CIDER_TEST(fat_32bit_slice_reported_not_fatal) {
+ORVYN_TEST(fat_32bit_slice_reported_not_fatal) {
     std::vector<uint8_t> m32{0xce, 0xfa, 0xed, 0xfe, 7, 0, 0, 0};
     m32.resize(64);
     auto fat = build_fat({{macho::kCpuX86_64, 3, x64()}, {macho::kCpuX86, 3, m32}});
@@ -67,7 +67,7 @@ CIDER_TEST(fat_32bit_slice_reported_not_fatal) {
     CHECK_EQ(macho::cpu_name(macho::kCpuX86, 3), std::string("i386"));
 }
 
-CIDER_TEST(fat_invalid_headers) {
+ORVYN_TEST(fat_invalid_headers) {
     auto good = build_fat({{macho::kCpuX86_64, 3, x64()}});
     CHECK_ERR(macho::parse_file(ByteView(good.data(), 7)), ErrorCode::Truncated);
     CHECK_ERR(macho::parse_file(ByteView(good.data(), 20)), ErrorCode::Truncated);
@@ -81,7 +81,7 @@ CIDER_TEST(fat_invalid_headers) {
     CHECK_ERR(macho::parse_file(ByteView(b)), ErrorCode::Malformed);
 }
 
-CIDER_TEST(fat_slice_out_of_bounds_or_overlapping) {
+ORVYN_TEST(fat_slice_out_of_bounds_or_overlapping) {
     auto good = build_fat({{macho::kCpuX86_64, 3, x64()}, {macho::kCpuArm64, 0, arm64()}});
     auto b = good;
     b[8 + 11] = 0xff; b[8 + 10] = 0xff;  // slice 0 size = huge
@@ -101,14 +101,14 @@ CIDER_TEST(fat_slice_out_of_bounds_or_overlapping) {
     CHECK_ERR(macho::parse_file(ByteView(b)), ErrorCode::Malformed);
 }
 
-CIDER_TEST(fat_duplicate_arch_is_warning) {
+ORVYN_TEST(fat_duplicate_arch_is_warning) {
     auto fat = build_fat({{macho::kCpuX86_64, 3, x64()}, {macho::kCpuX86_64, 3, x64()}});
     auto r = macho::parse_file(ByteView(fat));
     REQUIRE(r.ok());
     CHECK(!r.value().warnings.empty());
 }
 
-CIDER_TEST(fat_nested_container_rejected) {
+ORVYN_TEST(fat_nested_container_rejected) {
     auto inner = build_fat({{macho::kCpuX86_64, 3, x64()}});
     auto outer = build_fat({{macho::kCpuX86_64, 3, inner}});
     auto r = macho::parse_file(ByteView(outer));
@@ -117,7 +117,7 @@ CIDER_TEST(fat_nested_container_rejected) {
     CHECK(r.value().slices[0].error->code == ErrorCode::BadMagic);
 }
 
-CIDER_TEST(java_class_file_is_not_fat) {
+ORVYN_TEST(java_class_file_is_not_fat) {
     std::vector<uint8_t> cls{0xca, 0xfe, 0xba, 0xbe, 0x00, 0x00, 0x00, 0x34};  // version 52 -> "arch count" 52
     cls.resize(2000, 0);
     CHECK(!macho::parse_file(ByteView(cls)).ok());

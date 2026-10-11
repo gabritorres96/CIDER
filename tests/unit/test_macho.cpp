@@ -1,12 +1,12 @@
 #include <algorithm>
 
-#include "cider/macho.hpp"
-#include "cider/util.hpp"
+#include "orvyn/macho.hpp"
+#include "orvyn/util.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 
 static macho::Image parse_ok(const std::vector<uint8_t>& b, bool symbols = false) {
     macho::ParseOptions o;
@@ -16,7 +16,7 @@ static macho::Image parse_ok(const std::vector<uint8_t>& b, bool symbols = false
     return r.value();
 }
 
-CIDER_TEST(identify_formats) {
+ORVYN_TEST(identify_formats) {
     auto b = build_macho({});
     CHECK(macho::identify(ByteView(b.bytes)) == macho::Format::MachO64);
     std::vector<uint8_t> junk{1, 2, 3, 4, 5, 6, 7, 8};
@@ -26,7 +26,7 @@ CIDER_TEST(identify_formats) {
     CHECK(macho::identify(ByteView(m32)) == macho::Format::MachO32);
 }
 
-CIDER_TEST(parse_executable_header) {
+ORVYN_TEST(parse_executable_header) {
     auto img = parse_ok(build_macho({}).bytes);
     CHECK_EQ(img.cputype, macho::kCpuX86_64);
     CHECK_EQ(macho::cpu_name(img.cputype, img.cpusubtype), std::string("x86_64"));
@@ -37,7 +37,7 @@ CIDER_TEST(parse_executable_header) {
     CHECK(std::find(names.begin(), names.end(), "PIE") != names.end());
 }
 
-CIDER_TEST(parse_segments_and_sections) {
+ORVYN_TEST(parse_segments_and_sections) {
     auto img = parse_ok(build_macho({}).bytes);
     REQUIRE_EQ(img.segments.size(), size_t{3});
     CHECK_EQ(img.segments[0].name, std::string("__PAGEZERO"));
@@ -52,7 +52,7 @@ CIDER_TEST(parse_segments_and_sections) {
     CHECK(img.find_segment("__LINKEDIT") != nullptr);
 }
 
-CIDER_TEST(parse_entry_point_lc_main) {
+ORVYN_TEST(parse_entry_point_lc_main) {
     auto img = parse_ok(build_macho({}).bytes);
     REQUIRE(img.entry.has_value());
     CHECK(img.entry->kind == macho::EntryPoint::Kind::Main);
@@ -61,7 +61,7 @@ CIDER_TEST(parse_entry_point_lc_main) {
     CHECK_EQ(img.entry->segment, std::string("__TEXT"));
 }
 
-CIDER_TEST(parse_entry_point_unixthread) {
+ORVYN_TEST(parse_entry_point_unixthread) {
     MachoSpec s;
     s.main = false;
     s.unixthread = true;
@@ -71,7 +71,7 @@ CIDER_TEST(parse_entry_point_unixthread) {
     CHECK_EQ(img.entry->vmaddr, kTextAddr + 0xf00);
 }
 
-CIDER_TEST(no_entry_point_is_warning_for_executable) {
+ORVYN_TEST(no_entry_point_is_warning_for_executable) {
     MachoSpec s;
     s.main = false;
     auto img = parse_ok(build_macho(s).bytes);
@@ -79,7 +79,7 @@ CIDER_TEST(no_entry_point_is_warning_for_executable) {
     CHECK(!img.warnings.empty());
 }
 
-CIDER_TEST(parse_dependencies_all_kinds) {
+ORVYN_TEST(parse_dependencies_all_kinds) {
     MachoSpec s;
     s.dylibs = {"/usr/lib/libSystem.B.dylib", "@rpath/libfoo.dylib"};
     s.weak_dylibs = {"@executable_path/../Frameworks/Weak.dylib"};
@@ -98,7 +98,7 @@ CIDER_TEST(parse_dependencies_all_kinds) {
     CHECK_EQ(img.dylinker, std::string("/usr/lib/dyld"));
 }
 
-CIDER_TEST(parse_dylib_id) {
+ORVYN_TEST(parse_dylib_id) {
     MachoSpec s;
     s.filetype = 6;
     s.main = false;
@@ -110,7 +110,7 @@ CIDER_TEST(parse_dylib_id) {
     CHECK(img.dylibs.size() == 1);  // LC_ID_DYLIB is not a dependency
 }
 
-CIDER_TEST(parse_build_version_and_platform) {
+ORVYN_TEST(parse_build_version_and_platform) {
     auto img = parse_ok(build_macho({}).bytes);
     REQUIRE_EQ(img.build_versions.size(), size_t{1});
     CHECK_EQ(img.build_versions[0].platform, 1u);

@@ -1,4 +1,4 @@
-// LC_DYLD_CHAINED_FIXUPS decoder (CIDER 0.3). Supported, exactly:
+// LC_DYLD_CHAINED_FIXUPS decoder (ORVYN 0.3). Supported, exactly:
 //   * header version 0 (the only one that exists), imports formats DYLD_CHAINED_IMPORT (1), IMPORT_ADDEND (2) and
 //     IMPORT_ADDEND64 (3), uncompressed symbol pool;
 //   * chain pointer formats DYLD_CHAINED_PTR_64 (2) and DYLD_CHAINED_PTR_64_OFFSET (6): 64-bit pointers, 4-byte stride,
@@ -9,9 +9,9 @@
 // file-backed part of the segment, and bounds the number of fixups: a hostile chain cannot loop or write elsewhere.
 #include <format>
 
-#include "cider/fixups.hpp"
+#include "orvyn/fixups.hpp"
 
-namespace cider::dyld {
+namespace orvyn::dyld {
 namespace {
 
 constexpr uint16_t kPtr64 = 2, kPtr64Offset = 6;
@@ -178,4 +178,4 @@ Result<std::vector<Fixup>> decode_chained_fixups(const macho::Image& img, ByteVi
     return out;
 }
 
-}  // namespace cider::dyld
+}  // namespace orvyn::dyld

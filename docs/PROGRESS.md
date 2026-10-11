@@ -1,13 +1,13 @@
 # Progress
 
-**Current phase: CIDER 0.5.0 — AppKit subset, native Windows GUI, Blocks, libdispatch, Apple SDK research. Implemented and verified for controlled fixtures only.
+**Current phase: ORVYN 0.5.0 — AppKit subset, native Windows GUI, Blocks, libdispatch, Apple SDK research. Implemented and verified for controlled fixtures only.
 No macOS application runs; Cocoa does not exist; Swift and SwiftUI are not supported; AppKit and Foundation are host-written subsets.**
 Last verified: 2026-10-11, Windows 11 Pro 10.0.26200, MSVC 14.51 + ml64, clang-cl/LLVM 23.1.3 (portable), CMake 4.2.3.
 
 ## 0.6 in progress: 0.6.1 CoreGraphics API + 0.6.2 `NSView -drawRect:` (version stays 0.5.0)
 
 A Mach-O program compiled for macOS now draws with CoreGraphics from its own `-drawRect:` and the pixels appear in a real Windows window
-(`cg_draw_test`: "CIDER — CoreGraphics Drawing", Redraw button). Nothing else of 0.6 (images, menus, text, NSTimer, NSUserDefaults, Swift research, showcase) has been started.
+(`cg_draw_test`: "ORVYN — CoreGraphics Drawing", Redraw button). Nothing else of 0.6 (images, menus, text, NSTimer, NSUserDefaults, Swift research, showcase) has been started.
 
 | Capability | Evidence (2026-10-11) |
 |---|---|
@@ -30,13 +30,13 @@ Not done in 0.6.1-0.6.2 (see [LIMITATIONS.md](LIMITATIONS.md)): image creation f
 
 | Capability | Evidence |
 |---|---|
-| A clang-built Objective-C Mach-O creates a **real Windows window** (`hello_window`): title "CIDER — Hello from macOS", labels, "Click me" / "Close" buttons; clicks run guest methods, the counter lives in the program, Close ends the process with status 0 | `test_gui_win32` (3, interactive: a separate process finds the window and sends `BM_CLICK` / `WM_CLOSE`), `test_appkit` (3, headless) — also verified visually and by hand on the author's desktop |
+| A clang-built Objective-C Mach-O creates a **real Windows window** (`hello_window`): title "ORVYN — Hello from macOS", labels, "Click me" / "Close" buttons; clicks run guest methods, the counter lives in the program, Close ends the process with status 0 | `test_gui_win32` (3, interactive: a separate process finds the window and sends `BM_CLICK` / `WM_CLOSE`), `test_appkit` (3, headless) — also verified visually and by hand on the author's desktop |
 | Blocks (copy/release, `__block`, captured objects, runtime-invoked blocks) | `test_blocks` (3) |
 | libdispatch subset (main/serial/global queues, groups, semaphores, once, after, worker→main sync) | `test_dispatch` (3) |
 | Foundation: NSMutableString, NSData, NSDate, NSURL, NSError, NSFileManager (root-confined), NSNotificationCenter | `test_foundation_extra` (3), `test_appkit` |
 | CoreFoundation basics, CoreGraphics geometry with System V struct passing, shared run loop (timers, sources, main queue) | `test_corefoundation` (1), `test_geometry` (4) |
 | Message forwarding (resolve / forwarding target / NSInvocation), uncaught NSException, `@try` programs refused | `test_objc_dynamic` (4) |
-| Apple SDK `.tbd` reader and `cider sdk-scan` (3,702 stubs parsed, 0 failures) | `test_sdk` (4), [APPLE-SDK-RESEARCH.md](APPLE-SDK-RESEARCH.md) |
+| Apple SDK `.tbd` reader and `orvyn sdk-scan` (3,702 stubs parsed, 0 failures) | `test_sdk` (4), [APPLE-SDK-RESEARCH.md](APPLE-SDK-RESEARCH.md) |
 | CotEditor, Rectangle, Stats, MonitorControl analysed statically: all are Swift apps, refused | [COTEDITOR-COMPATIBILITY.md](COTEDITOR-COMPATIBILITY.md), [COMPATIBILITY.md](COMPATIBILITY.md) |
 
 ## Verification evidence (real runs, 2026-10-11)

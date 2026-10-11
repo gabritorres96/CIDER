@@ -12,9 +12,9 @@
 #include <windows.h>
 #endif
 
-using namespace cider;
-using namespace cider::libsystem;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::libsystem;
+using namespace orvyn::testing;
 
 namespace {
 
@@ -33,7 +33,7 @@ struct Env {
 
 }  // namespace
 
-CIDER_TEST(registry_lists_exactly_the_documented_symbols) {
+ORVYN_TEST(registry_lists_exactly_the_documented_symbols) {
     std::set<std::string> names;
     for (auto& s : implemented_symbols()) {
         CHECK(names.insert(s.name).second);                              // no duplicates
@@ -74,7 +74,7 @@ CIDER_TEST(registry_lists_exactly_the_documented_symbols) {
         CHECK(!is_implemented(n));
 }
 
-CIDER_TEST(puts_putchar_and_write_reach_the_sink_with_correct_values) {
+ORVYN_TEST(puts_putchar_and_write_reach_the_sink_with_correct_values) {
     Env e;
     const char* s = "hello";
     CHECK_EQ(static_cast<int32_t>(e.call("_puts", Env::p(s)).value), 1);
@@ -93,7 +93,7 @@ CIDER_TEST(puts_putchar_and_write_reach_the_sink_with_correct_values) {
     CHECK(e.ctx.bytes_out > 0 && e.ctx.bytes_err == 3);
 }
 
-CIDER_TEST(string_and_memory_functions) {
+ORVYN_TEST(string_and_memory_functions) {
     Env e;
     CHECK_EQ(e.call("_strlen", Env::p("")).value, uint64_t{0});
     CHECK_EQ(e.call("_strlen", Env::p("twelve chars")).value, uint64_t{12});
@@ -120,7 +120,7 @@ CIDER_TEST(string_and_memory_functions) {
     CHECK_EQ(e.call("_labs", static_cast<uint64_t>(-5000000000ll)).value, uint64_t{5000000000ull});
 }
 
-CIDER_TEST(malloc_family_tracks_blocks_and_refuses_foreign_pointers) {
+ORVYN_TEST(malloc_family_tracks_blocks_and_refuses_foreign_pointers) {
     Env e;
     uint64_t p = e.call("_malloc", 100).value;
     REQUIRE(p != 0);
@@ -150,7 +150,7 @@ CIDER_TEST(malloc_family_tracks_blocks_and_refuses_foreign_pointers) {
     // the two blocks still live are released together with the context (HeapDestroy): see the next test
 }
 
-CIDER_TEST(getenv_reads_the_guest_environment) {
+ORVYN_TEST(getenv_reads_the_guest_environment) {
     Env e;
     e.ctx.env = {"HOME=/Users/test", "EMPTY=", "A=1", "AB=2"};
     auto get = [&](const char* n) { uint64_t r = e.call("_getenv", Env::p(n)).value; return r ? std::string(reinterpret_cast<const char*>(r)) : std::string("<null>"); };
@@ -163,7 +163,7 @@ CIDER_TEST(getenv_reads_the_guest_environment) {
     CHECK_EQ(e.call("_getenv", 0).value, uint64_t{0});
 }
 
-CIDER_TEST(getpid_returns_the_real_process_id) {
+ORVYN_TEST(getpid_returns_the_real_process_id) {
     Env e;
 #ifdef _WIN32
     CHECK_EQ(static_cast<uint32_t>(e.call("_getpid").value), static_cast<uint32_t>(GetCurrentProcessId()));
@@ -171,7 +171,7 @@ CIDER_TEST(getpid_returns_the_real_process_id) {
     CHECK(static_cast<int32_t>(e.call("_getpid").value) > 0);
 }
 
-CIDER_TEST(math_functions_use_xmm_registers) {
+ORVYN_TEST(math_functions_use_xmm_registers) {
     Env e;
     auto bits = [](double d) { uint64_t u; std::memcpy(&u, &d, 8); return u; };
     auto unary = [&](const char* sym, double x) {
@@ -192,7 +192,7 @@ CIDER_TEST(math_functions_use_xmm_registers) {
     CHECK(std::isnan(unary("_sqrt", -1.0)));
 }
 
-CIDER_TEST(exit_requests_a_guest_exit_with_the_low_32_bits) {
+ORVYN_TEST(exit_requests_a_guest_exit_with_the_low_32_bits) {
     Env e;
     auto o = e.call("_exit", 37);
     CHECK(o.exited);
@@ -202,7 +202,7 @@ CIDER_TEST(exit_requests_a_guest_exit_with_the_low_32_bits) {
     CHECK_EQ(static_cast<int32_t>(o.value), -1);
 }
 
-CIDER_TEST(dyld_stub_binder_traps_instead_of_silently_continuing) {
+ORVYN_TEST(dyld_stub_binder_traps_instead_of_silently_continuing) {
     Env e;
     auto o = e.call("dyld_stub_binder");
     CHECK(o.exited);
@@ -210,7 +210,7 @@ CIDER_TEST(dyld_stub_binder_traps_instead_of_silently_continuing) {
     CHECK(e.ctx.fault.find("lazy binding") != std::string::npos);
 }
 
-CIDER_TEST(functions_work_without_a_runtime_context_by_falling_back_to_the_real_streams) {
+ORVYN_TEST(functions_work_without_a_runtime_context_by_falling_back_to_the_real_streams) {
     // no context: nothing to capture, nothing may crash (malloc tracking simply does not exist)
     set_context(nullptr);
     auto provider = take(LibSystemProvider::create());
@@ -224,7 +224,7 @@ CIDER_TEST(functions_work_without_a_runtime_context_by_falling_back_to_the_real_
 #endif
 }
 
-CIDER_TEST(guest_heap_is_destroyed_with_the_runtime_context_and_failures_return_null) {
+ORVYN_TEST(guest_heap_is_destroyed_with_the_runtime_context_and_failures_return_null) {
     uint64_t p = 0;
     {
         Env e;

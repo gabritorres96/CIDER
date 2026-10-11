@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace cider::testing {
+namespace orvyn::testing {
 
 struct TestCase {
     const char* name;
@@ -44,29 +44,29 @@ std::string describe(const A& a, const B& b, const char* ea, const char* eb) {
     return o.str();
 }
 
-}  // namespace cider::testing
+}  // namespace orvyn::testing
 
-#define CIDER_TEST(name)                                                         \
+#define ORVYN_TEST(name)                                                         \
     static void name();                                                          \
-    static ::cider::testing::Registrar cider_reg_##name(#name, name);            \
+    static ::orvyn::testing::Registrar orvyn_reg_##name(#name, name);            \
     static void name()
 
 #define CHECK(cond)                                                                       \
-    do { if (!(cond)) ::cider::testing::report_failure(__FILE__, __LINE__, #cond); } while (0)
+    do { if (!(cond)) ::orvyn::testing::report_failure(__FILE__, __LINE__, #cond); } while (0)
 #define REQUIRE(cond)                                                                     \
-    do { if (!(cond)) { ::cider::testing::report_failure(__FILE__, __LINE__, #cond); throw ::cider::testing::AbortTest{}; } } while (0)
+    do { if (!(cond)) { ::orvyn::testing::report_failure(__FILE__, __LINE__, #cond); throw ::orvyn::testing::AbortTest{}; } } while (0)
 #define CHECK_EQ(a, b)                                                                    \
-    do { auto cider_a = (a); auto cider_b = (b);                                      \
-         if (!(cider_a == cider_b)) ::cider::testing::report_failure(__FILE__, __LINE__, ::cider::testing::describe(cider_a, cider_b, #a, #b)); } while (0)
+    do { auto orvyn_a = (a); auto orvyn_b = (b);                                      \
+         if (!(orvyn_a == orvyn_b)) ::orvyn::testing::report_failure(__FILE__, __LINE__, ::orvyn::testing::describe(orvyn_a, orvyn_b, #a, #b)); } while (0)
 #define REQUIRE_EQ(a, b)                                                                  \
-    do { auto cider_a = (a); auto cider_b = (b);                                      \
-         if (!(cider_a == cider_b)) { ::cider::testing::report_failure(__FILE__, __LINE__, ::cider::testing::describe(cider_a, cider_b, #a, #b)); throw ::cider::testing::AbortTest{}; } } while (0)
+    do { auto orvyn_a = (a); auto orvyn_b = (b);                                      \
+         if (!(orvyn_a == orvyn_b)) { ::orvyn::testing::report_failure(__FILE__, __LINE__, ::orvyn::testing::describe(orvyn_a, orvyn_b, #a, #b)); throw ::orvyn::testing::AbortTest{}; } } while (0)
 // Expects a Result/Status to be an error with the given code.
 #define CHECK_ERR(expr, code_)                                                            \
-    do { auto cider_r = (expr);                                                           \
-         if (cider_r.ok()) ::cider::testing::report_failure(__FILE__, __LINE__, std::string(#expr) + " unexpectedly succeeded"); \
-         else if (cider_r.error().code != (code_)) ::cider::testing::report_failure(__FILE__, __LINE__, std::string(#expr) + " failed with " + ::cider::to_string(cider_r.error().code) + ": " + cider_r.error().message); } while (0)
+    do { auto orvyn_r = (expr);                                                           \
+         if (orvyn_r.ok()) ::orvyn::testing::report_failure(__FILE__, __LINE__, std::string(#expr) + " unexpectedly succeeded"); \
+         else if (orvyn_r.error().code != (code_)) ::orvyn::testing::report_failure(__FILE__, __LINE__, std::string(#expr) + " failed with " + ::orvyn::to_string(orvyn_r.error().code) + ": " + orvyn_r.error().message); } while (0)
 
 // Marks the running test as skipped (e.g. an optional external tool is not installed).
 #define SKIP(msg) \
-    do { std::printf("    SKIPPED: %s\n", msg); throw ::cider::testing::SkipTest{}; } while (0)
+    do { std::printf("    SKIPPED: %s\n", msg); throw ::orvyn::testing::SkipTest{}; } while (0)

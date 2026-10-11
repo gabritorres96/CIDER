@@ -4,7 +4,7 @@ _main:
 100000540:	55	pushq	%rbp
 100000541:	48 89 e5	movq	%rsp, %rbp
 100000544:	48 8d 3d cf 00 00 00	leaq	0xcf(%rip), %rdi ## literal pool for: "Text: %s\n"
-10000054b:	48 8d 35 d2 00 00 00	leaq	0xd2(%rip), %rsi ## literal pool for: "CIDER"
+10000054b:	48 8d 35 d2 00 00 00	leaq	0xd2(%rip), %rsi ## literal pool for: "ORVYN"
 100000552:	31 c0	xorl	%eax, %eax
 100000554:	e8 9f 00 00 00	callq	0x1000005f8 ## symbol stub for: _printf
 100000559:	48 8d 3d ca 00 00 00	leaq	0xca(%rip), %rdi ## literal pool for: "[%10s][%-10s][%.3s][%10.2s]\n"

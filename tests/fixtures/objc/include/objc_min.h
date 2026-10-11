@@ -1,7 +1,7 @@
 /* Minimal hand-written declarations of the libobjc API used by the fixtures (the Apple SDK is not available and is not redistributed).
-   Only prototypes: the behaviour comes from CIDER's runtime. */
-#ifndef CIDER_OBJC_MIN_H
-#define CIDER_OBJC_MIN_H
+   Only prototypes: the behaviour comes from ORVYN's runtime. */
+#ifndef ORVYN_OBJC_MIN_H
+#define ORVYN_OBJC_MIN_H
 
 typedef struct objc_class *Class;
 typedef struct objc_object { Class isa; } *id;

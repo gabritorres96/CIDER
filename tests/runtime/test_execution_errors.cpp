@@ -4,8 +4,8 @@
 #include <chrono>
 #include <cstring>
 
-#include "cider/guest.hpp"
-#include "cider/process.hpp"
+#include "orvyn/guest.hpp"
+#include "orvyn/process.hpp"
 #include "guest_code.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
@@ -15,8 +15,8 @@
 #include <windows.h>
 #endif
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 namespace fs = std::filesystem;
 
 namespace {
@@ -34,8 +34,8 @@ guest::Outcome load_only(const std::vector<uint8_t>& bytes, std::string* out = n
 bool range_free(uint64_t a) { return memory::query_address(reinterpret_cast<void*>(a)).state == memory::PageInfo::State::Free; }
 
 guest::SupervisorOptions supervised(const std::string& fixture_name) {
-    const char* exe = std::getenv("CIDER_EXE");
-    if (!exe) { report_failure(__FILE__, __LINE__, "CIDER_EXE is not set"); throw AbortTest{}; }
+    const char* exe = std::getenv("ORVYN_EXE");
+    if (!exe) { report_failure(__FILE__, __LINE__, "ORVYN_EXE is not set"); throw AbortTest{}; }
     guest::SupervisorOptions o;
     o.worker_exe = fs::absolute(path_from_utf8(exe));
     o.image = kExecFixtures / "bin" / fixture_name;
@@ -47,7 +47,7 @@ guest::SupervisorOptions supervised(const std::string& fixture_name) {
 }  // namespace
 
 // ---- load failures: the guest never runs ---------------------------------------------------------------------------------------
-CIDER_TEST(unresolved_symbol_aborts_before_execution) {
+ORVYN_TEST(unresolved_symbol_aborts_before_execution) {
     std::string out;
     auto r = load_only(exec_fixture("missing"), &out);
     CHECK(r.state == guest::State::LoadFailed);
@@ -61,8 +61,8 @@ CIDER_TEST(unresolved_symbol_aborts_before_execution) {
     CHECK(range_free(0x100000000ull));
 }
 
-CIDER_TEST(incompatible_files_are_rejected_with_specific_reasons) {
-    auto real = [](const char* n) { return read_file(fs::path(CIDER_REAL_FIXTURES_DIR) / "bin" / n, 1 << 20).value(); };
+ORVYN_TEST(incompatible_files_are_rejected_with_specific_reasons) {
+    auto real = [](const char* n) { return read_file(fs::path(ORVYN_REAL_FIXTURES_DIR) / "bin" / n, 1 << 20).value(); };
     struct Case { std::vector<uint8_t> bytes; loader::LoadFailure kind; const char* needle; };
     Case cases[] = {
         {{}, loader::LoadFailure::Incompatible, "not a valid Mach-O"},
@@ -80,7 +80,7 @@ CIDER_TEST(incompatible_files_are_rejected_with_specific_reasons) {
     CHECK(range_free(0x100000000ull));
 }
 
-CIDER_TEST(missing_library_dependency_is_reported_by_name) {
+ORVYN_TEST(missing_library_dependency_is_reported_by_name) {
     MachoSpec s;
     s.dylibs = {"/usr/lib/libSystem.B.dylib", "/usr/lib/libz.1.dylib", "@rpath/libfoo.dylib"};
     auto r = load_only(build_macho(s).bytes);
@@ -91,7 +91,7 @@ CIDER_TEST(missing_library_dependency_is_reported_by_name) {
     CHECK_EQ(r.required_libs.size(), size_t{3});
 }
 
-CIDER_TEST(unsupported_features_are_refused_explicitly) {
+ORVYN_TEST(unsupported_features_are_refused_explicitly) {
     auto built = build_macho({});
     auto b = built.bytes;
     patch32(b, built.cmd["text"] + 72 + 64, 0x15);           // __text section flags: thread-local init functions (0x11-0x14 are served since 0.3.6)
@@ -121,7 +121,7 @@ CIDER_TEST(unsupported_features_are_refused_explicitly) {
     CHECK(range_free(0x100000000ull));
 }
 
-CIDER_TEST(corrupt_binaries_fail_cleanly_and_never_execute) {
+ORVYN_TEST(corrupt_binaries_fail_cleanly_and_never_execute) {
     auto good = exec_fixture("hello");
     int failed = 0;
     for (size_t cut = 0; cut < 4096; cut += 37) {
@@ -136,7 +136,7 @@ CIDER_TEST(corrupt_binaries_fail_cleanly_and_never_execute) {
 }
 
 // ---- result protocol ------------------------------------------------------------------------------------------------------------------
-CIDER_TEST(worker_result_round_trips_including_hostile_text) {
+ORVYN_TEST(worker_result_round_trips_including_hostile_text) {
     guest::Outcome o;
     o.state = guest::State::LoadFailed;
     o.exit_code = -3;
@@ -158,7 +158,7 @@ CIDER_TEST(worker_result_round_trips_including_hostile_text) {
     CHECK_EQ(p->entry_address, o.entry_address);
 }
 
-CIDER_TEST(truncated_or_forged_result_files_are_rejected) {
+ORVYN_TEST(truncated_or_forged_result_files_are_rejected) {
     guest::Outcome o;
     o.state = guest::State::Exited;
     o.exit_code = 42;
@@ -166,14 +166,14 @@ CIDER_TEST(truncated_or_forged_result_files_are_rejected) {
     CHECK(guest::parse_result(text).has_value());
     for (size_t cut = 0; cut + 1 < text.size(); cut += 3) CHECK(!guest::parse_result(text.substr(0, cut)).has_value());   // worker died mid-write
     CHECK(!guest::parse_result("").has_value());
-    CHECK(!guest::parse_result("cider-result=2\nstate=exited\nend\n").has_value());
-    CHECK(!guest::parse_result("cider-result=1\nstate=bogus\nend\n").has_value());
-    CHECK(!guest::parse_result("cider-result=1\nexit_code=abc\nstate=exited\nend\n").has_value());
-    CHECK(!guest::parse_result("cider-result=1\nstate=exited\ngarbage line\nend\n").has_value());
+    CHECK(!guest::parse_result("orvyn-result=2\nstate=exited\nend\n").has_value());
+    CHECK(!guest::parse_result("orvyn-result=1\nstate=bogus\nend\n").has_value());
+    CHECK(!guest::parse_result("orvyn-result=1\nexit_code=abc\nstate=exited\nend\n").has_value());
+    CHECK(!guest::parse_result("orvyn-result=1\nstate=exited\ngarbage line\nend\n").has_value());
 }
 
 // ---- worker process ---------------------------------------------------------------------------------------------------------------------
-CIDER_TEST(worker_reports_the_guest_exit_code_and_captures_output) {
+ORVYN_TEST(worker_reports_the_guest_exit_code_and_captures_output) {
     auto o = supervised("hello");
     o.capture_output = true;
     auto r = guest::run_supervised(o);
@@ -190,7 +190,7 @@ CIDER_TEST(worker_reports_the_guest_exit_code_and_captures_output) {
     CHECK_EQ(guest::run_supervised(o).guest.exit_code, 7);
 }
 
-CIDER_TEST(guest_runs_in_a_separate_process) {
+ORVYN_TEST(guest_runs_in_a_separate_process) {
     auto o = supervised("pid");
     o.capture_output = true;
     auto r = guest::run_supervised(o);
@@ -204,7 +204,7 @@ CIDER_TEST(guest_runs_in_a_separate_process) {
 #endif
 }
 
-CIDER_TEST(arguments_reach_the_guest_through_the_worker) {
+ORVYN_TEST(arguments_reach_the_guest_through_the_worker) {
     auto o = supervised("args");
     o.guest_args = {"hello world", "second"};
     o.capture_output = true;
@@ -214,7 +214,7 @@ CIDER_TEST(arguments_reach_the_guest_through_the_worker) {
     CHECK_EQ(r.guest.exit_code, 31);
 }
 
-CIDER_TEST(worker_reports_load_failures_without_running_the_guest) {
+ORVYN_TEST(worker_reports_load_failures_without_running_the_guest) {
     auto r = guest::run_supervised(supervised("missing"));
     CHECK(r.status == guest::SupervisorResult::Status::LoadFailed);
     CHECK(r.guest.load_failure == loader::LoadFailure::UnresolvedSymbol);
@@ -223,16 +223,16 @@ CIDER_TEST(worker_reports_load_failures_without_running_the_guest) {
     CHECK_EQ(r.worker_exit_code, 0u);
 }
 
-CIDER_TEST(a_guest_crash_kills_only_the_worker) {
+ORVYN_TEST(a_guest_crash_kills_only_the_worker) {
     auto r = guest::run_supervised(supervised("crash"));
     CHECK(r.status == guest::SupervisorResult::Status::GuestCrashed);
     CHECK_EQ(r.worker_exit_code, 0xC0000005u);                    // access violation (write to address 0)
     CHECK(r.message.find("access violation") != std::string::npos);
-    // CIDER itself is still alive and can run another program right away
+    // ORVYN itself is still alive and can run another program right away
     CHECK_EQ(guest::run_supervised(supervised("ret42")).guest.exit_code, 42);
 }
 
-CIDER_TEST(an_illegal_instruction_in_the_guest_is_a_contained_crash) {
+ORVYN_TEST(an_illegal_instruction_in_the_guest_is_a_contained_crash) {
     // ud2 patched over the start of main: the CPU raises #UD inside the Mach-O code
     auto b = exec_fixture("ret42");
     const std::vector<uint8_t> needle = {0xB8, 0x2A, 0x00, 0x00, 0x00};     // mov eax, 42
@@ -249,13 +249,13 @@ CIDER_TEST(an_illegal_instruction_in_the_guest_is_a_contained_crash) {
     CHECK(r.message.find("illegal instruction") != std::string::npos);
 }
 
-CIDER_TEST(guest_stack_overflow_hits_the_guard_page_and_is_contained) {
+ORVYN_TEST(guest_stack_overflow_hits_the_guard_page_and_is_contained) {
     auto r = guest::run_supervised(supervised("recurse"));
     CHECK(r.status == guest::SupervisorResult::Status::GuestCrashed);
     CHECK(r.worker_exit_code == 0xC0000005u || r.worker_exit_code == 0xC00000FDu);
 }
 
-CIDER_TEST(a_guest_that_never_finishes_is_killed_at_the_timeout) {
+ORVYN_TEST(a_guest_that_never_finishes_is_killed_at_the_timeout) {
     auto o = supervised("spin");
     o.timeout = std::chrono::milliseconds(1500);
     auto t0 = std::chrono::steady_clock::now();
@@ -266,7 +266,7 @@ CIDER_TEST(a_guest_that_never_finishes_is_killed_at_the_timeout) {
     CHECK(r.message.find("did not finish") != std::string::npos);
 }
 
-CIDER_TEST(job_memory_limit_is_enforced_on_the_worker) {
+ORVYN_TEST(job_memory_limit_is_enforced_on_the_worker) {
     auto o = supervised("hog");                                    // asks for 1.5 GiB
     o.memory_limit = 1ull << 30;                                   // 1 GiB per process
     auto r = guest::run_supervised(o);
@@ -274,7 +274,7 @@ CIDER_TEST(job_memory_limit_is_enforced_on_the_worker) {
     CHECK_EQ(r.guest.exit_code, 3);                                // malloc failed: the limit held
 }
 
-CIDER_TEST(worker_with_a_missing_image_reports_a_load_failure) {
+ORVYN_TEST(worker_with_a_missing_image_reports_a_load_failure) {
     auto o = supervised("ret42");
     o.image = kExecFixtures / "bin" / "does-not-exist";
     auto r = guest::run_supervised(o);
@@ -282,7 +282,7 @@ CIDER_TEST(worker_with_a_missing_image_reports_a_load_failure) {
     CHECK(r.message.find("not found") != std::string::npos);
 }
 
-CIDER_TEST(an_unusable_worker_executable_is_an_internal_error) {
+ORVYN_TEST(an_unusable_worker_executable_is_an_internal_error) {
     auto o = supervised("ret42");
     o.worker_exe = kExecFixtures / "bin" / "ret42";                // a Mach-O, not a Windows program
     auto r = guest::run_supervised(o);

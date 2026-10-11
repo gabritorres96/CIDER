@@ -7,13 +7,13 @@
 #include <string>
 #include <vector>
 
-#include "cider/abi.hpp"
-#include "cider/libsystem.hpp"
-#include "cider/memory.hpp"
-#include "cider/util.hpp"
+#include "orvyn/abi.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/memory.hpp"
+#include "orvyn/util.hpp"
 #include "test_framework.hpp"
 
-namespace cider::testing {
+namespace orvyn::testing {
 
 // Unwraps a Result (move-only payloads allowed); a failure aborts the test with the error message.
 template <class T>
@@ -22,7 +22,7 @@ T take(Result<T> r) {
     return std::move(r.value());
 }
 
-inline const std::filesystem::path kExecFixtures = std::filesystem::path(CIDER_EXEC_FIXTURES_DIR);
+inline const std::filesystem::path kExecFixtures = std::filesystem::path(ORVYN_EXEC_FIXTURES_DIR);
 
 inline std::vector<uint8_t> exec_fixture(const std::string& name) {
     auto r = read_file(kExecFixtures / "bin" / name, 16u << 20);
@@ -78,4 +78,4 @@ inline abi::CallOutcome call_host(libsystem::LibSystemProvider& p, const char* s
     return run_code(c);
 }
 
-}  // namespace cider::testing
+}  // namespace orvyn::testing

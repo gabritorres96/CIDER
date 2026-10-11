@@ -6,21 +6,21 @@
       "name": "default",
       "displayName": "Default (Windows, tests on)",
       "binaryDir": "${sourceDir}/build",
-      "cacheVariables": { "CIDER_BUILD_TESTS": "ON" }
+      "cacheVariables": { "ORVYN_BUILD_TESTS": "ON" }
     },
     {
       "name": "asan",
       "displayName": "AddressSanitizer (needs the MSVC ASan component or clang)",
       "inherits": "default",
       "binaryDir": "${sourceDir}/build-asan",
-      "cacheVariables": { "CIDER_SANITIZE": "ON" }
+      "cacheVariables": { "ORVYN_SANITIZE": "ON" }
     },
     {
       "name": "fuzz",
       "displayName": "libFuzzer harnesses",
       "inherits": "asan",
       "binaryDir": "${sourceDir}/build-fuzz",
-      "cacheVariables": { "CIDER_BUILD_FUZZERS": "ON" }
+      "cacheVariables": { "ORVYN_BUILD_FUZZERS": "ON" }
     }
   ],
   "buildPresets": [

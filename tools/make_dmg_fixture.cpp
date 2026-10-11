@@ -6,7 +6,7 @@
 
 #include "dmg_builder.hpp"
 
-using namespace cider::testing;
+using namespace orvyn::testing;
 
 static void save(const std::filesystem::path& p, const std::vector<uint8_t>& b) {
     std::ofstream f(p, std::ios::binary);

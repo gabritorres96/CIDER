@@ -1,18 +1,18 @@
 #include <string>
 
-#include "cider/plist.hpp"
+#include "orvyn/plist.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 
 static std::string wrap(const std::string& body) {
     return "<?xml version=\"1.0\"?>\n<plist version=\"1.0\">" + body + "</plist>";
 }
 static Result<plist::Value> xml(const std::string& s) { return plist::parse_xml(s); }
 
-CIDER_TEST(xml_info_plist_roundtrip) {
+ORVYN_TEST(xml_info_plist_roundtrip) {
     auto r = plist::parse_xml(xml_plist({{"CFBundleExecutable", "Example"}, {"CFBundleIdentifier", "com.example.app"}}));
     REQUIRE(r.ok());
     CHECK(r.value().is_dict());
@@ -20,7 +20,7 @@ CIDER_TEST(xml_info_plist_roundtrip) {
     CHECK(!r.value().get("Nope"));
 }
 
-CIDER_TEST(xml_all_scalar_types) {
+ORVYN_TEST(xml_all_scalar_types) {
     auto r = xml(wrap("<dict><key>s</key><string>a &amp; b &lt;c&gt; &#65;&#x42;</string><key>i</key><integer>-42</integer>"
                       "<key>h</key><integer>0x10</integer><key>r</key><real>1.5</real><key>t</key><true/><key>f</key><false/>"
                       "<key>d</key><date>2001-01-02T00:00:00Z</date><key>b</key><data>aGVsbG8=</data></dict>"));
@@ -36,7 +36,7 @@ CIDER_TEST(xml_all_scalar_types) {
     CHECK_EQ(std::string(v.get("b")->data.begin(), v.get("b")->data.end()), std::string("hello"));
 }
 
-CIDER_TEST(xml_nested_containers_comments_cdata) {
+ORVYN_TEST(xml_nested_containers_comments_cdata) {
     auto r = xml(wrap("<!-- c --><dict><key>a</key><array><string>x</string><dict/><array/></array>"
                       "<key>c</key><string><![CDATA[<raw>]]></string><key>e</key><string/></dict>"));
     REQUIRE(r.ok());
@@ -47,20 +47,20 @@ CIDER_TEST(xml_nested_containers_comments_cdata) {
     CHECK_EQ(r.value().get("e")->s, std::string(""));
 }
 
-CIDER_TEST(xml_duplicate_keys_last_wins) {
+ORVYN_TEST(xml_duplicate_keys_last_wins) {
     auto r = xml(wrap("<dict><key>k</key><string>1</string><key>k</key><string>2</string></dict>"));
     REQUIRE(r.ok());
     CHECK_EQ(r.value().get("k")->s, std::string("2"));
 }
 
-CIDER_TEST(xml_bom_and_whitespace) {
+ORVYN_TEST(xml_bom_and_whitespace) {
     std::string bom = "\xEF\xBB\xBF  \n<plist><dict/></plist>";
     auto r = plist::parse(ByteView(reinterpret_cast<const uint8_t*>(bom.data()), bom.size()));
     REQUIRE(r.ok());
     CHECK(r.value().is_dict());
 }
 
-CIDER_TEST(xml_malformed_rejected) {
+ORVYN_TEST(xml_malformed_rejected) {
     CHECK_ERR(xml(""), ErrorCode::Malformed);
     CHECK_ERR(xml("<plist>"), ErrorCode::Malformed);
     CHECK_ERR(xml(wrap("<dict><key>a</key>")), ErrorCode::Malformed);
@@ -79,7 +79,7 @@ CIDER_TEST(xml_malformed_rejected) {
     CHECK_ERR(xml("<plist><![CDATA[x"), ErrorCode::Malformed);
 }
 
-CIDER_TEST(xml_depth_and_node_limits) {
+ORVYN_TEST(xml_depth_and_node_limits) {
     std::string deep, close;
     for (int i = 0; i < 200; ++i) { deep += "<array>"; close += "</array>"; }
     CHECK_ERR(xml(wrap(deep + close)), ErrorCode::LimitExceeded);
@@ -94,7 +94,7 @@ CIDER_TEST(xml_depth_and_node_limits) {
     CHECK_ERR(plist::parse_xml(wrap("<dict/>"), small), ErrorCode::TooLarge);
 }
 
-CIDER_TEST(binary_plist_parses) {
+ORVYN_TEST(binary_plist_parses) {
     auto s = binary_plist({{"Name", "Example"}, {"Id", "com.x"}});
     CHECK(plist::detect(ByteView(s)) == plist::Format::Binary);
     auto r = plist::parse(ByteView(s));
@@ -103,7 +103,7 @@ CIDER_TEST(binary_plist_parses) {
     CHECK_EQ(r.value().get_string("Id").value_or(""), std::string("com.x"));
 }
 
-CIDER_TEST(binary_plist_corruptions_rejected) {
+ORVYN_TEST(binary_plist_corruptions_rejected) {
     auto good = binary_plist({{"Name", "Example"}});
     REQUIRE(plist::parse(ByteView(good)).ok());
     for (size_t cut = 0; cut < good.size(); ++cut) {
@@ -125,7 +125,7 @@ CIDER_TEST(binary_plist_corruptions_rejected) {
     CHECK(!plist::parse_binary(ByteView(b)).ok());
 }
 
-CIDER_TEST(binary_plist_self_referencing_array_is_bounded) {
+ORVYN_TEST(binary_plist_self_referencing_array_is_bounded) {
     // object 0 = array with one element referencing object 0 (cycle)
     Buf b;
     for (char c : std::string("bplist00")) b.u8(static_cast<uint8_t>(c));
@@ -139,7 +139,7 @@ CIDER_TEST(binary_plist_self_referencing_array_is_bounded) {
     CHECK_ERR(plist::parse_binary(ByteView(b.v)), ErrorCode::LimitExceeded);
 }
 
-CIDER_TEST(unknown_format_rejected) {
+ORVYN_TEST(unknown_format_rejected) {
     std::string s = "{ CFBundleName = Foo; }";  // OpenStep: unsupported
     CHECK_ERR(plist::parse(ByteView(reinterpret_cast<const uint8_t*>(s.data()), s.size())), ErrorCode::Unsupported);
 }

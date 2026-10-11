@@ -7,11 +7,11 @@
 #include <cstdint>
 #include <cstring>
 
-#include "cider/abi.hpp"
-#include "cider/cg.hpp"
-#include "cider/geometry.hpp"
+#include "orvyn/abi.hpp"
+#include "orvyn/cg.hpp"
+#include "orvyn/geometry.hpp"
 
-namespace cider::graphics::sysv {
+namespace orvyn::graphics::sysv {
 
 inline double as_double(uint64_t bits) { double d; std::memcpy(&d, &bits, 8); return d; }
 inline uint64_t as_bits(double d) { uint64_t b; std::memcpy(&b, &d, 8); return b; }
@@ -64,4 +64,4 @@ inline void ret_point(abi::GuestRegs* r, const geometry::Point& p) { r->ret_xmm0
 inline void ret_size(abi::GuestRegs* r, const geometry::Size& s) { r->ret_xmm0 = as_bits(s.width); r->ret_xmm1 = as_bits(s.height); }
 inline void ret_double(abi::GuestRegs* r, double d) { r->ret_xmm0 = as_bits(d); }
 
-}  // namespace cider::graphics::sysv
+}  // namespace orvyn::graphics::sysv

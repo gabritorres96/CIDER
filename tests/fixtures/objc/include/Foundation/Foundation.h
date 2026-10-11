@@ -1,7 +1,7 @@
-/* Hand-written declarations of the Foundation subset CIDER implements (see docs/FOUNDATION.md). This is NOT Apple's Foundation.h: the
+/* Hand-written declarations of the Foundation subset ORVYN implements (see docs/FOUNDATION.md). This is NOT Apple's Foundation.h: the
    Apple SDK is not available and is not redistributed; only the classes and selectors listed below exist in the runtime. */
-#ifndef CIDER_FOUNDATION_H
-#define CIDER_FOUNDATION_H
+#ifndef ORVYN_FOUNDATION_H
+#define ORVYN_FOUNDATION_H
 #include "../objc_min.h"
 #include "../CoreGraphics/CoreGraphics.h"
 

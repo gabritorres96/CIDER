@@ -1,16 +1,16 @@
-// System V AMD64 <-> Windows x64, second half (CIDER 0.3): the raw thunk and the argument readers. The guest code is
+// System V AMD64 <-> Windows x64, second half (ORVYN 0.3): the raw thunk and the argument readers. The guest code is
 // hand-assembled machine code, so the bridge is verified independently of any compiler. The cases are the ones a
 // positional register remapping cannot express: mixed integer/double signatures, more than six integer arguments,
 // stack arguments, variadic calls (AL), aggregate returns, preservation of callee-saved registers and the red zone.
 #include <cmath>
 #include <cstring>
 
-#include "cider/abi.hpp"
+#include "orvyn/abi.hpp"
 #include "guest_code.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 
 namespace {
 
@@ -105,7 +105,7 @@ abi::ThunkTable raw_table(std::initializer_list<abi::RawHostFn> fns) {
 
 }  // namespace
 
-CIDER_TEST(raw_thunk_receives_six_register_and_two_stack_integers) {
+ORVYN_TEST(raw_thunk_receives_six_register_and_two_stack_integers) {
     auto t = raw_table({raw_weighted_sum});
     Code body;
     push_u64(body, 8);                                   // pushed first: highest address
@@ -118,7 +118,7 @@ CIDER_TEST(raw_thunk_receives_six_register_and_two_stack_integers) {
     CHECK_EQ(run_code(framed(body)).value, expect);       // 204
 }
 
-CIDER_TEST(raw_thunk_handles_mixed_integer_and_double_arguments) {
+ORVYN_TEST(raw_thunk_handles_mixed_integer_and_double_arguments) {
     auto t = raw_table({raw_mixed});
     Code body;
     movq_xmm(body, 0, 2.5);                              // b
@@ -131,7 +131,7 @@ CIDER_TEST(raw_thunk_handles_mixed_integer_and_double_arguments) {
     CHECK_EQ(from_bits(run_code(framed(body)).value), 93.0);
 }
 
-CIDER_TEST(a_positional_thunk_gets_mixed_signatures_wrong_which_is_why_raw_thunks_exist) {
+ORVYN_TEST(a_positional_thunk_gets_mixed_signatures_wrong_which_is_why_raw_thunks_exist) {
     // Windows x64 positions the double of f(int, double) in xmm1; System V puts it in xmm0. The positional thunk cannot know.
     auto t = take(abi::ThunkTable::build({reinterpret_cast<void*>(&positional_int_double)}));
     Code body;
@@ -144,7 +144,7 @@ CIDER_TEST(a_positional_thunk_gets_mixed_signatures_wrong_which_is_why_raw_thunk
     CHECK_EQ(wrong, int64_t{7});
 }
 
-CIDER_TEST(ten_doubles_use_eight_xmm_registers_and_two_stack_slots) {
+ORVYN_TEST(ten_doubles_use_eight_xmm_registers_and_two_stack_slots) {
     auto t = raw_table({raw_ten_doubles});
     Code body;
     push_u64(body, bits(10.0));
@@ -158,7 +158,7 @@ CIDER_TEST(ten_doubles_use_eight_xmm_registers_and_two_stack_slots) {
     CHECK_EQ(from_bits(run_code(framed(body)).value), expect);
 }
 
-CIDER_TEST(integer_and_double_stack_arguments_keep_call_order) {
+ORVYN_TEST(integer_and_double_stack_arguments_keep_call_order) {
     // 8 ints (6 regs + 2 stack) and 10 doubles (8 regs + 2 stack): the four stack slots hold int7 int8 dbl9 dbl10 in call order
     auto t = raw_table({raw_interleaved_stack});
     Code body;
@@ -176,7 +176,7 @@ CIDER_TEST(integer_and_double_stack_arguments_keep_call_order) {
     CHECK_EQ(run_code(framed(body)).value, uint64_t{12345678});
 }
 
-CIDER_TEST(al_announces_the_number_of_vector_registers_to_a_variadic_callee) {
+ORVYN_TEST(al_announces_the_number_of_vector_registers_to_a_variadic_callee) {
     auto t = raw_table({raw_al});
     for (int n : {0, 1, 3, 8}) {
         Code body;
@@ -190,7 +190,7 @@ CIDER_TEST(al_announces_the_number_of_vector_registers_to_a_variadic_callee) {
     }
 }
 
-CIDER_TEST(aggregate_results_come_back_in_rax_rdx_and_xmm0_xmm1) {
+ORVYN_TEST(aggregate_results_come_back_in_rax_rdx_and_xmm0_xmm1) {
     auto t = raw_table({raw_aggregate});
     Code a;
     mov_rdi(a, 100);
@@ -213,14 +213,14 @@ CIDER_TEST(aggregate_results_come_back_in_rax_rdx_and_xmm0_xmm1) {
     CHECK_EQ(from_bits(run_code(framed(d)).value), 2.5);
 }
 
-CIDER_TEST(stack_arguments_start_16_byte_aligned_like_a_system_v_call_site) {
+ORVYN_TEST(stack_arguments_start_16_byte_aligned_like_a_system_v_call_site) {
     auto t = raw_table({raw_alignment});
     Code body;
     call_r11(body, raw_addr(t, 0));
     CHECK_EQ(run_code(framed(body)).value, uint64_t{3});
 }
 
-CIDER_TEST(raw_thunk_preserves_callee_saved_registers_across_a_noisy_host_function) {
+ORVYN_TEST(raw_thunk_preserves_callee_saved_registers_across_a_noisy_host_function) {
     auto t = raw_table({raw_clobber});
     const uint64_t mb = 0x1111111111111111ull, m12 = 0x2222222222222222ull, m13 = 0x3333333333333333ull, m14 = 0x4444444444444444ull,
                    m15 = 0x5555555555555555ull, mbp = 0x6666666666666666ull;
@@ -241,7 +241,7 @@ CIDER_TEST(raw_thunk_preserves_callee_saved_registers_across_a_noisy_host_functi
     CHECK_EQ(run_code(framed(body)).value, mb ^ m12 ^ m13 ^ m14 ^ m15 ^ mbp);
 }
 
-CIDER_TEST(raw_thunk_never_writes_below_the_guest_stack_pointer) {
+ORVYN_TEST(raw_thunk_never_writes_below_the_guest_stack_pointer) {
     // Data in the 128 bytes below rsp (the red zone of a leaf function) survives a call that runs on the host stack.
     auto t = raw_table({raw_clobber});
     const uint64_t m1 = 0xA1A1A1A1A1A1A1A1ull, m2 = 0xB2B2B2B2B2B2B2B2ull, m3 = 0xC3C3C3C3C3C3C3C3ull;
@@ -258,7 +258,7 @@ CIDER_TEST(raw_thunk_never_writes_below_the_guest_stack_pointer) {
     CHECK_EQ(run_code(framed(body)).value, m1 ^ m2 ^ m3);
 }
 
-CIDER_TEST(raw_functions_can_end_the_guest_with_exit) {
+ORVYN_TEST(raw_functions_can_end_the_guest_with_exit) {
     auto t = raw_table({raw_exit});
     Code body;
     call_r11(body, raw_addr(t, 0));
@@ -268,7 +268,7 @@ CIDER_TEST(raw_functions_can_end_the_guest_with_exit) {
     CHECK_EQ(o.value, uint64_t{66});
 }
 
-CIDER_TEST(positional_and_raw_thunks_coexist_in_one_table) {
+ORVYN_TEST(positional_and_raw_thunks_coexist_in_one_table) {
     auto add = +[](int a, int b) -> int { return a + b; };
     std::vector<abi::ThunkSpec> specs = {{reinterpret_cast<void*>(add), false}, {reinterpret_cast<void*>(&raw_weighted_sum), true}};
     auto t = take(abi::ThunkTable::build_specs(specs));
@@ -280,7 +280,7 @@ CIDER_TEST(positional_and_raw_thunks_coexist_in_one_table) {
 }
 
 // ---- readers -------------------------------------------------------------------------------------------------------------------
-CIDER_TEST(regs_reader_walks_registers_then_stack_in_order) {
+ORVYN_TEST(regs_reader_walks_registers_then_stack_in_order) {
     abi::GuestRegs r;
     for (int i = 0; i < 6; ++i) r.gp[i] = 100 + i;
     for (int i = 0; i < 8; ++i) r.xmm[i] = bits(0.5 + i);
@@ -295,7 +295,7 @@ CIDER_TEST(regs_reader_walks_registers_then_stack_in_order) {
     CHECK_EQ(a.next_double(), 4000.5);
 }
 
-CIDER_TEST(va_list_reader_follows_the_system_v_register_save_area_layout) {
+ORVYN_TEST(va_list_reader_follows_the_system_v_register_save_area_layout) {
     // reg_save_area: 6 integer registers (48 bytes) then 8 xmm registers (16 bytes each, up to offset 176)
     alignas(16) uint8_t save[176] = {};
     for (int i = 0; i < 6; ++i) { uint64_t v = 10 + i; std::memcpy(save + 8 * i, &v, 8); }

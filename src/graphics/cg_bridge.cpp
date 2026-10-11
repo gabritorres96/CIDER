@@ -1,4 +1,4 @@
-// CoreGraphics geometry and the NSGeometry functions of Foundation (CIDER 0.5.6), implemented on top of cider::geometry.
+// CoreGraphics geometry and the NSGeometry functions of Foundation (ORVYN 0.5.6), implemented on top of orvyn::geometry.
 //
 // System V passing of the geometry structures, as clang emits it for x86_64 Darwin:
 //   * CGPoint / CGSize (two doubles, 16 bytes, class SSE): two consecutive xmm registers (xmm0:xmm1 for the first one).
@@ -9,17 +9,17 @@
 #include <cstring>
 #include <format>
 
-#include "cider/abi.hpp"
-#include "cider/geometry.hpp"
-#include "cider/libsystem.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/abi.hpp"
+#include "orvyn/geometry.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/objc.hpp"
 #include "../foundation/foundation_internal.hpp"
 #include "cg_api.hpp"
 #include "cg_bridge.hpp"
 #include "sysv_args.hpp"
 #include "../libsystem/internal.hpp"
 
-namespace cider::graphics {
+namespace orvyn::graphics {
 namespace {
 
 using abi::GuestRegs;
@@ -185,4 +185,4 @@ void install_cg(objc::Runtime& rt) {
     });
 }
 
-}  // namespace cider::graphics
+}  // namespace orvyn::graphics

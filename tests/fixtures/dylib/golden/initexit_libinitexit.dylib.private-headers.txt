@@ -192,7 +192,7 @@ compatibility version 0.0.0
 Load command 8
      cmd LC_UUID
  cmdsize 24
-    uuid 4C4C441A-5555-3144-A1FE-55F5EF31F666
+    uuid 4C4C44A3-5555-3144-A1F1-42B25AC0BD9B
 Load command 9
        cmd LC_BUILD_VERSION
    cmdsize 32

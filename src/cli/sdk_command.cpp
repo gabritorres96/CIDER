@@ -1,4 +1,4 @@
-// `cider sdk-scan <file.tbd | directory> [--json]`: reads Apple text stubs (.tbd) and compares what the libraries export with what CIDER
+// `orvyn sdk-scan <file.tbd | directory> [--json]`: reads Apple text stubs (.tbd) and compares what the libraries export with what ORVYN
 // implements. Exported is not functional: "implemented" means a host function / class exists, not that its behaviour matches Apple's.
 #include <algorithm>
 #include <cstdio>
@@ -7,15 +7,15 @@
 #include <map>
 #include <sstream>
 
-#include "cider/json.hpp"
-#include "cider/libsystem.hpp"
-#include "cider/objc.hpp"
-#include "cider/sdk.hpp"
+#include "orvyn/json.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/objc.hpp"
+#include "orvyn/sdk.hpp"
 #include "commands.hpp"
 
 namespace fs = std::filesystem;
 
-namespace cider::cli {
+namespace orvyn::cli {
 namespace {
 
 struct Family {
@@ -45,8 +45,8 @@ bool read_text(const fs::path& p, std::string& out) {
 }  // namespace
 
 int cmd_sdk_scan(const Options& o) {
-    if (o.positional.empty()) { std::fprintf(stderr, "usage: cider sdk-scan <file.tbd | directory> [--json]\n"); return 2; }
-    if (o.positional[0] == "@implemented") {                      // every host symbol CIDER implements: "<library> TAB <symbol>" (for coverage scripts)
+    if (o.positional.empty()) { std::fprintf(stderr, "usage: orvyn sdk-scan <file.tbd | directory> [--json]\n"); return 2; }
+    if (o.positional[0] == "@implemented") {                      // every host symbol ORVYN implements: "<library> TAB <symbol>" (for coverage scripts)
         static const char* libs[] = {"libSystem", "libobjc", "Foundation", "CoreFoundation", "CoreGraphics", "AppKit"};
         for (const auto& h : libsystem::implemented_symbols()) std::printf("%s\t%s\n", libs[static_cast<int>(h.lib)], h.name);
         for (const auto& d : libsystem::implemented_data_symbols()) std::printf("libSystem\t%s\n", d.name);
@@ -156,12 +156,12 @@ int cmd_sdk_scan(const Options& o) {
         std::puts(w.str().c_str());
         return 0;
     }
-    std::printf("CIDER - Darwin Executable Runtime\n\nSDK text stubs: %zu files parsed (%zu failed), %zu distinct libraries\n\n", parsed, failed, by_install.size());
+    std::printf("ORVYN - Darwin Executable Runtime\n\nSDK text stubs: %zu files parsed (%zu failed), %zu distinct libraries\n\n", parsed, failed, by_install.size());
     std::printf("%-15s %9s %9s %12s %12s  %s\n", "family", "symbols", "classes", "impl.symbols", "impl.classes", "install name");
     for (auto& r : rows)
         std::printf("%-15s %9zu %9zu %12zu %12zu  %s\n", r.family.c_str(), r.symbols, r.classes, r.impl_symbols, r.impl_classes, r.install_name.c_str());
-    std::puts("\nExported by the SDK is not working in CIDER: 'impl.' counts host functions / classes that exist, not behavioural compatibility.");
+    std::puts("\nExported by the SDK is not working in ORVYN: 'impl.' counts host functions / classes that exist, not behavioural compatibility.");
     return 0;
 }
 
-}  // namespace cider::cli
+}  // namespace orvyn::cli

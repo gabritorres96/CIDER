@@ -1,6 +1,6 @@
-# The event loop (CIDER 0.5)
+# The event loop (ORVYN 0.5)
 
-One run loop per process, shared by `CFRunLoop`, `NSRunLoop`-style timers, `dispatch_main`, and `NSApplication run`. Code: `src/corefoundation/runloop.cpp` (`include/cider/runloop.hpp`),
+One run loop per process, shared by `CFRunLoop`, `NSRunLoop`-style timers, `dispatch_main`, and `NSApplication run`. Code: `src/corefoundation/runloop.cpp` (`include/orvyn/runloop.hpp`),
 `src/corefoundation/cf_bridge.cpp` (sources and timers), `src/appkit/appkit_app.cpp` (the AppKit driver).
 
 ## One iteration (`runloop::run`)
@@ -41,11 +41,11 @@ user clicks "Click me"  ->  BUTTON control sends WM_COMMAND(BN_CLICKED) to its p
   -> objc_msgSend-equivalent dispatch of the selector -> -[AppController buttonClicked:] (code compiled into the guest Mach-O)
   -> NSLog, -[NSTextField setStringValue:] -> SetWindowTextW
 ```
-Nothing in this path is simulated: the controller in `tests/integration/test_gui_win32.cpp` sends real `BM_CLICK` / `WM_CLOSE` messages to the real window of a real `cider.exe` process.
+Nothing in this path is simulated: the controller in `tests/integration/test_gui_win32.cpp` sends real `BM_CLICK` / `WM_CLOSE` messages to the real window of a real `orvyn.exe` process.
 
 ## Timeouts
 
-`cider run` kills the worker after `--timeout` (default 60 s). A program that links AppKit is interactive, so its default is **lifted to 24 hours** unless `--timeout` is given. The worker is still
+`orvyn run` kills the worker after `--timeout` (default 60 s). A program that links AppKit is interactive, so its default is **lifted to 24 hours** unless `--timeout` is given. The worker is still
 supervised (Job Object: memory and process limits, kill-on-close) and still **not a sandbox**.
 
 ## Limits

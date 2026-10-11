@@ -1,4 +1,4 @@
-/* The reference program of CIDER 0.4: a root class without Foundation. Everything below is compiled by clang to Apple-ABI
+/* The reference program of ORVYN 0.4: a root class without Foundation. Everything below is compiled by clang to Apple-ABI
    Objective-C metadata + objc_msgSend calls; the 42 can only come from the method running inside the runtime's dispatch. */
 #include "objc_min.h"
 

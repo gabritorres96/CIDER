@@ -1,9 +1,9 @@
 #include <format>
 #include <set>
 
-#include "cider/exports.hpp"
+#include "orvyn/exports.hpp"
 
-namespace cider::dyld {
+namespace orvyn::dyld {
 namespace {
 
 Error bad(std::string m) { return Error{ErrorCode::Malformed, "export trie: " + std::move(m)}; }
@@ -16,21 +16,21 @@ public:
     Result<std::vector<ExportedSymbol>> run() {
         if (t_.empty()) return std::vector<ExportedSymbol>{};
         std::string prefix;
-        CIDER_CHECK(enter(0, prefix));
+        ORVYN_CHECK(enter(0, prefix));
         while (!stack_.empty()) {
             Frame& top = stack_.back();
             if (top.remaining == 0) { stack_.pop_back(); continue; }
             --top.remaining;
             uint64_t pos = top.pos;
             const size_t prefix_len = top.prefix_len;
-            CIDER_TRY(label, cstr(pos));
-            CIDER_TRY(child, uleb(pos));
+            ORVYN_TRY(label, cstr(pos));
+            ORVYN_TRY(child, uleb(pos));
             top.pos = pos;                                   // `top` is still valid: nothing was pushed yet
             prefix.resize(prefix_len);
             if (prefix.size() + label.size() > lim_.max_name_bytes) return Error{ErrorCode::LimitExceeded, "export trie: symbol name too long"};
             prefix += label;
             if (stack_.size() >= lim_.max_depth) return Error{ErrorCode::LimitExceeded, "export trie: nesting too deep"};
-            CIDER_CHECK(enter(child, prefix));
+            ORVYN_CHECK(enter(child, prefix));
         }
         return std::move(out_);
     }
@@ -70,27 +70,27 @@ private:
         if (off >= t_.size()) return bad(std::format("node offset {:#x} is outside the trie", off));
         if (!visited_.insert(off).second) return bad(std::format("node {:#x} is reachable twice (cycle or shared node)", off));
         uint64_t pos = off;
-        CIDER_TRY(tsize, uleb(pos));
+        ORVYN_TRY(tsize, uleb(pos));
         if (tsize > t_.size() - pos) return bad("terminal information extends past the trie");
         const uint64_t children_at = pos + tsize;
         if (tsize) {
             if (out_.size() >= lim_.max_symbols) return Error{ErrorCode::LimitExceeded, "export trie: too many symbols"};
             ExportedSymbol e;
             e.name = prefix;
-            CIDER_TRY(flags, uleb(pos));
+            ORVYN_TRY(flags, uleb(pos));
             e.flags = flags;
             if (flags & kExportReexport) {
-                CIDER_TRY(ord, uleb(pos));
-                CIDER_TRY(imp, cstr(pos));
+                ORVYN_TRY(ord, uleb(pos));
+                ORVYN_TRY(imp, cstr(pos));
                 e.reexport_ordinal = ord;
                 e.reexport_name = imp;
             } else if (flags & kExportStubAndResolver) {
-                CIDER_TRY(stub, uleb(pos));
-                CIDER_TRY(resolver, uleb(pos));
+                ORVYN_TRY(stub, uleb(pos));
+                ORVYN_TRY(resolver, uleb(pos));
                 (void)resolver;
                 e.address = stub;
             } else {
-                CIDER_TRY(addr, uleb(pos));
+                ORVYN_TRY(addr, uleb(pos));
                 e.address = addr;
             }
             if (pos > children_at) return bad("terminal information is larger than its declared size");
@@ -120,4 +120,4 @@ Result<std::vector<ExportedSymbol>> decode_exports(const macho::Image& img, Byte
     return parse_export_trie(bytes.value(), limits);
 }
 
-}  // namespace cider::dyld
+}  // namespace orvyn::dyld

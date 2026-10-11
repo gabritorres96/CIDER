@@ -5,16 +5,16 @@
 #include <cstdint>
 #include <memory>
 
-#include "cider/libsystem.hpp"
-#include "cider/loader.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/loader.hpp"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-    static std::unique_ptr<cider::libsystem::LibSystemProvider> provider = [] {
-        auto p = cider::libsystem::LibSystemProvider::create();
+    static std::unique_ptr<orvyn::libsystem::LibSystemProvider> provider = [] {
+        auto p = orvyn::libsystem::LibSystemProvider::create();
         return p.ok() ? std::move(p.value()) : nullptr;
     }();
     if (!provider) return 0;
-    auto r = cider::loader::load_macho(cider::ByteView(data, size), *provider);
+    auto r = orvyn::loader::load_macho(orvyn::ByteView(data, size), *provider);
     (void)r;
     return 0;
 }

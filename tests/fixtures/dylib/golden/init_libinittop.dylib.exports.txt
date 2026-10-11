@@ -1,4 +1,4 @@
 C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\init\libinittop.dylib:
 
 Exports trie:
-0x00002000  _cider_top_saw
+0x00002000  _orvyn_top_saw

@@ -1,16 +1,16 @@
 #include <cstring>
 
-#include "cider/log.hpp"
+#include "orvyn/log.hpp"
 #include "test_framework.hpp"
 
-namespace cider::testing {
+namespace orvyn::testing {
 std::vector<TestCase>& registry() { static std::vector<TestCase> r; return r; }
 int& failure_count() { static int n = 0; return n; }
-}  // namespace cider::testing
+}  // namespace orvyn::testing
 
 int main(int argc, char** argv) {
-    using namespace cider::testing;
-    cider::log::set_level(cider::log::Level::Off);  // tests deliberately feed corrupt data: keep stderr quiet
+    using namespace orvyn::testing;
+    orvyn::log::set_level(orvyn::log::Level::Off);  // tests deliberately feed corrupt data: keep stderr quiet
     const char* filter = argc > 1 ? argv[1] : nullptr;
     int ran = 0, failed = 0, skipped = 0;
     for (auto& t : registry()) {

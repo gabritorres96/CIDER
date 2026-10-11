@@ -2,5 +2,5 @@ C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\initcrash\libinitcrash
 
 SYMBOL TABLE:
 00000000000003b0 l     F __TEXT,__text _crash
-0000000000002000 g     O __DATA,__data _cider_dummy_crash
+0000000000002000 g     O __DATA,__data _orvyn_dummy_crash
 0000000000000000         *UND* dyld_stub_binder

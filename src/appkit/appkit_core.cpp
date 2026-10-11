@@ -1,15 +1,15 @@
 // AppKit core: shared state, payload access, the connection to the GUI backend, responder chain helpers, notifications and the class registry.
 #include <format>
 
-#include "cider/appkit.hpp"
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
-#include "cider/runloop.hpp"
+#include "orvyn/appkit.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/runloop.hpp"
 #include "../libsystem/internal.hpp"
 #include "appkit_internal.hpp"
 #include "appkit_install.hpp"
 
-namespace cider::appkit {
+namespace orvyn::appkit {
 namespace {
 
 State g_state;
@@ -381,4 +381,4 @@ void install(objc::Runtime& r) {
     r.add_dynamic_provider([](std::string_view name) { return data_symbol(name); });
 }
 
-}  // namespace cider::appkit
+}  // namespace orvyn::appkit

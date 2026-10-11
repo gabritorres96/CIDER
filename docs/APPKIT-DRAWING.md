@@ -1,4 +1,4 @@
-# AppKit drawing: `NSView -drawRect:` (CIDER 0.6.2)
+# AppKit drawing: `NSView -drawRect:` (ORVYN 0.6.2)
 
 A custom `NSView` subclass that overrides `-drawRect:` is drawn by its own Objective-C code, through the CoreGraphics functions described in
 [COREGRAPHICS-RENDERING.md](COREGRAPHICS-RENDERING.md), on a real Windows window.
@@ -6,7 +6,7 @@ A custom `NSView` subclass that overrides `-drawRect:` is drawn by its own Objec
 ## Paint flow
 
 ```
-Win32:      WM_PAINT on the view's CIDERView child window            Offscreen:  invalid view found by pump() / display_now()
+Win32:      WM_PAINT on the view's ORVYNView child window            Offscreen:  invalid view found by pump() / display_now()
                  |                                                                  |
                  +---- Backend::Events::paint(view, dirty) ---------------------------+
                                   |                                   (backend prepared a Direct2D surface: paint_device(), paint_scale())
@@ -25,7 +25,7 @@ Win32:      WM_PAINT on the view's CIDERView child window            Offscreen: 
 * A view is **custom-painted** when its class overrides `-drawRect:` (checked when its native window is created). Plain `NSView`s, controls and containers keep
   the old behavior (a native child window painted by Windows). `NSButton`/`NSTextField` are not custom-painted: subclasses of them that override
   `-drawRect:` are not drawn by it yet.
-* **Each custom-painted view has its own HWND** (`CIDERView`, `WS_CLIPCHILDREN | WS_CLIPSIBLINGS`) and its own surface. Subviews that are native controls sit on
+* **Each custom-painted view has its own HWND** (`ORVYNView`, `WS_CLIPCHILDREN | WS_CLIPSIBLINGS`) and its own surface. Subviews that are native controls sit on
   top of it as child windows; a custom view inside another custom view is its own window drawn independently by Windows (there is no parent-draws-children
   pass: `-drawRect:` of a parent does not paint its subviews, and `isOpaque`/`wantsLayer` are ignored).
 * **`dirtyRect`** passed to `-drawRect:` is always the whole view bounds. Direct2D presents the surface as a whole, so a partial invalidation
@@ -77,11 +77,11 @@ the program and calls `-setNeedsDisplay:`.
 
 ```
 tools\llvm-env.cmd tools\gen-appkit-fixtures.cmd        # clang + ld64.lld, no Apple SDK: writes tests\fixtures\appkit\bin\<name>\<name>
-build\bin\Release\cider.exe run tests\fixtures\appkit\bin\cg_draw_test\cg_draw_test            # real window
-build\bin\Release\cider.exe run tests\fixtures\appkit\bin\cg_draw_test\cg_draw_test flipped    # same commands, flipped view
+build\bin\Release\orvyn.exe run tests\fixtures\appkit\bin\cg_draw_test\cg_draw_test            # real window
+build\bin\Release\orvyn.exe run tests\fixtures\appkit\bin\cg_draw_test\cg_draw_test flipped    # same commands, flipped view
 ```
 
-The window is titled "CIDER — CoreGraphics Drawing". Pressing **Redraw** turns the bottom-left rectangle from red to blue; resizing the window repaints it.
+The window is titled "ORVYN — CoreGraphics Drawing". Pressing **Redraw** turns the bottom-left rectangle from red to blue; resizing the window repaints it.
 Programs are compiled against *hand-written* headers (`tests/fixtures/objc/include`) and `.tbd` stubs (`sysroot`); they are not Apple's SDK.
 
 ## Backends and verification

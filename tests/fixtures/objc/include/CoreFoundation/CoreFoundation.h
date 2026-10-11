@@ -1,6 +1,6 @@
-/* Hand-written declarations of the CoreFoundation subset CIDER implements (see docs/FOUNDATION.md, CoreFoundation). Not the Apple header. */
-#ifndef CIDER_COREFOUNDATION_H
-#define CIDER_COREFOUNDATION_H
+/* Hand-written declarations of the CoreFoundation subset ORVYN implements (see docs/FOUNDATION.md, CoreFoundation). Not the Apple header. */
+#ifndef ORVYN_COREFOUNDATION_H
+#define ORVYN_COREFOUNDATION_H
 #include "../objc_min.h"
 typedef const void *CFTypeRef;
 typedef const struct __CFAllocator *CFAllocatorRef;

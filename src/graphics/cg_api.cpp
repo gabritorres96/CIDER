@@ -1,5 +1,5 @@
-// Guest-visible CoreGraphics (CIDER 0.6.1): CGContext, CGColor, CGColorSpace, CGPath, CGImage and CGAffineTransform functions, implemented over
-// the engine in cider/cg.hpp. The signatures follow Apple's public CoreGraphics API (names, argument order, struct passing); nothing of Apple's code is used.
+// Guest-visible CoreGraphics (ORVYN 0.6.1): CGContext, CGColor, CGColorSpace, CGPath, CGImage and CGAffineTransform functions, implemented over
+// the engine in orvyn/cg.hpp. The signatures follow Apple's public CoreGraphics API (names, argument order, struct passing); nothing of Apple's code is used.
 //
 // System V passing as clang emits it for macOS x86_64:
 //   * CGFloat is double; CGPoint / CGSize are two SSE eightbytes (two xmm registers); CGRect (32 bytes) and CGAffineTransform (48 bytes) are class MEMORY:
@@ -14,20 +14,20 @@
 #include <cstring>
 #include <format>
 
-#include "cider/abi.hpp"
-#include "cider/cg.hpp"
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/abi.hpp"
+#include "orvyn/cg.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/objc.hpp"
 #include "../foundation/foundation_internal.hpp"
 #include "../libsystem/internal.hpp"
 #include "cg_api.hpp"
 #include "sysv_args.hpp"
 
-namespace cider::graphics {
+namespace orvyn::graphics {
 namespace {
 
-namespace fnd = cider::foundation;
+namespace fnd = orvyn::foundation;
 using abi::GuestRegs;
 using cg::Affine;
 using geometry::Point;
@@ -685,4 +685,4 @@ void add_cg_api_symbols(std::vector<libsystem::HostSymbol>& t) {
     raw("_CGContextSynchronize", w_CGContextSynchronize);
 }
 
-}  // namespace cider::graphics
+}  // namespace orvyn::graphics

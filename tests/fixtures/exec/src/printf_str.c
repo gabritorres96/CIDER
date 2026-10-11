@@ -2,7 +2,7 @@
 #include "darwin.h"
 
 int main(void) {
-    printf("Text: %s\n", "CIDER");
+    printf("Text: %s\n", "ORVYN");
     printf("[%10s][%-10s][%.3s][%10.2s]\n", "hello", "hello", "hello", "hello");
     const char *none = 0;
     printf("[%s][%8s]\n", none, none);

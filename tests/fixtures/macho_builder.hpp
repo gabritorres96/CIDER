@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-namespace cider::testing {
+namespace orvyn::testing {
 
 class Buf {
 public:
@@ -298,7 +298,7 @@ public:
         static int counter = 0;
         ++counter;
         auto tag = std::to_string(reinterpret_cast<uintptr_t>(this) ^ static_cast<uintptr_t>(counter));
-        path_ = std::filesystem::temp_directory_path() / ("cider-test-" + tag + "-" + std::to_string(counter));
+        path_ = std::filesystem::temp_directory_path() / ("orvyn-test-" + tag + "-" + std::to_string(counter));
         std::filesystem::create_directories(path_);
     }
     ~TempDir() { std::error_code ec; std::filesystem::remove_all(path_, ec); }
@@ -333,4 +333,4 @@ inline std::filesystem::path make_app(const TempDir& t, const std::string& app, 
     return t.path() / app;
 }
 
-}  // namespace cider::testing
+}  // namespace orvyn::testing

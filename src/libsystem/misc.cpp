@@ -5,10 +5,10 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "cider/libsystem.hpp"
+#include "orvyn/libsystem.hpp"
 #include "internal.hpp"
 
-namespace cider::libsystem {
+namespace orvyn::libsystem {
 namespace {
 
 using abi::GuestRegs;
@@ -99,4 +99,4 @@ void add_misc_symbols(std::vector<HostSymbol>& t) {
 }
 }  // namespace detail
 
-}  // namespace cider::libsystem
+}  // namespace orvyn::libsystem

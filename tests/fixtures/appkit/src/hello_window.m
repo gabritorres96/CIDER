@@ -1,5 +1,5 @@
-/* The CIDER 0.5 reference program: a real Windows window created by Objective-C code compiled for macOS.
-   Title "CIDER - Hello from macOS", two labels, a counter, a "Click me" button and a "Close" button. The counter lives in this program (the AppController ivar),
+/* The ORVYN 0.5 reference program: a real Windows window created by Objective-C code compiled for macOS.
+   Title "ORVYN - Hello from macOS", two labels, a counter, a "Click me" button and a "Close" button. The counter lives in this program (the AppController ivar),
    not in the host. Pressing "Click me" runs -buttonClicked: (found in this Mach-O by the Objective-C runtime), pressing "Close" closes the window; the delegate then ends
    the application, the event loop returns and the process exits with status 0. */
 #include "AppKit/AppKit.h"
@@ -22,7 +22,7 @@
                                          styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable
                                            backing:NSBackingStoreBuffered
                                              defer:NO];
-    [window setTitle:@"CIDER — Hello from macOS"];
+    [window setTitle:@"ORVYN — Hello from macOS"];
     [window setDelegate:self];
 
     NSView *content = [window contentView];
@@ -31,7 +31,7 @@
     [hello setFrame:NSMakeRect(20, 190, 380, 24)];
     [content addSubview:hello];
 
-    NSTextField *sub = [NSTextField labelWithString:@"Running through CIDER 0.5"];
+    NSTextField *sub = [NSTextField labelWithString:@"Running through ORVYN 0.5"];
     [sub setFrame:NSMakeRect(20, 160, 380, 20)];
     [content addSubview:sub];
 

@@ -1,11 +1,11 @@
 #include <algorithm>
 
-#include "cider/macho.hpp"
+#include "orvyn/macho.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 
 static macho::Image parse_ok(const std::vector<uint8_t>& b, bool symbols = false) {
     macho::ParseOptions o;
@@ -15,7 +15,7 @@ static macho::Image parse_ok(const std::vector<uint8_t>& b, bool symbols = false
     return r.value();
 }
 
-CIDER_TEST(legacy_version_min_command) {
+ORVYN_TEST(legacy_version_min_command) {
     MachoSpec s;
     s.build_version = false;
     s.legacy_version_min = true;
@@ -25,13 +25,13 @@ CIDER_TEST(legacy_version_min_command) {
     CHECK_EQ(img.build_versions[0].platform, 1u);
 }
 
-CIDER_TEST(parse_uuid) {
+ORVYN_TEST(parse_uuid) {
     auto img = parse_ok(build_macho({}).bytes);
     REQUIRE(img.uuid.has_value());
     CHECK_EQ(*img.uuid, std::string("10111213-1415-1617-1819-1A1B1C1D1E1F"));
 }
 
-CIDER_TEST(parse_symbols_when_requested) {
+ORVYN_TEST(parse_symbols_when_requested) {
     MachoSpec s;
     s.defined_symbols = {"_main", "_helper"};
     s.undefined_symbols = {"_puts", "_exit"};
@@ -51,7 +51,7 @@ CIDER_TEST(parse_symbols_when_requested) {
     CHECK_EQ(img.dysymtab->nundefsym, 2u);
 }
 
-CIDER_TEST(parse_dyld_info) {
+ORVYN_TEST(parse_dyld_info) {
     auto img = parse_ok(build_macho({}).bytes);
     REQUIRE(img.dyld_info.has_value());
     CHECK(img.dyld_info->only);
@@ -59,7 +59,7 @@ CIDER_TEST(parse_dyld_info) {
     CHECK_EQ(img.dyld_info->exports.offset, 0x1000u);
 }
 
-CIDER_TEST(parse_code_signature) {
+ORVYN_TEST(parse_code_signature) {
     MachoSpec s;
     s.code_signature = true;
     auto img = parse_ok(build_macho(s).bytes);
@@ -75,7 +75,7 @@ CIDER_TEST(parse_code_signature) {
     CHECK(img.warnings.empty());
 }
 
-CIDER_TEST(garbage_code_signature_is_warning_not_error) {
+ORVYN_TEST(garbage_code_signature_is_warning_not_error) {
     MachoSpec s;
     s.code_signature = true;
     auto b = build_macho(s);
@@ -88,14 +88,14 @@ CIDER_TEST(garbage_code_signature_is_warning_not_error) {
     CHECK(!img.warnings.empty());
 }
 
-CIDER_TEST(encrypted_image_detected) {
+ORVYN_TEST(encrypted_image_detected) {
     MachoSpec s;
     s.encrypted = true;
     CHECK(parse_ok(build_macho(s).bytes).encrypted);
     CHECK(!parse_ok(build_macho({}).bytes).encrypted);
 }
 
-CIDER_TEST(arm64_image_parses) {
+ORVYN_TEST(arm64_image_parses) {
     MachoSpec s;
     s.cputype = macho::kCpuArm64;
     s.cpusubtype = 0;
@@ -105,7 +105,7 @@ CIDER_TEST(arm64_image_parses) {
     CHECK_EQ(macho::cpu_name(macho::kCpuX86_64, 0x80000003), std::string("x86_64"));
 }
 
-CIDER_TEST(dylib_file_type) {
+ORVYN_TEST(dylib_file_type) {
     MachoSpec s;
     s.filetype = 6;
     s.main = false;
@@ -116,7 +116,7 @@ CIDER_TEST(dylib_file_type) {
     CHECK(img.warnings.empty());
 }
 
-CIDER_TEST(parse_file_thin_has_one_slice) {
+ORVYN_TEST(parse_file_thin_has_one_slice) {
     auto b = build_macho({});
     auto f = macho::parse_file(ByteView(b.bytes));
     REQUIRE(f.ok());
@@ -128,8 +128,8 @@ CIDER_TEST(parse_file_thin_has_one_slice) {
 }
 
 // N_UNDF symbols without N_EXT (e.g. N_PEXT, type 0x10) are undefined, like llvm-objdump/nm report them
-// (CIDER 0.1 required N_EXT and classified them as defined).
-CIDER_TEST(regression_non_external_undefined_symbol_is_undefined) {
+// (ORVYN 0.1 required N_EXT and classified them as defined).
+ORVYN_TEST(regression_non_external_undefined_symbol_is_undefined) {
     auto built = build_macho({});
     auto b = built.bytes;
     size_t puts_type = built.linkedit_off + 8 + 16 * 1 + 4;  // second nlist (_puts): n_type

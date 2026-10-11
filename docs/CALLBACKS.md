@@ -1,4 +1,4 @@
-# Host → guest callbacks (CIDER 0.4.0)
+# Host → guest callbacks (ORVYN 0.4.0)
 
 Until 0.3 control only went one way: guest code called host (Windows) functions. Since 0.4.0 a host function can call **back into guest machine code**
 and return its result, which `qsort`, `bsearch`, `atexit`, the Objective-C runtime (`+load`, `-dealloc`, `-description`, `-isEqual:`…) and the Foundation

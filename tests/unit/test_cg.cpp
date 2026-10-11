@@ -1,7 +1,7 @@
-// CoreGraphics drawing engine (CIDER 0.6.1): state machine with a recording device, and real rasterization through Direct2D into a WIC bitmap.
+// CoreGraphics drawing engine (ORVYN 0.6.1): state machine with a recording device, and real rasterization through Direct2D into a WIC bitmap.
 #include <cmath>
 
-#include "cider/cg.hpp"
+#include "orvyn/cg.hpp"
 #include "test_framework.hpp"
 #ifdef _WIN32
 #include "../../src/graphics/d2d_device.hpp"
@@ -9,8 +9,8 @@
 
 #define ASSERT_TRUE(c) do { if (!(c)) { CHECK(c); return; } } while (0)
 
-using namespace cider::cg;
-using cider::geometry::make_rect;
+using namespace orvyn::cg;
+using orvyn::geometry::make_rect;
 constexpr double kPi = 3.14159265358979323846;
 
 namespace {
@@ -32,7 +32,7 @@ struct Rec : Device {
 bool near(double a, double b) { return std::fabs(a - b) < 1e-9; }
 }  // namespace
 
-CIDER_TEST(affine_concat_applies_first_argument_first) {
+ORVYN_TEST(affine_concat_applies_first_argument_first) {
     const Affine t = concat(Affine::translation(10, 0), Affine::scaling(2, 2));       // translate, then scale
     const Point p = t.apply(Point{1, 1});
     CHECK(near(p.x, 22) && near(p.y, 2));
@@ -45,7 +45,7 @@ CIDER_TEST(affine_concat_applies_first_argument_first) {
     CHECK(near(r.x, 0) && near(r.y, 1));
 }
 
-CIDER_TEST(state_stack_restores_ctm_colors_and_pops_clips) {
+ORVYN_TEST(state_stack_restores_ctm_colors_and_pops_clips) {
     Rec dev;
     {
         Context c(&dev, Affine{}, Size{100, 100});
@@ -71,7 +71,7 @@ CIDER_TEST(state_stack_restores_ctm_colors_and_pops_clips) {
     CHECK_EQ(dev.clips, 0);
 }
 
-CIDER_TEST(paths_are_transformed_when_added_not_when_painted) {
+ORVYN_TEST(paths_are_transformed_when_added_not_when_painted) {
     Rec dev;
     Context c(&dev, Affine{}, Size{100, 100});
     c.translate(10, 20);
@@ -85,7 +85,7 @@ CIDER_TEST(paths_are_transformed_when_added_not_when_painted) {
     CHECK(near(c.path().current_point().x, 111));
 }
 
-CIDER_TEST(path_geometry_arc_rect_ellipse_and_hit_testing) {
+ORVYN_TEST(path_geometry_arc_rect_ellipse_and_hit_testing) {
     Path p;
     p.add_rect(make_rect(0, 0, 10, 10));
     Rect r;
@@ -103,10 +103,10 @@ CIDER_TEST(path_geometry_arc_rect_ellipse_and_hit_testing) {
     donut.add_rect(make_rect(3, 3, 4, 4));
     CHECK(!donut.contains(Point{5, 5}, FillRule::EvenOdd));
     CHECK(donut.contains(Point{5, 5}, FillRule::NonZero));
-    CHECK(Path().bounding_box().width() <= 0 || cider::geometry::is_null(Path().bounding_box()));
+    CHECK(Path().bounding_box().width() <= 0 || orvyn::geometry::is_null(Path().bounding_box()));
 }
 
-CIDER_TEST(stroke_width_uses_the_ctm_scale_and_flipped_base) {
+ORVYN_TEST(stroke_width_uses_the_ctm_scale_and_flipped_base) {
     Rec dev;
     Context c(&dev, view_base(100, false, 2.0), Size{100, 100});
     c.fill_rect(make_rect(0, 0, 10, 10));
@@ -125,7 +125,7 @@ struct Px { uint8_t b, g, r, a; };
 Px at(const std::vector<uint8_t>& v, uint32_t w, uint32_t x, uint32_t y) { const uint8_t* p = &v[(static_cast<size_t>(y) * w + x) * 4]; return {p[0], p[1], p[2], p[3]}; }
 }  // namespace
 
-CIDER_TEST(direct2d_bitmap_target_fills_with_the_right_orientation) {
+ORVYN_TEST(direct2d_bitmap_target_fills_with_the_right_orientation) {
     { auto warm = D2DDevice::create_bitmap(1, 1); }               // factories are created lazily and live until shutdown_d2d()
     const int before = com_objects_alive();
     {
@@ -151,7 +151,7 @@ CIDER_TEST(direct2d_bitmap_target_fills_with_the_right_orientation) {
     CHECK_EQ(com_objects_alive(), before);                       // no COM leak
 }
 
-CIDER_TEST(direct2d_clip_stroke_and_flip_are_applied) {
+ORVYN_TEST(direct2d_clip_stroke_and_flip_are_applied) {
     auto dev = D2DDevice::create_bitmap(40, 40);
     if (!dev) return;
     ASSERT_TRUE(dev->begin());
@@ -179,7 +179,7 @@ CIDER_TEST(direct2d_clip_stroke_and_flip_are_applied) {
     CHECK(at(px, 40, 30, 20).g == 255);                                   // untouched
 }
 
-CIDER_TEST(wic_decode_validates_limits_and_round_trips_png) {
+ORVYN_TEST(wic_decode_validates_limits_and_round_trips_png) {
     Image img;
     img.width = 4;
     img.height = 2;
@@ -203,7 +203,7 @@ CIDER_TEST(wic_decode_validates_limits_and_round_trips_png) {
 }
 #endif
 
-CIDER_TEST(non_finite_and_huge_arc_arguments_terminate_and_are_ignored) {          // found by fuzz_cg: an arc with a 1e300 sweep looped for ever
+ORVYN_TEST(non_finite_and_huge_arc_arguments_terminate_and_are_ignored) {          // found by fuzz_cg: an arc with a 1e300 sweep looped for ever
     Path p;
     p.arc(Point{0, 0}, 10, 0, 1e300, false);                                          // huge but finite: reduced modulo 2 pi, a full circle at most
     CHECK(!p.empty());

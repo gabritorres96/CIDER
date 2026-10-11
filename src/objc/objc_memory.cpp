@@ -12,13 +12,13 @@
 #include <format>
 #include <map>
 
-#include "cider/guest_threads.hpp"
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/guest_threads.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/objc.hpp"
 #include "../libsystem/internal.hpp"
 
-namespace cider::objc {
+namespace orvyn::objc {
 namespace {
 constexpr Addr kPoolTokenBase = 0x7e0000000000ull;
 
@@ -305,4 +305,4 @@ std::string Runtime::live_object_summary() const {
     return out;
 }
 
-}  // namespace cider::objc
+}  // namespace orvyn::objc

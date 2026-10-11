@@ -1,2 +1,2 @@
-extern int cider_add(int, int);
-int main(void) { return cider_add(20, 22); }
+extern int orvyn_add(int, int);
+int main(void) { return orvyn_add(20, 22); }

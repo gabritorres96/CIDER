@@ -1,6 +1,6 @@
-# CoreGraphics rendering (CIDER 0.6.1)
+# CoreGraphics rendering (ORVYN 0.6.1)
 
-A Mach-O program compiled for macOS can call CoreGraphics functions; CIDER executes them on a Direct2D surface. The program decides **what** to draw, CIDER only
+A Mach-O program compiled for macOS can call CoreGraphics functions; ORVYN executes them on a Direct2D surface. The program decides **what** to draw, ORVYN only
 translates and presents. Nothing in the host draws a scene on behalf of a guest.
 
 ```
@@ -10,7 +10,7 @@ Objective-C Mach-O x86_64
         v
 cg_api.cpp         guest-visible CG* functions, object handles, argument validation
         v
-cg::Context        graphics state stack, CTM, current path, clip stack        (include/cider/cg.hpp, cg_context.cpp; pure C++)
+cg::Context        graphics state stack, CTM, current path, clip stack        (include/orvyn/cg.hpp, cg_context.cpp; pure C++)
         v
 cg::Device         fill_path / stroke_path / push_clip / pop_clip / draw_image / draw_text
         v
@@ -38,14 +38,14 @@ Consequences:
 * A handle is accepted only if it is a **live** object of the right class (`is_live_object` + class check). A NULL pointer, a garbage pointer, a live object of
   another class (an `NSString` passed as a context), an already released object (double release, use after release) and a `CGPathRef` used where a
   `CGMutablePathRef` is required are **refused**: the call does nothing, a warning is logged and `cg_invalid_handle_events()` is incremented. Apple's
-  CoreGraphics also logs and returns for a NULL context; CIDER additionally refuses forged and dead pointers instead of dereferencing them. `NULL` passed to a
+  CoreGraphics also logs and returns for a NULL context; ORVYN additionally refuses forged and dead pointers instead of dereferencing them. `NULL` passed to a
   `*Release` function is a silent no-op, like Apple's.
 * Ownership: objects a program creates belong to it; the `CGContext` obtained from `NSGraphicsContext` belongs to the repaint (see below). Objects that are still
   alive when the guest ends are counted by `objc_live_objects` and named by `objc_live_summary`.
 
 ## Implemented functions
 
-All names and argument orders follow Apple's public API (verified from the public documentation; CIDER ships no Apple header, the fixtures use hand-written
+All names and argument orders follow Apple's public API (verified from the public documentation; ORVYN ships no Apple header, the fixtures use hand-written
 declarations in `tests/fixtures/objc/include/CoreGraphics/CoreGraphics.h`).
 
 | Area | Functions |

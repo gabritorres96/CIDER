@@ -1,6 +1,6 @@
-# Dynamic linking (CIDER 0.3)
+# Dynamic linking (ORVYN 0.3)
 
-`cider run` loads a Mach-O x86_64 executable **and every Mach-O dylib it needs**. Implementation: `include/cider/linker.hpp`,
+`orvyn run` loads a Mach-O x86_64 executable **and every Mach-O dylib it needs**. Implementation: `include/orvyn/linker.hpp`,
 `src/linker/linker.cpp`, `src/dyld/export_trie.cpp`, `src/dyld/chained_fixups.cpp`, `src/dyld/install_name.cpp`.
 This is a small dyld, not Apple's dyld: see "Not implemented".
 
@@ -25,7 +25,7 @@ This is a small dyld, not Apple's dyld: see "Not implemented".
 | `@executable_path/x` | directory of the main executable |
 | `@loader_path/x` | directory of the image that names the dependency |
 | `@rpath/x` | one per `LC_RPATH` of the loader, then of the images that loaded it; each entry expanded relative to the image that **owns** it |
-| `libSystem.B.dylib` | CIDER's own libSystem (see DARWIN-RUNTIME.md) |
+| `libSystem.B.dylib` | ORVYN's own libSystem (see DARWIN-RUNTIME.md) |
 | other `/usr/lib`, `/System/Library`, relative names | **never loaded**: reported as missing |
 
 Windows DLLs are never substituted. Install names / rpaths containing drive letters, `\`, `:`, UNC (`//`), wildcards or
@@ -37,7 +37,7 @@ absent → weak imports bind to NULL), image/depth/file-size limits (`LinkOption
 
 ## Cycles
 
-Mach-O allows dependency cycles and dyld loads them. CIDER **tolerates and reports** them (`dependency cycle` warning, each library
+Mach-O allows dependency cycles and dyld loads them. ORVYN **tolerates and reports** them (`dependency cycle` warning, each library
 mapped once, the initialization order ignores back edges). `LinkOptions::reject_cycles` / `GuestConfig::reject_cycles` refuse them.
 
 ## Initializers
@@ -56,17 +56,17 @@ weak-bind opcode streams, arm64, frameworks (no Foundation/AppKit/libobjc exist)
 ## Evidence
 
 `tests/runtime/test_linker.cpp` (37 tests) on the real fixtures of `tests/fixtures/dylib` (clang + ld64.lld, snapshots from
-`llvm-objdump`; regenerate with `tools\llvm-env.cmd tools\gen-dylib-fixtures.cmd`). Example, `cider run .../one/one --verbose`:
+`llvm-objdump`; regenerate with `tools\llvm-env.cmd tools\gen-dylib-fixtures.cmd`). Example, `orvyn run .../one/one --verbose`:
 
 ```
-[CIDER][DYLD] Loading main executable
-[CIDER][DYLD] Loading libmath.dylib
-[CIDER][DYLD] Dependencies resolved (2 image(s))
-[CIDER][DYLD][DEBUG] Resolving _cider_add for one
-[CIDER][DYLD][DEBUG] Binding _cider_add in one -> 0x...
-[CIDER][DYLD] Running initializers (0 in 2 image(s))
-[CIDER][EXECUTION] Guest started
-[CIDER][EXECUTION] guest returned 42
+[ORVYN][DYLD] Loading main executable
+[ORVYN][DYLD] Loading libmath.dylib
+[ORVYN][DYLD] Dependencies resolved (2 image(s))
+[ORVYN][DYLD][DEBUG] Resolving _orvyn_add for one
+[ORVYN][DYLD][DEBUG] Binding _orvyn_add in one -> 0x...
+[ORVYN][DYLD] Running initializers (0 in 2 image(s))
+[ORVYN][EXECUTION] Guest started
+[ORVYN][EXECUTION] guest returned 42
 ```
 
-The 42 comes from `cider_add` inside `libmath.dylib`: patching that function's `lea` in a copy of the dylib changes the result (22).
+The 42 comes from `orvyn_add` inside `libmath.dylib`: patching that function's `lea` in a copy of the dylib changes the result (22).

@@ -4,6 +4,6 @@ SYMBOL TABLE:
 0000000100002010 l     O __DATA,__data __dyld_private
 0000000100000570 g     F __TEXT,__text _main
 0000000100000000 g     F __TEXT,__text __mh_execute_header
-0000000000000000         *UND* _cider_add
-0000000000000000         *UND* _cider_scale
+0000000000000000         *UND* _orvyn_add
+0000000000000000         *UND* _orvyn_scale
 0000000000000000         *UND* dyld_stub_binder

@@ -2,7 +2,7 @@
 
 ## Technical
 
-* **Only controlled fixtures run (0.2).** `cider run` executes Mach-O x86_64 programs that import nothing but the 24
+* **Only controlled fixtures run (0.2).** `orvyn run` executes Mach-O x86_64 programs that import nothing but the 24
   libSystem functions listed in EXECUTION.md. No Foundation, AppKit, Objective-C/Swift/C++ runtime, no dyld proper,
   no frameworks, no dependent dylibs, no TLS, no static initializers, no chained fixups, no threads, no signals, no
   printf/stdio/files. Every real application tried is refused.
@@ -13,7 +13,7 @@
   rejected.
 * Code signatures are parsed, never verified. Entitlements are not decoded.
 * System libraries are never resolved against anything: `/usr/lib` and `/System/Library` entries
-  are reported as "system, not provided by CIDER yet".
+  are reported as "system, not provided by ORVYN yet".
 * Whole executables are read into memory (limit 512 MiB). Disk images are streamed by 7-Zip.
 * Dependency analysis follows the architecture of the main executable (x86_64 slice if present).
 * `.app` support covers macOS bundles (`Contents/`); iOS-style flat bundles are rejected.
@@ -59,7 +59,7 @@ No sandbox. No claim of isolation. See SECURITY.md.
 
 ## Legal
 
-CIDER does not redistribute or download Apple frameworks. Running macOS software may be subject to
+ORVYN does not redistribute or download Apple frameworks. Running macOS software may be subject to
 Apple's licence terms (the macOS SLA restricts macOS software to Apple hardware in several
 clauses); this project does not give legal advice — check the licence of what you run.
 

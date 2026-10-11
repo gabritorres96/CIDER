@@ -1,4 +1,4 @@
-/* CIDER 0.6 CoreGraphics ABI test: a macOS x86_64 program calling the CoreGraphics functions that pass or return structures, so the arguments are laid out by
+/* ORVYN 0.6 CoreGraphics ABI test: a macOS x86_64 program calling the CoreGraphics functions that pass or return structures, so the arguments are laid out by
    clang for the System V ABI, not by the host:
      CGPoint / CGSize        two SSE eightbytes (xmm0:xmm1, xmm2:xmm3 ...), returned in xmm0:xmm1
      CGRect (32 bytes)       class MEMORY: copied on the stack; returned through a hidden pointer in rdi

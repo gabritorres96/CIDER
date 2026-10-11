@@ -1,2 +1,2 @@
-extern int cider_dummy_crash;
-int main(void) { return cider_dummy_crash ? 42 : 0; }
+extern int orvyn_dummy_crash;
+int main(void) { return orvyn_dummy_crash ? 42 : 0; }

@@ -1,5 +1,5 @@
 #pragma once
-// Direct2D implementation of cg::Device (CIDER 0.6.1) plus the WIC/DirectWrite helpers the image and text code needs.
+// Direct2D implementation of cg::Device (ORVYN 0.6.1) plus the WIC/DirectWrite helpers the image and text code needs.
 //
 // Why Direct2D: GDI has no antialiasing or transforms for vector drawing; GDI+ has both but is legacy (no DPI-aware targets, software only, no geometry masks);
 // Direct2D gives antialiased paths, arbitrary affine transforms, geometry-masked clipping, per-monitor DPI and a software WIC bitmap target that works
@@ -10,11 +10,11 @@
 #include <string>
 #include <vector>
 
-#include "cider/cg.hpp"
+#include "orvyn/cg.hpp"
 
 struct HWND__;
 
-namespace cider::cg {
+namespace orvyn::cg {
 
 class D2DDevice : public Device {
 public:
@@ -54,7 +54,7 @@ private:
     bool window_ = false, ok_ = true;
 };
 
-// ---- WIC image decoding / encoding (CIDER 0.6.3) ----------------------------------------------------------------------------------------------------------------
+// ---- WIC image decoding / encoding (ORVYN 0.6.3) ----------------------------------------------------------------------------------------------------------------
 struct DecodeLimits {
     uint32_t max_dimension = 16384;                              // width and height
     uint64_t max_pixels = 64ull << 20;                           // 64 megapixels
@@ -69,4 +69,4 @@ bool encode_png(const Image& img, std::vector<uint8_t>& out, std::string& error)
 int com_objects_alive();
 void shutdown_d2d();                                             // releases the factories (process end / tests)
 
-}  // namespace cider::cg
+}  // namespace orvyn::cg

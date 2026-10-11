@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-namespace cider::cli {
+namespace orvyn::cli {
 
 struct Options {
     bool json = false;
@@ -31,4 +31,4 @@ int cmd_logs(const Options& o);
 int cmd_doctor(const Options& o);
 int cmd_sdk_scan(const Options& o);
 
-}  // namespace cider::cli
+}  // namespace orvyn::cli

@@ -1,2 +1,2 @@
-extern int cider_gone(void);
-int main(void) { return cider_gone(); }
+extern int orvyn_gone(void);
+int main(void) { return orvyn_gone(); }

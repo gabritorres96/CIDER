@@ -1,6 +1,6 @@
 # Mach-O and FAT support
 
-Implemented in `src/macho` (`include/cider/macho.hpp`). Written from the public format description;
+Implemented in `src/macho` (`include/orvyn/macho.hpp`). Written from the public format description;
 no Apple headers are copied.
 
 ## Containers

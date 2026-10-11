@@ -2,7 +2,7 @@ hello_chained_x86_64:
 
 SYMBOL TABLE:
 00000001000004f0 g     F __TEXT,__text _main
-00000001000004e0 g     F __TEXT,__text _cider_add
+00000001000004e0 g     F __TEXT,__text _orvyn_add
 0000000100000540 g     O __TEXT,__const _kGreeting
 0000000100002000 g     O __DATA,__data _g_initialized
 0000000100002010 g     O __DATA,__common _g_zero

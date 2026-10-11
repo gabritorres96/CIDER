@@ -13,17 +13,17 @@
 #include <windows.h>
 #endif
 
-#include "cider/analysis.hpp"
-#include "cider/bundle.hpp"
-#include "cider/dmg.hpp"
-#include "cider/json.hpp"
-#include "cider/log.hpp"
-#include "cider/macho.hpp"
-#include "cider/util.hpp"
+#include "orvyn/analysis.hpp"
+#include "orvyn/bundle.hpp"
+#include "orvyn/dmg.hpp"
+#include "orvyn/json.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/macho.hpp"
+#include "orvyn/util.hpp"
 
 namespace fs = std::filesystem;
 
-namespace cider::cli {
+namespace orvyn::cli {
 namespace {
 
 using analysis::DepClass;
@@ -36,14 +36,14 @@ struct Target {
     macho::File file;
 };
 
-void banner() { std::puts("CIDER - Darwin Executable Runtime\n"); }
+void banner() { std::puts("ORVYN - Darwin Executable Runtime\n"); }
 
 int fail(const Options& o, const std::string& msg, int code = 1) {
     log::error("{}", msg);
     if (o.json) {
         JsonWriter w;
         w.begin_object();
-        w.field("tool", "cider");
+        w.field("tool", "orvyn");
         w.field("version", kVersion);
         w.field("ok", false);
         w.field("error", msg);
@@ -327,7 +327,7 @@ void print_deps_text(const analysis::DependencyReport& r, const fs::path* root =
         printed.insert(d.install_name);
         std::string extra;
         switch (d.cls) {
-            case DepClass::System: extra = "system library, not provided by CIDER yet"; break;
+            case DepClass::System: extra = "system library, not provided by ORVYN yet"; break;
             case DepClass::Bundled: {
                 std::string shown = d.resolved;
                 if (root) {
@@ -371,7 +371,7 @@ static int inspect_macho_target(const Options& o) {
     if (o.json) {
         JsonWriter w;
         w.begin_object();
-        w.field("tool", "cider");
+        w.field("tool", "orvyn");
         w.field("version", kVersion);
         w.field("ok", any_valid);
         w.field("path", tg.display_path);
@@ -467,7 +467,7 @@ static int inspect_macho_target(const Options& o) {
 }
 
 int cmd_dependencies(const Options& o) {
-    if (o.positional.empty()) return fail(o, "usage: cider dependencies <program|App.app> [--json]", 2);
+    if (o.positional.empty()) return fail(o, "usage: orvyn dependencies <program|App.app> [--json]", 2);
     auto t = load_target(o);
     if (!t.ok()) return fail(o, t.error().message);
     const macho::Image* img = primary_image(t.value());
@@ -486,7 +486,7 @@ int cmd_dependencies(const Options& o) {
 }
 
 int cmd_compatibility(const Options& o) {
-    if (o.positional.empty()) return fail(o, "usage: cider compatibility <program|App.app> [--json]", 2);
+    if (o.positional.empty()) return fail(o, "usage: orvyn compatibility <program|App.app> [--json]", 2);
     auto t = load_target(o);
     if (!t.ok()) return fail(o, t.error().message);
     const macho::Image* img = primary_image(t.value());
@@ -505,9 +505,9 @@ int cmd_compatibility(const Options& o) {
 }
 
 int cmd_logs(const Options& o) {
-    const char* env = std::getenv("CIDER_LOG_FILE");
+    const char* env = getenv_compat("ORVYN_LOG_FILE", "CIDER_LOG_FILE");
     std::string path = !o.positional.empty() ? o.positional[0] : (env ? env : "");
-    if (path.empty()) return fail(o, "no log file configured: pass a path, set CIDER_LOG_FILE, or run other commands with --log-file <path>", 2);
+    if (path.empty()) return fail(o, "no log file configured: pass a path, set ORVYN_LOG_FILE, or run other commands with --log-file <path>", 2);
     std::ifstream f(path_from_utf8(path));
     if (!f) return fail(o, "cannot open log file: " + path);
     std::deque<std::string> tail;
@@ -550,18 +550,18 @@ int cmd_doctor(const Options& o) {
         else checks.push_back({"operating system", "warn", "Windows (version unknown)"});
     }
 #else
-    checks.push_back({"operating system", "warn", "not Windows: CIDER targets Windows 10/11"});
+    checks.push_back({"operating system", "warn", "not Windows: ORVYN targets Windows 10/11"});
 #endif
     checks.push_back({"mach-o parser", "ok", "available (static analysis)"});
     checks.push_back({"plist reader", "ok", "available (XML + binary)"});
-    const char* lf = std::getenv("CIDER_LOG_FILE");
-    checks.push_back({"log file", "info", lf ? lf : "not configured (use --log-file or CIDER_LOG_FILE)"});
-    checks.push_back({"loader / dyld / darwin runtime", "missing", "not implemented in 0.1: 'cider run' unavailable"});
+    const char* lf = getenv_compat("ORVYN_LOG_FILE", "CIDER_LOG_FILE");
+    checks.push_back({"log file", "info", lf ? lf : "not configured (use --log-file or ORVYN_LOG_FILE)"});
+    checks.push_back({"loader / dyld / darwin runtime", "missing", "not implemented in 0.1: 'orvyn run' unavailable"});
 
     if (o.json) {
         JsonWriter w;
         w.begin_object();
-        w.field("tool", "cider");
+        w.field("tool", "orvyn");
         w.field("version", kVersion);
         w.key("checks"); w.begin_array();
         for (auto& c : checks) { w.begin_object(); w.field("name", c.name); w.field("status", c.status); w.field("detail", c.detail); w.end_object(); }
@@ -577,4 +577,4 @@ int cmd_doctor(const Options& o) {
 
 #include "commands_dmg.inc"
 
-}  // namespace cider::cli
+}  // namespace orvyn::cli

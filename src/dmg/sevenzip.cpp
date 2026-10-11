@@ -7,11 +7,11 @@
 #include <set>
 #include <sstream>
 
-#include "cider/bytes.hpp"
-#include "cider/dmg.hpp"
-#include "cider/log.hpp"
-#include "cider/process.hpp"
-#include "cider/util.hpp"
+#include "orvyn/bytes.hpp"
+#include "orvyn/dmg.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/process.hpp"
+#include "orvyn/util.hpp"
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -20,7 +20,7 @@
 
 namespace fs = std::filesystem;
 
-namespace cider::dmg {
+namespace orvyn::dmg {
 namespace {
 
 std::string trim(std::string s) {
@@ -178,7 +178,7 @@ Result<Backend> locate_7zip(const fs::path& explicit_path) {
         if (!is_file(explicit_path)) return Error{ErrorCode::NotFound, "7-Zip not found at " + path_to_utf8(explicit_path)};
         return probe_candidate(explicit_path);
     }
-    if (const char* env = std::getenv("CIDER_7Z"); env && *env) {
+    if (const char* env = getenv_compat("ORVYN_7Z", "CIDER_7Z"); env && *env) {
         fs::path p = path_from_utf8(env);
         if (p.is_absolute() && is_file(p)) candidates.push_back(p);
     }
@@ -208,7 +208,7 @@ Result<Backend> locate_7zip(const fs::path& explicit_path) {
         if (const char* pf = std::getenv(env)) candidates.push_back(fs::path(pf) / "7-Zip" / "7z.exe");
 #endif
     std::set<std::string> seen;
-    std::string last_error = "7-Zip was not found (set CIDER_7Z, use --7z <path>, or install it from https://www.7-zip.org/)";
+    std::string last_error = "7-Zip was not found (set ORVYN_7Z, use --7z <path>, or install it from https://www.7-zip.org/)";
     for (auto& c : candidates) {
         if (!is_file(c) || !seen.insert(lower(path_to_utf8(c))).second) continue;
         auto be = probe_candidate(c);
@@ -246,7 +246,7 @@ Status validate_listing(const std::vector<ArchiveItem>& items, const ExtractLimi
     if (items.size() > lim.max_files) return Error{ErrorCode::LimitExceeded, std::format("archive lists {} entries (limit {})", items.size(), lim.max_files)};
     uint64_t total = 0;
     for (auto& it : items) {
-        CIDER_CHECK(validate_item_path(it.path));
+        ORVYN_CHECK(validate_item_path(it.path));
         if (it.encrypted) return Error{ErrorCode::Unsupported, "archive contains encrypted entries (password-protected): " + sanitize_utf8(it.path)};
         auto sum = checked_add(total, it.size);
         if (!sum || *sum > lim.max_total_bytes)
@@ -310,7 +310,7 @@ TempDir::TempDir(const fs::path& base) {
     std::random_device rd;
     std::mt19937_64 rng((static_cast<uint64_t>(rd()) << 32) ^ rd());
     for (int attempt = 0; attempt < 16; ++attempt) {
-        fs::path p = b / std::format("cider-{:016x}", rng());
+        fs::path p = b / std::format("orvyn-{:016x}", rng());
         if (fs::create_directory(p, ec) && !ec) { path_ = p; return; }
     }
 }
@@ -469,4 +469,4 @@ Result<ExtractReport> extract_image(const Backend& be, const fs::path& image, co
     return rep;
 }
 
-}  // namespace cider::dmg
+}  // namespace orvyn::dmg

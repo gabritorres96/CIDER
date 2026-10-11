@@ -1,10 +1,10 @@
-// CoreGraphics graphics-state machine, paths and transforms (pure C++, no Windows, no guest access). See include/cider/cg.hpp.
+// CoreGraphics graphics-state machine, paths and transforms (pure C++, no Windows, no guest access). See include/orvyn/cg.hpp.
 #include <algorithm>
 #include <cmath>
 
-#include "cider/cg.hpp"
+#include "orvyn/cg.hpp"
 
-namespace cider::cg {
+namespace orvyn::cg {
 namespace {
 constexpr double kPi = 3.14159265358979323846;
 constexpr double kKappa = 0.5522847498307936;           // 4/3 * (sqrt(2) - 1): cubic approximation of a quarter circle
@@ -342,4 +342,4 @@ void Context::draw_text(const std::u16string& text, const FontSpec& font, Point 
 Affine bottom_left_base(double height_in_points, double scale) { return {scale, 0, 0, -scale, 0, height_in_points * scale}; }
 Affine view_base(double view_height_points, bool flipped, double scale) { return flipped ? Affine{scale, 0, 0, scale, 0, 0} : bottom_left_base(view_height_points, scale); }
 
-}  // namespace cider::cg
+}  // namespace orvyn::cg

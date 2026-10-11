@@ -1,10 +1,10 @@
 #include <cstring>
 #include <format>
 
-#include "cider/abi.hpp"
-#include "cider/log.hpp"
+#include "orvyn/abi.hpp"
+#include "orvyn/log.hpp"
 
-namespace cider::abi {
+namespace orvyn::abi {
 
 Result<GuestStack> GuestStack::create(size_t size) {
     auto rounded = memory::align_up(size, memory::page_size());
@@ -39,9 +39,9 @@ Result<GuestArgs> build_guest_args(GuestStack& stack, const std::vector<std::str
         return {};
     };
     std::vector<uint64_t> a_ptr, e_ptr, v_ptr;
-    CIDER_CHECK(put_strings(apple, a_ptr));
-    CIDER_CHECK(put_strings(envp, e_ptr));
-    CIDER_CHECK(put_strings(argv, v_ptr));
+    ORVYN_CHECK(put_strings(apple, a_ptr));
+    ORVYN_CHECK(put_strings(envp, e_ptr));
+    ORVYN_CHECK(put_strings(argv, v_ptr));
 
     const size_t pointers = (a_ptr.size() + 1) + (e_ptr.size() + 1) + (v_ptr.size() + 1);
     cur = reinterpret_cast<uint8_t*>(reinterpret_cast<uintptr_t>(cur) & ~uintptr_t{15});
@@ -66,4 +66,4 @@ Result<GuestArgs> build_guest_args(GuestStack& stack, const std::vector<std::str
     return g;
 }
 
-}  // namespace cider::abi
+}  // namespace orvyn::abi

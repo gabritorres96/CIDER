@@ -4,11 +4,11 @@
 #include <filesystem>
 #include <vector>
 
-#include "cider/guest_threads.hpp"
-#include "cider/libsystem.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/guest_threads.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/objc.hpp"
 
-namespace cider::libsystem::detail {
+namespace orvyn::libsystem::detail {
 
 void add_stdio_symbols(std::vector<HostSymbol>& out);   // stdio.cpp : printf family, fwrite, fputs, ...
 void add_posix_symbols(std::vector<HostSymbol>& out);   // posix.cpp : files, time, process ids, errno
@@ -64,7 +64,7 @@ void guest_free(void* p);
 // exit(code) from host code that runs inside a guest call: every other guest thread unwinds, then this call chain does.
 void guest_exit(int code);
 
-// A runtime trap: the guest asked for something CIDER refuses to emulate. Marks the run as faulted and ends it.
+// A runtime trap: the guest asked for something ORVYN refuses to emulate. Marks the run as faulted and ends it.
 void trap(const std::string& what);
 
-}  // namespace cider::libsystem::detail
+}  // namespace orvyn::libsystem::detail

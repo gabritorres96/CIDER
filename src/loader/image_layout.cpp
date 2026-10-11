@@ -1,10 +1,10 @@
 #include <algorithm>
 #include <format>
 
-#include "cider/loader.hpp"
-#include "cider/log.hpp"
+#include "orvyn/loader.hpp"
+#include "orvyn/log.hpp"
 
-namespace cider::loader {
+namespace orvyn::loader {
 namespace {
 constexpr uint64_t kPage = 4096;  // Mach-O x86_64 page size (Windows commits at the same granularity)
 Error bad(ErrorCode c, std::string m) { return Error{c, std::move(m)}; }
@@ -83,4 +83,4 @@ Result<ImageLayout> plan_layout(const macho::Image& img, const ValidatorOptions&
     return lay;
 }
 
-}  // namespace cider::loader
+}  // namespace orvyn::loader

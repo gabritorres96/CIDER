@@ -1,17 +1,17 @@
 #include <algorithm>
 
-#include "cider/analysis.hpp"
-#include "cider/bundle.hpp"
-#include "cider/dyld.hpp"
-#include "cider/util.hpp"
+#include "orvyn/analysis.hpp"
+#include "orvyn/bundle.hpp"
+#include "orvyn/dyld.hpp"
+#include "orvyn/util.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 namespace fs = std::filesystem;
 
-CIDER_TEST(bundle_basic_metadata) {
+ORVYN_TEST(bundle_basic_metadata) {
     TempDir t;
     auto app = make_app(t, "Example.app", build_macho({}).bytes);
     CHECK(bundle::looks_like_bundle(app));
@@ -30,7 +30,7 @@ CIDER_TEST(bundle_basic_metadata) {
     CHECK(b.issues.empty());
 }
 
-CIDER_TEST(bundle_binary_info_plist) {
+ORVYN_TEST(bundle_binary_info_plist) {
     TempDir t;
     // the fixture writer only supports keys shorter than 15 characters
     t.write("B.app/Contents/Info.plist", binary_plist({{"CFBundleName", "Bin"}}));
@@ -41,7 +41,7 @@ CIDER_TEST(bundle_binary_info_plist) {
     CHECK(!r.value().issues.empty());  // CFBundleExecutable missing
 }
 
-CIDER_TEST(bundle_missing_pieces_reported) {
+ORVYN_TEST(bundle_missing_pieces_reported) {
     TempDir t;
     fs::create_directories(t.path() / "Empty.app");
     auto r0 = bundle::inspect(t.path() / "Empty.app");
@@ -62,7 +62,7 @@ CIDER_TEST(bundle_missing_pieces_reported) {
     CHECK_ERR(bundle::inspect(t.path() / "does-not-exist.app"), ErrorCode::NotFound);
 }
 
-CIDER_TEST(bundle_rejects_path_traversal_in_executable_name) {
+ORVYN_TEST(bundle_rejects_path_traversal_in_executable_name) {
     TempDir t;
     t.write("Evil.app/Contents/Info.plist", xml_plist({{"CFBundleExecutable", "../../outside"}}));
     t.write("outside", std::string("x"));
@@ -80,7 +80,7 @@ CIDER_TEST(bundle_rejects_path_traversal_in_executable_name) {
     }
 }
 
-CIDER_TEST(bundle_ios_requirements_flagged) {
+ORVYN_TEST(bundle_ios_requirements_flagged) {
     TempDir t;
     t.write("I.app/Contents/Info.plist",
             "<plist><dict><key>CFBundleExecutable</key><string>I</string><key>LSRequiresIPhoneOS</key><true/></dict></plist>");
@@ -90,7 +90,7 @@ CIDER_TEST(bundle_ios_requirements_flagged) {
     CHECK(std::any_of(r.value().issues.begin(), r.value().issues.end(), [](auto& s) { return s.find("iOS") != std::string::npos; }));
 }
 
-CIDER_TEST(bundle_frameworks_listed_with_architectures) {
+ORVYN_TEST(bundle_frameworks_listed_with_architectures) {
     TempDir t;
     auto app = make_app(t, "F.app", build_macho({}).bytes);
     MachoSpec lib;
@@ -111,7 +111,7 @@ CIDER_TEST(bundle_frameworks_listed_with_architectures) {
 }
 
 // ---- dyld path expansion ---------------------------------------------------------------
-CIDER_TEST(dyld_system_and_anchor_classification) {
+ORVYN_TEST(dyld_system_and_anchor_classification) {
     CHECK(dyld::is_system_path("/usr/lib/libSystem.B.dylib"));
     CHECK(dyld::is_system_path("/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation"));
     CHECK(!dyld::is_system_path("/usr/local/lib/libfoo.dylib"));
@@ -123,7 +123,7 @@ CIDER_TEST(dyld_system_and_anchor_classification) {
     CHECK(dyld::anchor_of("/abs") == dyld::Anchor::None);
 }
 
-CIDER_TEST(dyld_candidate_expansion) {
+ORVYN_TEST(dyld_candidate_expansion) {
     dyld::PathContext c;
     c.executable_dir = fs::path("/app/Contents/MacOS");
     c.loader_dir = fs::path("/app/Contents/Frameworks/Foo.framework/Versions/A");
@@ -149,7 +149,7 @@ static bundle::Info must_inspect(const fs::path& p) {
     return r.value();
 }
 
-CIDER_TEST(dependencies_resolved_inside_bundle_transitively) {
+ORVYN_TEST(dependencies_resolved_inside_bundle_transitively) {
     TempDir t;
     MachoSpec exe;
     exe.dylibs = {"/usr/lib/libSystem.B.dylib", "@rpath/libfoo.dylib", "@rpath/libmissing.dylib", "/usr/local/lib/libext.dylib"};
@@ -199,7 +199,7 @@ CIDER_TEST(dependencies_resolved_inside_bundle_transitively) {
     CHECK(!compat.execution_confirmed);
 }
 
-CIDER_TEST(dependency_resolving_outside_bundle_is_flagged) {
+ORVYN_TEST(dependency_resolving_outside_bundle_is_flagged) {
     TempDir t;
     MachoSpec exe;
     exe.dylibs = {"@executable_path/../../../escape.dylib"};
@@ -215,7 +215,7 @@ CIDER_TEST(dependency_resolving_outside_bundle_is_flagged) {
     CHECK(rep.deps[0].cls == analysis::DepClass::OutsideBundle);
 }
 
-CIDER_TEST(dependency_cycle_terminates) {
+ORVYN_TEST(dependency_cycle_terminates) {
     TempDir t;
     MachoSpec exe;
     exe.dylibs = {"@executable_path/a.dylib"};
@@ -242,7 +242,7 @@ static macho::File parsed(const std::vector<uint8_t>& b) {
     return r.value();
 }
 
-CIDER_TEST(compat_analysis_compatible_never_claims_execution) {
+ORVYN_TEST(compat_analysis_compatible_never_claims_execution) {
     auto f = parsed(build_macho({}).bytes);
     auto c = analysis::assess(f, nullptr, nullptr);
     CHECK(c.status == analysis::CompatStatus::AnalysisCompatible);
@@ -250,7 +250,7 @@ CIDER_TEST(compat_analysis_compatible_never_claims_execution) {
     CHECK(c.status != analysis::CompatStatus::Executable);
 }
 
-CIDER_TEST(compat_arm64_only_is_not_compatible) {
+ORVYN_TEST(compat_arm64_only_is_not_compatible) {
     MachoSpec s;
     s.cputype = macho::kCpuArm64;
     s.cpusubtype = 0;
@@ -258,7 +258,7 @@ CIDER_TEST(compat_arm64_only_is_not_compatible) {
     CHECK(c.status == analysis::CompatStatus::NotCompatible);
 }
 
-CIDER_TEST(compat_ios_and_encrypted_are_not_compatible) {
+ORVYN_TEST(compat_ios_and_encrypted_are_not_compatible) {
     MachoSpec s;
     s.platform = 2;
     CHECK(analysis::assess(parsed(build_macho(s).bytes), nullptr, nullptr).status == analysis::CompatStatus::NotCompatible);
@@ -267,7 +267,7 @@ CIDER_TEST(compat_ios_and_encrypted_are_not_compatible) {
     CHECK(analysis::assess(parsed(build_macho(e).bytes), nullptr, nullptr).status == analysis::CompatStatus::NotCompatible);
 }
 
-CIDER_TEST(compat_fat_with_x86_64_slice_is_analysable) {
+ORVYN_TEST(compat_fat_with_x86_64_slice_is_analysable) {
     MachoSpec a;
     a.cputype = macho::kCpuArm64;
     a.cpusubtype = 0;

@@ -1,12 +1,12 @@
-// Guest threads (CIDER 0.4.2): pthreads of Mach-O programs on real Windows threads with the cooperative guest lock.
+// Guest threads (ORVYN 0.4.2): pthreads of Mach-O programs on real Windows threads with the cooperative guest lock.
 // ThreadSanitizer is not available for this toolchain on Windows, so correctness is checked with deterministic fixtures whose
 // result is only right if mutual exclusion, joins, condition variables and per-thread TLS/errno really work, plus repeated runs.
 #include <chrono>
 #include <cstring>
 #include <intrin.h>
 
-#include "cider/guest.hpp"
-#include "cider/guest_threads.hpp"
+#include "orvyn/guest.hpp"
+#include "orvyn/guest_threads.hpp"
 #include "guest_code.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
@@ -17,8 +17,8 @@
 #include <tlhelp32.h>
 #endif
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 namespace fs = std::filesystem;
 
 namespace {
@@ -58,15 +58,15 @@ DWORD thread_count() {
 
 }  // namespace
 
-CIDER_TEST(create_join_self_equal_exit_and_error_codes) { expect_exit(run_fixture("thread_basic"), 42, "thread_basic"); }
+ORVYN_TEST(create_join_self_equal_exit_and_error_codes) { expect_exit(run_fixture("thread_basic"), 42, "thread_basic"); }
 
-CIDER_TEST(four_threads_and_a_mutex_count_exactly) {
+ORVYN_TEST(four_threads_and_a_mutex_count_exactly) {
     Run r = run_fixture("thread_mutex");
     expect_exit(r, 42, "thread_mutex");
     CHECK_EQ(r.out, std::string("counter=40000 max_inside=1\n"));    // never two threads inside the critical section
 }
 
-CIDER_TEST(without_the_mutex_updates_are_lost_which_proves_real_interleaving) {
+ORVYN_TEST(without_the_mutex_updates_are_lost_which_proves_real_interleaving) {
     Run r = run_fixture("thread_race");
     expect_exit(r, 42, "thread_race");
     long counter = 0;
@@ -75,35 +75,35 @@ CIDER_TEST(without_the_mutex_updates_are_lost_which_proves_real_interleaving) {
     CHECK(counter >= 1000);                                           // at least one thread's worth survives
 }
 
-CIDER_TEST(each_thread_has_its_own_tls_starting_from_the_template) {
+ORVYN_TEST(each_thread_has_its_own_tls_starting_from_the_template) {
     Run r = run_fixture("thread_tls");
     expect_exit(r, 42, "thread_tls");
     CHECK_EQ(r.out, std::string("a=105 b=110 main=101 template 7\n"));
 }
 
-CIDER_TEST(condition_variables_mutex_kinds_pthread_once_and_per_thread_errno) { expect_exit(run_fixture("thread_sync"), 42, "thread_sync"); }
+ORVYN_TEST(condition_variables_mutex_kinds_pthread_once_and_per_thread_errno) { expect_exit(run_fixture("thread_sync"), 42, "thread_sync"); }
 
-CIDER_TEST(exit_from_a_non_main_thread_ends_the_whole_process) {
+ORVYN_TEST(exit_from_a_non_main_thread_ends_the_whole_process) {
     Run r = run_fixture("thread_exit", {"x"});                        // main blocks forever in pthread_join(sleeper)
     expect_exit(r, 7, "thread_exit x");
     CHECK_EQ(r.out, std::string("thread calls exit(7)\n"));
     CHECK(r.seconds < 10.0);
 }
 
-CIDER_TEST(returning_from_main_stops_threads_that_are_still_running) {
+ORVYN_TEST(returning_from_main_stops_threads_that_are_still_running) {
     Run r = run_fixture("thread_exit", {"m"});
     expect_exit(r, 5, "thread_exit m");
     CHECK_EQ(r.out, std::string("main returns\n"));
     CHECK(r.seconds < 10.0);
 }
 
-CIDER_TEST(the_thread_limit_is_enforced_with_eagain) {
+ORVYN_TEST(the_thread_limit_is_enforced_with_eagain) {
     Run r = run_fixture("thread_exit", {"l"});
     expect_exit(r, 42, "thread_exit l");
     CHECK_EQ(r.out, std::string("created=63 err=35\n"));              // 64 live threads including main, EAGAIN is 35 on Darwin
 }
 
-CIDER_TEST(guest_threads_do_not_touch_the_hosts_windows_thread_state) {
+ORVYN_TEST(guest_threads_do_not_touch_the_hosts_windows_thread_state) {
     const uint64_t self = __readgsqword(0x30), tls_ptr = __readgsqword(0x58), stack_base = __readgsqword(0x08);
     for (const char* f : {"thread_tls", "thread_mutex", "thread_sync"}) expect_exit(run_fixture(f), 42, f);
     CHECK_EQ(__readgsqword(0x30), self);
@@ -111,7 +111,7 @@ CIDER_TEST(guest_threads_do_not_touch_the_hosts_windows_thread_state) {
     CHECK_EQ(__readgsqword(0x08), stack_base);
 }
 
-CIDER_TEST(repeated_runs_leave_no_threads_or_handles_behind) {
+ORVYN_TEST(repeated_runs_leave_no_threads_or_handles_behind) {
     run_fixture("thread_mutex");                                      // warm up
     DWORD handles0 = 0, handles1 = 0;
     GetProcessHandleCount(GetCurrentProcess(), &handles0);
@@ -125,23 +125,23 @@ CIDER_TEST(repeated_runs_leave_no_threads_or_handles_behind) {
     CHECK(thread_count() <= threads0 + 1);
 }
 
-CIDER_TEST(the_scheduler_is_deterministic_and_stable_over_many_runs) {
+ORVYN_TEST(the_scheduler_is_deterministic_and_stable_over_many_runs) {
     for (int i = 0; i < 25; ++i) {
         Run r = run_fixture("thread_mutex");
         if (r.r.exit_code != 42 || r.out != "counter=40000 max_inside=1\n") { report_failure(__FILE__, __LINE__, "run " + std::to_string(i) + " differed"); break; }
     }
 }
 
-CIDER_TEST(handles_are_opaque_numbers_and_mutex_storage_keeps_the_darwin_layout) {
+ORVYN_TEST(handles_are_opaque_numbers_and_mutex_storage_keeps_the_darwin_layout) {
     CHECK_EQ(libsystem::GuestThreads::id_of(libsystem::GuestThreads::handle_of(5)), uint64_t{5});
-    CHECK_EQ(libsystem::GuestThreads::id_of(0x1234), uint64_t{0});     // not a handle CIDER ever gave out
+    CHECK_EQ(libsystem::GuestThreads::id_of(0x1234), uint64_t{0});     // not a handle ORVYN ever gave out
     CHECK_EQ(libsystem::GuestThreads::id_of(0), uint64_t{0});
 }
 
 // ---- a crash in a guest thread is contained by the worker ----------------------------------------------------------------------------
-CIDER_TEST(a_fault_in_a_guest_thread_kills_only_the_worker) {
-    const char* exe = std::getenv("CIDER_EXE");
-    if (!exe) SKIP("CIDER_EXE is not set");
+ORVYN_TEST(a_fault_in_a_guest_thread_kills_only_the_worker) {
+    const char* exe = std::getenv("ORVYN_EXE");
+    if (!exe) SKIP("ORVYN_EXE is not set");
     guest::SupervisorOptions o;
     o.worker_exe = fs::absolute(path_from_utf8(exe));
     o.image = kExecFixtures / "bin" / "thread_exit";

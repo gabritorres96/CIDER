@@ -1,10 +1,10 @@
-// Geometry module (CIDER 0.5.6): rectangle algebra with CoreGraphics semantics, AppKit <-> Win32 coordinate conversion, DPI and autoresizing.
-#include "cider/geometry.hpp"
+// Geometry module (ORVYN 0.5.6): rectangle algebra with CoreGraphics semantics, AppKit <-> Win32 coordinate conversion, DPI and autoresizing.
+#include "orvyn/geometry.hpp"
 #include "test_framework.hpp"
 
-using namespace cider::geometry;
+using namespace orvyn::geometry;
 
-CIDER_TEST(rectangle_algebra_matches_coregraphics) {
+ORVYN_TEST(rectangle_algebra_matches_coregraphics) {
     const Rect a = make_rect(0, 0, 10, 10), b = make_rect(5, 5, 10, 10);
     CHECK(equal(union_rect(a, b), make_rect(0, 0, 15, 15)));
     CHECK(equal(intersection(a, b), make_rect(5, 5, 5, 5)));
@@ -24,7 +24,7 @@ CIDER_TEST(rectangle_algebra_matches_coregraphics) {
     CHECK_EQ(make_rect(10, 0, -4, 1).min_x(), 6.0);                 // negative widths are standardized by the accessors
 }
 
-CIDER_TEST(appkit_screen_space_flips_around_the_primary_display_height) {
+ORVYN_TEST(appkit_screen_space_flips_around_the_primary_display_height) {
     // 1080 px high display, 100 % scale: a 300x200 window whose bottom-left is at (100, 50) has its top at 1080 - 250 = 830
     const PixelRect p = screen_to_win32(make_rect(100, 50, 300, 200), 1.0, 1080);
     CHECK(p.left == 100 && p.right == 400 && p.top == 830 && p.bottom == 1030);
@@ -41,7 +41,7 @@ CIDER_TEST(appkit_screen_space_flips_around_the_primary_display_height) {
     CHECK_EQ(to_pixels(-2.5, 1.0), -3L);
 }
 
-CIDER_TEST(child_frames_flip_inside_unflipped_parents_and_not_inside_flipped_ones) {
+ORVYN_TEST(child_frames_flip_inside_unflipped_parents_and_not_inside_flipped_ones) {
     // parent 400x300 points; child at (10, 20) size 100x30 measured from the parent bottom-left corner
     const PixelRect u = child_to_client(make_rect(10, 20, 100, 30), 300, false, 1.0);
     CHECK(u.left == 10 && u.right == 110 && u.top == 250 && u.bottom == 280);
@@ -53,7 +53,7 @@ CIDER_TEST(child_frames_flip_inside_unflipped_parents_and_not_inside_flipped_one
     CHECK(hi.left == 20 && hi.right == 220 && hi.top == 500 && hi.bottom == 560);
 }
 
-CIDER_TEST(autoresizing_distributes_the_extra_space_like_nsview) {
+ORVYN_TEST(autoresizing_distributes_the_extra_space_like_nsview) {
     const Rect f = make_rect(10, 10, 100, 50);
     const Size from{200, 100}, to{300, 160};
     CHECK(equal(autoresize(f, from, to, 0), f));                                          // fixed

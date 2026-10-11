@@ -1,4 +1,4 @@
-// Included at the end of commands.cpp (inside namespace cider::cli): disk-image commands.
+// Included at the end of commands.cpp (inside namespace orvyn::cli): disk-image commands.
 // They share the report helpers defined in commands.cpp's anonymous namespace.
 
 namespace {
@@ -7,7 +7,7 @@ dmg::ExtractOptions extract_options(const Options& o) {
     dmg::ExtractOptions eo;
     if (o.max_size_mib) eo.limits.max_total_bytes = o.max_size_mib << 20;
     if (!o.temp_dir.empty()) eo.temp_base = path_from_utf8(o.temp_dir);
-    else if (const char* t = std::getenv("CIDER_TEMP_DIR"); t && *t) eo.temp_base = path_from_utf8(t);
+    else if (const char* t = getenv_compat("ORVYN_TEMP_DIR", "CIDER_TEMP_DIR"); t && *t) eo.temp_base = path_from_utf8(t);
     return eo;
 }
 
@@ -206,7 +206,7 @@ int inspect_dmg(const Options& o, DmgContext& c) {
     JsonWriter w;
     if (o.json) {
         w.begin_object();
-        w.field("tool", "cider");
+        w.field("tool", "orvyn");
         w.field("version", kVersion);
         w.field("kind", "disk-image");
         w.field("path", o.positional[0]);
@@ -279,7 +279,7 @@ int inspect_dmg(const Options& o, DmgContext& c) {
 }  // namespace
 
 int cmd_inspect(const Options& o) {
-    if (o.positional.empty()) return fail(o, "usage: cider inspect <program|App.app|image.dmg> [--json] [--symbols]", 2);
+    if (o.positional.empty()) return fail(o, "usage: orvyn inspect <program|App.app|image.dmg> [--json] [--symbols]", 2);
     fs::path p = path_from_utf8(o.positional[0]);
     std::error_code ec;
     if (!fs::exists(p, ec)) return fail(o, "path does not exist: " + o.positional[0]);
@@ -301,7 +301,7 @@ int cmd_inspect(const Options& o) {
 }
 
 int cmd_dmg_info(const Options& o) {
-    if (o.positional.empty()) return fail(o, "usage: cider dmg-info <image.dmg> [--json] [--7z <path>]", 2);
+    if (o.positional.empty()) return fail(o, "usage: orvyn dmg-info <image.dmg> [--json] [--7z <path>]", 2);
     auto ctx = open_dmg(o);
     if (!ctx.ok()) return fail(o, ctx.error().message);
     const dmg::Info& info = ctx.value().info;
@@ -319,7 +319,7 @@ int cmd_dmg_info(const Options& o) {
     if (o.json) {
         JsonWriter w;
         w.begin_object();
-        w.field("tool", "cider");
+        w.field("tool", "orvyn");
         w.field("version", kVersion);
         w.field("path", o.positional[0]);
         w.key("image"); write_dmg_json(w, info);
@@ -357,7 +357,7 @@ int cmd_dmg_info(const Options& o) {
 
 int cmd_extract(const Options& o) {
     if (o.positional.empty() || o.output.empty())
-        return fail(o, "usage: cider extract <image.dmg> --output <directory> [--7z <path>] [--max-size <MiB>] [--json]", 2);
+        return fail(o, "usage: orvyn extract <image.dmg> --output <directory> [--7z <path>] [--max-size <MiB>] [--json]", 2);
     auto ctx = open_dmg(o);
     if (!ctx.ok()) return fail(o, ctx.error().message);
     if (std::string pr = kind_problem(ctx.value().info); !pr.empty()) return fail(o, pr);
@@ -371,7 +371,7 @@ int cmd_extract(const Options& o) {
     if (o.json) {
         JsonWriter w;
         w.begin_object();
-        w.field("tool", "cider");
+        w.field("tool", "orvyn");
         w.field("version", kVersion);
         w.field("ok", true);
         w.field("output", path_to_utf8(r.output));
@@ -396,7 +396,7 @@ int cmd_extract(const Options& o) {
         for (auto& s : r.warnings) std::printf("Warning: %s\n", sanitize_utf8(s).c_str());
         std::printf("Applications found: %zu\n", r.apps.size());
         for (auto& a : r.apps) std::printf("- %s\n", sanitize_utf8(a).c_str());
-        std::puts("\nNothing was executed. Analyse an application with: cider inspect <path-to-.app>");
+        std::puts("\nNothing was executed. Analyse an application with: orvyn inspect <path-to-.app>");
     }
     return 0;
 }

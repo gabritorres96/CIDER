@@ -1,5 +1,5 @@
 #pragma once
-// CIDER's Foundation subset: host-implemented classes registered in the Objective-C runtime (see docs/FOUNDATION.md). This is NOT Apple's
+// ORVYN's Foundation subset: host-implemented classes registered in the Objective-C runtime (see docs/FOUNDATION.md). This is NOT Apple's
 // Foundation and does not reuse any of its code: it is written from the public behaviour of the classes, covers only what is listed in
 // the documentation, and traps (ends the guest with a message) where Apple's Foundation would raise an exception.
 //
@@ -11,9 +11,9 @@
 #include <string_view>
 #include <vector>
 
-#include "cider/objc.hpp"
+#include "orvyn/objc.hpp"
 
-namespace cider::foundation {
+namespace orvyn::foundation {
 
 using objc::Addr;
 using objc::Class;
@@ -80,7 +80,7 @@ bool dict_set(Addr dict, Addr key, Addr value);       // insert or replace (copi
 
 Addr new_array(std::vector<Addr> items, bool mutable_, bool retain_items);   // autoreleased; retain_items=false adopts the +1 the caller holds
 
-// errors: Apple raises an NSException; CIDER ends the guest with the message
+// errors: Apple raises an NSException; ORVYN ends the guest with the message
 void g_rt_set(Runtime* rt);
 void raise(const std::string& name, const std::string& reason);   // traps the guest, returns so the native method can return 0
 
@@ -99,4 +99,4 @@ void post_notification(const std::string& name, Addr object, Addr userinfo);   /
 bool format_with_objects(const std::string& format, abi::ArgReader& args, std::string& out);   // printf with %@ (NSLog, stringWithFormat:)
 Addr immortal_string(const std::string& utf8);   // NSString in the runtime arena that is never released (framework constants)
 
-}  // namespace cider::foundation
+}  // namespace orvyn::foundation

@@ -1,19 +1,19 @@
-# Objective-C runtime (CIDER 0.4)
+# Objective-C runtime (ORVYN 0.4)
 
-CIDER executes Objective-C code from Mach-O x86_64 files compiled for Apple's **objc2 ("non-fragile") ABI**. The runtime is written for
-CIDER (`src/objc/`); it is not Apple's libobjc and does not contain any of its code. This document records the research behind that
+ORVYN executes Objective-C code from Mach-O x86_64 files compiled for Apple's **objc2 ("non-fragile") ABI**. The runtime is written for
+ORVYN (`src/objc/`); it is not Apple's libobjc and does not contain any of its code. This document records the research behind that
 decision, the data structures that are read, the dispatch design, and what is **not** supported.
 
-Scope: controlled fixtures compiled with clang and linked with ld64.lld. No Apple application has been run. CIDER makes no claim of
+Scope: controlled fixtures compiled with clang and linked with ld64.lld. No Apple application has been run. ORVYN makes no claim of
 general Objective-C, Cocoa or macOS compatibility.
 
 ## 1. Options evaluated
 
 | Option | Verdict |
 |---|---|
-| Apple libobjc (objc4) | Not available to redistribute with CIDER (Apple Public Source License); the binary lives only in the macOS dyld shared cache. Not used, not copied. |
+| Apple libobjc (objc4) | Not available to redistribute with ORVYN (Apple Public Source License); the binary lives only in the macOS dyld shared cache. Not used, not copied. |
 | GNUstep libobjc2 | MIT-licensed, but it is **not Apple-ABI-equivalent**: different class/method/ivar metadata (`objc_class` v2 with `dtable`, `objc_method_list`), different selector representation (typed selectors, selector tables in a separate section), different `objc_msgSend` family (`objc_msgSend_slow`, `objc_slot_lookup`), different property and protocol structures and different ARC entry points. Compiler output for the Apple ABI (`__objc_classlist`, `class_ro_t`, `method_list_t` with `entsize`/flags, `__objc_selrefs`) cannot be consumed by it without a translating layer. GNUstep-base (Foundation) is LGPL and depends on that runtime. Not used. |
-| Own runtime reading the Apple metadata | **Chosen.** The metadata layout is public through the open-source objc4 headers' documented behaviour and through what `llvm-objdump --objc-meta-data` prints; CIDER's parser is checked against that tool. |
+| Own runtime reading the Apple metadata | **Chosen.** The metadata layout is public through the open-source objc4 headers' documented behaviour and through what `llvm-objdump --objc-meta-data` prints; ORVYN's parser is checked against that tool. |
 
 Only layouts that clang emits for `x86_64-apple-macos` are implemented. Every offset below was verified against fixtures compiled by
 the bundled LLVM 23.1.3 and against the `llvm-objdump --objc-meta-data` snapshots in `tests/fixtures/objc/golden`.
@@ -90,8 +90,8 @@ class construction, the memory-management and ARC helpers above, `objc_getProper
 * Relative (small) method lists, Swift classes, class extensions with property synthesis through metadata introspection (`class_copyPropertyList`
   and friends), `objc_msgSend` message forwarding, `+resolveInstanceMethod:`, KVO/KVC, `NSInvocation`, `objc_copyClassList`.
 * Method type encodings are stored, not validated against the call.
-* The runtime is single-process and cooperative with CIDER's guest threads (see [THREADING.md](THREADING.md)); it has no ThreadSanitizer coverage.
-* The log line `[CIDER][OBJC] Message dispatched: …` is printed once per distinct class+selector pair, not on every send.
+* The runtime is single-process and cooperative with ORVYN's guest threads (see [THREADING.md](THREADING.md)); it has no ThreadSanitizer coverage.
+* The log line `[ORVYN][OBJC] Message dispatched: …` is printed once per distinct class+selector pair, not on every send.
 
 ## 8. Tests
 
@@ -110,6 +110,6 @@ subset. Rebuild the fixtures with `tools\llvm-env.cmd tools\gen-objc-fixtures.cm
 * **Exceptions: limited and honest.** `NSException` (create, `raise`, `raise:format:`, `name/reason/userInfo`) and `objc_exception_throw` exist and end the guest with the macOS text for an *uncaught* exception
   (`*** Terminating app due to uncaught exception 'Name', reason: 'Reason'`). `@try/@catch/@finally` are **not supported**: they need the Darwin unwinder (`__Unwind_RaiseException`, `__objc_personality_v0`, DWARF
   call-frame information of every guest and host frame in between) and unwinding through the host frames of the ABI bridge cannot be verified. A binary compiled with Objective-C exceptions imports weak EH-type bindings
-  and personality symbols and is **refused at load time** (`cider run` exit code 11, "weak binding information is not supported yet") rather than run with a broken catch. Compile guest code with `-fno-objc-exceptions`.
+  and personality symbols and is **refused at load time** (`orvyn run` exit code 11, "weak binding information is not supported yet") rather than run with a broken catch. Compile guest code with `-fno-objc-exceptions`.
 * Blocks are Objective-C objects (`NSBlock`, [BLOCKS.md](BLOCKS.md)); `objc_retainBlock` is exported; the exported libobjc surface is now 82 functions.
 * Compiler `@protocol(X)` handles are recognised by `conformsToProtocol:` / `class_conformsToProtocol`.

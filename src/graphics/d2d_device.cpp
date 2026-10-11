@@ -13,10 +13,10 @@
 #include <cmath>
 #include <cstring>
 
-#include "cider/log.hpp"
+#include "orvyn/log.hpp"
 #include "d2d_device.hpp"
 
-namespace cider::cg {
+namespace orvyn::cg {
 namespace {
 
 std::atomic<int> g_live{0};
@@ -414,4 +414,4 @@ bool encode_png(const Image& img, std::vector<uint8_t>& out, std::string& error)
     return true;
 }
 
-}  // namespace cider::cg
+}  // namespace orvyn::cg

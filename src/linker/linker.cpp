@@ -1,15 +1,15 @@
-#include "cider/linker.hpp"
+#include "orvyn/linker.hpp"
 
 #include <algorithm>
 #include <cstring>
 #include <format>
 
-#include "cider/log.hpp"
-#include "cider/util.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/util.hpp"
 
 namespace fs = std::filesystem;
 
-namespace cider::linker {
+namespace orvyn::linker {
 
 struct Program::Lookup {
     std::optional<uint64_t> address;
@@ -187,7 +187,7 @@ private:
             std::vector<fs::path> cands;
             std::string how;
             if (dyld::is_system_path(dep.path)) {
-                how = "macOS system library; CIDER does not load system libraries and never substitutes Windows DLLs";
+                how = "macOS system library; ORVYN does not load system libraries and never substitutes Windows DLLs";
             } else if (dyld::anchor_of(dep.path) != dyld::Anchor::None && me.is_main && exe_dir_.empty()) {
                 how = "the path of the main executable is unknown, so the anchor cannot be expanded";
             } else {
@@ -376,7 +376,7 @@ private:
 
     std::optional<uint64_t> provided(const std::string& lib, const std::string& symbol, dyld::Unresolved& u) {
         if (auto r = libsystem_.lookup(lib, symbol)) return r->address;
-        u.reason = "symbol not implemented by CIDER";
+        u.reason = "symbol not implemented by ORVYN";
         return std::nullopt;
     }
 
@@ -527,7 +527,7 @@ Program::Lookup Program::lookup(size_t idx, std::string_view name, std::vector<b
         if (dep >= 0) return lookup(static_cast<size_t>(dep), sym, visited, depth + 1);
         if (dep == kProvidedDep) {
             if (auto s = libsystem_->lookup(d.path, sym)) l.address = s->address;
-            else l.reason = "symbol not implemented by CIDER";
+            else l.reason = "symbol not implemented by ORVYN";
         }
         return l;
     };
@@ -607,4 +607,4 @@ InitResult Program::run_initializers(const InitCaller& call) {
     return res;
 }
 
-}  // namespace cider::linker
+}  // namespace orvyn::linker

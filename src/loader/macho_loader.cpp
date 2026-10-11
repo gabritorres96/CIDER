@@ -1,9 +1,9 @@
 #include <format>
 
-#include "cider/loader.hpp"
-#include "cider/log.hpp"
+#include "orvyn/loader.hpp"
+#include "orvyn/log.hpp"
 
-namespace cider::loader {
+namespace orvyn::loader {
 namespace {
 
 LoadResult fail(LoadFailure k, std::string msg, LoadReport rep = {}) {
@@ -27,7 +27,7 @@ LoadFailure kind_of(const ValidationReport& v) {
 }  // namespace
 
 LoadResult load_macho(ByteView file, dyld::SymbolProvider& provider, const ValidatorOptions& opts) {
-    // 1. static analysis (parser from CIDER 0.1)
+    // 1. static analysis (parser from ORVYN 0.1)
     macho::ParseOptions po;
     auto parsed = macho::parse_file(file, po);
     if (!parsed.ok()) return fail(LoadFailure::Incompatible, "not a valid Mach-O file: " + parsed.error().message);
@@ -91,4 +91,4 @@ LoadResult load_macho(ByteView file, dyld::SymbolProvider& provider, const Valid
     return ok;
 }
 
-}  // namespace cider::loader
+}  // namespace orvyn::loader

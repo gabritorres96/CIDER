@@ -1,6 +1,6 @@
-// LC_DYLD_CHAINED_FIXUPS (CIDER 0.3.5): decoding checked against llvm-objdump --dyld-info / --chained-fixups on real
+// LC_DYLD_CHAINED_FIXUPS (ORVYN 0.3.5): decoding checked against llvm-objdump --dyld-info / --chained-fixups on real
 // ld64.lld output, execution of chained executables and dylibs, a patched PTR_64_OFFSET variant, and the refusal
-// of every format and malformation CIDER does not implement.
+// of every format and malformation ORVYN does not implement.
 #include <algorithm>
 #include <cstring>
 #include <fstream>
@@ -8,22 +8,22 @@
 #include <random>
 #include <sstream>
 
-#include "cider/fixups.hpp"
-#include "cider/guest.hpp"
-#include "cider/linker.hpp"
-#include "cider/loader.hpp"
+#include "orvyn/fixups.hpp"
+#include "orvyn/guest.hpp"
+#include "orvyn/linker.hpp"
+#include "orvyn/loader.hpp"
 #include "guest_code.hpp"
 #include "macho_builder.hpp"
 #include "test_framework.hpp"
 
-using namespace cider;
-using namespace cider::testing;
+using namespace orvyn;
+using namespace orvyn::testing;
 namespace fs = std::filesystem;
 
 namespace {
 
-const fs::path kDylib = fs::path(CIDER_DYLIB_FIXTURES_DIR);
-const fs::path kReal = fs::path(CIDER_REAL_FIXTURES_DIR);
+const fs::path kDylib = fs::path(ORVYN_DYLIB_FIXTURES_DIR);
+const fs::path kReal = fs::path(ORVYN_REAL_FIXTURES_DIR);
 
 std::vector<uint8_t> load(const fs::path& p) {
     auto r = read_file(p, 64u << 20);
@@ -161,13 +161,13 @@ guest::Outcome run_patched(const std::vector<uint8_t>& bytes) {
 }  // namespace
 
 // ============================== decoding against llvm-objdump ====================================================================
-CIDER_TEST(decoded_fixups_equal_llvm_objdump_dyld_info) {
+ORVYN_TEST(decoded_fixups_equal_llvm_objdump_dyld_info) {
     compare_with_objdump(load(kDylib / "bin/chained/chained"), "chained_chained");
     compare_with_objdump(load(kDylib / "bin/chained/libchain.dylib"), "chained_libchain.dylib");
     compare_with_objdump(load(kDylib / "bin/chainexe/chainexe"), "chainexe_chainexe");
 }
 
-CIDER_TEST(chained_header_fields_equal_llvm_objdump) {
+ORVYN_TEST(chained_header_fields_equal_llvm_objdump) {
     for (const char* key : {"chained_chained", "chainexe_chainexe"}) {
         std::string path = std::string(key) == "chained_chained" ? "bin/chained/chained" : "bin/chainexe/chainexe";
         auto bytes = load(kDylib / path);
@@ -195,21 +195,21 @@ CIDER_TEST(chained_header_fields_equal_llvm_objdump) {
     }
 }
 
-CIDER_TEST(an_image_without_chained_fixups_decodes_to_nothing) {
+ORVYN_TEST(an_image_without_chained_fixups_decodes_to_nothing) {
     auto bytes = load(kDylib / "bin/one/one");
     Parsed p = parse(bytes);
     CHECK(take(dyld::decode_chained_fixups(*p.img, p.slice)).empty());
 }
 
 // ============================== execution ===========================================================================================
-CIDER_TEST(chained_executable_with_rebases_and_binds_runs) {
+ORVYN_TEST(chained_executable_with_rebases_and_binds_runs) {
     Run r = run_file(kDylib / "bin/chainexe/chainexe");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 42);
     CHECK_EQ(r.out, std::string("alpha gamma 80\n"));
 }
 
-CIDER_TEST(chained_executable_and_chained_dylib_link_together) {
+ORVYN_TEST(chained_executable_and_chained_dylib_link_together) {
     Run r = run_file(kDylib / "bin/chained/chained");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 42);
@@ -217,14 +217,14 @@ CIDER_TEST(chained_executable_and_chained_dylib_link_together) {
     CHECK_EQ(r.r.images.size(), size_t{2});
 }
 
-CIDER_TEST(the_hello_chained_fixture_of_0_1_1_now_runs) {
+ORVYN_TEST(the_hello_chained_fixture_of_0_1_1_now_runs) {
     Run r = run_file(kReal / "bin/hello_chained_x86_64");
     REQUIRE(r.r.state == guest::State::Exited);
     CHECK_EQ(r.r.exit_code, 0);
     CHECK_EQ(r.out, std::string("hello from a real Mach-O\n"));
 }
 
-CIDER_TEST(chained_images_are_relocatable_by_the_slide) {
+ORVYN_TEST(chained_images_are_relocatable_by_the_slide) {
     // Occupy the preferred base so the executable must be relocated: every chained rebase must add the slide.
     auto blocker = memory::Region::reserve(0x100000000ull, 0x10000, false);
     if (!blocker.ok()) SKIP("cannot reserve the preferred base");
@@ -234,7 +234,7 @@ CIDER_TEST(chained_images_are_relocatable_by_the_slide) {
     CHECK(r.r.image_base != 0x100000000ull);
 }
 
-CIDER_TEST(pointer_format_64_offset_is_decoded_like_pointer_format_64) {
+ORVYN_TEST(pointer_format_64_offset_is_decoded_like_pointer_format_64) {
     // Rewrite a PTR_64 image as PTR_64_OFFSET: format 6, rebase targets stored as offsets from the header.
     auto bytes = load(kDylib / "bin/chainexe/chainexe");
     Parsed p = parse(bytes);
@@ -267,7 +267,7 @@ CIDER_TEST(pointer_format_64_offset_is_decoded_like_pointer_format_64) {
     CHECK_EQ(o.exit_code, 42);
 }
 
-CIDER_TEST(the_high8_byte_of_a_rebase_lands_in_bits_56_to_63) {
+ORVYN_TEST(the_high8_byte_of_a_rebase_lands_in_bits_56_to_63) {
     auto bytes = load(kDylib / "bin/chainexe/chainexe");
     Parsed p = parse(bytes);
     auto fixups = take(dyld::decode_fixups(*p.img, p.slice));
@@ -307,7 +307,7 @@ void expect_refused(const std::vector<uint8_t>& bytes, loader::LoadFailure kind,
 }
 }  // namespace
 
-CIDER_TEST(unsupported_pointer_formats_are_refused_by_name) {
+ORVYN_TEST(unsupported_pointer_formats_are_refused_by_name) {
     const struct { uint16_t fmt; const char* name; } cases[] = {
         {1, "DYLD_CHAINED_PTR_ARM64E"}, {3, "DYLD_CHAINED_PTR_32"}, {4, "DYLD_CHAINED_PTR_32_CACHE"}, {7, "DYLD_CHAINED_PTR_ARM64E_KERNEL"},
         {8, "DYLD_CHAINED_PTR_64_KERNEL_CACHE"}, {9, "DYLD_CHAINED_PTR_ARM64E_USERLAND"}, {11, "DYLD_CHAINED_PTR_X86_64_KERNEL_CACHE"},
@@ -321,7 +321,7 @@ CIDER_TEST(unsupported_pointer_formats_are_refused_by_name) {
     }
 }
 
-CIDER_TEST(unsupported_header_versions_and_import_formats_are_refused) {
+ORVYN_TEST(unsupported_header_versions_and_import_formats_are_refused) {
     auto fresh = [] { return load(kDylib / "bin/chainexe/chainexe"); };
     {
         auto b = fresh(); Blob bl = blob_of(b); put32(b, bl.base + 0, 1);
@@ -347,7 +347,7 @@ CIDER_TEST(unsupported_header_versions_and_import_formats_are_refused) {
     }
 }
 
-CIDER_TEST(malformed_chains_are_refused_without_touching_memory_outside_the_image) {
+ORVYN_TEST(malformed_chains_are_refused_without_touching_memory_outside_the_image) {
     auto fresh = [] { return load(kDylib / "bin/chainexe/chainexe"); };
     auto first_chain_segment = [](const std::vector<uint8_t>& b, const Blob& bl) { for (int si = 0; si < 4; ++si) if (bl.seg_record(b, si)) return si; return -1; };
     {   // bind with an import index past the table: patch the first bind's ordinal to 99
@@ -435,7 +435,7 @@ CIDER_TEST(malformed_chains_are_refused_without_touching_memory_outside_the_imag
     }
 }
 
-CIDER_TEST(an_image_with_classic_and_chained_fixups_is_refused) {
+ORVYN_TEST(an_image_with_classic_and_chained_fixups_is_refused) {
     // The hello_chained fixture plus a classic LC_DYLD_INFO_ONLY would be ambiguous; the decoder refuses it.
     auto bytes = load(kReal / "bin/hello_chained_x86_64");
     Parsed p = parse(bytes);
@@ -445,7 +445,7 @@ CIDER_TEST(an_image_with_classic_and_chained_fixups_is_refused) {
     CHECK(!r.ok());
 }
 
-CIDER_TEST(mutated_chained_images_never_crash_the_decoder_or_the_linker) {
+ORVYN_TEST(mutated_chained_images_never_crash_the_decoder_or_the_linker) {
     const auto exe = load(kDylib / "bin/chained/chained");
     const auto lib = load(kDylib / "bin/chained/libchain.dylib");
     Blob eb = blob_of(exe);

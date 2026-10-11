@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 1280" width="256" height="256" fill="none" stroke="#f7f7f7" stroke-width="68" stroke-linecap="round" stroke-linejoin="round">
+  <title>ORVYN</title>
+  <path d="M470 208H800Q825 208 835 235L880 400C920 520 925 600 905 650C870 760 770 815 633 815C490 815 385 750 360 640C345 570 360 500 385 420L430 235Q440 208 470 208Z"/>
+  <path d="M365 585C450 540 520 545 600 580C700 625 800 640 905 600"/>
+  <path d="M633 815V1110"/>
+  <path d="M495 1112H770"/>
+</svg>

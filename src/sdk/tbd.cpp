@@ -1,9 +1,9 @@
 // Minimal reader for TAPI text stubs. It is a line scanner for the YAML subset TAPI emits, not a general YAML parser.
-#include "cider/sdk.hpp"
+#include "orvyn/sdk.hpp"
 
 #include <algorithm>
 
-namespace cider::sdk {
+namespace orvyn::sdk {
 namespace {
 
 constexpr size_t kMaxInput = 64u << 20;
@@ -152,4 +152,4 @@ TbdParse parse_tbd(std::string_view text) {
     return out;
 }
 
-}  // namespace cider::sdk
+}  // namespace orvyn::sdk

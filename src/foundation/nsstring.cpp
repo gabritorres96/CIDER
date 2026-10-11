@@ -4,13 +4,13 @@
 #include <cstring>
 #include <format>
 
-#include "cider/libsystem.hpp"
-#include "cider/objc.hpp"
-#include "cider/printf_format.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/objc.hpp"
+#include "orvyn/printf_format.hpp"
 #include "../libsystem/internal.hpp"
 #include "foundation_internal.hpp"
 
-namespace cider::foundation {
+namespace orvyn::foundation {
 namespace {
 
 using abi::GuestRegs;
@@ -287,4 +287,4 @@ void install_nsstring(Runtime& r) {
     });
 }
 
-}  // namespace cider::foundation
+}  // namespace orvyn::foundation

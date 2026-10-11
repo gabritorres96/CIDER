@@ -1,5 +1,5 @@
 /* Four threads increment a shared counter 10000 times each. The mutex is statically initialised (PTHREAD_MUTEX_INITIALIZER, a
-   Darwin signature that CIDER recognises lazily). sched_yield() inside the critical section forces other threads to be scheduled
+   Darwin signature that ORVYN recognises lazily). sched_yield() inside the critical section forces other threads to be scheduled
    while the lock is held, so only real mutual exclusion keeps the count exact. */
 #include "darwin.h"
 

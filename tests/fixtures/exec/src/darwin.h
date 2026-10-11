@@ -1,7 +1,7 @@
-/* Minimal hand-written "SDK" for the freestanding fixtures: just the declarations of CIDER's libSystem subset.
+/* Minimal hand-written "SDK" for the freestanding fixtures: just the declarations of ORVYN's libSystem subset.
    Layouts and constants are the Darwin x86_64 ones (they differ from Linux and Windows). */
-#ifndef CIDER_DARWIN_H
-#define CIDER_DARWIN_H
+#ifndef ORVYN_DARWIN_H
+#define ORVYN_DARWIN_H
 
 typedef unsigned long size_t;
 typedef long ssize_t;

@@ -1,4 +1,4 @@
-// View drawing (CIDER 0.6.2): the path from a native repaint request to the guest's -drawRect:, and NSGraphicsContext.
+// View drawing (ORVYN 0.6.2): the path from a native repaint request to the guest's -drawRect:, and NSGraphicsContext.
 //
 //   WM_PAINT / offscreen repaint -> Backend Events::paint -> view_paint:
 //     1. take the surface the backend prepared (paint_device(), valid only during the event) and its pixel scale;
@@ -11,10 +11,10 @@
 #include "../graphics/cg_api.hpp"
 #include "appkit_internal.hpp"
 #include "appkit_install.hpp"
-#include "cider/abi.hpp"
-#include "cider/log.hpp"
+#include "orvyn/abi.hpp"
+#include "orvyn/log.hpp"
 
-namespace cider::appkit {
+namespace orvyn::appkit {
 
 bool view_is_flipped(Addr view) { return (rt().send(view, "isFlipped") & 0xff) != 0; }
 
@@ -157,4 +157,4 @@ void install_drawing_classes(objc::Runtime& r) {
     });
 }
 
-}  // namespace cider::appkit
+}  // namespace orvyn::appkit

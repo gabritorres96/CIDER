@@ -1,4 +1,4 @@
-/* qsort with a comparator that is Mach-O code of this program: CIDER's qsort calls it through a host -> guest callback. */
+/* qsort with a comparator that is Mach-O code of this program: ORVYN's qsort calls it through a host -> guest callback. */
 #include "darwin.h"
 
 static int calls;

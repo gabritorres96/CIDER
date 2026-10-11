@@ -1,12 +1,12 @@
-# Foundation subset (CIDER 0.4)
+# Foundation subset (ORVYN 0.4)
 
-CIDER implements a **small, host-written subset of Foundation** so that Objective-C programs that use strings, numbers, arrays,
+ORVYN implements a **small, host-written subset of Foundation** so that Objective-C programs that use strings, numbers, arrays,
 dictionaries, `NSLog` and autorelease pools can run. It is not Apple's Foundation: no Apple code or framework binary is used or copied
 (`src/foundation/` is written from the public documented behaviour of the classes), and it makes **no claim of Foundation, Cocoa or
 macOS compatibility** beyond the classes and selectors listed here.
 
 A program is linked against the subset when it has `LC_LOAD_DYLIB` for `/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation`
-(or CoreFoundation). The runtime then logs `[CIDER][OBJC] Foundation compatibility loaded`. The linker resolves symbols per library: a
+(or CoreFoundation). The runtime then logs `[ORVYN][OBJC] Foundation compatibility loaded`. The linker resolves symbols per library: a
 Foundation function or class that is not in the tables below fails the link with the symbol name (exit code 12) — it is never stubbed.
 
 ## How it works
@@ -28,7 +28,7 @@ Foundation function or class that is not in the tables below fails the link with
 
 | Symbol | Behaviour |
 |---|---|
-| `NSLog(NSString *format, ...)` | Formats with `%@` (calls `-description`), the printf conversions of the libSystem formatter, appends `\n` and writes to **stderr**. Apple's NSLog also writes a timestamp, process name, pid and thread id; **CIDER writes only the message** (documented deviation). `%n` is refused. |
+| `NSLog(NSString *format, ...)` | Formats with `%@` (calls `-description`), the printf conversions of the libSystem formatter, appends `\n` and writes to **stderr**. Apple's NSLog also writes a timestamp, process name, pid and thread id; **ORVYN writes only the message** (documented deviation). `%n` is refused. |
 | `NSStringFromClass`, `NSClassFromString`, `NSStringFromSelector`, `NSSelectorFromString` | As documented. |
 
 Data symbols: `___CFConstantStringClassReference`, `___NSArray0__`, `___NSDictionary0__`.
@@ -90,13 +90,13 @@ There is no Apple SDK in the repository. `tests/fixtures/objc/include/Foundation
 
 | Program | What it proves |
 |---|---|
-| `foundation_hello` | The reference program: `@"CIDER"`, `@[@20, @22]`, `for…in`, `NSLog(@"%@ result: %ld")` → `CIDER result: 42`, exit code 42, 0 live objects. |
+| `foundation_hello` | The reference program: `@"ORVYN"`, `@[@20, @22]`, `for…in`, `NSLog(@"%@ result: %ld")` → `ORVYN result: 42`, exit code 42, 0 live objects. |
 | `foundation_string` | NSString behaviour including UTF-16 literals, formatting and ranges (exit code = failed checks). |
 | `foundation_collections` | NSNumber, NSArray, NSMutableArray (100-element fast enumeration), NSDictionary, NSMutableDictionary, copies, subscripts, descriptions. |
 | `foundation_subclass` | Guest subclasses of NSObject (MRC): retain counts, dealloc balance, `-description` used by `%@`, `-hash`/`-isEqual:` keys, copied keys, explicit `NSAutoreleasePool`. |
 | `foundation_error` | Ten misuse modes that must end the guest with an exception-style message. |
 
-Run one: `cider run tests\fixtures\objc\bin\foundation_hello\foundation_hello` (stdout: log lines and `Guest exit code: 42`; stderr: `CIDER result: 42`).
+Run one: `orvyn run tests\fixtures\objc\bin\foundation_hello\foundation_hello` (stdout: log lines and `Guest exit code: 42`; stderr: `ORVYN result: 42`).
 
 ## 0.5 additions
 
@@ -115,7 +115,7 @@ rights of the worker. Errors use `NSCocoaErrorDomain` codes 4 (no such file), 51
 
 ## CoreFoundation (0.5.5)
 
-The CF types CIDER knows **are** the Foundation objects (a `CFStringRef` is an `NSString`, a `CFArrayRef` an `NSArray`...): toll-free bridging by construction for exactly these types, no general bridging layer.
+The CF types ORVYN knows **are** the Foundation objects (a `CFStringRef` is an `NSString`, a `CFArrayRef` an `NSArray`...): toll-free bridging by construction for exactly these types, no general bridging layer.
 Exported (CoreFoundation group): `CFRetain/Release/GetRetainCount/GetTypeID/Equal/Hash/CopyDescription/Show`, `CFString*` (create from a C string in UTF-8/ASCII/Latin-1, `CreateWithFormat` with `%@`, length, character at index, `GetCString`,
 `GetCStringPtr`, compare, copy, mutable create/append), `CFArray*` / `CFDictionary*` (create, mutable create, count, get, append/set/add/remove, keys and values; only the `kCFType...CallBacks` are accepted: NULL or custom callbacks are refused),
 `CFNumberCreate/GetValue`, `CFAbsoluteTimeGetCurrent`, and the run loop ([EVENT-LOOP.md](EVENT-LOOP.md)): `CFRunLoopGetMain/GetCurrent/Run/RunInMode/Stop/WakeUp`, version-0 sources, timers. Constants: `kCFAllocatorDefault`, `kCFTypeArrayCallBacks`,

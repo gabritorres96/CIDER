@@ -1,15 +1,15 @@
-// NSApplication (CIDER 0.5.7): the singleton, the launch sequence, run / stop: / terminate:, the delegate and the action dispatch.
+// NSApplication (ORVYN 0.5.7): the singleton, the launch sequence, run / stop: / terminate:, the delegate and the action dispatch.
 //
-// run drives the shared run loop (cider/runloop.hpp) with the GUI backend as its input source: window messages, timers, sources and
+// run drives the shared run loop (orvyn/runloop.hpp) with the GUI backend as its input source: window messages, timers, sources and
 // libdispatch main-queue blocks are all serviced by the same loop on the main thread. See docs/EVENT-LOOP.md.
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
-#include "cider/runloop.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/runloop.hpp"
 #include "../libsystem/internal.hpp"
 #include "appkit_internal.hpp"
 #include "appkit_install.hpp"
 
-namespace cider::appkit {
+namespace orvyn::appkit {
 
 void finish_launching() {
     AppPayload* app = A(st().app);
@@ -141,4 +141,4 @@ void install_application_class(objc::Runtime& r) {
     });
 }
 
-}  // namespace cider::appkit
+}  // namespace orvyn::appkit

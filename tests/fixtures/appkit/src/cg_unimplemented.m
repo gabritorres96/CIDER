@@ -1,4 +1,4 @@
-/* A program that imports a real CoreGraphics function CIDER does not implement (CGContextDrawLinearGradient). It must be refused when it is loaded, naming the
+/* A program that imports a real CoreGraphics function ORVYN does not implement (CGContextDrawLinearGradient). It must be refused when it is loaded, naming the
    symbol and the library; it must never start and never receive a fake that does nothing. */
 #include "AppKit/AppKit.h"
 

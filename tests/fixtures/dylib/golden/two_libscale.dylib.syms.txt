@@ -1,5 +1,5 @@
 C:\Users\gabri\Desktop\mtd\CIDER\tests\fixtures\dylib\bin\two\libscale.dylib:
 
 SYMBOL TABLE:
-0000000000000280 g     F __TEXT,__text _cider_scale
+0000000000000280 g     F __TEXT,__text _orvyn_scale
 0000000000000000         *UND* dyld_stub_binder

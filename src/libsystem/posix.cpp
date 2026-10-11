@@ -1,9 +1,9 @@
-// POSIX subset of CIDER's libSystem: file descriptors, files, time and process identity, with Darwin's constants,
+// POSIX subset of ORVYN's libSystem: file descriptors, files, time and process identity, with Darwin's constants,
 // structure layouts (x86_64, 64-bit inode variant) and errno values translated onto Win32. NOTHING here hands a Win32
 // HANDLE, a CRT file descriptor, a Windows `struct _stat` or a Windows error code to the guest.
 //
 // Guest paths: the guest sees a POSIX tree whose "/" is RuntimeContext::root (a host directory chosen with
-// `cider run --root`). Paths are normalised lexically ('.', '..' never leave the root), Windows-only syntax (drive
+// `orvyn run --root`). Paths are normalised lexically ('.', '..' never leave the root), Windows-only syntax (drive
 // letters, backslashes, streams, wildcards, reserved device names) is refused, and every existing path is checked
 // again after resolving links so a junction/symlink cannot lead outside the root. This confines honest programs;
 // it is NOT a security sandbox (guest machine code runs natively, see docs/SECURITY.md).
@@ -21,14 +21,14 @@
 #include <cstring>
 #include <ctime>
 
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
-#include "cider/util.hpp"
-#include "cider/guest_threads.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/util.hpp"
+#include "orvyn/guest_threads.hpp"
+#include "orvyn/objc.hpp"
 #include "internal.hpp"
 
-namespace cider::libsystem {
+namespace orvyn::libsystem {
 
 RuntimeContext::RuntimeContext() {
     fds.resize(3);
@@ -328,7 +328,7 @@ int64_t w_access(const char* path, int mode) {
 }
 
 char* w_getcwd(char* buf, uint64_t size) {
-    static const char cwd[] = "/";                                          // CIDER has no chdir: the guest lives at its root
+    static const char cwd[] = "/";                                          // ORVYN has no chdir: the guest lives at its root
     if (!buf) {
         const uint64_t n = size ? size : sizeof cwd;
         if (n < sizeof cwd) { fail_errno(detail::kERANGE); return nullptr; }
@@ -456,7 +456,7 @@ int* w_errno_location() { return &detail::errno_ref(); }
 
 template <class F> void* addr(F* f) { return reinterpret_cast<void*>(f); }
 
-#else   // !_WIN32: the runtime is Windows-only (see CIDER_HAS_RUNTIME)
+#else   // !_WIN32: the runtime is Windows-only (see ORVYN_HAS_RUNTIME)
 #endif
 
 }  // namespace
@@ -506,9 +506,9 @@ void add_posix_symbols(std::vector<HostSymbol>& t) {
 }
 }  // namespace detail
 
-}  // namespace cider::libsystem
+}  // namespace orvyn::libsystem
 
-namespace cider::libsystem::detail {
+namespace orvyn::libsystem::detail {
 // Guest path -> host path inside the guest root (see resolve_path above); 0 or a Darwin errno. Used by the Foundation file classes.
 int resolve_guest_path(const char* guest, std::filesystem::path& host) { return resolve_path(guest, host); }
-}  // namespace cider::libsystem::detail
+}  // namespace orvyn::libsystem::detail

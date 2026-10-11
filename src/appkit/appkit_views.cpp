@@ -1,18 +1,18 @@
-// NSResponder, NSView, NSControl, NSButton, NSTextField (CIDER 0.5.7).
+// NSResponder, NSView, NSControl, NSButton, NSTextField (ORVYN 0.5.7).
 //
 // Layout model: every view has a frame in its superview coordinates (origin bottom-left unless the view is flipped). The backend wants
-// rectangles measured from the TOP-left of the parent client area, so each frame is converted here (see cider/geometry.hpp). bounds always
+// rectangles measured from the TOP-left of the parent client area, so each frame is converted here (see orvyn/geometry.hpp). bounds always
 // start at (0,0) and have the frame size: bounds rotation/scaling/origin are not supported.
 #include <algorithm>
 #include <cstring>
 #include <format>
 
-#include "cider/libsystem.hpp"
+#include "orvyn/libsystem.hpp"
 #include "../libsystem/internal.hpp"
 #include "appkit_internal.hpp"
 #include "appkit_install.hpp"
 
-namespace cider::appkit {
+namespace orvyn::appkit {
 namespace {
 
 using abi::GuestRegs;
@@ -574,4 +574,4 @@ void install_responder_classes(objc::Runtime& r) {
     });
 }
 
-}  // namespace cider::appkit
+}  // namespace orvyn::appkit

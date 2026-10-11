@@ -1,11 +1,11 @@
-#include "cider/guest_threads.hpp"
+#include "orvyn/guest_threads.hpp"
 
 #include <algorithm>
 #include <chrono>
 #include <thread>
 
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
 #include "internal.hpp"
 
 #ifdef _WIN32
@@ -13,7 +13,7 @@
 #include <windows.h>
 #endif
 
-namespace cider::libsystem {
+namespace orvyn::libsystem {
 namespace {
 thread_local ThreadState* t_current = nullptr;   // HOST thread_local (a C++ variable): not related to guest TLS
 }
@@ -235,4 +235,4 @@ bool GuestThreads::shutdown() {
     return clean;
 }
 
-}  // namespace cider::libsystem
+}  // namespace orvyn::libsystem

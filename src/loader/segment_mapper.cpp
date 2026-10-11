@@ -1,10 +1,10 @@
 #include <cstring>
 #include <format>
 
-#include "cider/loader.hpp"
-#include "cider/log.hpp"
+#include "orvyn/loader.hpp"
+#include "orvyn/log.hpp"
 
-namespace cider::loader {
+namespace orvyn::loader {
 
 uint8_t* LoadedImage::host_address(uint64_t vmaddr) const noexcept {
     for (const auto& s : layout.segments)
@@ -94,4 +94,4 @@ Status apply_fixups_resolved(LoadedImage& image, const macho::Image& img, const 
     return apply_impl(image, img, fixups, [&](size_t i, const dyld::Fixup&) -> Result<uint64_t> { return bind_values[i]; });
 }
 
-}  // namespace cider::loader
+}  // namespace orvyn::loader

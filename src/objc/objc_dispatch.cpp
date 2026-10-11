@@ -3,12 +3,12 @@
 // calls lookup_for_message(self, _cmd) through a thunk, then jumps to the IMP it returns.
 #include <format>
 
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/objc.hpp"
 #include "../libsystem/internal.hpp"
 
-namespace cider::objc {
+namespace orvyn::objc {
 
 Addr Runtime::lookup_for_message(Addr self, Addr s) {
     ++messages_sent;
@@ -61,4 +61,4 @@ Addr Runtime::lookup_for_super(Addr super_struct, Addr s, int mode) {
     return imp ? imp : forward_imp_;
 }
 
-}  // namespace cider::objc
+}  // namespace orvyn::objc

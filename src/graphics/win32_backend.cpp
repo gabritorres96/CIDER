@@ -1,4 +1,4 @@
-// Win32 GUI backend (CIDER 0.5.8): real HWNDs through RegisterClassExW / CreateWindowExW and the standard BUTTON / STATIC / EDIT controls.
+// Win32 GUI backend (ORVYN 0.5.8): real HWNDs through RegisterClassExW / CreateWindowExW and the standard BUTTON / STATIC / EDIT controls.
 // Everything runs on the main guest thread, which is the OS thread that owns every window and pumps their messages. See docs/GUI-BACKEND.md.
 #include <algorithm>
 #include <unordered_map>
@@ -11,11 +11,11 @@
 #include <windows.h>
 #include <windowsx.h>
 
-#include "cider/log.hpp"
+#include "orvyn/log.hpp"
 #include "d2d_device.hpp"
 #include "gui_backend.hpp"
 
-namespace cider::gui {
+namespace orvyn::gui {
 namespace {
 
 using geometry::PixelRect;
@@ -27,8 +27,8 @@ using geometry::Size;
 #define EM_SETCUEBANNER 0x1501      // ECM_FIRST + 1 (commctrl.h)
 #endif
 
-const wchar_t* kWindowClass = L"CIDERWindow";
-const wchar_t* kViewClass = L"CIDERView";
+const wchar_t* kWindowClass = L"ORVYNWindow";
+const wchar_t* kViewClass = L"ORVYNView";
 
 std::wstring widen(const std::string& s) {
     if (s.empty()) return {};
@@ -145,7 +145,7 @@ LRESULT CALLBACK view_trampoline(HWND h, UINT m, WPARAM w, LPARAM l) {
 Win32Backend::Win32Backend() {
     g_backend = this;
     instance_ = GetModuleHandleW(nullptr);
-    // Per-monitor DPI awareness is declared by the manifest of cider.exe; this is the fallback when the manifest is not embedded.
+    // Per-monitor DPI awareness is declared by the manifest of orvyn.exe; this is the fallback when the manifest is not embedded.
     SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     WNDCLASSEXW wc{};
     wc.cbSize = sizeof wc;
@@ -537,4 +537,4 @@ LRESULT Win32Backend::window_proc(HWND h, UINT m, WPARAM w, LPARAM l) {
 
 std::unique_ptr<Backend> create_win32_backend() { return std::make_unique<Win32Backend>(); }
 
-}  // namespace cider::gui
+}  // namespace orvyn::gui

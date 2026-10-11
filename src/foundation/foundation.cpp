@@ -3,19 +3,19 @@
 #include <format>
 #include <unordered_map>
 
-#include "cider/appkit.hpp"
-#include "cider/dispatch.hpp"
+#include "orvyn/appkit.hpp"
+#include "orvyn/dispatch.hpp"
 #include "../graphics/cg_bridge.hpp"
 #include "../corefoundation/cf_bridge.hpp"
-#include "cider/runloop.hpp"
-#include "cider/libsystem.hpp"
-#include "cider/log.hpp"
-#include "cider/objc.hpp"
-#include "cider/printf_format.hpp"
+#include "orvyn/runloop.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/objc.hpp"
+#include "orvyn/printf_format.hpp"
 #include "../libsystem/internal.hpp"
 #include "foundation_internal.hpp"
 
-namespace cider::foundation {
+namespace orvyn::foundation {
 namespace {
 Runtime* g_rt = nullptr;
 Classes g_classes;
@@ -200,7 +200,7 @@ using abi::GuestRegs;
 using abi::RegsReader;
 
 // void NSLog(NSString* format, ...): formats with %@ support and writes "message\n" to stderr. Apple's NSLog also prefixes a timestamp,
-// the process name, pid and thread id; CIDER writes the bare message (documented deviation).
+// the process name, pid and thread id; ORVYN writes the bare message (documented deviation).
 void w_NSLog(GuestRegs* r) {
     RegsReader a(*r);
     const Addr fmt = a.next_int();
@@ -261,9 +261,9 @@ void install_misc(Runtime& r) {
     r.add_native_methods(pool, false, {{"init", "@16@0:8", addr(pool_init), false}, {"drain", "v16@0:8", addr(pool_drain), false}, {"release", "Vv16@0:8", addr(pool_drain), false}});
 }
 
-}  // namespace cider::foundation
+}  // namespace orvyn::foundation
 
-namespace cider::objc {
+namespace orvyn::objc {
 void add_foundation_symbols(std::vector<libsystem::HostSymbol>& t) {
     using libsystem::HostSymbol;
     using libsystem::Lib;
@@ -319,4 +319,4 @@ void install_foundation(Runtime& rt) {
     runloop::install(rt);
     appkit::install(rt);
 }
-}  // namespace cider::objc
+}  // namespace orvyn::objc

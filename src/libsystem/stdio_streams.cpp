@@ -1,6 +1,6 @@
-// FILE streams for guest code (CIDER 0.4.1).
+// FILE streams for guest code (ORVYN 0.4.1).
 //
-// Darwin's FILE is a public struct (_p, _r, _w, _flags, _file, ...) that some macros read directly; CIDER does NOT emulate that
+// Darwin's FILE is a public struct (_p, _r, _w, _flags, _file, ...) that some macros read directly; ORVYN does NOT emulate that
 // layout. A guest FILE* is an OPAQUE pointer to a 64-byte, read-only slot in a pool owned by the libSystem provider (magic + slot
 // index). The state lives in the host, in RuntimeContext::streams, on top of the guest descriptor table: so path confinement
 // (--root), the descriptor limit and cleanup at exit are shared with open()/close(). A guest pointer is only ever compared against
@@ -12,10 +12,10 @@
 #include <algorithm>
 #include <cstring>
 
-#include "cider/libsystem.hpp"
+#include "orvyn/libsystem.hpp"
 #include "internal.hpp"
 
-namespace cider::libsystem {
+namespace orvyn::libsystem {
 namespace {
 
 using detail::fail_errno;
@@ -271,4 +271,4 @@ void add_stream_symbols(std::vector<HostSymbol>& t) {
 }
 
 }  // namespace detail
-}  // namespace cider::libsystem
+}  // namespace orvyn::libsystem

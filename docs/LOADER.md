@@ -1,7 +1,7 @@
-# Loader and cider-dyld
+# Loader and orvyn-dyld
 
-**Status (CIDER 0.2): implemented for controlled x86_64 executables.** Sources: `src/loader`, `src/memory`,
-`src/security`, `src/dyld`. Public API: `include/cider/loader.hpp`, `memory.hpp`, `fixups.hpp`.
+**Status (ORVYN 0.2): implemented for controlled x86_64 executables.** Sources: `src/loader`, `src/memory`,
+`src/security`, `src/dyld`. Public API: `include/orvyn/loader.hpp`, `memory.hpp`, `fixups.hpp`.
 How a whole run fits together: [EXECUTION.md](EXECUTION.md).
 
 ## Pipeline (`loader::load_macho`)
@@ -27,7 +27,7 @@ Strict separation between stages; nothing before step 5 touches process memory.
 
 Any failure after step 5 releases the reservation (RAII `memory::Region`); tests verify the address range is free again.
 
-## Supported fixups (cider-dyld, `LC_DYLD_INFO_ONLY`)
+## Supported fixups (orvyn-dyld, `LC_DYLD_INFO_ONLY`)
 
 | Mechanism | Support |
 | --- | --- |
@@ -40,8 +40,8 @@ Any failure after step 5 releases the reservation (RAII `memory::Region`); tests
 | Chained fixups (`LC_DYLD_CHAINED_FIXUPS`) | **rejected** with a clear message; link with `-no_fixup_chains` |
 | Re-exported libraries, two-level namespace semantics beyond "the ordinal names the library" | not implemented |
 
-Symbol resolution consults a `SymbolProvider`; the only provider is CIDER's libSystem subset. A symbol of
-`libSystem.B.dylib` that CIDER does not implement is *unresolved*, never mapped to a same-named Windows function.
+Symbol resolution consults a `SymbolProvider`; the only provider is ORVYN's libSystem subset. A symbol of
+`libSystem.B.dylib` that ORVYN does not implement is *unresolved*, never mapped to a same-named Windows function.
 
 ## Not done (needed for real applications)
 

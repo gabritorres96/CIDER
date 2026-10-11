@@ -5,7 +5,7 @@ segment  section            address     type
 
 Bind table:
 segment  section            address    type       addend dylib            symbol
-__DATA_CONST __got              0x100001000 pointer         0 libinitoff       _cider_off_ready
+__DATA_CONST __got              0x100001000 pointer         0 libinitoff       _orvyn_off_ready
 
 Lazy bind table:
 segment  section            address     dylib            symbol

@@ -1,13 +1,13 @@
-#include "cider/bundle.hpp"
+#include "orvyn/bundle.hpp"
 
 #include <algorithm>
 
-#include "cider/log.hpp"
-#include "cider/util.hpp"
+#include "orvyn/log.hpp"
+#include "orvyn/util.hpp"
 
 namespace fs = std::filesystem;
 
-namespace cider::bundle {
+namespace orvyn::bundle {
 namespace {
 
 bool is_dir(const fs::path& p) {
@@ -148,4 +148,4 @@ Result<Info> inspect(const fs::path& root_in, const macho::Limits& limits) {
     return info;
 }
 
-}  // namespace cider::bundle
+}  // namespace orvyn::bundle

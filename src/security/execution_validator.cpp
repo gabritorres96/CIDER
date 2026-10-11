@@ -1,10 +1,10 @@
 #include <algorithm>
 #include <format>
 
-#include "cider/loader.hpp"
-#include "cider/log.hpp"
+#include "orvyn/loader.hpp"
+#include "orvyn/log.hpp"
 
-namespace cider::loader {
+namespace orvyn::loader {
 namespace {
 void add(ValidationReport& r, Issue::Kind k, std::string m) { r.issues.push_back({k, std::move(m)}); }
 }  // namespace
@@ -14,7 +14,7 @@ ValidationReport validate_for_execution(const macho::Image& img, const Validator
     using K = Issue::Kind;
 
     if (img.cputype != macho::kCpuX86_64)
-        add(r, K::Incompatible, std::format("architecture is {}, CIDER 0.2 executes x86_64 only", macho::cpu_name(img.cputype, img.cpusubtype)));
+        add(r, K::Incompatible, std::format("architecture is {}, ORVYN 0.2 executes x86_64 only", macho::cpu_name(img.cputype, img.cpusubtype)));
     if (opts.as_dependency) {
         if (img.filetype != macho::kFileDylib)
             add(r, K::Incompatible, std::format("file type is '{}', not a dynamic library (MH_DYLIB)", macho::filetype_name(img.filetype)));
@@ -62,7 +62,7 @@ ValidationReport validate_for_execution(const macho::Image& img, const Validator
             log::warn(log::Category::Loader, "weak dependency {} is not provided; symbols bound to it become null", d.path);
             continue;
         }
-        add(r, K::MissingDependency, std::format("required library {} is not available in CIDER", d.path));
+        add(r, K::MissingDependency, std::format("required library {} is not available in ORVYN", d.path));
     }
     if (!img.rpaths.empty() && !opts.linker_resolves_dependencies) log::debug(log::Category::Loader, "ignoring {} LC_RPATH entr(ies): no bundled libraries are loaded", img.rpaths.size());
 
@@ -76,4 +76,4 @@ ValidationReport validate_for_execution(const macho::Image& img, const Validator
     return r;
 }
 
-}  // namespace cider::loader
+}  // namespace orvyn::loader

@@ -1,14 +1,14 @@
-// NSNotification and NSNotificationCenter (CIDER 0.5): selector- and block-based observers, synchronous delivery on the posting thread.
+// NSNotification and NSNotificationCenter (ORVYN 0.5): selector- and block-based observers, synchronous delivery on the posting thread.
 // Observers are NOT retained (as in Cocoa); blocks are copied. Not implemented: operation queues (the queue argument is ignored: blocks run on the
 // posting thread), notification coalescing, distributed notifications.
 #include <algorithm>
 
-#include "cider/libsystem.hpp"
-#include "cider/objc.hpp"
+#include "orvyn/libsystem.hpp"
+#include "orvyn/objc.hpp"
 #include "../libsystem/internal.hpp"
 #include "foundation_internal.hpp"
 
-namespace cider::foundation {
+namespace orvyn::foundation {
 namespace {
 
 struct NotificationPayload : Payload { Addr name = 0, object = 0, userinfo = 0; };
@@ -199,4 +199,4 @@ void install_nsnotification(Runtime& r) {
     });
 }
 
-}  // namespace cider::foundation
+}  // namespace orvyn::foundation
