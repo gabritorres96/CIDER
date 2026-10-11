@@ -361,6 +361,28 @@ ORVYN_TEST(malformed_relative_method_lists_are_refused_before_any_guest_code_run
     }
 }
 
+ORVYN_TEST(random_corruption_of_relative_method_lists_never_crashes_the_metadata_reader) {
+    // 400 mutations per selector mode in the method-list area (header words and offsets): the reader either accepts the image or refuses
+    // it with a message; it must never read outside the image or crash. No guest code runs (prepare() only links and parses metadata).
+    std::mt19937 rng(0x6d657468);
+    for (auto mode : {testing::relmeth::Mode::Direct, testing::relmeth::Mode::Indirect}) {
+        const auto good = relative_fixture(mode);
+        const uint64_t list = testing::relmeth::first_method_list(good);
+        const uint64_t off = testing::relmeth::file_offset_of(good, list);
+        REQUIRE(off != 0);
+        size_t refused = 0, accepted = 0;
+        for (int i = 0; i < 400; ++i) {
+            auto v = good;
+            const int edits = 1 + static_cast<int>(rng() % 3);
+            for (int e = 0; e < edits; ++e) v[off + rng() % 44] = static_cast<uint8_t>(rng());
+            auto l = prepare(bin("objc_relative"), &v);
+            (l->ok ? accepted : refused)++;
+        }
+        CHECK(refused > 0);                                   // corrupting offsets is noticed
+        CHECK(accepted + refused == 400);
+    }
+}
+
 // ============================== @synchronized and associated objects (ORVYN 0.6) =======================================================
 ORVYN_TEST(synchronized_is_recursive_exclusive_between_guest_threads_and_associations_follow_their_policies) {
     Run r = run(bin("objc_sync"));
