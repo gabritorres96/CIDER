@@ -40,4 +40,7 @@ area). `cf_basic.m` calls every one of them from clang-generated code.
 
 ## Not implemented
 
-Affine transforms, `CGRectMakeWithDictionaryRepresentation`/dictionary forms, the "nearly equal" functions, `NSRange` helpers, `NSDivideRect`, bounds origin/rotation/scale of views (bounds always start at (0,0) with the frame size).
+`CGRectMakeWithDictionaryRepresentation`/dictionary forms, the "nearly equal" functions, `NSRange` helpers, `NSDivideRect`, bounds origin/rotation/scale of views (bounds always start at (0,0) with the frame size).
+
+Drawing (contexts, colors, paths, affine transforms, images) is a separate layer: [COREGRAPHICS-RENDERING.md](COREGRAPHICS-RENDERING.md) (0.6.1) and
+[APPKIT-DRAWING.md](APPKIT-DRAWING.md) (0.6.2).

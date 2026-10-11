@@ -94,3 +94,16 @@ clauses); this project does not give legal advice — check the licence of what 
 * GUI: only the main guest thread touches windows; the offscreen backend is a test device; the Win32 GUI tests need an interactive desktop; keyboard codes are Windows virtual-key codes; DPI scaling is per monitor but only the primary display is modelled.
 * The worker is **still not a sandbox**: guest code, including GUI programs, runs with the user rights. For GUI programs the default 60 s timeout is lifted to 24 h (an explicit `--timeout` still applies).
 * Release/ASan/fuzzing evidence is in [PROGRESS.md](PROGRESS.md); GitHub Actions has still never run.
+
+## 0.6.1 - 0.6.2 (CoreGraphics drawing, `-drawRect:`)
+
+* CoreGraphics is a **subset**: no bitmap/PDF contexts, gradients, shadings, patterns, shadows, blend modes, text drawing, color spaces other than DeviceRGB; no way yet for a
+  guest to create a `CGImage` ([COREGRAPHICS-RENDERING.md](COREGRAPHICS-RENDERING.md)). A program importing anything else is refused when loaded.
+* `CGContextGetCTM` is relative to the view (identity at start), not the full device matrix; stroke width under a non-uniform scale is the average scale.
+* `dirtyRect` is always the whole view; `setNeedsDisplayInRect:` is widened. A repaint request from inside the same view's `-drawRect:` is ignored.
+* Drawing happens only for views whose class overrides `-drawRect:`; every such view is its own window, so a parent's `-drawRect:` does not paint its subviews, and
+  there is no layer backing, `isOpaque`, `bounds` origin, `lockFocus` or `cacheDisplayInRect:`. `NSColor`, `NSBezierPath`, `NSRectFill`, `NSImage`, text drawing do not exist yet.
+* Main thread only: the Direct2D factory is single-threaded and every surface belongs to the thread that pumps messages.
+* Invalid or dead CoreGraphics handles are refused with a log line, not with the crash Apple's CoreGraphics may produce; a guest relying on that crash is not emulated.
+* Verified on one machine (Windows 11, one monitor at the primary DPI), software Direct2D for the headless tests and the default Direct2D target type for windows.
+* The worker is still not a sandbox.

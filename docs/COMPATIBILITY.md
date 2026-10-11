@@ -74,3 +74,10 @@ Programs that call **Blocks, libdispatch, CoreFoundation basics, CoreGraphics ge
 | MonitorControl 4.4.0 | 1,434 | 26 | 22 | refused: Swift (1,086 libswiftCore imports) |
 
 All four are Swift applications. The Swift runtime, not AppKit, is the first blocker; **none of them runs and none is claimed to**.
+
+## What 0.6.1 - 0.6.2 add (drawing)
+
+A controlled Objective-C Mach-O program can now draw with CoreGraphics from `-drawRect:` into a real window. Evidence is limited to the fixtures `cg_draw_test` (scene and
+Redraw button), `cg_abi_test` (struct passing), `cg_lifecycle` (window cycles, close during drawing, stale contexts) and `cg_unimplemented` (refusal). **No real application
+draws through CIDER yet**: CotEditor, Rectangle, Stats and MonitorControl remain Swift applications and are refused at load; nothing in this phase changes that
+([COTEDITOR-COMPATIBILITY.md](COTEDITOR-COMPATIBILITY.md)). See [COREGRAPHICS-RENDERING.md](COREGRAPHICS-RENDERING.md) and [APPKIT-DRAWING.md](APPKIT-DRAWING.md).

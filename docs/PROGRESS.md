@@ -4,6 +4,28 @@
 No macOS application runs; Cocoa does not exist; Swift and SwiftUI are not supported; AppKit and Foundation are host-written subsets.**
 Last verified: 2026-10-11, Windows 11 Pro 10.0.26200, MSVC 14.51 + ml64, clang-cl/LLVM 23.1.3 (portable), CMake 4.2.3.
 
+## 0.6 in progress: 0.6.1 CoreGraphics API + 0.6.2 `NSView -drawRect:` (version stays 0.5.0)
+
+A Mach-O program compiled for macOS now draws with CoreGraphics from its own `-drawRect:` and the pixels appear in a real Windows window
+(`cg_draw_test`: "CIDER — CoreGraphics Drawing", Redraw button). Nothing else of 0.6 (images, menus, text, NSTimer, NSUserDefaults, Swift research, showcase) has been started.
+
+| Capability | Evidence (2026-10-11) |
+|---|---|
+| ~100 CoreGraphics functions exposed to guests (contexts, colors, paths, transforms), handles validated | `test_cg_abi` (2), `test_runtime` (exact symbol registry), `docs/COREGRAPHICS-RENDERING.md` |
+| System V struct passing: `CGPoint`/`CGSize` (SSE), `CGRect`/`CGAffineTransform` (MEMORY, hidden result pointers), `NSRect` on the stack to `-drawRect:` | `cg_abi_test`, `cg_draw_test` (clang-built macOS programs) |
+| `WM_PAINT` → `-drawRect:` → Direct2D, real window pixels, Redraw button repaints from a guest variable, resize repaints | `test_gui_win32` (`PrintWindow` capture from another process), `test_cg_rendering` (offscreen PNG snapshots: orientation, flipped views, clip, stroke, rotation, DPI x2) |
+| Lifecycle: 40 window cycles, close during `-drawRect:`, stale/dead contexts refused, no objc/CG/COM/GDI/USER leak in the runs measured | `cg_lifecycle`, `test_cg_rendering` |
+| Unimplemented CoreGraphics imports are refused at load | `cg_unimplemented` |
+| Tests | Debug: 509 run, 506 passed, 0 failed, 3 skipped, 39 suites; Release: 509 run, 506 passed, 0 failed, 3 skipped, 39 suites (previous release: 490 run) |
+| Fresh build from scratch (new directory, Release) | configure + build rc 0; ctest 39/39 pass |
+| AddressSanitizer (clang-cl, all 39 suites, GUI tests included) | 39/39 pass. One flaky GDI-count check was found and given a documented tolerance (see TESTING.md) |
+| `fuzz_cg` (new) | 944,443 runs / 150 s after fixing the hang it found (a `1e300` arc sweep); no crash, leak or timeout afterwards |
+| `fuzz_linker`, `fuzz_objc` (120 s each) | 1,398,896 and 6,065 runs; no crash, leak or timeout (`fuzz_tbd` and the other fuzzers were not re-run: the code they cover did not change) |
+
+Local commits of this work: `6510583` engine and Direct2D device, `c12f8a7` guest API and `-drawRect:` bridge, `6f01b58` fixtures and tests, a handle-safety fix, `0bce9f8` fuzz-found fix, plus documentation.
+
+Not done in 0.6.1-0.6.2 (see [LIMITATIONS.md](LIMITATIONS.md)): image creation from the guest, text drawing, `NSColor`/`NSBezierPath`/`NSRectFill`, partial dirty rectangles.
+
 ## What now works (0.5, on top of 0.4)
 
 | Capability | Evidence |

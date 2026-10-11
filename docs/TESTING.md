@@ -151,3 +151,23 @@ New fuzzers: `fuzz_chained` (export trie + chained/classic fixup decoders) and `
 * Fixture generators: `tools\llvm-env.cmd tools\gen-objc-fixtures.cmd` (Objective-C, Foundation, blocks, dispatch, CF, forwarding), `tools\llvm-env.cmd tools\gen-appkit-fixtures.cmd` (AppKit; shares headers and stubs with the Objective-C fixtures).
 * New fuzzer `fuzz_tbd` (TAPI reader); `fuzz_objc` now also covers the new classes' installation. The SDK/xip/pkg tools are exercised against the real Apple downloads by hand, not in CTest (the downloads are not versioned).
 * `test_execution`'s memory-growth limit is wider under ASan (its allocator quarantine); `test_linker` uses SceneKit (not AppKit) as the example of an unavailable system library.
+
+## 0.6.1 - 0.6.2 notes (CoreGraphics drawing, `-drawRect:`)
+
+* **Counts** (per executable, this machine, 2026-10-11): **Debug: 509 run, 506 passed, 0 failed, 3 skipped, 39 suites; Release: 509 run, 506 passed, 0 failed, 3 skipped, 39 suites**. New suites: `test_cg` (engine + Direct2D bitmap), `test_cg_abi`,
+  `test_cg_rendering`; `test_gui_win32` has a fourth interactive test; `test_runtime` lists the new symbols (the registry test is exact).
+* Pixel tests never depend on exact antialiasing: interiors are compared with a tolerance of 3 per channel, black strokes with `< 40`, and every scene check
+  includes non-background colors at asymmetric positions (top-right blue rectangle vs bottom-left red one; a rotated square tested inside and outside its diamond).
+  A blank or all-background image fails: the background-only count must leave more than 3000 differing pixels. Vertical inversions fail on the first check.
+* The fixtures are real Mach-O programs: `tools\llvm-env.cmd tools\gen-appkit-fixtures.cmd` builds `cg_draw_test`, `cg_abi_test`, `cg_lifecycle` and `cg_unimplemented`
+  with clang and ld64.lld against *hand-written* headers/stubs (no Apple SDK). The generator is deterministic: rebuilding leaves the other fixtures byte-identical.
+* Leak evidence is per run, not a proof of absence: `objc_live_objects == 0` (with the class summary on failure), `cg_live_objects() == 0`, Direct2D/WIC COM objects
+  (`com_objects_alive()`) equal before and after 120 repaints and after 40 window cycles, `gui_native_objects_after == 0`, and on real windows GDI/USER handle
+  counts of the test process around a run of 40 windows (tolerance 8: a leak of one handle per window would add 40). One flake was found and fixed while building
+  this: the first version required `<=` exactly and failed once under ASan with a parallel ctest.
+* `fuzz_cg` (new): half the inputs are run through WIC `decode_image` with tight limits, half are programs of context operations with NaN/infinite/huge values checked
+  against a device that traps on unbalanced clips. It found a real hang in its first minute (an arc with a `1e300` sweep looped `while (sweep > 0) sweep -= 2*pi`);
+  fixed with `fmod` and with refusing non-finite arguments, covered by a unit test.
+* Interactive tests need an input desktop and are skipped otherwise. The capture uses `PrintWindow(PW_RENDERFULLCONTENT)`; it was only exercised on a visible window.
+* Not covered: monitors with different DPI at the same time, a real DPI change event (the offscreen `scale` command emulates it, `WM_DPICHANGED` is exercised only
+  by the manual path of 0.5), GPU device loss, ClearType text (there is no text drawing yet), several guest threads drawing.
