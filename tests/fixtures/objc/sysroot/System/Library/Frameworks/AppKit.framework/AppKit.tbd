@@ -12,5 +12,5 @@ exports:
     symbols:         [ _NSApp, _NSApplicationDidFinishLaunchingNotification, _NSApplicationWillTerminateNotification,
                        _NSApplicationDidBecomeActiveNotification, _NSWindowWillCloseNotification, _NSWindowDidResizeNotification,
                        _NSWindowDidMoveNotification, _NSWindowDidBecomeKeyNotification, _NSWindowDidResignKeyNotification ]
-    objc-classes:    [ NSResponder, NSApplication, NSWindow, NSView, NSControl, NSButton, NSTextField, NSEvent, NSScreen ]
+    objc-classes:    [ NSResponder, NSApplication, NSWindow, NSView, NSControl, NSButton, NSTextField, NSEvent, NSScreen, NSGraphicsContext ]
 ...

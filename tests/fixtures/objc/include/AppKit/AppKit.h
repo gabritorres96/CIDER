@@ -107,6 +107,8 @@ extern NSApplication *NSApp;
 - (void)setNeedsDisplay:(BOOL)flag;
 - (BOOL)needsDisplay;
 - (void)display;
+- (void)displayIfNeeded;
+- (void)setNeedsDisplayInRect:(NSRect)invalidRect;
 - (BOOL)isHidden;
 - (void)setHidden:(BOOL)hidden;
 - (NSInteger)tag;
@@ -117,6 +119,20 @@ extern NSApplication *NSApp;
 - (BOOL)isFlipped;
 - (BOOL)isDescendantOf:(NSView *)view;
 - (void)drawRect:(NSRect)dirtyRect;
+@end
+
+@interface NSGraphicsContext : NSObject
++ (NSGraphicsContext *)currentContext;
++ (void)setCurrentContext:(NSGraphicsContext *)context;
++ (NSGraphicsContext *)graphicsContextWithCGContext:(CGContextRef)graphicsPort flipped:(BOOL)initialFlippedState;
++ (void)saveGraphicsState;
++ (void)restoreGraphicsState;
+- (CGContextRef)CGContext;
+- (void *)graphicsPort;
+- (BOOL)isFlipped;
+- (void)flushGraphics;
+- (void)saveGraphicsState;
+- (void)restoreGraphicsState;
 @end
 
 @interface NSControl : NSView

@@ -9,6 +9,7 @@
 #include <tlhelp32.h>
 
 #include <chrono>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <string>
@@ -214,4 +215,125 @@ CIDER_TEST(two_runs_in_a_row_leave_no_windows_behind) {
         CHECK(program.wait_exit(15000, code));
         CHECK(!IsWindow(w));
     }
+}
+
+// ---- CoreGraphics drawing on a real window (CIDER 0.6) ----------------------------------------------------------------------------------------------------------
+namespace {
+
+struct Capture {
+    int w = 0, h = 0, client_x = 0, client_y = 0;
+    std::vector<uint8_t> bgra;
+    bool pixel(int x, int y, int& r, int& g, int& b) const {          // client coordinates, pixels
+        const int px = client_x + x, py = client_y + y;
+        if (px < 0 || py < 0 || px >= w || py >= h) return false;
+        const uint8_t* p = &bgra[(static_cast<size_t>(py) * w + px) * 4];
+        r = p[2]; g = p[1]; b = p[0];
+        return true;
+    }
+};
+
+// PrintWindow with PW_RENDERFULLCONTENT: the composited window including Direct2D child surfaces (works for windows that are not on top)
+bool capture_window(HWND top, Capture& out) {
+    RECT wr{};
+    GetWindowRect(top, &wr);
+    out.w = wr.right - wr.left;
+    out.h = wr.bottom - wr.top;
+    POINT origin{0, 0};
+    ClientToScreen(top, &origin);
+    out.client_x = origin.x - wr.left;
+    out.client_y = origin.y - wr.top;
+    HDC screen = GetDC(nullptr);
+    HDC mem = CreateCompatibleDC(screen);
+    BITMAPINFO bi{};
+    bi.bmiHeader.biSize = sizeof bi.bmiHeader;
+    bi.bmiHeader.biWidth = out.w;
+    bi.bmiHeader.biHeight = -out.h;
+    bi.bmiHeader.biPlanes = 1;
+    bi.bmiHeader.biBitCount = 32;
+    bi.bmiHeader.biCompression = BI_RGB;
+    void* bits = nullptr;
+    HBITMAP bmp = CreateDIBSection(screen, &bi, DIB_RGB_COLORS, &bits, nullptr, 0);
+    bool ok = false;
+    if (bmp && bits) {
+        HGDIOBJ old = SelectObject(mem, bmp);
+        ok = PrintWindow(top, mem, 2 /* PW_RENDERFULLCONTENT */) != 0;
+        if (ok) out.bgra.assign(static_cast<uint8_t*>(bits), static_cast<uint8_t*>(bits) + static_cast<size_t>(out.w) * out.h * 4);
+        SelectObject(mem, old);
+    }
+    if (bmp) DeleteObject(bmp);
+    DeleteDC(mem);
+    ReleaseDC(nullptr, screen);
+    return ok;
+}
+
+bool near_color(const Capture& c, int x, int y, int r, int g, int b, int tol = 6) {
+    int pr, pg, pb;
+    return c.pixel(x, y, pr, pg, pb) && std::abs(pr - r) <= tol && std::abs(pg - g) <= tol && std::abs(pb - b) <= tol;
+}
+
+HWND find_child_text(HWND parent, const wchar_t* cls, const wchar_t* text) {
+    struct Q { const wchar_t* cls; const wchar_t* text; HWND found; } q{cls, text, nullptr};
+    EnumChildWindows(parent, [](HWND h, LPARAM l) -> BOOL {
+        auto* q = reinterpret_cast<Q*>(l);
+        if (class_of(h) == q->cls && text_of(h) == q->text) { q->found = h; return FALSE; }
+        return TRUE;
+    }, reinterpret_cast<LPARAM>(&q));
+    return q.found;
+}
+
+}  // namespace
+
+CIDER_TEST(cg_draw_test_paints_real_pixels_through_wm_paint_and_the_redraw_button_repaints) {
+    if (!desktop_available()) SKIP("no interactive desktop");
+    Program program(fs::path(CIDER_APPKIT_FIXTURES_DIR) / "bin" / "cg_draw_test" / "cg_draw_test");
+    HWND w = program.find_window(20000);
+    REQUIRE_MSG(w != nullptr, "the program did not create its window");
+    CHECK(text_of(w) == L"CIDER — CoreGraphics Drawing");
+    HWND redraw = find_child_text(w, L"Button", L"Redraw");
+    REQUIRE_MSG(redraw != nullptr, "the Redraw button does not exist");
+    const double k = GetDpiForWindow(w) / 96.0;
+    auto X = [&](double x) { return static_cast<int>(std::lround(x * k)); };
+    auto Y = [&](double user_y) { return static_cast<int>(std::lround((300 - user_y) * k)); };       // the 400x300 view is at the top of the client area
+
+    Capture c;
+    bool drawn = false;
+    for (int i = 0; i < 100 && !drawn; ++i) {                      // wait for the first WM_PAINT to have been presented
+        if (capture_window(w, c) && near_color(c, X(60), Y(40), 255, 0, 0)) drawn = true; else std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    REQUIRE_MSG(drawn, "the red rectangle never appeared: the window was not painted by -drawRect:");
+    CHECK(near_color(c, X(10), Y(290), 255, 255, 204));            // background drawn by the guest
+    CHECK(near_color(c, X(340), Y(260), 0, 0, 255));               // blue rectangle top-right (orientation)
+    CHECK(near_color(c, X(210), Y(190), 0, 255, 0));               // ellipse
+    CHECK(near_color(c, X(60), Y(120), 255, 128, 0));              // CGPath triangle
+    CHECK(near_color(c, X(345), Y(100), 128, 0, 128));             // rotated square
+    CHECK(near_color(c, X(338), Y(118), 255, 255, 204));
+    CHECK(near_color(c, X(180), Y(270), 0, 255, 255));             // clipped region
+    CHECK(near_color(c, X(110), Y(270), 255, 255, 204));
+    CHECK(near_color(c, X(310), Y(175), 0, 0, 0, 40));             // stroked edge
+
+    SendMessageW(redraw, BM_CLICK, 0, 0);                          // runs -[Controller redraw:] in the guest: state changes, setNeedsDisplay:, WM_PAINT, -drawRect: again
+    bool changed = false;
+    for (int i = 0; i < 100 && !changed; ++i) {
+        if (capture_window(w, c) && near_color(c, X(60), Y(40), 0, 0, 255)) changed = true; else std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    CHECK(changed);                                                // the guest's state variable changed the picture
+
+    // a real resize: the window grows by 200 x 100 device-independent pixels, the view autoresizes, WM_SIZE resizes the Direct2D target, WM_PAINT repaints
+    RECT wr{};
+    GetWindowRect(w, &wr);
+    SetWindowPos(w, nullptr, 0, 0, wr.right - wr.left + X(200), wr.bottom - wr.top + X(100), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+    bool grown = false;
+    for (int i = 0; i < 100 && !grown; ++i) {
+        if (capture_window(w, c) && near_color(c, X(550), X(20), 255, 255, 204)) grown = true; else std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    CHECK(grown);                                                  // the new area (x > 400) is painted by the guest's background fill of the dirty rectangle
+    CHECK(near_color(c, X(60), X(100) + Y(40), 0, 0, 255));        // the state rectangle follows the bottom edge of the taller view (still blue after the redraw)
+
+    PostMessageW(w, WM_CLOSE, 0, 0);
+    DWORD code = 999;
+    CHECK(program.wait_exit(15000, code));
+    CHECK_EQ(code, DWORD{0});
+    const std::string log = program.output();
+    CHECK(log.find("failures=0") != std::string::npos && log.find("redraws=1") != std::string::npos);
+    CHECK(!IsWindow(w));
 }

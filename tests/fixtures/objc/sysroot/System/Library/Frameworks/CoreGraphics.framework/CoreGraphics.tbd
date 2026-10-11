@@ -9,9 +9,29 @@ current-version: 1500
 compatibility-version: 64
 exports:
   - targets:         [ x86_64-macos ]
-    symbols:         [ _CGPointZero, _CGSizeZero, _CGRectZero, _CGRectNull, _CGRectInfinite, _CGRectGetMinX, _CGRectGetMidX, _CGRectGetMaxX,
+    symbols:         [_CGPointZero, _CGSizeZero, _CGRectZero, _CGRectNull, _CGRectInfinite, _CGRectGetMinX, _CGRectGetMidX, _CGRectGetMaxX,
                        _CGRectGetMinY, _CGRectGetMidY, _CGRectGetMaxY, _CGRectGetWidth, _CGRectGetHeight, _CGPointEqualToPoint, _CGSizeEqualToSize,
                        _CGRectEqualToRect, _CGRectIsEmpty, _CGRectIsNull, _CGRectIsInfinite, _CGRectContainsPoint, _CGRectContainsRect,
                        _CGRectIntersectsRect, _CGRectStandardize, _CGRectIntegral, _CGRectInset, _CGRectOffset, _CGRectUnion, _CGRectIntersection,
-                       _CGRectDivide ]
+                       _CGRectDivide, _CGColorSpaceCreateDeviceRGB, _CGColorSpaceRetain, _CGColorSpaceRelease, _CGColorSpaceGetNumberOfComponents,
+                       _CGColorCreate, _CGColorCreateGenericRGB, _CGColorCreateCopy, _CGColorRetain, _CGColorRelease, _CGColorGetNumberOfComponents,
+                       _CGColorGetComponents, _CGColorGetAlpha, _CGPathCreateMutable, _CGPathCreateCopy, _CGPathCreateMutableCopy, _CGPathRetain,
+                       _CGPathRelease, _CGPathMoveToPoint, _CGPathAddLineToPoint, _CGPathAddCurveToPoint, _CGPathAddQuadCurveToPoint, _CGPathAddRect,
+                       _CGPathAddEllipseInRect, _CGPathAddArc, _CGPathAddPath, _CGPathCloseSubpath, _CGPathIsEmpty, _CGPathGetBoundingBox,
+                       _CGPathGetCurrentPoint, _CGPathContainsPoint, _CGPathCreateWithRect, _CGPathCreateWithEllipseInRect, _CGImageGetWidth,
+                       _CGImageGetHeight, _CGImageRetain, _CGImageRelease, _CGAffineTransformMake, _CGAffineTransformMakeTranslation,
+                       _CGAffineTransformMakeScale, _CGAffineTransformMakeRotation, _CGAffineTransformConcat, _CGAffineTransformTranslate,
+                       _CGAffineTransformScale, _CGAffineTransformRotate, _CGAffineTransformInvert, _CGAffineTransformIsIdentity,
+                       _CGAffineTransformEqualToTransform, _CGPointApplyAffineTransform, _CGSizeApplyAffineTransform, _CGRectApplyAffineTransform,
+                       _CGContextRetain, _CGContextRelease, _CGContextSaveGState, _CGContextRestoreGState, _CGContextSetFillColorWithColor,
+                       _CGContextSetStrokeColorWithColor, _CGContextSetRGBFillColor, _CGContextSetRGBStrokeColor, _CGContextSetGrayFillColor,
+                       _CGContextSetGrayStrokeColor, _CGContextSetAlpha, _CGContextSetLineWidth, _CGContextSetLineCap, _CGContextSetLineJoin,
+                       _CGContextSetMiterLimit, _CGContextSetLineDash, _CGContextSetShouldAntialias, _CGContextSetInterpolationQuality,
+                       _CGContextFillRect, _CGContextStrokeRect, _CGContextStrokeRectWithWidth, _CGContextClearRect, _CGContextFillEllipseInRect,
+                       _CGContextStrokeEllipseInRect, _CGContextBeginPath, _CGContextClosePath, _CGContextMoveToPoint, _CGContextAddLineToPoint,
+                       _CGContextAddCurveToPoint, _CGContextAddQuadCurveToPoint, _CGContextAddRect, _CGContextAddRects, _CGContextAddEllipseInRect,
+                       _CGContextAddArc, _CGContextAddArcToPoint, _CGContextAddPath, _CGContextStrokePath, _CGContextFillPath, _CGContextEOFillPath,
+                       _CGContextDrawPath, _CGContextClip, _CGContextEOClip, _CGContextClipToRect, _CGContextTranslateCTM, _CGContextScaleCTM,
+                       _CGContextRotateCTM, _CGContextConcatCTM, _CGContextGetCTM, _CGContextDrawImage, _CGContextFlush, _CGContextSynchronize,
+                       _CGAffineTransformIdentity, _CGContextDrawLinearGradient, _CGBitmapContextCreate]
 ...
