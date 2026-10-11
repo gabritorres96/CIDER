@@ -128,6 +128,7 @@ ORVYN_TEST(the_provider_resolves_only_what_a_library_really_re_exports) {
     // unknown functions and DATA symbols of recognised libraries are refused, never stubbed
     CHECK(!p->lookup(ApplicationServices, "_AXUIElementPostKeyboardEvent").has_value());
     CHECK(!p->lookup(Carbon, "_kTISPropertyLocalizedName").has_value());
+    CHECK(!p->lookup(IOKit, "_IOMainPort").has_value());                              // prototype not verifiable against an available header: refused, not exposed
     // the umbrella forwards to what is really implemented and nothing else
     auto nslog = p->lookup(Cocoa, "_NSLog");
     REQUIRE(nslog.has_value());

@@ -17,9 +17,9 @@ namespace orvyn::libsystem {
 
 const char* to_string(FrameworkStatus s) noexcept {
     switch (s) {
-        case FrameworkStatus::Implemented: return "implemented subset";
+        case FrameworkStatus::Implemented: return "partially implemented (subset)";
         case FrameworkStatus::Umbrella: return "umbrella (re-exports only)";
-        case FrameworkStatus::StubOnly: return "recognised, not implemented";
+        case FrameworkStatus::StubOnly: return "recognised: stubs only, NOT implemented";
     }
     return "?";
 }
@@ -87,7 +87,9 @@ bool lib_visible(Lib requested, Lib have) {
 }
 
 // ---- the stub table -------------------------------------------------------------------------------------------------------------
-// Prototypes are copied from Apple's public headers (types as spelled there). Only FUNCTIONS are listed.
+// Prototypes were checked on 2026-10-11 against the macOS 11.3 SDK headers (read from a public mirror, nothing copied into the repository). A function whose
+// prototype could not be verified is NOT listed (IOMainPort), so it is refused at load rather than exposed as a callable with an unchecked signature.
+// Only FUNCTIONS are listed.
 const std::vector<StubSymbol>& stub_symbols() {
     static const std::vector<StubSymbol> table = {
         // ApplicationServices (HIServices / Accessibility)
@@ -112,7 +114,7 @@ const std::vector<StubSymbol>& stub_symbols() {
         {"_IORegistryEntryCreateCFProperty", Lib::IOKit, "CFTypeRef IORegistryEntryCreateCFProperty(io_registry_entry_t entry, CFStringRef key, CFAllocatorRef allocator, IOOptionBits options)"},
         {"_IOObjectRelease", Lib::IOKit, "kern_return_t IOObjectRelease(io_object_t object)"},
         {"_IOPSCopyPowerSourcesInfo", Lib::IOKit, "CFTypeRef IOPSCopyPowerSourcesInfo(void)"},
-        {"_IOMainPort", Lib::IOKit, "kern_return_t IOMainPort(mach_port_t bootstrapPort, mach_port_t *mainPort)"},
+        // IOMainPort (macOS 12+) is NOT listed: its prototype could not be verified against a header available here (the 11.3 SDK only has IOMasterPort), so it stays unresolved.
         // Security
         {"_SecItemCopyMatching", Lib::Security, "OSStatus SecItemCopyMatching(CFDictionaryRef query, CFTypeRef *result)"},
         {"_SecItemAdd", Lib::Security, "OSStatus SecItemAdd(CFDictionaryRef attributes, CFTypeRef *result)"},

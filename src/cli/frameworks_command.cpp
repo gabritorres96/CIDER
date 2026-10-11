@@ -83,7 +83,7 @@ int registry(const Options& o) {
     std::puts("ORVYN - Darwin Executable Runtime\n\nRecognised Apple libraries (recognised is NOT the same as implemented):\n");
     std::printf("%-20s %-28s %5s  %s\n", "library", "status", "stubs", "note");
     for (const auto& f : fw) std::printf("%-20s %-28s %5zu  %s\n", f.name, libsystem::to_string(f.status), stubs[f.lib], f.note);
-    std::puts("\nAnything not listed is not recognised: an import from it is refused at load. A stub resolves a call to a diagnostic, never to a result.");
+    std::puts("\nAnything not listed is absent (not recognised): an import from it is refused at load. A framework's status says nothing about each of its symbols:\nan implemented subset still refuses what it lacks, and a stub resolves a call to a diagnostic, never to a result.");
     return 0;
 }
 

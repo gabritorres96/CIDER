@@ -228,7 +228,7 @@ ORVYN_TEST(doctor_and_logs) {
 ORVYN_TEST(frameworks_lists_the_registry_and_classifies_the_imports_of_a_program) {
     auto reg = orvyn_run({"frameworks"});
     CHECK_EQ(reg.code, 0);
-    CHECK(has(reg, "recognised, not implemented"));
+    CHECK(has(reg, "stubs only, NOT implemented"));
     CHECK(has(reg, "umbrella"));
     auto rj = orvyn_run({"frameworks", "--json"});
     CHECK(JsonCheck(json_part(rj.out)).valid());
