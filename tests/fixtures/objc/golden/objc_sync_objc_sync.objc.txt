@@ -11,40 +11,40 @@ Contents of (__DATA_CONST,__objc_classlist) section
              instanceSize 12
                  reserved 0x0
                ivarLayout 0x0
-                     name 0x10000132c Obj
+                     name 0x10000134c Obj
               baseMethods 0x100004150 (struct method_list_t *)
 		   entsize 24
 		     count 6
-		      name 0x1000012fc retain
-		     types 0x10000133b @16@0:8
+		      name 0x10000131c retain
+		     types 0x10000135b @16@0:8
 		       imp -[Obj retain]
-		      name 0x100001303 release
-		     types 0x100001343 Vv16@0:8
+		      name 0x100001323 release
+		     types 0x100001363 Vv16@0:8
 		       imp -[Obj release]
-		      name 0x10000130b autorelease
-		     types 0x10000133b @16@0:8
+		      name 0x10000132b autorelease
+		     types 0x10000135b @16@0:8
 		       imp -[Obj autorelease]
-		      name 0x100001317 copy
-		     types 0x10000133b @16@0:8
+		      name 0x100001337 copy
+		     types 0x10000135b @16@0:8
 		       imp -[Obj copy]
-		      name 0x10000131c tag
-		     types 0x10000134c i16@0:8
+		      name 0x10000133c tag
+		     types 0x10000136c i16@0:8
 		       imp -[Obj tag]
-		      name 0x100001320 dealloc
-		     types 0x100001354 v16@0:8
+		      name 0x100001340 dealloc
+		     types 0x100001374 v16@0:8
 		       imp -[Obj dealloc]
             baseProtocols 0x0
                     ivars 0x1000041e8
                     entsize 32
                       count 2
 			   offset 0x100004278 0
-			     name 0x100001328 isa
-			     type 0x10000135c #
+			     name 0x100001348 isa
+			     type 0x10000137c #
 			alignment 3
 			     size 8
 			   offset 0x100004280 8
-			     name 0x10000131c tag
-			     type 0x10000135e i
+			     name 0x10000133c tag
+			     type 0x10000137e i
 			alignment 2
 			     size 4
            weakIvarLayout 0x0
@@ -60,12 +60,12 @@ Meta Class
              instanceSize 40
                  reserved 0x0
                ivarLayout 0x0
-                     name 0x10000132c Obj
+                     name 0x10000134c Obj
               baseMethods 0x1000040e8 (struct method_list_t *)
 		   entsize 24
 		     count 1
-		      name 0x1000012f0 newWithTag:
-		     types 0x100001330 @20@0:8i16
+		      name 0x100001310 newWithTag:
+		     types 0x100001350 @20@0:8i16
 		       imp +[Obj newWithTag:]
             baseProtocols 0x0
                     ivars 0x0

@@ -60,6 +60,11 @@ clang %COMMON% -fobjc-exceptions -fexceptions src\objc_try_nothrow.m -o obj\objc
 mkdir bin\objc_try_nothrow
 %LDF% -o bin\objc_try_nothrow\objc_try_nothrow obj\objc_try_nothrow.o || exit /b 1
 
+rem ---- objc_exc_direct (plain C): calls the unwinding entry points directly; built -O0 against libobjc only
+clang --target=x86_64-apple-macos10.15 -O0 -ffreestanding -nostdinc -fno-stack-protector -fno-ident -c src\objc_exc_direct.c -o obj\objc_exc_direct.o || exit /b 1
+mkdir bin\objc_exc_direct
+ld64.lld -arch x86_64 -platform_version macos 10.15.0 12.0.0 -syslibroot sysroot -lSystem -lobjc -o bin\objc_exc_direct\objc_exc_direct obj\objc_exc_direct.o || exit /b 1
+
 rem ---- slide: the base class lives in a dylib that is newer than the header the executable was compiled against --------------------
 clang %COMMON% src\shape_v2.m -o obj\shape_v2.o || exit /b 1
 clang %COMMON% src\slide_main.m -o obj\slide_main.o || exit /b 1

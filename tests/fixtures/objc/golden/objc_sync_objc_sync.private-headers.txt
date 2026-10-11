@@ -30,7 +30,7 @@ Section
   sectname __text
    segname __TEXT
       addr 0x00000001000008e0
-      size 0x00000000000008fd
+      size 0x000000000000091d
     offset 2272
      align 2^4 (16)
     reloff 0
@@ -42,9 +42,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __stubs
    segname __TEXT
-      addr 0x00000001000011e0
+      addr 0x0000000100001200
       size 0x0000000000000060
-    offset 4576
+    offset 4608
      align 2^2 (4)
     reloff 0
     nreloc 0
@@ -55,9 +55,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __stub_helper
    segname __TEXT
-      addr 0x0000000100001240
+      addr 0x0000000100001260
       size 0x00000000000000b0
-    offset 4672
+    offset 4704
      align 2^2 (4)
     reloff 0
     nreloc 0
@@ -68,9 +68,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __objc_methname
    segname __TEXT
-      addr 0x00000001000012f0
+      addr 0x0000000100001310
       size 0x000000000000003c
-    offset 4848
+    offset 4880
      align 2^0 (1)
     reloff 0
     nreloc 0
@@ -81,9 +81,9 @@ attributes (none)
 Section
   sectname __cstring
    segname __TEXT
-      addr 0x000000010000132c
+      addr 0x000000010000134c
       size 0x00000000000000b4
-    offset 4908
+    offset 4940
      align 2^0 (1)
     reloff 0
     nreloc 0
@@ -94,9 +94,9 @@ attributes (none)
 Section
   sectname __unwind_info
    segname __TEXT
-      addr 0x00000001000013e0
+      addr 0x0000000100001400
       size 0x0000000000001048
-    offset 5088
+    offset 5120
      align 2^2 (4)
     reloff 0
     nreloc 0
@@ -107,9 +107,9 @@ attributes (none)
 Section
   sectname __eh_frame
    segname __TEXT
-      addr 0x0000000100002428
+      addr 0x0000000100002448
       size 0x0000000000000018
-    offset 9256
+    offset 9288
      align 2^3 (8)
     reloff 0
     nreloc 0
@@ -344,7 +344,7 @@ Load command 8
 Load command 9
      cmd LC_UUID
  cmdsize 24
-    uuid 4C4C4461-5555-3144-A1CB-CCBFD5F5554F
+    uuid 4C4C44CE-5555-3144-A1A1-F3B259209FF2
 Load command 10
        cmd LC_BUILD_VERSION
    cmdsize 32

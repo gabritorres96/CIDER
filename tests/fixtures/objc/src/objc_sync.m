@@ -64,12 +64,13 @@ static int sync_checks(void) {
     if (objc_sync_exit(b) != -1) return 7;
     if (objc_sync_enter(nil) != 0 || objc_sync_exit(nil) != 0) return 8;       /* @synchronized(nil) is a no-op */
     if (objc_sync_exit(lock_obj) != -1) return 9;
-    pthread_t t1, t2;
-    if (pthread_create(&t1, NULL, worker, NULL) || pthread_create(&t2, NULL, worker, NULL)) return 10;
+    pthread_t t1, t2, t3;                                 /* three threads: two of them can be waiting for the same lock at once */
+    if (pthread_create(&t1, NULL, worker, NULL) || pthread_create(&t2, NULL, worker, NULL) || pthread_create(&t3, NULL, worker, NULL)) return 10;
     pthread_join(t1, NULL);
     pthread_join(t2, NULL);
+    pthread_join(t3, NULL);
     if (violations != 0) return 11;                       /* mutual exclusion held although both threads yielded inside the section */
-    if (shared != 100) return 12;                         /* no lost update */
+    if (shared != 150) return 12;                         /* no lost update */
     if (objc_sync_exit(lock_obj) != -1) return 13;        /* every enter was matched */
     [a release]; [b release]; [lock_obj release];
     return 0;

@@ -56,3 +56,25 @@ ORVYN_TEST(an_uncaught_throw_in_a_program_without_handlers_keeps_the_macos_messa
     CHECK(r.r.state == orvyn::guest::State::Faulted);
     CHECK(r.r.message.rfind("*** Terminating app due to uncaught exception", 0) == 0);
 }
+
+ORVYN_TEST(calling_the_unwinding_entry_points_directly_stops_the_program_and_never_returns) {
+    // 0.6.8 audit: nothing may return a fake result. The program imports all of them, only the requested one is called.
+    FixtureRun ok = run_fixture_file(objc_fixture("objc_exc_direct"));
+    expect_exit_code(ok, 42, "imported, never called");
+    const struct { const char* mode; const char* needle; } cases[] = {
+        {"b", "a @catch handler was entered"},     {"e", "a @catch handler was left"},     {"u", "tried to resume unwinding"},
+        {"r", "a @catch handler rethrew"},         {"p", "personality routine was called"}};
+    for (auto& c : cases) {
+        FixtureRun r = run_fixture_file(objc_fixture("objc_exc_direct"), {c.mode});
+        if (r.r.state != orvyn::guest::State::Faulted) { report_failure(__FILE__, __LINE__, std::string("mode ") + c.mode + ": state " + orvyn::guest::to_string(r.r.state)); continue; }
+        if (r.r.message.find(c.needle) == std::string::npos) report_failure(__FILE__, __LINE__, std::string("mode ") + c.mode + ": message was " + r.r.message);
+        CHECK(r.r.message.find("made-up result") != std::string::npos);
+        CHECK(r.r.message.find("Public prototype") != std::string::npos);
+        CHECK(r.err.find("must never print") == std::string::npos);
+        CHECK(r.out.find("must never print") == std::string::npos);
+    }
+    // throwing nil with handlers present
+    FixtureRun n = run_fixture_file(objc_fixture("objc_exc_direct"), {"n"});
+    CHECK(n.r.state == orvyn::guest::State::Faulted);
+    CHECK(n.r.message.find("nil exception thrown") != std::string::npos);
+}
