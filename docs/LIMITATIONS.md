@@ -69,15 +69,15 @@ clauses); this project does not give legal advice — check the licence of what 
 * One guest thread; no signals, `atexit`, `dlopen`, `fork`, `mmap`, `qsort` (no host→guest callbacks), `FILE` streams beyond stdin/stdout/stderr,
   `readdir`, wide characters, `long double`, locale.
 * `printf`: grammar in DARWIN-RUNTIME.md; `%n %a %Lf %ls %'` trap the guest.
-* Dylibs: no shared cache, interposing, weak coalescing, lazy loading; lazy binds are applied eagerly; resolver (`STUB_AND_RESOLVER`) exports unsupported.
+* Dylibs: no shared cache, interposing, lazy loading; weak definitions are coalesced since 0.6 (first non-weak export, else the first weak one in load order; see the 0.6 section); lazy binds are applied eagerly; resolver (`STUB_AND_RESOLVER`) exports unsupported.
 * Chained fixups: only pointer formats 2 and 6 (no arm64e, 32-bit, kernel-cache, multi-start pages).
 * TLS: single thread, no thread destructors, no `__thread_init`.
 * Verified on one machine (Windows 11 26200); GitHub Actions never ran. arm64 unsupported.
 
 ## 0.4 (Objective-C / Foundation subset)
 
-* Objective-C support covers what clang emits for plain classes, categories, protocols, ARC and MRC on the objc2 ABI. Not supported: blocks, `@try/@catch`, `@synchronized`,
-  Swift, relative method lists, message forwarding (`forwardInvocation:`, `resolveInstanceMethod:`), property reflection, KVC/KVO, `NSInvocation`.
+* Objective-C support covers what clang emits for plain classes, categories, protocols, ARC and MRC on the objc2 ABI. Not supported: `@try/@catch` (see 0.6),
+  Swift, property reflection, KVC/KVO. (Blocks, `@synchronized`, relative method lists, message forwarding and `NSInvocation` were added in 0.5/0.6; this line was out of date.)
 * Foundation is a **host-written subset** of 9 classes (NSObject, NSString, NSConstantString, NSNumber, NSArray, NSMutableArray, NSDictionary, NSMutableDictionary, NSAutoreleasePool) plus `NSLog` and four helper functions ([FOUNDATION.md](FOUNDATION.md)); `NSLog` omits Apple's timestamp/pid prefix;
   exceptions end the guest; dictionary lookup is linear; no `NSMutableString`, `NSData`, `NSDate`, `NSURL`, `NSFileManager`, `NSBundle`, run loops, formatters or localisation.
 * Threads are cooperative, one at a time: no parallelism, spinning threads starve the others, no race detection ([THREADING.md](THREADING.md)).
@@ -89,7 +89,7 @@ clauses); this project does not give legal advice — check the licence of what 
 
 * AppKit is a **subset of 9 classes** creating native Windows controls ([APPKIT.md](APPKIT.md)): no menus, no text system, no drawing, no images, no panels, no Auto Layout, no nibs. **No general AppKit/Cocoa compatibility is claimed.**
 * **Swift is not supported at all**; every real application tried (CotEditor, Rectangle, Stats, MonitorControl) is a Swift app and is refused. SwiftUI does not exist.
-* `@try/@catch` are not supported (programs that use them are refused); uncaught `NSException` throws end the guest.
+* `@try/@catch` are not supported: since 0.6 programs that contain them LOAD, but nothing is ever caught (see the 0.6 section); uncaught `NSException` throws end the guest.
 * Message forwarding does not handle structures by value; blocks are a subset ([BLOCKS.md](BLOCKS.md)); libdispatch runs concurrent queues serially and has no sources ([LIBDISPATCH.md](LIBDISPATCH.md)).
 * GUI: only the main guest thread touches windows; the offscreen backend is a test device; the Win32 GUI tests need an interactive desktop; keyboard codes are Windows virtual-key codes; DPI scaling is per monitor but only the primary display is modelled.
 * The worker is **still not a sandbox**: guest code, including GUI programs, runs with the user rights. For GUI programs the default 60 s timeout is lifted to 24 h (an explicit `--timeout` still applies).
@@ -107,3 +107,14 @@ clauses); this project does not give legal advice — check the licence of what 
 * Invalid or dead CoreGraphics handles are refused with a log line, not with the crash Apple's CoreGraphics may produce; a guest relying on that crash is not emulated.
 * Verified on one machine (Windows 11, one monitor at the primary DPI), software Direct2D for the headless tests and the default Direct2D target type for windows.
 * The worker is still not a sandbox.
+
+## 0.6 (in progress; version number unchanged): modern Objective-C, weak binding, frameworks, Darwin libc
+
+* **Relative ("small") method lists**: read (direct and indirect selectors, categories, class methods, bounds-checked). Tested only on fixtures converted by `tests/fixtures/relmeth.hpp` (clang and ld64.lld cannot emit the format) - **no real ld64-produced binary has been run**. Protocol method lists are not read at all.
+* **Weak binding**: `weak_bind` streams are decoded and coalesced across loaded images. Not covered: chained-fixup images (no weak bind stream exists there), flat-namespace interposing, definitions inside the shared cache. Load order approximates dyld's.
+* **Cocoa** is only an umbrella: a symbol bound to it is looked up in the AppKit/Foundation subsets (9 AppKit classes, host-written Foundation). **No Cocoa compatibility is claimed.** CoreData is not recognised.
+* **Recognised-but-unimplemented frameworks** (ApplicationServices, Carbon, IOKit, CoreServices, Security, ServiceManagement) have a short table of honest stubs (`orvyn frameworks`): linking proceeds, calling one ends the program with its name and public prototype. Data symbols (e.g. `kTISPropertyLocalizedName`) and unlisted functions are refused at load. A stub never returns a value.
+* **Exceptions**: programs containing `@try/@catch/@finally` link and run while nothing is thrown (the unwinding entry points are stubs). A throw in such a program stops it with a "no unwinder" message; **nothing is ever caught**. The `_OBJC_EHTYPE_*` descriptors exist only so that linking works.
+* **Darwin libc**: `getopt` is BSD getopt (no GNU extras, no `getopt_long`); `malloc_size` reports the requested size, not the allocator's rounded size; `___chkstk_darwin` is a register-preserving `ret` (guest stacks are fully committed) and its name comes from Apple's libSystem, not from the available LLVM 23.1.3 driver, which does not emit it.
+* **`@synchronized` / associated objects**: correct for the cooperative guest threads (one runs at a time); no parallelism is claimed. Association policies other than ASSIGN/RETAIN/COPY (+NONATOMIC variants) stop the program.
+* **External binaries**: none runs. cliclick 5.1 is blocked by 19 missing imports (see [compatibility/CLICLICK-5.1.md](compatibility/CLICLICK-5.1.md)).

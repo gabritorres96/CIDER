@@ -26,6 +26,21 @@ Local commits of this work: `6510583` engine and Direct2D device, `c12f8a7` gues
 
 Not done in 0.6.1-0.6.2 (see [LIMITATIONS.md](LIMITATIONS.md)): image creation from the guest, text drawing, `NSColor`/`NSBezierPath`/`NSRectFill`, partial dirty rectangles.
 
+## 0.6 work after drawing (2026-10-11, local branch `claude/orvyn-objc-darwin-3d9584`, version still 0.5.0)
+
+| Item | State | Evidence |
+|---|---|---|
+| Relative method lists (direct + indirect selectors, categories) | **tested on fixtures** (converted, see LIMITATIONS) | `test_objc` (+7 tests incl. 800 corruptions), fixture `objc_relative` |
+| Weak binding (`weak_bind` coalescing) | **tested on fixtures** from ld64.lld (exe+dylib, two dylibs) | `test_linker` (+4), `test_symbols`, `test_loader` |
+| Framework registry, Cocoa umbrella, honest stubs, `orvyn frameworks` | **implemented, fixtures** | `test_frameworks` (8), `test_cli` (+1) |
+| Darwin libc: stack protector, `__assert_rtn`, `abort`, `getopt`+globals, `__cxa_atexit`, `posix_memalign`, `malloc_size`, `memchr`, `modf`, `fma`, `pthread_main_np`, `___chkstk_darwin` | **tested on fixtures** | `test_darwin_runtime` (+6), `test_runtime` registry |
+| `objc_sync_enter/exit`, associated objects | **tested on fixtures** (cooperative threads) | `test_objc` (+3), fixture `objc_sync` |
+| Programs containing `@try/@catch` link; a throw stops with a no-unwinder diagnostic | **partial**: no catch ever runs | `test_objc_dynamic` (+3), fixture `objc_try_nothrow` |
+| cliclick 5.1 | **blocked**: stages A-C reached statically (FAT parsed, 11/11 libraries recognised, 76 imports: 47 implemented, 10 stubs, 19 missing) | [compatibility/CLICLICK-5.1.md](compatibility/CLICLICK-5.1.md) |
+| Second external binary | **none found** that meets all criteria | same document |
+
+Tests (Release, this machine): 40 suites, 539 run, 0 failed, 3 skipped (baseline before this work: 39 suites, 509 run, 3 skipped). Debug: 40/40 suites. ASan (clang-cl): 40/40 pass (`test_threads` failed once under `-j3` load and passed alone and in 5 repeats). libFuzzer was not re-run (its sources are not available here); the new parser code is covered by the in-tree corruption tests only.
+
 ## What now works (0.5, on top of 0.4)
 
 | Capability | Evidence |

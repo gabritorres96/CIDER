@@ -46,3 +46,21 @@ Unknown (needs a run): whether `-V`/`-h` reach code that throws; the refusal at 
 3. Pick another small Objective-C binary without `@try` (run the same checks first: `llvm-objdump --macho --lazy-bind | grep -E 'begin_catch|Unwind'`).
 
 Decision pending the owner.
+
+## ORVYN 0.6 staged run (2026-10-11, Windows; binary downloaded with the owner's approval, SHA-256 verified)
+
+`cliclick.zip` SHA-256 and the FAT binary SHA-256 match the values above. Everything below is **static** (`orvyn inspect`, `orvyn frameworks`); cliclick was **not executed**.
+
+| Stage | Result |
+|---|---|
+| A. Analysis | **passed**: FAT (x86_64 + arm64) parsed, x86_64 slice selected |
+| B. Loader / dependencies | **passed**: all 11 libraries are recognised (Foundation, AppKit, CoreFoundation, CoreGraphics, libSystem, libobjc = implemented subsets; Cocoa = umbrella; ApplicationServices, Carbon, IOKit, CoreServices = recognised, not implemented) |
+| C. Binding | **failed**: 76 imports - 47 implemented, 10 stubs (`AXIsProcessTrusted`, `LMGetKbdType`, `TISCopyCurrent*`, `TISGetInputSourceProperty`, `UCKeyTranslate`, `__Unwind_Resume`, `objc_begin_catch`, `objc_end_catch`, `__objc_personality_v0`), **19 missing** |
+| D-F. Runtime, CLI, verification | **not reached** (the link is refused; there is no stdout/stderr/exit code) |
+
+The 19 blocking imports: classes `NSCharacterSet`, `NSFileHandle`, `NSPredicate`, `NSProcessInfo`, `NSBitmapImageRep`, `NSPasteboard`, `NSWorkspace`; data `kTISPropertyLocalizedName`, `kTISPropertyUnicodeKeyLayoutData`, `NSStringPboardType`; functions `CFDataGetBytePtr`, `CGEventCreate`, `CGEventCreateKeyboardEvent`, `CGEventCreateMouseEvent`, `CGEventGetLocation`, `CGEventPost`, `CGEventSetIntegerValueField`, `CGEventSetType`, `CGWindowListCreateImage`. Exceptions are no longer a loading blocker (0.6), but a throw would still stop the program.
+
+Not done on purpose: stubbing the `CGEvent*` family or declaring empty placeholder classes would make the link succeed while hiding that cliclick's whole purpose (synthesising input) does not exist on ORVYN; injecting real Windows input from a macOS binary is a safety decision for the owner.
+
+### Second external binary
+Selection criteria: no Swift, no libc++, no exceptions, few dependencies, clear licence, original upstream binary, x86_64, reproducible. A web search found **no candidate** meeting all of them (results were frameworks, Swift rewrites or GPL tools). No further download was made. Next step: find an upstream release asset or build a small Objective-C CLI with the owner's toolchain, then run `orvyn frameworks <binary>` first - it says in seconds whether the link can succeed.

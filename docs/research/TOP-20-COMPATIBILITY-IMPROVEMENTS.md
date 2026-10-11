@@ -33,6 +33,10 @@ Effort: S (days), M (1–3 weeks), L (a month or more), XL (a quarter or more) �
 * Items 12–13 plus 11 unlock the first GUI application. Items 19–20 are not prerequisites for an Objective-C-only first application.
 * Out of scope for this list: SwiftUI (1,267 symbols in CotEditor), Metal, Auto Layout, nibs/keyed archives (needed for most nib-based apps; add after 11–13), IOKit/CGEvent behavior on Windows (those calls must fail honestly).
 
+## Status of items 1-12 (2026-10-11, local branch; fixtures only, no external binary yet)
+
+Done on fixtures: relative method lists, weak binding, `Cocoa` umbrella and honest stubs for ApplicationServices/Carbon/IOKit/CoreServices/Security/ServiceManagement, libc basics (item 3), `objc_sync_*` and associated objects, and linking of programs that contain `@try/@catch` (item 19 is still open: nothing is ever caught). Not done: `NSPredicate`, `NSProcessInfo`, `NSFileHandle`, `NSCharacterSet`, `CGEvent*` (cliclick's remaining blockers), image/text drawing.
+
 ## Measurement rule
 
 Progress is reported as **named, tested behaviors and binaries that reach a defined stage**, never as a percentage of imported symbols (`tools/app_coverage.py` counts names only and under-counts dynamic providers).

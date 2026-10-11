@@ -36,7 +36,8 @@ Not an emulator, not a VM, no macOS and no XNU kernel required.
 | Objective-C (Apple objc2 ABI: classes, categories, protocols, `objc_msgSend`, MRC/ARC) and a Foundation subset (NSObject, NSString, NSNumber, NSArray, NSDictionary, NSLog, pools) | works for the clang-built fixtures in `tests/fixtures/objc` — [OBJECTIVE-C-RUNTIME.md](docs/OBJECTIVE-C-RUNTIME.md), [FOUNDATION.md](docs/FOUNDATION.md) |
 | Blocks, libdispatch (main/serial/global queues, groups, semaphores), CoreFoundation basics, CoreGraphics geometry, message forwarding | subset, fixtures only — [BLOCKS.md](docs/BLOCKS.md), [LIBDISPATCH.md](docs/LIBDISPATCH.md), [COREGRAPHICS.md](docs/COREGRAPHICS.md) |
 | AppKit subset (NSApplication, NSWindow, NSView, NSControl, NSButton, NSTextField, NSEvent) on native Win32 windows | works for the fixtures in `tests/fixtures/appkit` (headless and with a real window) — [APPKIT.md](docs/APPKIT.md) |
-| `@try/@catch`, Swift, SwiftUI, menus, drawing, other frameworks, signals | **not implemented** |
+| Work after 0.5.0 (version unchanged): relative method lists, weak binding, Cocoa umbrella, honest stubs for unimplemented frameworks (`orvyn frameworks`), Darwin libc basics, `@synchronized`, associated objects, CoreGraphics drawing in `-drawRect:` | fixtures only - see [PROGRESS.md](docs/PROGRESS.md); **no external macOS binary runs yet** |
+| `@try/@catch` (programs containing them link, nothing is caught), Swift, SwiftUI, menus, text/images, most frameworks, signals | **not implemented** |
 
 ## Commands
 

@@ -1,5 +1,7 @@
 # ORVYN roadmap 0.6 → 1.0
 
+> Status 2026-10-11 (local branch): relative method lists, weak binding, Cocoa umbrella + framework stubs, libc basics, `@synchronized`/associated objects and exception-tolerant linking are implemented and tested on fixtures; **no external binary runs** (cliclick is blocked at binding by 19 imports, see [../compatibility/CLICLICK-5.1.md](../compatibility/CLICLICK-5.1.md)). The version stays 0.5.0 until the acceptance criteria below are met.
+
 Replaces the proposal row for 0.6 in [../ROADMAP.md](../ROADMAP.md) with a plan based on the measurements in this research. **No dates are promised.** Each milestone has an acceptance test that can be run; none is claimed before it passes. The version stays **0.5.0** until a milestone is accepted. Item numbers refer to [TOP-20-COMPATIBILITY-IMPROVEMENTS.md](TOP-20-COMPATIBILITY-IMPROVEMENTS.md).
 
 | Version | Theme | Content | Acceptance |
