@@ -1,0 +1,24 @@
+chkstk_probe:
+(__TEXT,__text) section
+_big:
+100000590:	b8 28 4e 00 00	movl	$0x4e28, %eax
+100000595:	e8 46 00 00 00	callq	0x1000005e0 ## symbol stub for: ____chkstk_darwin
+10000059a:	48 29 c4	subq	%rax, %rsp
+10000059d:	c6 04 24 07	movb	$0x7, (%rsp)
+1000005a1:	c6 84 24 1f 4e 00 00 09	movb	$0x9, 0x4e1f(%rsp)
+1000005a9:	8a 04 24	movb	(%rsp), %al
+1000005ac:	8a 8c 24 1f 4e 00 00	movb	0x4e1f(%rsp), %cl
+1000005b3:	0f b6 c0	movzbl	%al, %eax
+1000005b6:	0f b6 c9	movzbl	%cl, %ecx
+1000005b9:	01 c8	addl	%ecx, %eax
+1000005bb:	01 f8	addl	%edi, %eax
+1000005bd:	48 81 c4 28 4e 00 00	addq	$0x4e28, %rsp
+1000005c4:	c3	retq
+1000005c5:	66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+1000005cf:	90	nop
+_main:
+1000005d0:	50	pushq	%rax
+1000005d1:	bf 1a 00 00 00	movl	$0x1a, %edi
+1000005d6:	e8 b5 ff ff ff	callq	_big
+1000005db:	59	popq	%rcx
+1000005dc:	c3	retq

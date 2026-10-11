@@ -11,7 +11,7 @@ if exist "%R%\obj" rmdir /s /q "%R%\obj"
 if exist "%R%\bin" rmdir /s /q "%R%\bin"
 mkdir "%R%\obj" "%R%\bin" "%R%\golden" 2>nul
 
-set "NAMES=ret42 ret7 ret99 math stack calls globals bss libcall hello args missing exitcall crash spin malloc fmath recurse hog pid printf_int printf_double printf_str printf_mixed snprintf stdio_out files_read files_write time_clock abi_ret unsupported ids open_path qsort_ints qsort_records qsort_nested atexit_order atexit_exit atexit_skipped qsort_exit qsort_bad streams_write streams_read streams_limit thread_basic thread_mutex thread_race thread_tls thread_sync thread_exit libc_darwin stack_smash"
+set "NAMES=ret42 ret7 ret99 math stack calls globals bss libcall hello args missing exitcall crash spin malloc fmath recurse hog pid printf_int printf_double printf_str printf_mixed snprintf stdio_out files_read files_write time_clock abi_ret unsupported ids open_path qsort_ints qsort_records qsort_nested atexit_order atexit_exit atexit_skipped qsort_exit qsort_bad streams_write streams_read streams_limit thread_basic thread_mutex thread_race thread_tls thread_sync thread_exit libc_darwin stack_smash libc_ext chkstk_probe"
 set "CFLAGS=--target=x86_64-apple-macos10.15 -O1 -ffreestanding -nostdinc -fno-builtin -fno-stack-protector -fno-ident -c"
 
 pushd "%R%\src"
@@ -19,6 +19,9 @@ for %%s in (%NAMES%) do (
   if /i "%%s"=="stack_smash" (
     rem the stack protector fixture is built WITH the canary (-fstack-protector-all) and unoptimised so the overrun stays an overrun
     clang --target=x86_64-apple-macos10.15 -O0 -ffreestanding -nostdinc -fno-builtin -fstack-protector-all -fno-ident -c %%s.c -o ..\obj\%%s.o || exit /b 1
+  ) else if /i "%%s"=="chkstk_probe" (
+    rem LLVM IR with the probe-stack attribute (-O0 keeps the 20 KB frame): LLVM itself emits the call to ____chkstk_darwin
+    clang --target=x86_64-apple-macos10.15 -O0 -c %%s.ll -o ..\obj\%%s.o || exit /b 1
   ) else (
     clang %CFLAGS% %%s.c -o ..\obj\%%s.o || exit /b 1
   )

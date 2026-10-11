@@ -1,0 +1,58 @@
+libc_ext:
+
+SYMBOL TABLE:
+0000000100003190 l     O __DATA,__data __dyld_private
+0000000100000590 g     F __TEXT,__text _main
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* __DefaultRuneLocale
+0000000000000000         *UND* ___error
+0000000000000000         *UND* ___maskrune
+0000000000000000         *UND* _acos
+0000000000000000         *UND* _acosh
+0000000000000000         *UND* _asin
+0000000000000000         *UND* _asinh
+0000000000000000         *UND* _atanh
+0000000000000000         *UND* _cbrt
+0000000000000000         *UND* _cosh
+0000000000000000         *UND* _dirname
+0000000000000000         *UND* _erf
+0000000000000000         *UND* _erfc
+0000000000000000         *UND* _exp2
+0000000000000000         *UND* _expm1
+0000000000000000         *UND* _fdim
+0000000000000000         *UND* _gmtime_r
+0000000000000000         *UND* _hypot
+0000000000000000         *UND* _isatty
+0000000000000000         *UND* _j0
+0000000000000000         *UND* _j1
+0000000000000000         *UND* _jn
+0000000000000000         *UND* _lgamma
+0000000000000000         *UND* _lgamma_r
+0000000000000000         *UND* _localtime_r
+0000000000000000         *UND* _log1p
+0000000000000000         *UND* _log2
+0000000000000000         *UND* _logb
+0000000000000000         *UND* _memmem
+0000000000000000         *UND* _nextafter
+0000000000000000         *UND* _nexttoward
+0000000000000000         *UND* _pathconf
+0000000000000000         *UND* _printf
+0000000000000000         *UND* _rand
+0000000000000000         *UND* _realpath$DARWIN_EXTSN
+0000000000000000         *UND* _remainder
+0000000000000000         *UND* _scalb
+0000000000000000         *UND* _scalbln
+0000000000000000         *UND* _setlocale
+0000000000000000         *UND* _sinh
+0000000000000000         *UND* _strcmp
+0000000000000000         *UND* _strerror
+0000000000000000         *UND* _strftime
+0000000000000000         *UND* _strptime
+0000000000000000         *UND* _strspn
+0000000000000000         *UND* _tanh
+0000000000000000         *UND* _tgamma
+0000000000000000         *UND* _timegm
+0000000000000000         *UND* _y0
+0000000000000000         *UND* _y1
+0000000000000000         *UND* _yn
+0000000000000000         *UND* dyld_stub_binder

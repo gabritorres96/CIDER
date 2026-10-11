@@ -441,6 +441,34 @@ ORVYN_TEST(weak_bind_streams_are_decoded_and_hostile_streams_are_refused) {
     CHECK(!dyld::decode_weak_bind_stream(ByteView(good), segs, lim).ok());           // 3 sites > limit
 }
 
+// ============================== flat namespace and chained fixups (audit 0.6.8) ================================================================
+ORVYN_TEST(flat_namespace_binds_resolve_by_name_across_the_loaded_images) {
+    expect_exit("flat", 42);                                   // _orvyn_add is looked up by name (ordinal -2) in libmath.dylib
+    auto l = link_scenario("flat");
+    REQUIRE(l.program != nullptr);
+    CHECK_EQ(l.program->images().size(), size_t{2});
+}
+ORVYN_TEST(flat_namespace_lookup_of_a_missing_symbol_fails_the_link_instead_of_binding_to_null) {
+    auto l = link_scenario("flatmissing");                     // -undefined dynamic_lookup: dyld would fail at the first call; ORVYN refuses at load
+    CHECK(l.program == nullptr);
+    REQUIRE(!l.error.unresolved.empty());
+    CHECK_EQ(l.error.unresolved[0].symbol, std::string("_orvyn_gone"));
+    CHECK_EQ(l.error.unresolved[0].library, std::string("(flat lookup)"));
+}
+ORVYN_TEST(chained_fixup_images_get_no_weak_coalescing_and_mixed_formats_are_refused) {
+    auto l = link_scenario("chained");
+    REQUIRE(l.program != nullptr);
+    for (const auto& im : l.program->images()) CHECK_EQ(im->weak_binds, size_t{0});     // the chained format has no weak_bind stream: nothing is coalesced
+    // an image that declares BOTH formats is malformed and must be refused, never half-applied
+    auto bytes = file_bytes(dy("chained", "chained"));
+    auto file = take(macho::parse_file(ByteView(bytes)));
+    macho::Image img = *file.slices[0].image;
+    REQUIRE(img.chained_fixups.has_value());
+    img.dyld_info = macho::DyldInfo{};
+    img.dyld_info->weak_bind.size = 8;
+    CHECK(!dyld::decode_fixups(img, ByteView(bytes)).ok());
+}
+
 ORVYN_TEST(dependency_cycles_are_detected_and_tolerated_like_dyld) {
     auto l = link_scenario("cycle");
     REQUIRE(l.program != nullptr);

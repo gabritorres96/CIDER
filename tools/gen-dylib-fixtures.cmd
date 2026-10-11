@@ -109,6 +109,11 @@ mkdir bin\weakdef2
 %LD% -dylib -install_name @rpath/libwb.dylib -o bin\weakdef2\libwb.dylib obj\wdef2_b.o -lSystem || exit /b 1
 %LD% -rpath @executable_path -Lbin\weakdef2 -lwa -lwb -o bin\weakdef2\weakdef2 obj\wdef2_main.o -lSystem || exit /b 1
 
+rem ---- flat / flatmissing: -flat_namespace (symbols bound by name to "flat-namespace", no library recorded). ld64.lld needs the transitive libSystem.B.dylib
+rem      on the search path for this mode: copy the sysroot to a temp directory and add usr\lib\libSystem.B.tbd (a copy of libSystem.tbd), then use it as -syslibroot.
+rem      (commands used: %LD% -rpath @executable_path -Lbinlat -lmath -flat_namespace -o binlatlat obj\one_main.o -lSystem ;
+rem       %LD% -undefined dynamic_lookup -flat_namespace -o binlatmissinglatmissing obj\missing_main.o -lSystem)
+
 rem ---- initexit / initcrash: failing initializers -------------------------------------------------------------------------
 mkdir bin\initexit
 %LD% -dylib -install_name @rpath/libinitexit.dylib -o bin\initexit\libinitexit.dylib obj\initexit.o -lSystem || exit /b 1

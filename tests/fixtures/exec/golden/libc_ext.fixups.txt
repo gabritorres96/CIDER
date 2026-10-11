@@ -1,0 +1,112 @@
+libc_ext:
+
+Rebase table:
+segment  section            address     type
+__DATA   __la_symbol_ptr    0x100003000  pointer
+__DATA   __la_symbol_ptr    0x100003008  pointer
+__DATA   __la_symbol_ptr    0x100003010  pointer
+__DATA   __la_symbol_ptr    0x100003018  pointer
+__DATA   __la_symbol_ptr    0x100003020  pointer
+__DATA   __la_symbol_ptr    0x100003028  pointer
+__DATA   __la_symbol_ptr    0x100003030  pointer
+__DATA   __la_symbol_ptr    0x100003038  pointer
+__DATA   __la_symbol_ptr    0x100003040  pointer
+__DATA   __la_symbol_ptr    0x100003048  pointer
+__DATA   __la_symbol_ptr    0x100003050  pointer
+__DATA   __la_symbol_ptr    0x100003058  pointer
+__DATA   __la_symbol_ptr    0x100003060  pointer
+__DATA   __la_symbol_ptr    0x100003068  pointer
+__DATA   __la_symbol_ptr    0x100003070  pointer
+__DATA   __la_symbol_ptr    0x100003078  pointer
+__DATA   __la_symbol_ptr    0x100003080  pointer
+__DATA   __la_symbol_ptr    0x100003088  pointer
+__DATA   __la_symbol_ptr    0x100003090  pointer
+__DATA   __la_symbol_ptr    0x100003098  pointer
+__DATA   __la_symbol_ptr    0x1000030A0  pointer
+__DATA   __la_symbol_ptr    0x1000030A8  pointer
+__DATA   __la_symbol_ptr    0x1000030B0  pointer
+__DATA   __la_symbol_ptr    0x1000030B8  pointer
+__DATA   __la_symbol_ptr    0x1000030C0  pointer
+__DATA   __la_symbol_ptr    0x1000030C8  pointer
+__DATA   __la_symbol_ptr    0x1000030D0  pointer
+__DATA   __la_symbol_ptr    0x1000030D8  pointer
+__DATA   __la_symbol_ptr    0x1000030E0  pointer
+__DATA   __la_symbol_ptr    0x1000030E8  pointer
+__DATA   __la_symbol_ptr    0x1000030F0  pointer
+__DATA   __la_symbol_ptr    0x1000030F8  pointer
+__DATA   __la_symbol_ptr    0x100003100  pointer
+__DATA   __la_symbol_ptr    0x100003108  pointer
+__DATA   __la_symbol_ptr    0x100003110  pointer
+__DATA   __la_symbol_ptr    0x100003118  pointer
+__DATA   __la_symbol_ptr    0x100003120  pointer
+__DATA   __la_symbol_ptr    0x100003128  pointer
+__DATA   __la_symbol_ptr    0x100003130  pointer
+__DATA   __la_symbol_ptr    0x100003138  pointer
+__DATA   __la_symbol_ptr    0x100003140  pointer
+__DATA   __la_symbol_ptr    0x100003148  pointer
+__DATA   __la_symbol_ptr    0x100003150  pointer
+__DATA   __la_symbol_ptr    0x100003158  pointer
+__DATA   __la_symbol_ptr    0x100003160  pointer
+__DATA   __la_symbol_ptr    0x100003168  pointer
+__DATA   __la_symbol_ptr    0x100003170  pointer
+__DATA   __la_symbol_ptr    0x100003178  pointer
+__DATA   __la_symbol_ptr    0x100003180  pointer
+__DATA   __la_symbol_ptr    0x100003188  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100002000 pointer         0 libSystem        __DefaultRuneLocale
+__DATA_CONST __got              0x100002008 pointer         0 libSystem        dyld_stub_binder
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100003000 libSystem        _printf
+__DATA   __la_symbol_ptr    0x100003008 libSystem        ___maskrune
+__DATA   __la_symbol_ptr    0x100003010 libSystem        ___error
+__DATA   __la_symbol_ptr    0x100003018 libSystem        _isatty
+__DATA   __la_symbol_ptr    0x100003020 libSystem        _pathconf
+__DATA   __la_symbol_ptr    0x100003028 libSystem        _realpath$DARWIN_EXTSN
+__DATA   __la_symbol_ptr    0x100003030 libSystem        _strcmp
+__DATA   __la_symbol_ptr    0x100003038 libSystem        _rand
+__DATA   __la_symbol_ptr    0x100003040 libSystem        _strptime
+__DATA   __la_symbol_ptr    0x100003048 libSystem        _strftime
+__DATA   __la_symbol_ptr    0x100003050 libSystem        _gmtime_r
+__DATA   __la_symbol_ptr    0x100003058 libSystem        _timegm
+__DATA   __la_symbol_ptr    0x100003060 libSystem        _localtime_r
+__DATA   __la_symbol_ptr    0x100003068 libSystem        _setlocale
+__DATA   __la_symbol_ptr    0x100003070 libSystem        _dirname
+__DATA   __la_symbol_ptr    0x100003078 libSystem        _strerror
+__DATA   __la_symbol_ptr    0x100003080 libSystem        _strspn
+__DATA   __la_symbol_ptr    0x100003088 libSystem        _memmem
+__DATA   __la_symbol_ptr    0x100003090 libSystem        _nexttoward
+__DATA   __la_symbol_ptr    0x100003098 libSystem        _nextafter
+__DATA   __la_symbol_ptr    0x1000030A0 libSystem        _scalbln
+__DATA   __la_symbol_ptr    0x1000030A8 libSystem        _scalb
+__DATA   __la_symbol_ptr    0x1000030B0 libSystem        _remainder
+__DATA   __la_symbol_ptr    0x1000030B8 libSystem        _hypot
+__DATA   __la_symbol_ptr    0x1000030C0 libSystem        _fdim
+__DATA   __la_symbol_ptr    0x1000030C8 libSystem        _yn
+__DATA   __la_symbol_ptr    0x1000030D0 libSystem        _y1
+__DATA   __la_symbol_ptr    0x1000030D8 libSystem        _y0
+__DATA   __la_symbol_ptr    0x1000030E0 libSystem        _jn
+__DATA   __la_symbol_ptr    0x1000030E8 libSystem        _j1
+__DATA   __la_symbol_ptr    0x1000030F0 libSystem        _j0
+__DATA   __la_symbol_ptr    0x1000030F8 libSystem        _lgamma_r
+__DATA   __la_symbol_ptr    0x100003100 libSystem        _lgamma
+__DATA   __la_symbol_ptr    0x100003108 libSystem        _tgamma
+__DATA   __la_symbol_ptr    0x100003110 libSystem        _logb
+__DATA   __la_symbol_ptr    0x100003118 libSystem        _log1p
+__DATA   __la_symbol_ptr    0x100003120 libSystem        _expm1
+__DATA   __la_symbol_ptr    0x100003128 libSystem        _log2
+__DATA   __la_symbol_ptr    0x100003130 libSystem        _exp2
+__DATA   __la_symbol_ptr    0x100003138 libSystem        _erfc
+__DATA   __la_symbol_ptr    0x100003140 libSystem        _erf
+__DATA   __la_symbol_ptr    0x100003148 libSystem        _tanh
+__DATA   __la_symbol_ptr    0x100003150 libSystem        _sinh
+__DATA   __la_symbol_ptr    0x100003158 libSystem        _cosh
+__DATA   __la_symbol_ptr    0x100003160 libSystem        _cbrt
+__DATA   __la_symbol_ptr    0x100003168 libSystem        _atanh
+__DATA   __la_symbol_ptr    0x100003170 libSystem        _asinh
+__DATA   __la_symbol_ptr    0x100003178 libSystem        _acosh
+__DATA   __la_symbol_ptr    0x100003180 libSystem        _asin
+__DATA   __la_symbol_ptr    0x100003188 libSystem        _acos

@@ -448,3 +448,20 @@ ORVYN_TEST(darwin_libc_data_symbols_live_in_guest_writable_memory_and_restart_fo
     CHECK(guard != 0);
     CHECK_EQ(guard & 0xff, uint64_t{0});
 }
+
+// ============================== ORVYN 0.6.8: libSystem surface of the first external binary ===============================================================
+ORVYN_TEST(libm_time_strings_locale_rand_files_and_ctype_extensions_return_mathematically_exact_values) {
+    TempDir t;
+    Run r = run_fixture("libc_ext", {}, t.path());
+    expect_exited(r, 42, "libc_ext");
+    CHECK_EQ(r.out, std::string("libc ext ok\n"));
+}
+
+ORVYN_TEST(a_stack_probe_emitted_by_llvm_calls_the_real_mach_o_name_and_keeps_rax_semantics) {
+    // chkstk_probe.ll carries the "probe-stack"="___chkstk_darwin" attribute: LLVM itself emits `mov eax, size ; call ____chkstk_darwin ; sub rax, rsp`
+    Run r = run_fixture("chkstk_probe");
+    expect_exited(r, 42, "chkstk_probe");
+    auto p = take(libsystem::LibSystemProvider::create());
+    CHECK(p->lookup(libsystem::kInstallName, "____chkstk_darwin").has_value());
+    CHECK(!p->lookup(libsystem::kInstallName, "___chkstk_darwin").has_value());              // the 3-underscore spelling was wrong and must not resolve
+}
