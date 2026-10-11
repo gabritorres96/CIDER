@@ -19,6 +19,7 @@ void add_callback_symbols(std::vector<HostSymbol>& out); // callbacks.cpp: qsort
 void add_tls_symbols(std::vector<HostSymbol>& out);     // tls.cpp   : __tlv_bootstrap / tlv_get_addr
 void add_dispatch_symbols(std::vector<HostSymbol>& out); // dispatch/dispatch.cpp
 const std::vector<HostSymbol>& stub_host_symbols();    // frameworks.cpp: honest stubs of recognised-but-unimplemented frameworks
+void add_darwin_libc_symbols(std::vector<HostSymbol>& out);   // darwin_libc.cpp: stack protector, __assert_rtn, abort, getopt, __cxa_atexit...
 void add_block_symbols(std::vector<HostSymbol>& out);   // blocks.cpp: _Block_copy, _Block_release, _Block_object_assign/dispose
 // Blocks are Objective-C objects (isa = one of the __NS*Block__ classes) whose counts live in the block header (blocks.cpp).
 bool block_is_object(uint64_t obj);

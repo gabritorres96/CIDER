@@ -1,0 +1,36 @@
+libc_darwin:
+
+SYMBOL TABLE:
+0000000100000d70 l     F __TEXT,__text _run_getopt
+0000000100000f30 l     F __TEXT,__text _main_np_thread
+0000000100000f40 l     F __TEXT,__text _cxa_handler
+00000001000030a8 l     O __DATA,__bss _dso
+0000000100000f60 l     F __TEXT,__text _plain_handler
+00000001000030a0 l     O __DATA,__data __dyld_private
+00000001000005e0 g     F __TEXT,__text _main
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* ___assert_rtn
+0000000000000000         *UND* ___chkstk_darwin
+0000000000000000         *UND* ___cxa_atexit
+0000000000000000         *UND* ___error
+0000000000000000         *UND* ___stack_chk_guard
+0000000000000000         *UND* _abort
+0000000000000000         *UND* _atexit
+0000000000000000         *UND* _fma
+0000000000000000         *UND* _free
+0000000000000000         *UND* _getopt
+0000000000000000         *UND* _malloc
+0000000000000000         *UND* _malloc_size
+0000000000000000         *UND* _memchr
+0000000000000000         *UND* _modf
+0000000000000000         *UND* _optarg
+0000000000000000         *UND* _optind
+0000000000000000         *UND* _optopt
+0000000000000000         *UND* _posix_memalign
+0000000000000000         *UND* _printf
+0000000000000000         *UND* _pthread_create
+0000000000000000         *UND* _pthread_join
+0000000000000000         *UND* _pthread_main_np
+0000000000000000         *UND* _puts
+0000000000000000         *UND* _realloc
+0000000000000000         *UND* dyld_stub_binder

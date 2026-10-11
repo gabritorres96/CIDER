@@ -1,0 +1,82 @@
+stack_smash:
+(__TEXT,__text) section
+_main:
+100000540:	55	pushq	%rbp
+100000541:	48 89 e5	movq	%rsp, %rbp
+100000544:	48 81 ec 90 00 00 00	subq	$0x90, %rsp
+10000054b:	48 8b 05 ae 0a 00 00	movq	0xaae(%rip), %rax ## literal pool symbol address: ___stack_chk_guard
+100000552:	48 8b 00	movq	(%rax), %rax
+100000555:	48 89 45 f8	movq	%rax, -0x8(%rbp)
+100000559:	89 7d 8c	movl	%edi, -0x74(%rbp)
+10000055c:	48 89 75 80	movq	%rsi, -0x80(%rbp)
+100000560:	c7 85 7c ff ff ff 00 00 00 00	movl	$0x0, -0x84(%rbp)
+10000056a:	83 bd 7c ff ff ff 60	cmpl	$0x60, -0x84(%rbp)
+100000571:	7d 1d	jge	0x100000590
+100000573:	48 63 85 7c ff ff ff	movslq	-0x84(%rbp), %rax
+10000057a:	c6 44 05 90 41	movb	$0x41, -0x70(%rbp,%rax)
+10000057f:	8b 85 7c ff ff ff	movl	-0x84(%rbp), %eax
+100000585:	83 c0 01	addl	$0x1, %eax
+100000588:	89 85 7c ff ff ff	movl	%eax, -0x84(%rbp)
+10000058e:	eb da	jmp	0x10000056a
+100000590:	48 8d 7d 90	leaq	-0x70(%rbp), %rdi
+100000594:	8b 4d 8c	movl	-0x74(%rbp), %ecx
+100000597:	be 08 00 00 00	movl	$0x8, %esi
+10000059c:	b8 60 00 00 00	movl	$0x60, %eax
+1000005a1:	83 f9 01	cmpl	$0x1, %ecx
+1000005a4:	0f 4f f0	cmovgl	%eax, %esi
+1000005a7:	e8 64 00 00 00	callq	_fill
+1000005ac:	89 85 78 ff ff ff	movl	%eax, -0x88(%rbp)
+1000005b2:	48 8d 3d fb 00 00 00	leaq	0xfb(%rip), %rdi ## literal pool for: "returned normally"
+1000005b9:	e8 cc 00 00 00	callq	0x10000068a ## symbol stub for: _puts
+1000005be:	8b 95 78 ff ff ff	movl	-0x88(%rbp), %edx
+1000005c4:	b8 01 00 00 00	movl	$0x1, %eax
+1000005c9:	b9 2a 00 00 00	movl	$0x2a, %ecx
+1000005ce:	83 fa 41	cmpl	$0x41, %edx
+1000005d1:	0f 44 c1	cmovel	%ecx, %eax
+1000005d4:	89 85 74 ff ff ff	movl	%eax, -0x8c(%rbp)
+1000005da:	48 8b 05 1f 0a 00 00	movq	0xa1f(%rip), %rax ## literal pool symbol address: ___stack_chk_guard
+1000005e1:	48 8b 00	movq	(%rax), %rax
+1000005e4:	48 8b 4d f8	movq	-0x8(%rbp), %rcx
+1000005e8:	48 39 c8	cmpq	%rcx, %rax
+1000005eb:	75 0f	jne	0x1000005fc
+1000005ed:	8b 85 74 ff ff ff	movl	-0x8c(%rbp), %eax
+1000005f3:	48 81 c4 90 00 00 00	addq	$0x90, %rsp
+1000005fa:	5d	popq	%rbp
+1000005fb:	c3	retq
+1000005fc:	e8 83 00 00 00	callq	0x100000684 ## symbol stub for: ___stack_chk_fail
+100000601:	66 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00	nopw	%cs:(%rax,%rax)
+_fill:
+100000610:	55	pushq	%rbp
+100000611:	48 89 e5	movq	%rsp, %rbp
+100000614:	48 83 ec 40	subq	$0x40, %rsp
+100000618:	48 8b 05 e1 09 00 00	movq	0x9e1(%rip), %rax ## literal pool symbol address: ___stack_chk_guard
+10000061f:	48 8b 00	movq	(%rax), %rax
+100000622:	48 89 45 f8	movq	%rax, -0x8(%rbp)
+100000626:	48 89 7d d8	movq	%rdi, -0x28(%rbp)
+10000062a:	89 75 d4	movl	%esi, -0x2c(%rbp)
+10000062d:	c7 45 d0 00 00 00 00	movl	$0x0, -0x30(%rbp)
+100000634:	8b 45 d0	movl	-0x30(%rbp), %eax
+100000637:	3b 45 d4	cmpl	-0x2c(%rbp), %eax
+10000063a:	7d 1e	jge	0x10000065a
+10000063c:	48 8b 45 d8	movq	-0x28(%rbp), %rax
+100000640:	48 63 4d d0	movslq	-0x30(%rbp), %rcx
+100000644:	8a 0c 08	movb	(%rax,%rcx), %cl
+100000647:	48 63 45 d0	movslq	-0x30(%rbp), %rax
+10000064b:	88 4c 05 e0	movb	%cl, -0x20(%rbp,%rax)
+10000064f:	8b 45 d0	movl	-0x30(%rbp), %eax
+100000652:	83 c0 01	addl	$0x1, %eax
+100000655:	89 45 d0	movl	%eax, -0x30(%rbp)
+100000658:	eb da	jmp	0x100000634
+10000065a:	8a 45 e3	movb	-0x1d(%rbp), %al
+10000065d:	0f be c0	movsbl	%al, %eax
+100000660:	89 45 cc	movl	%eax, -0x34(%rbp)
+100000663:	48 8b 05 96 09 00 00	movq	0x996(%rip), %rax ## literal pool symbol address: ___stack_chk_guard
+10000066a:	48 8b 00	movq	(%rax), %rax
+10000066d:	48 8b 4d f8	movq	-0x8(%rbp), %rcx
+100000671:	48 39 c8	cmpq	%rcx, %rax
+100000674:	75 09	jne	0x10000067f
+100000676:	8b 45 cc	movl	-0x34(%rbp), %eax
+100000679:	48 83 c4 40	addq	$0x40, %rsp
+10000067d:	5d	popq	%rbp
+10000067e:	c3	retq
+10000067f:	e8 00 00 00 00	callq	0x100000684 ## symbol stub for: ___stack_chk_fail

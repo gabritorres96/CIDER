@@ -182,9 +182,11 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     uint64_t final_code = r.value;
     while (ctx.fault.empty() && !ctx.skip_atexit && !ctx.atexit_handlers.empty()) {
         const uint64_t fn = ctx.atexit_handlers.back();
+        const uint64_t arg = ctx.atexit_args.size() >= ctx.atexit_handlers.size() ? ctx.atexit_args[ctx.atexit_handlers.size() - 1] : 0;
         ctx.atexit_handlers.pop_back();
+        if (ctx.atexit_args.size() > ctx.atexit_handlers.size()) ctx.atexit_args.resize(ctx.atexit_handlers.size());
         log::info(log::Category::Execution, "running atexit handler at {:#x}", fn);
-        abi::CallOutcome h = abi::call_guest(fn, stack.value(), g.initial_sp);
+        abi::CallOutcome h = abi::call_guest(fn, stack.value(), g.initial_sp, arg);
         if (h.exited) { final_code = h.value; break; }
     }
     // The process ends here: other guest threads (if any) are told to unwind and joined.

@@ -99,6 +99,14 @@ void* w_calloc(uint64_t a, uint64_t b) {
 void w_free(void* p) {
     if (!p) return;
     RuntimeContext* c = context();
+    if (c) {
+        if (auto it = c->aligned_blocks.find(p); it != c->aligned_blocks.end()) {     // posix_memalign block: free the heap block behind it
+            void* base = it->second;
+            c->aligned_blocks.erase(it);
+            if (c->allocations.erase(base)) HeapFree(heap_of(c), 0, base);
+            return;
+        }
+    }
     if (!c || c->allocations.erase(p) == 0) {
         log::warn(log::Category::LibSystem, "free({}) of a pointer that malloc did not return: ignored", p);
         return;
@@ -108,6 +116,16 @@ void w_free(void* p) {
 void* w_realloc(void* p, uint64_t n) {
     if (!p) return w_malloc(n);
     RuntimeContext* c = context();
+    if (c) {
+        if (auto it = c->aligned_blocks.find(p); it != c->aligned_blocks.end()) {     // move out of an over-aligned block: new block, copy, free
+            const SIZE_T have = HeapSize(heap_of(c), 0, it->second) - static_cast<SIZE_T>(static_cast<char*>(p) - static_cast<char*>(it->second));
+            void* q = w_malloc(n);
+            if (!q) return nullptr;
+            std::memcpy(q, p, std::min<SIZE_T>(have, static_cast<SIZE_T>(n)));
+            w_free(p);
+            return q;
+        }
+    }
     if (!c || c->allocations.count(p) == 0) {
         log::warn(log::Category::LibSystem, "realloc({}) of a pointer that malloc did not return: refused", p);
         return nullptr;
@@ -130,6 +148,52 @@ double w_fabs(double x) { return std::fabs(x); }
 double w_floor(double x) { return std::floor(x); }
 double w_ceil(double x) { return std::ceil(x); }
 double w_pow(double a, double b) { return std::pow(a, b); }
+
+#ifdef _WIN32
+// int posix_memalign(void **memptr, size_t alignment, size_t size): returns an error NUMBER (EINVAL / ENOMEM), never touches errno, and
+// leaves *memptr untouched on failure. alignment must be a power of two and a multiple of sizeof(void*). Up to 16 bytes the heap already
+// aligns; beyond that the block is over-allocated and the aligned pointer is remembered so free()/realloc() find the real block.
+int w_posix_memalign(void** out, uint64_t align, uint64_t size) {
+    if (!out) return detail::kEINVAL;
+    if (align < sizeof(void*) || (align & (align - 1)) != 0) return detail::kEINVAL;
+    if (align <= 16) {
+        void* p = w_malloc(size);
+        if (!p) return detail::kENOMEM;
+        *out = p;
+        return 0;
+    }
+    if (align > (1ull << 30) || size > UINT64_MAX - align - 16) return detail::kENOMEM;
+    RuntimeContext* c = context();
+    if (!c) return detail::kENOMEM;
+    void* base = w_malloc(size + align);
+    if (!base) return detail::kENOMEM;
+    const uint64_t a = (reinterpret_cast<uint64_t>(base) + align - 1) & ~(align - 1);
+    void* aligned = reinterpret_cast<void*>(a);
+    c->aligned_blocks[aligned] = base;
+    *out = aligned;
+    return 0;
+}
+
+// size_t malloc_size(const void *ptr): the usable size of a block malloc returned, 0 for anything else (Darwin returns 0, it never traps).
+// The Windows heap reports the requested size, which satisfies the contract "at least what was asked for".
+uint64_t w_malloc_size(const void* p) {
+    RuntimeContext* c = context();
+    if (!p || !c) return 0;
+    const void* base = p;
+    uint64_t skip = 0;
+    if (auto it = c->aligned_blocks.find(const_cast<void*>(p)); it != c->aligned_blocks.end()) {
+        base = it->second;
+        skip = static_cast<uint64_t>(static_cast<const char*>(p) - static_cast<const char*>(base));
+    }
+    if (c->allocations.count(const_cast<void*>(base)) == 0) return 0;
+    const SIZE_T n = HeapSize(heap_of(c), 0, base);
+    return n == static_cast<SIZE_T>(-1) || n < skip ? 0 : n - skip;
+}
+
+#else
+int w_posix_memalign(void**, uint64_t, uint64_t) { return detail::kENOMEM; }
+uint64_t w_malloc_size(const void*) { return 0; }
+#endif
 
 template <class F> void* addr(F* f) { return reinterpret_cast<void*>(f); }
 
@@ -176,6 +240,8 @@ const std::vector<HostSymbol>& implemented_symbols() {
         {"_calloc", addr(w_calloc)},   {"_realloc", addr(w_realloc)}, {"_free", addr(w_free)},     {"_sqrt", addr(w_sqrt)},
         {"_fabs", addr(w_fabs)},       {"_floor", addr(w_floor)},     {"_ceil", addr(w_ceil)},     {"_pow", addr(w_pow)},
         {"dyld_stub_binder", addr(w_lazy_bind_trap)},
+        {"_posix_memalign", addr(w_posix_memalign)},
+        {"_malloc_size", addr(w_malloc_size)},
     };
     detail::add_stdio_symbols(t);
     detail::add_posix_symbols(t);
@@ -185,6 +251,7 @@ const std::vector<HostSymbol>& implemented_symbols() {
     detail::add_block_symbols(t);
     detail::add_dispatch_symbols(t);
     detail::add_stream_symbols(t);
+    detail::add_darwin_libc_symbols(t);
     detail::add_pthread_symbols(t);
     objc::add_objc_symbols(t);
     objc::add_foundation_symbols(t);

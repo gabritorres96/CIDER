@@ -1,0 +1,16 @@
+stack_smash:
+
+Rebase table:
+segment  section            address     type
+__DATA   __la_symbol_ptr    0x100002000  pointer
+__DATA   __la_symbol_ptr    0x100002008  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100001000 pointer         0 libSystem        ___stack_chk_guard
+__DATA_CONST __got              0x100001008 pointer         0 libSystem        dyld_stub_binder
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100002000 libSystem        ___stack_chk_fail
+__DATA   __la_symbol_ptr    0x100002008 libSystem        _puts

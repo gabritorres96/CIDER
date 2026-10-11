@@ -370,3 +370,81 @@ ORVYN_TEST(errno_values_are_darwin_values_not_windows_or_linux) {
     t.write("input.txt", std::string("hello, world!\n"));
     expect_exited(run_fixture("files_read", {}, t.path()), 0, "files_read errno checks");
 }
+
+// ============================== ORVYN 0.6: Darwin libc basics ====================================================================================
+ORVYN_TEST(darwin_libc_basics_memchr_modf_fma_memalign_cxa_atexit_stack_guard_and_chkstk) {
+    Run r = run_fixture("libc_darwin");
+    expect_exited(r, 42, "libc_darwin");
+    // handlers run in reverse registration order after main; __cxa_atexit ones receive their argument
+    CHECK_EQ(r.out, std::string("libc ok\ncxa(three)\natexit\ncxa(one)\n"));
+}
+
+ORVYN_TEST(assert_failure_prints_the_darwin_message_and_ends_the_program_like_sigabrt) {
+    Run r = run_fixture("libc_darwin", {"assert"});
+    REQUIRE(r.r.state == guest::State::Faulted);
+    CHECK_EQ(r.err, std::string("Assertion failed: (x == 1), function main, file libc_darwin.c, line 777.\n"));
+    CHECK(r.r.message.find("assertion failed") != std::string::npos);
+}
+
+ORVYN_TEST(abort_stops_the_program_and_skips_atexit_handlers) {
+    Run r = run_fixture("libc_darwin", {"abort"});
+    REQUIRE(r.r.state == guest::State::Faulted);
+    CHECK(r.r.message.find("abort()") != std::string::npos);
+    CHECK_EQ(r.out, std::string("before abort\n"));
+}
+
+ORVYN_TEST(the_stack_protector_catches_a_smashed_canary) {
+    expect_exited(run_fixture("stack_smash"), 42, "stack_smash (no overrun)");              // the canary never fires falsely
+    Run r = run_fixture("stack_smash", {"overrun"});
+    REQUIRE(r.r.state == guest::State::Faulted);
+    CHECK(r.r.message.find("__stack_chk_fail") != std::string::npos);
+    CHECK_EQ(r.err, std::string("*** stack smashing detected ***: terminated\n"));
+    CHECK(r.out.find("returned normally") == std::string::npos);
+}
+
+ORVYN_TEST(getopt_follows_the_bsd_contract_and_its_globals_are_shared_with_the_program) {
+    // options, an attached and a detached argument, a cluster, "--" and a non-option: stops at the first operand
+    Run r = run_fixture("libc_darwin", {"getopt", "-a", "-bVAL", "-c", "-b", "two", "file", "-a"});
+    expect_exited(r, 40 + 2, "getopt basic");                                                // operands left: "file" and "-a" (BSD getopt does not permute)
+    CHECK_EQ(r.out, std::string("a\nb=VAL\nc\nb=two\noptind=7 rest=file\n"));
+    CHECK(r.err.empty());
+    Run cluster = run_fixture("libc_darwin", {"getopt", "-acbX", "--", "-a"});
+    expect_exited(cluster, 40 + 1, "getopt cluster and --");
+    CHECK_EQ(cluster.out, std::string("a\nc\nb=X\noptind=4 rest=-a\n"));
+    // unknown option and missing argument: '?', message on stderr with the program name
+    Run bad = run_fixture("libc_darwin", {"getopt", "-z", "-b"});
+    expect_exited(bad, 40, "getopt errors");
+    CHECK_EQ(bad.out, std::string("?(z)\n?(b)\noptind=4\n"));
+    CHECK_EQ(bad.err, std::string("libc_darwin: illegal option -- z\nlibc_darwin: option requires an argument -- b\n"));
+    // a leading ':' silences the messages and reports a missing argument as ':'
+    Run quiet = run_fixture("libc_darwin", {"getopt_colon", "-z", "-b"});
+    expect_exited(quiet, 40, "getopt_colon");
+    CHECK_EQ(quiet.out, std::string("?(z)\n:(b)\noptind=4\n"));
+    CHECK(quiet.err.empty());
+    // no options at all
+    Run none = run_fixture("libc_darwin", {"getopt"});
+    expect_exited(none, 40, "getopt without options");
+    CHECK_EQ(none.out, std::string("optind=2\n"));
+}
+
+ORVYN_TEST(darwin_libc_data_symbols_live_in_guest_writable_memory_and_restart_for_every_run) {
+    auto p = take(libsystem::LibSystemProvider::create());
+    for (const char* n : {"_optarg", "_optind", "_optopt", "_opterr", "_optreset", "___stack_chk_guard"}) {
+        auto s = p->lookup(libsystem::kInstallName, n);
+        REQUIRE(s.has_value());
+        CHECK(!s->is_function);
+        CHECK(s->address != 0);
+    }
+    libsystem::RuntimeContext ctx;
+    p->install_stdio(ctx);
+    REQUIRE(ctx.libc_vars != nullptr);
+    CHECK_EQ(ctx.libc_vars->optind, 1);
+    CHECK_EQ(ctx.libc_vars->opterr, 1);
+    CHECK_EQ(*reinterpret_cast<int*>(p->lookup(libsystem::kInstallName, "_optind")->address), 1);
+    ctx.libc_vars->optind = 9;
+    p->install_stdio(ctx);                                              // a new process starts from the defaults again
+    CHECK_EQ(ctx.libc_vars->optind, 1);
+    uint64_t guard = *reinterpret_cast<uint64_t*>(p->lookup(libsystem::kInstallName, "___stack_chk_guard")->address);
+    CHECK(guard != 0);
+    CHECK_EQ(guard & 0xff, uint64_t{0});
+}

@@ -76,6 +76,13 @@ struct Stream {
 inline constexpr uint64_t kFileObjectSize = 64;   // stride of the FILE objects handed to the guest
 inline constexpr size_t kMaxStreams = 64;         // slots 0-2 are stdin/stdout/stderr
 
+// The Darwin globals a program binds to as data and that libc writes: getopt's optarg/optind/optopt/opterr/optreset. They live in
+// guest-writable memory owned by the LibSystemProvider; RuntimeContext::libc_vars points at them.
+struct LibcVars {
+    uint64_t optarg = 0;       // char * (guest address)
+    int32_t optind = 1, optopt = 0, opterr = 1, optreset = 0;
+};
+
 // Per-guest-process state seen by the host functions (single guest at a time).
 struct RuntimeContext {
     RuntimeContext();
@@ -102,7 +109,11 @@ struct RuntimeContext {
     std::vector<TlsImage> tls_images;       // images with thread-local storage (filled by the dynamic linker)
     // ---- callbacks (0.4) -------------------------------------------------------------------------------------
     std::vector<std::pair<uint64_t, uint64_t>> code_ranges;   // [lo, hi) executable guest code a callback may target (+ libSystem thunks)
-    std::vector<uint64_t> atexit_handlers;  // guest functions registered with atexit(), run in reverse order
+    std::vector<uint64_t> atexit_handlers;  // guest functions registered with atexit()/__cxa_atexit(), run in reverse order
+    std::vector<uint64_t> atexit_args;      // __cxa_atexit argument per handler (index-aligned with atexit_handlers; missing entries mean 0)
+    std::map<void*, void*> aligned_blocks;  // posix_memalign blocks aligned beyond the heap's 16 bytes: returned pointer -> start of the heap block
+    LibcVars* libc_vars = nullptr;          // getopt globals (see LibcVars), set by LibSystemProvider::install_stdio
+    uint64_t getopt_place = 0;              // getopt: scanning position inside the current argv element (0 = start a new one)
     bool skip_atexit = false;               // _exit(): handlers do not run
     // ---- GUI (0.5) --------------------------------------------------------------------------------------------
     std::string gui_backend = "win32";      // "win32" (real windows) or "offscreen" (in-memory windows with scripted input, for tests)
@@ -154,7 +165,8 @@ public:
 
 private:
     abi::ThunkTable table_;
-    memory::Region data_;              // stdio variables and FILE objects (read-only after initialisation)
+    memory::Region data_;              // stdio variables, FILE objects and the stack-protector guard (read-only after initialisation)
+    memory::Region rw_;                // LibcVars: guest-writable globals (getopt)
     std::map<std::string, size_t, std::less<>> index_;
     std::map<std::string, uint64_t, std::less<>> data_index_;
     std::map<std::string, uint64_t, std::less<>> direct_index_;    // name -> address of machine code

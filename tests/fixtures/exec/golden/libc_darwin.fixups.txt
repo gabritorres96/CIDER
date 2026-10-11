@@ -1,0 +1,55 @@
+libc_darwin:
+
+Rebase table:
+segment  section            address     type
+__DATA   __la_symbol_ptr    0x100003000  pointer
+__DATA   __la_symbol_ptr    0x100003008  pointer
+__DATA   __la_symbol_ptr    0x100003010  pointer
+__DATA   __la_symbol_ptr    0x100003018  pointer
+__DATA   __la_symbol_ptr    0x100003020  pointer
+__DATA   __la_symbol_ptr    0x100003028  pointer
+__DATA   __la_symbol_ptr    0x100003030  pointer
+__DATA   __la_symbol_ptr    0x100003038  pointer
+__DATA   __la_symbol_ptr    0x100003040  pointer
+__DATA   __la_symbol_ptr    0x100003048  pointer
+__DATA   __la_symbol_ptr    0x100003050  pointer
+__DATA   __la_symbol_ptr    0x100003058  pointer
+__DATA   __la_symbol_ptr    0x100003060  pointer
+__DATA   __la_symbol_ptr    0x100003068  pointer
+__DATA   __la_symbol_ptr    0x100003070  pointer
+__DATA   __la_symbol_ptr    0x100003078  pointer
+__DATA   __la_symbol_ptr    0x100003080  pointer
+__DATA   __la_symbol_ptr    0x100003088  pointer
+__DATA   __la_symbol_ptr    0x100003090  pointer
+__DATA   __la_symbol_ptr    0x100003098  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100002000 pointer         0 libSystem        ___stack_chk_guard
+__DATA_CONST __got              0x100002008 pointer         0 libSystem        _optind
+__DATA_CONST __got              0x100002010 pointer         0 libSystem        _optarg
+__DATA_CONST __got              0x100002018 pointer         0 libSystem        _optopt
+__DATA_CONST __got              0x100002020 pointer         0 libSystem        dyld_stub_binder
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100003000 libSystem        _abort
+__DATA   __la_symbol_ptr    0x100003008 libSystem        _puts
+__DATA   __la_symbol_ptr    0x100003010 libSystem        ___assert_rtn
+__DATA   __la_symbol_ptr    0x100003018 libSystem        ___cxa_atexit
+__DATA   __la_symbol_ptr    0x100003020 libSystem        _atexit
+__DATA   __la_symbol_ptr    0x100003028 libSystem        ___chkstk_darwin
+__DATA   __la_symbol_ptr    0x100003030 libSystem        _pthread_join
+__DATA   __la_symbol_ptr    0x100003038 libSystem        _pthread_create
+__DATA   __la_symbol_ptr    0x100003040 libSystem        _pthread_main_np
+__DATA   __la_symbol_ptr    0x100003048 libSystem        _malloc_size
+__DATA   __la_symbol_ptr    0x100003050 libSystem        _free
+__DATA   __la_symbol_ptr    0x100003058 libSystem        _malloc
+__DATA   __la_symbol_ptr    0x100003060 libSystem        ___error
+__DATA   __la_symbol_ptr    0x100003068 libSystem        _posix_memalign
+__DATA   __la_symbol_ptr    0x100003070 libSystem        _realloc
+__DATA   __la_symbol_ptr    0x100003078 libSystem        _fma
+__DATA   __la_symbol_ptr    0x100003080 libSystem        _modf
+__DATA   __la_symbol_ptr    0x100003088 libSystem        _printf
+__DATA   __la_symbol_ptr    0x100003090 libSystem        _memchr
+__DATA   __la_symbol_ptr    0x100003098 libSystem        _getopt

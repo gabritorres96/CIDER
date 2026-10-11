@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <new>
+#include <random>
 
 #include "internal.hpp"
 #include "orvyn/frameworks.hpp"
@@ -60,10 +62,31 @@ Result<std::unique_ptr<LibSystemProvider>> LibSystemProvider::create() {
             std::memcpy(base + i * 8, &ptr, 8);
         }
     }
+    // ___stack_chk_guard: one random value per process, lowest byte zero (stops string-copy overruns), like Darwin's. Offset 24 of the data page.
+    {
+        std::random_device rd;
+        uint64_t guard = (static_cast<uint64_t>(rd()) << 32) ^ rd();
+        guard = (guard | 0x100) & ~uint64_t{0xff};
+        std::memcpy(base + 24, &guard, 8);
+        p->data_index_["___stack_chk_guard"] = reinterpret_cast<uint64_t>(base + 24);
+    }
     p->data_index_["___stdinp"] = reinterpret_cast<uint64_t>(base);
     p->data_index_["___stdoutp"] = reinterpret_cast<uint64_t>(base + 8);
     p->data_index_["___stderrp"] = reinterpret_cast<uint64_t>(base + 16);
     if (auto pr = p->data_.protect(0, p->data_.size(), memory::Prot::Read); !pr.ok()) return pr.error();
+
+    // getopt's globals are written by libc and by the program: a separate writable page.
+    auto rw = memory::Region::reserve(0, static_cast<size_t>(*memory::align_up(sizeof(LibcVars), memory::page_size())), false);
+    if (!rw.ok()) return rw.error();
+    p->rw_ = std::move(rw.value());
+    if (auto c = p->rw_.commit(0, p->rw_.size()); !c.ok()) return c.error();
+    new (p->rw_.base()) LibcVars();
+    uint8_t* v = p->rw_.base();
+    p->data_index_["_optarg"] = reinterpret_cast<uint64_t>(v + offsetof(LibcVars, optarg));
+    p->data_index_["_optind"] = reinterpret_cast<uint64_t>(v + offsetof(LibcVars, optind));
+    p->data_index_["_optopt"] = reinterpret_cast<uint64_t>(v + offsetof(LibcVars, optopt));
+    p->data_index_["_opterr"] = reinterpret_cast<uint64_t>(v + offsetof(LibcVars, opterr));
+    p->data_index_["_optreset"] = reinterpret_cast<uint64_t>(v + offsetof(LibcVars, optreset));
     return p;
 }
 
@@ -110,6 +133,8 @@ std::optional<dyld::ResolvedSymbol> LibSystemProvider::lookup(std::string_view l
 bool LibSystemProvider::provides_library(std::string_view install_name) const { return group_of(install_name).has_value(); }
 
 void LibSystemProvider::install_stdio(RuntimeContext& ctx) const {
+    ctx.libc_vars = new (const_cast<uint8_t*>(rw_.base())) LibcVars();     // a fresh process: optind = 1, opterr = 1
+    ctx.getopt_place = 0;
     ctx.file_stdin = files_[0];
     ctx.file_stdout = files_[1];
     ctx.file_stderr = files_[2];

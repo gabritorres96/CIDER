@@ -88,6 +88,8 @@ int w_atexit(uint64_t fn) {
     if (!c || !is_valid_callback(fn)) return static_cast<int>(detail::fail_errno(detail::kEINVAL));
     if (c->atexit_handlers.size() >= kMaxAtexit) return static_cast<int>(detail::fail_errno(detail::kENOMEM));
     c->atexit_handlers.push_back(fn);
+    c->atexit_args.resize(c->atexit_handlers.size() - 1, 0);
+    c->atexit_args.push_back(0);
     return 0;
 }
 
