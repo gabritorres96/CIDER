@@ -261,6 +261,6 @@ void install_foundation(Runtime& rt);       // declares NSObject, NSString, ... 
 
 // ---- layout constants of the Apple ABI (x86_64) -------------------------------------------------------------------------------------
 inline constexpr uint32_t kRoMeta = 0x1, kRoRoot = 0x2, kRoHasCxxStructors = 0x4;
-inline constexpr uint32_t kMethodListEntSizeMask = 0xFFFC, kMethodListRelativeFlag = 0x80000000;
+inline constexpr uint32_t kMethodListEntSizeMask = 0xFFFC, kMethodListRelativeFlag = 0x80000000, kMethodListDirectSelectors = 0x40000000;
 
 }  // namespace orvyn::objc

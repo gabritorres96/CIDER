@@ -13,6 +13,7 @@
 #include "orvyn/objc.hpp"
 #include "guest_code.hpp"
 #include "macho_builder.hpp"
+#include "relmeth.hpp"
 #include "test_framework.hpp"
 
 using namespace orvyn;
@@ -272,6 +273,94 @@ ORVYN_TEST(runtime_errors_end_the_guest_with_a_precise_diagnosis) {
     }
 }
 
+// ============================== relative ("small") method lists =================================================================================
+// clang/ld64.lld only emit absolute lists, so relmeth.hpp converts the linked fixture into the format ld64 writes for macOS 11+ targets.
+namespace {
+std::vector<uint8_t> relative_fixture(testing::relmeth::Mode mode) {
+    std::string why;
+    auto r = testing::relmeth::to_relative(load(bin("objc_relative")), mode, &why);
+    if (!r) { report_failure(__FILE__, __LINE__, "cannot convert fixture: " + why); throw AbortTest{}; }
+    return *r;
+}
+}  // namespace
+
+ORVYN_TEST(relative_method_lists_with_direct_selectors_run_like_absolute_lists) {
+    expect_exit(run(bin("objc_relative")), 42, "absolute reference");
+    const auto b = relative_fixture(testing::relmeth::Mode::Direct);
+    CHECK(b != load(bin("objc_relative")));
+    Run r = run(bin("objc_relative"), {}, &b);
+    expect_exit(r, 42, "relative direct");
+    CHECK_EQ(r.out, std::string("answer=42\n"));
+}
+ORVYN_TEST(relative_method_lists_with_indirect_selectors_run_like_absolute_lists) {
+    const auto b = relative_fixture(testing::relmeth::Mode::Indirect);
+    Run r = run(bin("objc_relative"), {}, &b);
+    expect_exit(r, 42, "relative indirect");
+    CHECK_EQ(r.out, std::string("answer=42\n"));
+}
+ORVYN_TEST(relative_and_absolute_lists_register_the_same_methods) {
+    auto ref = prepare(bin("objc_relative"));
+    REQUIRE(ref->ok);
+    for (auto mode : {testing::relmeth::Mode::Direct, testing::relmeth::Mode::Indirect}) {
+        const auto b = relative_fixture(mode);
+        auto rel = prepare(bin("objc_relative"), &b);
+        if (!rel->ok) { report_failure(__FILE__, __LINE__, "relative image did not load: " + rel->link_error.message + rel->objc_error); continue; }
+        for (const char* cname : {"Item"})
+            for (bool meta : {false, true}) {
+                objc::Class* a = ref->rt()->class_named(cname);
+                objc::Class* c = rel->rt()->class_named(cname);
+                REQUIRE(a != nullptr);
+                REQUIRE(c != nullptr);
+                if (meta) { a = a->meta; c = c->meta; }
+                REQUIRE_EQ(a->methods.size(), c->methods.size());
+                CHECK(!a->methods.empty());
+                for (size_t i = 0; i < a->methods.size(); ++i) {
+                    CHECK_EQ(a->methods[i].name, c->methods[i].name);
+                    CHECK_EQ(a->methods[i].types, c->methods[i].types);
+                    // the implementations are addresses in two different loads: only their presence is comparable here (the run tests execute them)
+                    CHECK(c->methods[i].imp != 0);
+                }
+            }
+    }
+}
+ORVYN_TEST(malformed_relative_method_lists_are_refused_before_any_guest_code_runs) {
+    const fs::path exe = bin("objc_relative");
+    for (auto mode : {testing::relmeth::Mode::Direct, testing::relmeth::Mode::Indirect}) {
+        const auto good = relative_fixture(mode);
+        const uint64_t list = testing::relmeth::first_method_list(good);
+        REQUIRE(list != 0);
+        const uint64_t off = testing::relmeth::file_offset_of(good, list);
+        REQUIRE(off != 0);
+        auto put32 = [&](std::vector<uint8_t>& v, uint64_t at, uint32_t x) { std::memcpy(v.data() + at, &x, 4); };
+        auto expect = [&](const std::vector<uint8_t>& v, const char* needle, const char* what) {
+            Run r = run(exe, {}, &v);
+            if (r.r.state != guest::State::LoadFailed) { report_failure(__FILE__, __LINE__, std::string("accepted: ") + what); return; }
+            if (r.r.message.find(needle) == std::string::npos) report_failure(__FILE__, __LINE__, std::string(what) + ": message was " + r.r.message);
+            CHECK_EQ(r.out, std::string(""));
+        };
+        {   auto v = good; put32(v, off, 0x80000000u | (mode == testing::relmeth::Mode::Direct ? 0x40000000u : 0u) | 16);
+            expect(v, "unexpected small method entry size", "entsize 16"); }
+        {   auto v = good; put32(v, off, 0x80000000u | (mode == testing::relmeth::Mode::Direct ? 0x40000000u : 0u) | 12 | 0x1000);
+            expect(v, "unexpected small method entry size", "entsize 4108"); }
+        {   auto v = good; put32(v, off + 4, 0x7fffffffu);
+            expect(v, "truncated or too large", "huge count"); }
+        {   auto v = good; put32(v, off + 4, 0xffffffffu);
+            expect(v, "truncated or too large", "count -1"); }
+        {   auto v = good; put32(v, off + 8, 0x7ffffff0u);             // name offset far outside the image
+            expect(v, "outside the image", "name offset beyond the image"); }
+        {   auto v = good; put32(v, off + 8, 0x80000010u);             // large negative offset
+            expect(v, "outside the image", "negative offset beyond the image"); }
+        {   auto v = good; put32(v, off + 16, 0x7fffffffu);            // imp offset: INT32_MAX
+            expect(v, "outside the image", "imp offset INT32_MAX"); }
+        {   auto v = good; put32(v, off + 12, 0x80000000u);            // types offset: INT32_MIN
+            expect(v, "outside the image", "types offset INT32_MIN"); }
+        if (mode == testing::relmeth::Mode::Indirect) {
+            auto v = good; put32(v, off + 8, 0x10);                    // points into the list itself, not into __objc_selrefs
+            expect(v, "__objc_selrefs", "indirect selector outside __objc_selrefs");
+        }
+    }
+}
+
 // ============================== hostile metadata ===============================================================================================
 namespace {
 struct Patcher {
@@ -314,7 +403,7 @@ ORVYN_TEST(malformed_objective_c_metadata_is_refused_before_any_guest_code_runs)
         const uint64_t cls = p.get64(p.section_addr("__objc_classlist")), ro = p.get64(cls + 32) & ~7ull;
         const uint64_t methods = p.get64(ro + 32);
         p.put32(methods, 0x80000000u | 24);
-        expect_refused(p.b, "relative method lists", "relative method list");
+        expect_refused(p.b, "unexpected small method entry size", "relative flag on a 24-byte entry list");
     }
     {   // wrong method entry size
         Patcher p(exe);

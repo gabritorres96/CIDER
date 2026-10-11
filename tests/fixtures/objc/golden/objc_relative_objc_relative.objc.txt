@@ -1,0 +1,203 @@
+bin\objc_relative\objc_relative:
+Contents of (__DATA_CONST,__objc_classlist) section
+0000000100002018 0x100003060 _OBJC_CLASS_$_Item
+           isa 0x100003088 _OBJC_METACLASS_$_Item
+    superclass 0x0
+         cache 0x0
+        vtable 0x0
+          data 0x1000031d0 (struct class_ro_t *)
+                    flags 0x2 RO_ROOT
+            instanceStart 0
+             instanceSize 8
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000b96 Item
+              baseMethods 0x100003170 (struct method_list_t *)
+		   entsize 24
+		     count 2
+		      name 0x100000b6c value
+		     types 0x100000bb6 i16@0:8
+		       imp -[Item value]
+		      name 0x100000b7d describe
+		     types 0x100000bb6 i16@0:8
+		       imp -[Item describe]
+            baseProtocols 0x100003110
+                      count 1
+		      list[0] 0x1000032b0 (struct protocol_t *)
+			      isa 0x0
+			     name 0x100000b9b Describable
+			protocols 0x0
+		  instanceMethods 0x1000030e8 (struct method_list_t *)
+			   entsize 24
+			     count 1
+			      name 0x100000b7d describe
+			     types 0x100000bb6 i16@0:8
+			       imp 0x0 
+		     classMethods 0x0 (struct method_list_t *)
+	  optionalInstanceMethods 0x0
+	     optionalClassMethods 0x0
+	       instanceProperties 0x0
+                    ivars 0x1000031a8
+                    entsize 32
+                      count 1
+			   offset 0x100003318 0
+			     name 0x100000b86 isa
+			     type 0x100000bbe #
+			alignment 3
+			     size 8
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x100003088 _OBJC_METACLASS_$_Item
+    superclass 0x100003060 _OBJC_CLASS_$_Item
+         cache 0x0
+        vtable 0x0
+          data 0x100003128 (struct class_ro_t *)
+                    flags 0x3 RO_META RO_ROOT
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000b96 Item
+              baseMethods 0x1000030b0 (struct method_list_t *)
+		   entsize 24
+		     count 2
+		      name 0x100000b72 new
+		     types 0x100000bae @16@0:8
+		       imp +[Item new]
+		      name 0x100000b76 answer
+		     types 0x100000bb6 i16@0:8
+		       imp +[Item answer]
+            baseProtocols 0x100003110
+                      count 1
+		      list[0] 0x1000032b0 (struct protocol_t *)
+			      isa 0x0
+			     name 0x100000b9b Describable
+			protocols 0x0
+		  instanceMethods 0x1000030e8 (struct method_list_t *)
+			   entsize 24
+			     count 1
+			      name 0x100000b7d describe
+			     types 0x100000bb6 i16@0:8
+			       imp 0x0 
+		     classMethods 0x0 (struct method_list_t *)
+	  optionalInstanceMethods 0x0
+	     optionalClassMethods 0x0
+	       instanceProperties 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Contents of (__DATA,__objc_classrefs) section
+0000000100003320 0x100003060 _OBJC_CLASS_$_Item
+Contents of (__DATA_CONST,__objc_catlist) section
+0000000100002020 0x100003270 __OBJC_$_CATEGORY_Item_$_Extras
+              name 0x100000ba7 Extras
+               cls 0x100003060
+           isa 0x100003088 _OBJC_METACLASS_$_Item
+    superclass 0x0
+         cache 0x0
+        vtable 0x0
+          data 0x1000031d0 (struct class_ro_t *)
+                    flags 0x2 RO_ROOT
+            instanceStart 0
+             instanceSize 8
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000b96 Item
+              baseMethods 0x100003170 (struct method_list_t *)
+		   entsize 24
+		     count 2
+		      name 0x100000b6c value
+		     types 0x100000bb6 i16@0:8
+		       imp -[Item value]
+		      name 0x100000b7d describe
+		     types 0x100000bb6 i16@0:8
+		       imp -[Item describe]
+            baseProtocols 0x100003110
+                      count 1
+		      list[0] 0x1000032b0 (struct protocol_t *)
+			      isa 0x0
+			     name 0x100000b9b Describable
+			protocols 0x0
+		  instanceMethods 0x1000030e8 (struct method_list_t *)
+			   entsize 24
+			     count 1
+			      name 0x100000b7d describe
+			     types 0x100000bb6 i16@0:8
+			       imp 0x0 
+		     classMethods 0x0 (struct method_list_t *)
+	  optionalInstanceMethods 0x0
+	     optionalClassMethods 0x0
+	       instanceProperties 0x0
+                    ivars 0x1000031a8
+                    entsize 32
+                      count 1
+			   offset 0x100003318 0
+			     name 0x100000b86 isa
+			     type 0x100000bbe #
+			alignment 3
+			     size 8
+           weakIvarLayout 0x0
+           baseProperties 0x0
+Meta Class
+           isa 0x100003088 _OBJC_METACLASS_$_Item
+    superclass 0x100003060 _OBJC_CLASS_$_Item
+         cache 0x0
+        vtable 0x0
+          data 0x100003128 (struct class_ro_t *)
+                    flags 0x3 RO_META RO_ROOT
+            instanceStart 40
+             instanceSize 40
+                 reserved 0x0
+               ivarLayout 0x0
+                     name 0x100000b96 Item
+              baseMethods 0x1000030b0 (struct method_list_t *)
+		   entsize 24
+		     count 2
+		      name 0x100000b72 new
+		     types 0x100000bae @16@0:8
+		       imp +[Item new]
+		      name 0x100000b76 answer
+		     types 0x100000bb6 i16@0:8
+		       imp +[Item answer]
+            baseProtocols 0x100003110
+                      count 1
+		      list[0] 0x1000032b0 (struct protocol_t *)
+			      isa 0x0
+			     name 0x100000b9b Describable
+			protocols 0x0
+		  instanceMethods 0x1000030e8 (struct method_list_t *)
+			   entsize 24
+			     count 1
+			      name 0x100000b7d describe
+			     types 0x100000bb6 i16@0:8
+			       imp 0x0 
+		     classMethods 0x0 (struct method_list_t *)
+	  optionalInstanceMethods 0x0
+	     optionalClassMethods 0x0
+	       instanceProperties 0x0
+                    ivars 0x0
+           weakIvarLayout 0x0
+           baseProperties 0x0
+   instanceMethods 0x100003218
+		   entsize 24
+		     count 2
+		      name 0x100000b8a extra
+		     types 0x100000bb6 i16@0:8
+		       imp -[Item(Extras) extra]
+		      name 0x100000b6c value
+		     types 0x100000bb6 i16@0:8
+		       imp -[Item(Extras) value]
+      classMethods 0x100003250
+		   entsize 24
+		     count 1
+		      name 0x100000b90 bonus
+		     types 0x100000bb6 i16@0:8
+		       imp +[Item(Extras) bonus]
+         protocols 0x0
+instanceProperties 0x0
+Contents of (__DATA_CONST,__objc_protolist) section
+0000000100002010 0x1000032b0 __OBJC_PROTOCOL_$_Describable
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES

@@ -1,6 +1,6 @@
 // Reads the metadata clang emits for the Apple (objc2) runtime from a loaded Mach-O image and registers classes, categories and
 // protocols. EVERY pointer is checked with Runtime::readable before it is dereferenced, every count is bounded, and anything the
-// runtime does not implement (relative method lists, ...) is refused with a message instead of being misread.
+// runtime does not implement is refused with a message instead of being misread. Absolute and "small" (relative) method lists are both read.
 #include <algorithm>
 #include <cstring>
 #include <format>
@@ -23,11 +23,63 @@ struct Parser {
     }
     bool fail(std::string m) { if (err.empty()) err = std::move(m); return false; }
 
+    // The image the metadata belongs to: offsets of relative method lists must not leave it.
+    bool in_image(Addr a, size_t n = 1) const {
+        const Addr lo = img.mapped.actual_base();
+        const uint64_t span = img.mapped.layout.span;
+        return a >= lo && a - lo < span && n <= span - (a - lo);
+    }
+
+    // "Small" (relative) method list, macOS 11+ deployment targets. Entry = three int32, each relative to the address of its own field:
+    //   name  -> the selector string (direct selectors, flag 0x40000000) or the __objc_selrefs slot that points to it (indirect)
+    //   types -> the type-encoding string
+    //   imp   -> the implementation
+    // Every target is checked to lie inside this image; the selref slot also has to lie inside a __objc_selrefs section.
+    bool small_method_list(Addr list, uint32_t entsize_flags, uint32_t count, std::vector<Method>& out, const char* what) {
+        const std::string w = what;
+        if ((entsize_flags & kMethodListEntSizeMask) != 12) return fail(w + ": unexpected small method entry size");
+        if (list % 4 != 0) return fail(w + ": small method list is not 4-byte aligned");
+        if (count > 100000 || !rt.readable(list + 8, static_cast<size_t>(count) * 12)) return fail(w + ": small method list is truncated or too large");
+        const bool direct = (entsize_flags & kMethodListDirectSelectors) != 0;
+        auto target = [&](Addr field, Addr& out_addr) {
+            int32_t off = 0;
+            if (!rd(field, off)) return false;
+            const int64_t t = static_cast<int64_t>(field) + static_cast<int64_t>(off);        // 64-bit sum of a 47-bit address and an int32: no overflow
+            if (t <= 0) return false;
+            out_addr = static_cast<Addr>(t);
+            return in_image(out_addr);
+        };
+        for (uint32_t i = 0; i < count; ++i) {
+            const Addr e = list + 8 + 12ull * i;
+            Addr name_t = 0, types_t = 0, imp_t = 0;
+            if (!target(e, name_t) || !target(e + 4, types_t) || !target(e + 8, imp_t)) return fail(w + ": small method entry points outside the image");
+            Addr name_str = name_t;
+            if (!direct) {
+                bool in_selrefs = false;
+                for (const auto& seg : img.info.segments)
+                    for (const auto& sec : seg.sections)
+                        if (sec.name == "__objc_selrefs") {
+                            const Addr b = static_cast<Addr>(static_cast<int64_t>(sec.addr) + img.mapped.slide);
+                            if (name_t >= b && name_t - b < sec.size && (name_t - b) % 8 == 0) in_selrefs = true;
+                        }
+                if (!in_selrefs) return fail(w + ": indirect selector does not point into __objc_selrefs");
+                if (!rd(name_t, name_str) || !in_image(name_str)) return fail(w + ": selector reference does not point to a string of the image");
+            }
+            Method m;
+            if (!rt.read_cstring(name_str, m.name, 1024) || m.name.empty()) return fail(w + ": bad method name");
+            rt.read_cstring(types_t, m.types, 1024);
+            m.sel = rt.sel(m.name);
+            m.imp = imp_t;
+            out.push_back(std::move(m));
+        }
+        return true;
+    }
+
     bool method_list(Addr list, std::vector<Method>& out, const char* what) {
         if (!list) return true;
         uint32_t entsize_flags = 0, count = 0;
         if (!rd(list, entsize_flags) || !rd(list + 4, count)) return fail(std::string(what) + ": method list is not readable");
-        if (entsize_flags & kMethodListRelativeFlag) return fail(std::string(what) + ": relative method lists (macOS 11+ deployment targets) are not supported");
+        if (entsize_flags & kMethodListRelativeFlag) return small_method_list(list, entsize_flags, count, out, what);
         if ((entsize_flags & kMethodListEntSizeMask) != 24) return fail(std::string(what) + ": unexpected method entry size");
         if (count > 100000 || !rt.readable(list + 8, static_cast<size_t>(count) * 24)) return fail(std::string(what) + ": method list is truncated or too large");
         for (uint32_t i = 0; i < count; ++i) {
@@ -174,20 +226,16 @@ struct Parser {
     }
 
     bool run() {
+        // __objc_selrefs is patched LAST: indirect selectors of relative method lists point to those slots while they still hold
+        // the selector string address.
+        std::vector<const macho::Section*> selrefs;
         for (const auto& seg : img.info.segments) {
             for (const auto& sec : seg.sections) {
                 if (sec.name == "__objc_selrefs") {
-                    // selector references are patched IN PLACE: the slot gets the runtime's unique SEL for the method-name string
-                    if (!each_pointer(sec, [&](Addr slot, Addr str) {
-                            std::string name;
-                            if (!rt.read_cstring(str, name, 1024) || name.empty()) return fail("a selector reference does not point to a string");
-                            const Addr s = rt.sel(name);
-                            if (rt.logged_sels_.insert(s).second && rt.logged_sels_.size() <= 64) log::info(log::Category::Objc, "Selector {} resolved", name);
-                            std::memcpy(reinterpret_cast<void*>(slot), &s, 8);
-                            return true;
-                        }))
-                        return false;
-                } else if (sec.name == "__objc_classlist" || sec.name == "__objc_nlclslist") {
+                    selrefs.push_back(&sec);
+                    continue;
+                }
+                if (sec.name == "__objc_classlist" || sec.name == "__objc_nlclslist") {
                     const bool nl = sec.name == "__objc_nlclslist";
                     if (!each_pointer(sec, [&](Addr, Addr cls) {
                             if (!parse_class(cls)) return false;
@@ -213,6 +261,18 @@ struct Parser {
                     if (flags & 0x1) return fail("replacement images (OBJC_IMAGE_IS_REPLACEMENT) are not supported");
                 }
             }
+        }
+        for (const macho::Section* sec : selrefs) {
+            // selector references are patched IN PLACE: the slot gets the runtime's unique SEL for the method-name string
+            if (!each_pointer(*sec, [&](Addr slot, Addr str) {
+                    std::string name;
+                    if (!rt.read_cstring(str, name, 1024) || name.empty()) return fail("a selector reference does not point to a string");
+                    const Addr s = rt.sel(name);
+                    if (rt.logged_sels_.insert(s).second && rt.logged_sels_.size() <= 64) log::info(log::Category::Objc, "Selector {} resolved", name);
+                    std::memcpy(reinterpret_cast<void*>(slot), &s, 8);
+                    return true;
+                }))
+                return false;
         }
         return true;
     }

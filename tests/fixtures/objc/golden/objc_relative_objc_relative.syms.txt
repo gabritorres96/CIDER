@@ -1,0 +1,45 @@
+bin\objc_relative\objc_relative:
+
+SYMBOL TABLE:
+0000000100000930 l     F __TEXT,__text +[Item new]
+0000000100000940 l     F __TEXT,__text +[Item answer]
+0000000100000950 l     F __TEXT,__text -[Item value]
+0000000100000960 l     F __TEXT,__text -[Item describe]
+0000000100003030 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_
+0000000100000980 l     F __TEXT,__text -[Item(Extras) extra]
+0000000100000990 l     F __TEXT,__text +[Item(Extras) bonus]
+00000001000009a0 l     F __TEXT,__text -[Item(Extras) value]
+0000000100003320 l     O __DATA,__objc_classrefs _OBJC_CLASSLIST_REFERENCES_$_
+0000000100003038 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.11
+0000000100003040 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.12
+0000000100003048 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.13
+0000000100003050 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.14
+0000000100003058 l     O __DATA,__objc_selrefs _OBJC_SELECTOR_REFERENCES_.17
+00000001000031d0 l     O __DATA,__objc_const __OBJC_CLASS_RO_$_Item
+0000000100003128 l     O __DATA,__objc_const __OBJC_METACLASS_RO_$_Item
+00000001000030b0 l     O __DATA,__objc_const __OBJC_$_CLASS_METHODS_Item
+00000001000030e8 l     O __DATA,__objc_const __OBJC_$_PROTOCOL_INSTANCE_METHODS_Describable
+0000000100003108 l     O __DATA,__objc_const __OBJC_$_PROTOCOL_METHOD_TYPES_Describable
+0000000100003110 l     O __DATA,__objc_const __OBJC_CLASS_PROTOCOLS_$_Item
+0000000100003170 l     O __DATA,__objc_const __OBJC_$_INSTANCE_METHODS_Item
+00000001000031a8 l     O __DATA,__objc_const __OBJC_$_INSTANCE_VARIABLES_Item
+0000000100003218 l     O __DATA,__objc_const __OBJC_$_CATEGORY_INSTANCE_METHODS_Item_$_Extras
+0000000100003250 l     O __DATA,__objc_const __OBJC_$_CATEGORY_CLASS_METHODS_Item_$_Extras
+0000000100003270 l     O __DATA,__objc_const __OBJC_$_CATEGORY_Item_$_Extras
+0000000100003310 l     O __DATA,__data __dyld_private
+00000001000032b0 l     O __DATA,__data .hidden __OBJC_PROTOCOL_$_Describable
+0000000100002010 l     O __DATA_CONST,__objc_protolist .hidden __OBJC_LABEL_PROTOCOL_$_Describable
+00000001000009b0 g     F __TEXT,__text _main
+0000000100003060 g     O __DATA,__objc_data _OBJC_CLASS_$_Item
+0000000100003088 g     O __DATA,__objc_data _OBJC_METACLASS_$_Item
+0000000100003318 g     O __DATA,__objc_ivar _OBJC_IVAR_$_Item.isa
+0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* _printf
+0000000000000000         *UND* dyld_stub_binder
+0000000000000000         *UND* __objc_empty_cache
+0000000000000000         *UND* _class_createInstance
+0000000000000000         *UND* _class_respondsToSelector
+0000000000000000         *UND* _objc_getClass
+0000000000000000         *UND* _objc_msgSend
+0000000000000000         *UND* _object_dispose
+0000000000000000         *UND* _sel_registerName
