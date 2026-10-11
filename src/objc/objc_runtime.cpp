@@ -388,11 +388,37 @@ std::pair<Addr, Addr> Runtime::thunk_range() const {
 }
 
 // ---- symbols visible to the dynamic linker ------------------------------------------------------------------------------------------
+Addr Runtime::make_ehtype(const char* name, Class* cls) {
+    if (!arena_.valid()) return 0;
+    const Addr vt = dynamic_symbol("_objc_ehtype_vtable").value_or(0);
+    const size_t n = std::strlen(name) + 1;
+    const Addr str = arena_alloc(n, 1), obj = arena_alloc(24, 16);
+    if (!vt || !str || !obj) return 0;
+    std::memcpy(reinterpret_cast<void*>(str), name, n);
+    const uint64_t words[3] = {vt + 16, str, cls ? cls->addr : 0};                // vtable pointer points 16 bytes into objc_ehtype_vtable, like Apple's
+    std::memcpy(reinterpret_cast<void*>(obj), words, sizeof words);
+    return obj;
+}
+
 std::optional<uint64_t> Runtime::dynamic_symbol(std::string_view name) {
     if (name == "__objc_empty_cache" || name == "_objc_empty_cache") {
         static Addr empty = 0;
         if (!empty || !arena_.valid()) empty = arena_alloc(32, 16);
         return empty;
+    }
+    // Exception type descriptors (objc_ehtype_t = {vtable, name, class}). A @catch clause compares them with the thrown object's descriptor, but only an
+    // unwinder's personality routine does that and ORVYN has none: they exist so that an image containing @try/@catch can be LINKED, not to catch anything.
+    if (name == "_objc_ehtype_vtable") {
+        if (!ehtype_vtable_ && arena_.valid()) ehtype_vtable_ = arena_alloc(24, 16);
+        return ehtype_vtable_ ? std::optional<uint64_t>(ehtype_vtable_) : std::nullopt;
+    }
+    if (name == "_OBJC_EHTYPE_$_NSException") {
+        if (!ehtype_ns_exception_) ehtype_ns_exception_ = make_ehtype("NSException", class_named("NSException"));
+        return ehtype_ns_exception_ ? std::optional<uint64_t>(ehtype_ns_exception_) : std::nullopt;
+    }
+    if (name == "_OBJC_EHTYPE_id") {
+        if (!ehtype_id_) ehtype_id_ = make_ehtype("id", nullptr);
+        return ehtype_id_ ? std::optional<uint64_t>(ehtype_id_) : std::nullopt;
     }
     constexpr std::string_view kClass = "_OBJC_CLASS_$_", kMeta = "_OBJC_METACLASS_$_";
     if (name.substr(0, kClass.size()) == kClass) {

@@ -88,7 +88,9 @@ ORVYN_TEST(stubs_are_never_counted_as_implemented_behaviour) {
         CHECK(std::string(s.signature).find(s.name + 1) != std::string::npos);      // the prototype names the function
         const FrameworkInfo* f = framework_of(s.lib);
         REQUIRE(f != nullptr);
-        CHECK(f->status == FrameworkStatus::StubOnly);                                // only unimplemented frameworks have stubs
+        // only unimplemented frameworks have stubs - except the exception-unwinding entry points of libobjc / libSystem (ORVYN has no unwinder)
+        const bool unwinding = s.lib == Lib::Objc || s.lib == Lib::System;
+        if (unwinding) CHECK(s.explanation[0] != 0); else CHECK(f->status == FrameworkStatus::StubOnly);
         CHECK(!is_implemented(s.name));                                               // the `implemented` registry never contains a stub
         for (const auto& h : implemented_symbols()) CHECK(std::string(h.name) != s.name);
     }

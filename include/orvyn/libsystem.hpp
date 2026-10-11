@@ -112,6 +112,7 @@ struct RuntimeContext {
     std::vector<uint64_t> atexit_handlers;  // guest functions registered with atexit()/__cxa_atexit(), run in reverse order
     std::vector<uint64_t> atexit_args;      // __cxa_atexit argument per handler (index-aligned with atexit_handlers; missing entries mean 0)
     std::map<void*, void*> aligned_blocks;  // posix_memalign blocks aligned beyond the heap's 16 bytes: returned pointer -> start of the heap block
+    bool exception_handlers_linked = false; // some image imports the exception-unwinding entry points (it contains @try/@catch/@finally); ORVYN cannot run them
     LibcVars* libc_vars = nullptr;          // getopt globals (see LibcVars), set by LibSystemProvider::install_stdio
     uint64_t getopt_place = 0;              // getopt: scanning position inside the current argv element (0 = start a new one)
     bool skip_atexit = false;               // _exit(): handlers do not run

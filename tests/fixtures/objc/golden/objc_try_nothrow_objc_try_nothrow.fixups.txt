@@ -1,0 +1,42 @@
+bin\objc_try_nothrow\objc_try_nothrow:
+
+Rebase table:
+segment  section            address     type
+__DATA_CONST __got              0x100002008  pointer
+__DATA_CONST __cfstring         0x100002030  pointer
+__DATA_CONST __cfstring         0x100002050  pointer
+__DATA_CONST __cfstring         0x100002070  pointer
+__DATA_CONST __cfstring         0x100002090  pointer
+__DATA_CONST __cfstring         0x1000020B0  pointer
+__DATA   __la_symbol_ptr    0x100003000  pointer
+__DATA   __la_symbol_ptr    0x100003008  pointer
+__DATA   __la_symbol_ptr    0x100003010  pointer
+__DATA   __la_symbol_ptr    0x100003018  pointer
+__DATA   __la_symbol_ptr    0x100003020  pointer
+__DATA   __la_symbol_ptr    0x100003028  pointer
+__DATA   __data             0x100003038  pointer
+__DATA   __objc_selrefs     0x100003058  pointer
+__DATA   __objc_selrefs     0x100003060  pointer
+
+Bind table:
+segment  section            address    type       addend dylib            symbol
+__DATA_CONST __got              0x100002000 pointer         0 libobjc          _objc_msgSend
+__DATA_CONST __got              0x100002010 pointer         0 libobjc          ___objc_personality_v0
+__DATA_CONST __got              0x100002018 pointer         0 libSystem        dyld_stub_binder
+__DATA_CONST __cfstring         0x100002020 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002040 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002060 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x100002080 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA_CONST __cfstring         0x1000020A0 pointer         0 Foundation       ___CFConstantStringClassReference
+__DATA   __data             0x100003030 pointer        16 libobjc          _objc_ehtype_vtable
+__DATA   __data             0x100003040 pointer         0 Foundation       _OBJC_CLASS_$_NSException
+__DATA   __objc_classrefs   0x100003050 pointer         0 Foundation       _OBJC_CLASS_$_NSException
+
+Lazy bind table:
+segment  section            address     dylib            symbol
+__DATA   __la_symbol_ptr    0x100003000 libobjc          _objc_terminate
+__DATA   __la_symbol_ptr    0x100003008 libSystem        __Unwind_Resume
+__DATA   __la_symbol_ptr    0x100003010 libobjc          _objc_end_catch
+__DATA   __la_symbol_ptr    0x100003018 libobjc          _objc_begin_catch
+__DATA   __la_symbol_ptr    0x100003020 Foundation       _NSLog
+__DATA   __la_symbol_ptr    0x100003028 libobjc          _objc_exception_rethrow

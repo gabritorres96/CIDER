@@ -4,7 +4,8 @@
 // with exactly what an UNCAUGHT exception does on macOS: "*** Terminating app due to uncaught exception 'Name', reason: 'Reason'" (the process does not continue).
 // What does not exist: @try/@catch/@finally. They need the Darwin zero-cost unwinder (__Unwind_RaiseException, __objc_personality_v0, objc_begin_catch/end_catch, DWARF
 // call-frame information of every guest and host frame in between). Unwinding through the host frames of the ABI bridge is not implemented and nothing can be
-// verified there, so a program that imports those symbols is REFUSED at link time with their names (exit code 12) instead of being run with a half-working catch.
+// verified there. Since 0.6 a program that merely CONTAINS handlers still loads (the entry points are honest stubs, see libsystem/frameworks.cpp) and runs normally while
+// nothing is thrown; a throw in such a program stops it with an explicit "no unwinder" diagnostic instead of guessing whether a handler would have caught it.
 #include <format>
 
 #include "orvyn/libsystem.hpp"
@@ -44,6 +45,11 @@ void throw_exception(Addr ex) {
     ExceptionPayload* p = ex_of(ex);
     const std::string name = p ? describe(p->name) : "(unknown)";
     const std::string reason = p && p->reason ? describe(p->reason) : "(null)";
+    if (rt().ctx().exception_handlers_linked) {
+        libsystem::detail::trap("*** Objective-C exception '" + name + "', reason: '" + reason + "' was thrown, but the program contains @catch/@finally handlers and ORVYN has no unwinder to reach them "
+                                "(on macOS one of them might have caught it): the program was stopped, not continued");
+        return;
+    }
     libsystem::detail::trap("*** Terminating app due to uncaught exception '" + name + "', reason: '" + reason + "'");
 }
 
@@ -91,7 +97,11 @@ Addr e_dealloc(Addr self, Addr) {
     rt().dispose_instance(self);
     return 0;
 }
-void w_objc_exception_throw(Addr ex) { if (ex) throw_exception(ex); else libsystem::detail::trap("*** Terminating app due to uncaught exception: nil exception thrown"); }
+void w_objc_exception_throw(Addr ex) {
+    if (ex) throw_exception(ex);
+    else libsystem::detail::trap(rt().ctx().exception_handlers_linked ? "*** nil exception thrown in a program with @catch/@finally handlers; ORVYN has no unwinder to reach them"
+                                                                      : "*** Terminating app due to uncaught exception: nil exception thrown");
+}
 
 template <class F> void* addr(F* f) { return reinterpret_cast<void*>(f); }
 

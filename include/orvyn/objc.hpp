@@ -257,6 +257,8 @@ private:
     std::unordered_map<Addr, std::vector<Addr*>> weak_by_object_;
     std::unordered_map<Addr*, Addr> weak_by_location_;
     friend struct Pools;
+    Addr ehtype_vtable_ = 0, ehtype_ns_exception_ = 0, ehtype_id_ = 0;     // type-info descriptors for @catch clauses (see dynamic_symbol)
+    Addr make_ehtype(const char* name, Class* cls);
     struct SyncLock { uint64_t owner = 0; uint32_t count = 0; };
     std::unordered_map<Addr, SyncLock> sync_;
     struct Association { Addr value = 0; uint32_t policy = 0; };

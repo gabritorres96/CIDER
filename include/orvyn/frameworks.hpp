@@ -40,12 +40,14 @@ const FrameworkInfo* framework_of(Lib lib);
 // re-exports (transitively), or - for the four implemented Foundation-family subsets - each other (they share one host runtime).
 bool lib_visible(Lib requested, Lib have);
 
-// A symbol of a StubOnly library that ORVYN can bind without implementing. `signature` is the C prototype from Apple's public header
+// A symbol that ORVYN can bind without implementing: a function of a StubOnly library, or - in libobjc / libSystem - one of the few
+// exception-unwinding entry points (objc_begin_catch, _Unwind_Resume...) a program that merely CONTAINS @try/@catch imports. `signature` is the C prototype from Apple's public header
 // (documentation and diagnostics only: the stub never reads its arguments and never returns).
 struct StubSymbol {
     const char* name;        // Mach-O name, leading underscore
     Lib lib;                 // exporting library
     const char* signature;
+    const char* explanation = "";   // when set, the diagnostic says this instead of the generic "not implemented" text
 };
 const std::vector<StubSymbol>& stub_symbols();
 const StubSymbol* find_stub(std::string_view mach_o_symbol);

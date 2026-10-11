@@ -82,6 +82,9 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
 
     out.required_libs = program->required_libs();
     out.stubs = program->stub_bindings();
+    for (const auto& s : out.stubs)
+        if (s.symbol == "_objc_begin_catch" || s.symbol == "_objc_end_catch" || s.symbol == "___objc_personality_v0" || s.symbol == "__Unwind_Resume" || s.symbol == "_objc_exception_rethrow")
+            ctx.exception_handlers_linked = true;
     out.entry_address = program->entry_address();
     out.image_base = program->main().mapped.actual_base();
     for (const auto& r : program->images()) {

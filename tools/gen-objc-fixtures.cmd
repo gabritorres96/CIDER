@@ -56,6 +56,9 @@ rem ---- @try/@catch: compiled WITH Objective-C exceptions; ORVYN must refuse it
 clang %COMMON% -fobjc-exceptions -fexceptions src\objc_try.m -o obj\objc_try.o || exit /b 1
 mkdir bin\objc_try
 %LDF% -o bin\objc_try\objc_try obj\objc_try.o || exit /b 1
+clang %COMMON% -fobjc-exceptions -fexceptions src\objc_try_nothrow.m -o obj\objc_try_nothrow.o || exit /b 1
+mkdir bin\objc_try_nothrow
+%LDF% -o bin\objc_try_nothrow\objc_try_nothrow obj\objc_try_nothrow.o || exit /b 1
 
 rem ---- slide: the base class lives in a dylib that is newer than the header the executable was compiled against --------------------
 clang %COMMON% src\shape_v2.m -o obj\shape_v2.o || exit /b 1

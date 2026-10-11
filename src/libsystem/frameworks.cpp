@@ -122,6 +122,19 @@ const std::vector<StubSymbol>& stub_symbols() {
         // ServiceManagement
         {"_SMLoginItemSetEnabled", Lib::ServiceManagement, "Boolean SMLoginItemSetEnabled(CFStringRef identifier, Boolean enabled)"},
         {"_SMCopyAllJobDictionaries", Lib::ServiceManagement, "CFArrayRef SMCopyAllJobDictionaries(CFStringRef domain)"},
+        // Exception unwinding (libobjc / libunwind in libSystem). ORVYN has no unwinder: an image that contains @try/@catch/@finally LOADS, runs
+        // normally while nothing is thrown, and stops with this diagnostic if control ever reaches a handler. objc_exception_throw itself is
+        // implemented (it ends the program like an uncaught exception, see nsexception.cpp); nothing can reach the functions below without an unwind.
+        {"_objc_begin_catch", Lib::Objc, "void *objc_begin_catch(void *exc_buf)",
+         "Objective-C exception handling: a @catch handler was entered. ORVYN has no unwinder, so exceptions can be thrown (they end the program) but never caught"},
+        {"_objc_end_catch", Lib::Objc, "void objc_end_catch(void)", "Objective-C exception handling: a @catch handler was left. ORVYN has no unwinder, so no handler can have run"},
+        {"_objc_terminate", Lib::Objc, "void objc_terminate(void)", "objc_terminate was called (unwinding failed or crossed a noexcept frame): ORVYN has no unwinder, so this cannot have been a real unwind"},
+        {"_objc_exception_rethrow", Lib::Objc, "void objc_exception_rethrow(void)", "Objective-C exception handling: a @catch handler rethrew. ORVYN has no unwinder"},
+        {"___objc_personality_v0", Lib::Objc,
+         "_Unwind_Reason_Code __objc_personality_v0(int version, _Unwind_Action actions, uint64_t exceptionClass, struct _Unwind_Exception *exceptionObject, struct _Unwind_Context *context)",
+         "the Objective-C personality routine was called: only an unwinder calls it, and ORVYN has none"},
+        {"__Unwind_Resume", Lib::System, "void _Unwind_Resume(struct _Unwind_Exception *exception_object)",
+         "a cleanup (@finally / ARC / C++ destructor landing pad) tried to resume unwinding: ORVYN has no unwinder, so no landing pad can have run"},
     };
     return table;
 }
@@ -139,6 +152,10 @@ void stub_entry(abi::GuestRegs*) {
     if (I >= stub_symbols().size()) { detail::trap("internal error: a stub thunk beyond the stub table was called"); return; }
     const StubSymbol& s = stub_symbols()[I];
     const FrameworkInfo* f = framework_of(s.lib);
+    if (s.explanation[0]) {
+        detail::trap(std::string(f ? f->name : "?") + ": " + s.explanation + " (" + (s.name + 1) + "; the program was stopped instead of continuing with a made-up result). Public prototype: " + s.signature);
+        return;
+    }
     detail::trap(std::string(f ? f->name : "?") + ": " + (s.name + 1) + " is not implemented in ORVYN, so the program was stopped instead of being given an invented result. Public prototype: " +
                  s.signature);
 }

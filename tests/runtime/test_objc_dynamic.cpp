@@ -32,8 +32,27 @@ ORVYN_TEST(nsexception_objects_work_and_an_uncaught_throw_ends_the_guest_like_ma
     CHECK_EQ(t.err, std::string("before throw, objects ok=1\n"));
 }
 
-ORVYN_TEST(a_program_that_catches_exceptions_is_refused_instead_of_run_with_a_broken_catch) {
-    FixtureRun r = run_fixture_file(objc_fixture("objc_try"));
-    CHECK(r.r.state != orvyn::guest::State::Exited);
-    CHECK(r.err.empty());                                        // no guest instruction ran
+ORVYN_TEST(a_program_that_contains_catch_handlers_loads_and_runs_while_nothing_is_thrown) {
+    FixtureRun ok = run_fixture_file(objc_fixture("objc_try_nothrow"));
+    expect_exit_code(ok, 42, "try without a throw");
+    CHECK(ok.err.find("no throw") != std::string::npos);
+    CHECK(ok.err.find("finally") != std::string::npos);          // the @finally body of the normal path ran
+    CHECK(ok.err.find("caught") == std::string::npos);
+}
+
+ORVYN_TEST(a_throw_in_a_program_with_handlers_stops_with_an_explicit_no_unwinder_diagnostic) {
+    // never "caught": ORVYN cannot deliver the exception to the @catch, and does not pretend to
+    for (const char* fixture : {"objc_try", "objc_try_nothrow"}) {
+        FixtureRun r = fixture == std::string("objc_try") ? run_fixture_file(objc_fixture(fixture)) : run_fixture_file(objc_fixture(fixture), {"throw"});
+        if (r.r.state != orvyn::guest::State::Faulted) { report_failure(__FILE__, __LINE__, std::string(fixture) + ": state " + orvyn::guest::to_string(r.r.state)); continue; }
+        CHECK(r.r.message.find("ORVYN has no unwinder") != std::string::npos);
+        CHECK(r.r.message.find("was thrown") != std::string::npos);
+        CHECK(r.err.find("caught") == std::string::npos);
+    }
+}
+
+ORVYN_TEST(an_uncaught_throw_in_a_program_without_handlers_keeps_the_macos_message) {
+    FixtureRun r = run_fixture_file(objc_fixture("objc_exception"), {"r"});
+    CHECK(r.r.state == orvyn::guest::State::Faulted);
+    CHECK(r.r.message.rfind("*** Terminating app due to uncaught exception", 0) == 0);
 }

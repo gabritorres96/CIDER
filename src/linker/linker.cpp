@@ -434,7 +434,7 @@ private:
         const libsystem::StubSymbol* st = libsystem::find_stub(symbol);
         const libsystem::FrameworkInfo* fw = st ? libsystem::framework_of(st->lib) : nullptr;
         prog_.stub_bindings_.push_back({rec.leaf, symbol, fw ? fw->name : lib, st ? st->signature : ""});
-        log::warn(log::Category::Symbols, "{}: {} is bound to a stub (library {} is not implemented): it stops the program if it is called", rec.leaf, symbol, fw ? fw->name : lib);
+        log::warn(log::Category::Symbols, "{}: {} ({}) is bound to a stub: it is NOT implemented and stops the program if it is called", rec.leaf, symbol, fw ? fw->name : lib);
     }
 
     std::optional<uint64_t> provided(const std::string& lib, const std::string& symbol, dyld::Unresolved& u) {

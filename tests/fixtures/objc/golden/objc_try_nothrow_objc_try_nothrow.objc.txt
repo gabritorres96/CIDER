@@ -1,0 +1,6 @@
+bin\objc_try_nothrow\objc_try_nothrow:
+Contents of (__DATA,__objc_classrefs) section
+0000000100003050 0x0 _OBJC_CLASS_$_NSException
+Contents of (__DATA_CONST,__objc_imageinfo) section
+  version 0
+    flags 0x40 OBJC_IMAGE_HAS_CATEGORY_CLASS_PROPERTIES
