@@ -26,6 +26,12 @@ Local commits of this work: `6510583` engine and Direct2D device, `c12f8a7` gues
 
 Not done in 0.6.1-0.6.2 (see [LIMITATIONS.md](LIMITATIONS.md)): image creation from the guest, text drawing, `NSColor`/`NSBezierPath`/`NSRectFill`, partial dirty rectangles.
 
+## 0.6.8 validation milestone (2026-10-11, internal, version still 0.5.0)
+
+**First unmodified external macOS binary executed:** jq 1.7.1 `jq-macos-amd64` (SHA-256 4155822b...) runs real filters, regex, date and math functions, reads files and stdin (`--stdin`), and returns jq's own exit codes. Evidence and limits: [compatibility/JQ-1.7.1.md](compatibility/JQ-1.7.1.md); full audit, fuzzing numbers and open items: [validation/ORVYN-0.6.8-REPORT.md](validation/ORVYN-0.6.8-REPORT.md). It is **one binary**: nothing else is claimed. cliclick remains blocked at binding (19 imports).
+
+Also in this milestone: the `test_threads` intermittency was a fixture timing defect (fixed, 0 failures in 240 parallel ASan runs), `____chkstk_darwin` name corrected, stub prototypes verified against the 11.3 SDK headers (`IOMainPort` removed), flat-namespace and chained-format weak-binding behaviour pinned by tests, libFuzzer sessions run (about 4 million executions, no crash) with a new structure-aware harness `fuzz_objc_relative`.
+
 ## 0.6 work after drawing (2026-10-11, local branch `claude/orvyn-objc-darwin-3d9584`, version still 0.5.0)
 
 | Item | State | Evidence |

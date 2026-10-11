@@ -64,3 +64,6 @@ Not done on purpose: stubbing the `CGEvent*` family or declaring empty placehold
 
 ### Second external binary
 Selection criteria: no Swift, no libc++, no exceptions, few dependencies, clear licence, original upstream binary, x86_64, reproducible. A web search found **no candidate** meeting all of them (results were frameworks, Swift rewrites or GPL tools). No further download was made. Next step: find an upstream release asset or build a small Objective-C CLI with the owner's toolchain, then run `orvyn frameworks <binary>` first - it says in seconds whether the link can succeed.
+
+### Re-check at 0.6.8 (2026-10-11)
+After the libSystem additions for jq, `orvyn frameworks` on the same binary still reports 76 imports: 47 implemented, 10 stubs, **19 missing** (no regression, no change). First blocker in `orvyn run`: `_OBJC_CLASS_$_NSCharacterSet`. Not run. `CGEvent*` is not implemented and no real input injection exists.

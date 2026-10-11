@@ -118,3 +118,14 @@ clauses); this project does not give legal advice — check the licence of what 
 * **Darwin libc**: `getopt` is BSD getopt (no GNU extras, no `getopt_long`); `malloc_size` reports the requested size, not the allocator's rounded size; `___chkstk_darwin` is a register-preserving `ret` (guest stacks are fully committed) and its name comes from Apple's libSystem, not from the available LLVM 23.1.3 driver, which does not emit it.
 * **`@synchronized` / associated objects**: correct for the cooperative guest threads (one runs at a time); no parallelism is claimed. Association policies other than ASSIGN/RETAIN/COPY (+NONATOMIC variants) stop the program.
 * **External binaries**: none runs. cliclick 5.1 is blocked by 19 missing imports (see [compatibility/CLICLICK-5.1.md](compatibility/CLICLICK-5.1.md)).
+
+## 0.6.8 additions (jq 1.7.1)
+
+* **Guest environment**: time zone is **UTC** (`localtime_r` == `gmtime_r`, `tm_zone` "UTC"); locale is **"C" only** (`setlocale` refuses anything else); no signals (`raise(SIGABRT)` = `abort()`, other signals stop the program); `isatty` is true only for an uncaptured real console.
+* **libm / ctype / time**: implemented with the host's C runtime where the contract matches (checked with mathematically exact values), not bit-compared with Apple's libm. `__DefaultRuneLocale`: layout (offset 60) and the alpha/space bits confirmed in jq's code; the other `_CTYPE_*` bits come from Apple's public header as remembered. `rand()` is the FreeBSD/Darwin Park-Miller generator, not compared with a macOS run. `strftime`/`strptime` cover the common conversions only (unknown conversions are copied literally).
+* **stdin**: the guest's stdin is empty unless `orvyn run --stdin` is given.
+* **Lazy binding** is still eager: an unresolved import that is never called still fails the load (proposal in the validation report).
+* **Flat namespace**: symbols are looked up by name in load order; interposing and `DYLD_FORCE_FLAT_NAMESPACE` do not exist.
+* **Weak binding** is not applied to chained-fixup images.
+* **Objective-C metadata**: protocol method lists (absolute or relative) are not read; no authentic ld64-produced relative-list binary has been run.
+* Only **one** external binary has run (jq). That says nothing about other programs.

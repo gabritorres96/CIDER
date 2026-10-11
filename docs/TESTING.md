@@ -171,3 +171,9 @@ New fuzzers: `fuzz_chained` (export trie + chained/classic fixup decoders) and `
 * Interactive tests need an input desktop and are skipped otherwise. The capture uses `PrintWindow(PW_RENDERFULLCONTENT)`; it was only exercised on a visible window.
 * Not covered: monitors with different DPI at the same time, a real DPI change event (the offscreen `scale` command emulates it, `WM_DPICHANGED` is exercised only
   by the manual path of 0.5), GPU device loss, ClearType text (there is no text drawing yet), several guest threads drawing.
+
+## External binaries and 0.6.8 validation
+
+* `test_external` runs **unmodified** third-party macOS binaries that are NOT in the repository. Set `ORVYN_EXTERNAL_JQ` to the original `jq-macos-amd64` of jq 1.7.1 (download URL and SHA-256 in [compatibility/JQ-1.7.1.md](compatibility/JQ-1.7.1.md)) and `ORVYN_EXE` to `orvyn.exe` (CTest sets it). The test verifies the SHA-256 and skips any other file; without the variable the tests are skipped.
+* Fuzzing (`clang-cl` + ASan + libFuzzer built from the llvm-project sources): `cmake -S . -B build-fuzz -G Ninja -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_LINKER_TYPE=LLD -DORVYN_SANITIZE=ON -DORVYN_BUILD_FUZZERS=ON -DORVYN_BUILD_TESTS=OFF -DORVYN_LIBFUZZER_SRC=<llvm-project>/compiler-rt/lib/fuzzer` (inside `tools\llvm-env.cmd`). New harness `fuzz_objc_relative` mutates only Objective-C data of valid linked programs. Numbers: [validation/ORVYN-0.6.8-REPORT.md](validation/ORVYN-0.6.8-REPORT.md).
+* Timing-sensitive guest tests must not depend on host thread start latency (see the `thread_race` start barrier).
