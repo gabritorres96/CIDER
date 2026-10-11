@@ -30,7 +30,7 @@ Section
   sectname __text
    segname __TEXT
       addr 0x0000000100000590
-      size 0x00000000000000d1
+      size 0x0000000000000101
     offset 1424
      align 2^4 (16)
     reloff 0
@@ -42,9 +42,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __stubs
    segname __TEXT
-      addr 0x0000000100000664
+      addr 0x0000000100000694
       size 0x0000000000000018
-    offset 1636
+    offset 1684
      align 2^2 (4)
     reloff 0
     nreloc 0
@@ -55,9 +55,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __stub_helper
    segname __TEXT
-      addr 0x000000010000067c
+      addr 0x00000001000006ac
       size 0x0000000000000038
-    offset 1660
+    offset 1708
      align 2^2 (4)
     reloff 0
     nreloc 0
@@ -68,9 +68,9 @@ attributes PURE_INSTRUCTIONS SOME_INSTRUCTIONS
 Section
   sectname __cstring
    segname __TEXT
-      addr 0x00000001000006b4
+      addr 0x00000001000006e4
       size 0x0000000000000013
-    offset 1716
+    offset 1764
      align 2^0 (1)
     reloff 0
     nreloc 0
@@ -145,7 +145,7 @@ Section
   sectname __bss
    segname __DATA
       addr 0x0000000100002028
-      size 0x0000000000000008
+      size 0x000000000000000c
     offset 0
      align 2^3 (8)
     reloff 0
@@ -159,9 +159,9 @@ Load command 4
   cmdsize 72
   segname __LINKEDIT
    vmaddr 0x0000000100003000
-   vmsize 0x00000000000001f0
+   vmsize 0x0000000000000208
   fileoff 12288
- filesize 496
+ filesize 520
   maxprot r--
  initprot r--
    nsects 0
@@ -183,17 +183,17 @@ Load command 6
      cmd LC_SYMTAB
  cmdsize 24
   symoff 12456
-   nsyms 10
-  stroff 12656
- strsize 128
+   nsyms 11
+  stroff 12672
+ strsize 136
 Load command 7
             cmd LC_DYSYMTAB
         cmdsize 80
       ilocalsym 0
-      nlocalsym 3
-     iextdefsym 3
+      nlocalsym 4
+     iextdefsym 4
      nextdefsym 2
-      iundefsym 5
+      iundefsym 6
       nundefsym 5
          tocoff 0
            ntoc 0
@@ -201,7 +201,7 @@ Load command 7
         nmodtab 0
    extrefsymoff 0
     nextrefsyms 0
- indirectsymoff 12616
+ indirectsymoff 12632
   nindirectsyms 9
       extreloff 0
         nextrel 0
@@ -214,7 +214,7 @@ Load command 8
 Load command 9
      cmd LC_UUID
  cmdsize 24
-    uuid 4C4C444A-5555-3144-A165-6316EDEDA1B9
+    uuid 4C4C4414-5555-3144-A19C-8FABD1C197CA
 Load command 10
        cmd LC_BUILD_VERSION
    cmdsize 32

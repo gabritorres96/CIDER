@@ -3,6 +3,7 @@ thread_race:
 SYMBOL TABLE:
 0000000100000630 l     F __TEXT,__text _worker
 0000000100002028 l     O __DATA,__bss _counter
+0000000100002030 l     O __DATA,__bss _ready
 0000000100002020 l     O __DATA,__data __dyld_private
 0000000100000590 g     F __TEXT,__text _main
 0000000100000000 g     F __TEXT,__text __mh_execute_header
