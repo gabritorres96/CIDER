@@ -22,6 +22,7 @@ struct ProcessResult {
 struct ProcessOptions {
     size_t max_output_bytes = 64u << 20;
     bool inherit_stdio = false;      // child writes directly to our stdout/stderr (nothing is captured)
+    bool inherit_stdin = false;      // child reads OUR stdin (default: the NUL device, so a guest never reads the terminal by accident)
     bool separate_stderr = false;    // capture stderr separately instead of merging it into `output`
     bool restrict_job = false;       // job limits: one process, UI restrictions, no WER dialog on crash
     uint64_t job_memory_limit = 0;   // per-process committed memory limit in bytes (0 = none), needs restrict_job

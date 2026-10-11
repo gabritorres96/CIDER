@@ -90,6 +90,7 @@ SupervisorResult run_supervised(const SupervisorOptions& opts) {
     ProcessOptions po;
     po.restrict_job = true;
     po.job_memory_limit = opts.memory_limit;
+    po.inherit_stdin = opts.inherit_stdin;
     po.inherit_stdio = !opts.capture_output;
     po.separate_stderr = opts.capture_output;
     log::info(log::Category::Process, "starting worker process (timeout {} s)", std::chrono::duration_cast<std::chrono::seconds>(opts.timeout).count());

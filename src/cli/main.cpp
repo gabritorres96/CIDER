@@ -35,6 +35,7 @@ const char* kUsage =
     "  --json                 Machine-readable output\n"
     "  --symbols              Include the symbol table (inspect)\n"
     "  --timeout <seconds>    run: kill the guest after this many seconds (default 60)\n"
+    "  --stdin                run: the guest reads this process's standard input (default: empty)\n"
     "  --root <dir>           run: host directory the guest sees as \"/\" (default: current directory)\n"
     "  -o, --output <dir>    Output directory (extract; must not exist or be empty)\n"
     "  --7z <path>            Absolute path of 7z.exe (default: $ORVYN_7Z, PATH, Program Files)\n"
@@ -87,6 +88,7 @@ int main(int argc, char** argv) {
         if (a == "--help" || a == "-h") { std::fputs(kUsage, stdout); return 0; }
         if (a == "--json") opt.json = true;
         else if (a == "--symbols") opt.symbols = true;
+        else if (a == "--stdin") opt.stdin_inherit = true;
         else if (a == "--verbose" || a == "-v") { level = orvyn::log::Level::Debug; level_set = true; }
         else if (a == "--output" || a == "-o" || a == "--7z" || a == "--temp-dir" || a == "--max-size" || a == "--timeout" || a == "--result-file" || a == "--root") {
             if (i + 1 >= args.size()) { std::fprintf(stderr, "error: %s needs a value\n", a.c_str()); return 2; }

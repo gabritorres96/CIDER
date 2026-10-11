@@ -7,6 +7,7 @@ namespace orvyn::cli {
 struct Options {
     bool json = false;
     bool symbols = false;
+    bool stdin_inherit = false;   // run --stdin: the guest reads the caller's stdin
     std::string output;        // --output / -o
     std::string seven_zip;     // --7z <path>
     std::string temp_dir;      // --temp-dir <path> (private work directories are created here)

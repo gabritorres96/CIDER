@@ -80,6 +80,7 @@ struct SupervisorOptions {
     std::filesystem::path image;          // Mach-O file to execute
     std::vector<std::string> guest_args;  // argv[1..]
     std::chrono::milliseconds timeout = std::chrono::seconds(60);
+    bool inherit_stdin = false;           // the guest's stdin is the caller's stdin (default: empty, reads return end-of-file)
     bool capture_output = false;          // capture guest stdout/stderr (JSON mode) instead of inheriting
     std::string log_level = "info";
     std::filesystem::path log_file;       // worker log file (empty: worker logs to stderr)

@@ -79,6 +79,10 @@ Result<ProcessResult> run_process_ex(const std::filesystem::path& exe, const std
     si.cb = sizeof si;
     si.dwFlags = STARTF_USESTDHANDLES;
     si.hStdInput = nul_in.h;
+    if (opts.inherit_stdin) {
+        HANDLE in = GetStdHandle(STD_INPUT_HANDLE);
+        if (in && in != INVALID_HANDLE_VALUE) { inheritable(in); si.hStdInput = in; }
+    }
     if (opts.inherit_stdio) {
         HANDLE so = GetStdHandle(STD_OUTPUT_HANDLE), se = GetStdHandle(STD_ERROR_HANDLE);
         inheritable(so);

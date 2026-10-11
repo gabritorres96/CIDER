@@ -229,6 +229,7 @@ int cmd_run(const Options& o) {
     so.timeout = std::chrono::seconds(o.timeout_s ? o.timeout_s : (interactive ? 24 * 3600 : 60));
     if (interactive && !o.timeout_s) log::info(log::Category::Process, "GUI program (AppKit): the default timeout is disabled, use --timeout <seconds> to set one");
     so.capture_output = o.json;
+    so.inherit_stdin = o.stdin_inherit;
     // JSON mode always collects at least INFO-level runtime messages into the "log" array.
     so.log_level = log::level_name(o.json && log::level() > log::Level::Info ? log::Level::Info : log::level());
     for (auto& c : so.log_level) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));

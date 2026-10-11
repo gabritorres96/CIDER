@@ -12,6 +12,7 @@
 #include "orvyn/guest.hpp"
 #include "guest_code.hpp"
 #include "macho_builder.hpp"
+#include "orvyn/process.hpp"
 #include "test_framework.hpp"
 
 using namespace orvyn;
@@ -173,4 +174,31 @@ ORVYN_TEST(jq_1_7_1_reads_json_files_from_the_guest_root_and_reports_errors_like
     REQUIRE(bad.r.state == guest::State::Exited);
     CHECK_EQ(bad.r.exit_code, 3);
     CHECK(bad.err.find("syntax error") != std::string::npos);
+}
+
+ORVYN_TEST(jq_1_7_1_reads_standard_input_only_when_run_with_stdin) {
+    Jq j = find_jq();
+    const char* exe = std::getenv("ORVYN_EXE");
+    if (!exe || !*exe) SKIP("ORVYN_EXE is not set");
+#ifdef _WIN32
+    TempDir t;
+    auto in = t.write("in.json", std::vector<uint8_t>{'{', '"', 'a', '"', ':', '[', '1', ',', '2', ',', '3', ']', '}', '\n'});
+    const std::string orvyn = path_to_utf8(fs::absolute(fs::path(exe)).make_preferred());
+    const std::string jq = path_to_utf8(fs::absolute(j.path).make_preferred());
+    auto pipeline = [&](const char* flag) {
+        // a batch file: cmd.exe feeds the file to ORVYN's own stdin and ORVYN decides whether the guest may see it
+        const std::string bat = "@\"" + orvyn + "\" run " + flag + " \"" + jq + "\" -- -c .a[1] < \"" + path_to_utf8(in.make_preferred()) + "\"\r\n";
+        auto script = t.write("run.cmd", std::vector<uint8_t>(bat.begin(), bat.end()));
+        return run_process(fs::path("C:/Windows/System32/cmd.exe"), {"/d", "/c", path_to_utf8(script.make_preferred())}, std::chrono::seconds(60));
+    };
+    auto with = pipeline("--stdin");
+    REQUIRE(with.ok());
+    const std::string& wo = with.value().output;
+    if (wo.find("\n2\n") == std::string::npos && wo.find("\n2\r\n") == std::string::npos) report_failure(__FILE__, __LINE__, "jq .a[1] with --stdin did not print 2; size=" + std::to_string(wo.size()) + " exit=" + std::to_string(with.value().exit_code) + " tail: [" + wo.substr(wo.size() > 700 ? wo.size() - 700 : 0) + "]");
+    auto without = pipeline("--verbose");                       // no --stdin: the guest sees an empty input, jq prints nothing
+    REQUIRE(without.ok());
+    CHECK(without.value().output.find("\n2\n") == std::string::npos && without.value().output.find("\n2\r\n") == std::string::npos);
+#else
+    SKIP("Windows only");
+#endif
 }
