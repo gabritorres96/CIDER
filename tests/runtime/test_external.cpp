@@ -131,6 +131,16 @@ ORVYN_TEST(jq_1_7_1_evaluates_filters_with_the_expected_results) {
         {{"-n", "-r", "\"héllo\"|ascii_upcase"}, "HéLLO\n"},                                // jq's ascii_upcase leaves non-ASCII bytes alone
         {{"-n", "-c", "\"test\"|test(\"^t\")"}, "true\n"},                                    // oniguruma (statically linked in jq) runs too
         {{"-n", "-c", "\"abc123\"|[match(\"[0-9]+\").string]"}, "[\"123\"]\n"},
+        // number formatting (shortest round-trip doubles), sorting, regex substitution, formats
+        {{"-n", "-c", "[1/3, 0.1+0.2, 123456789012, 3.0]"}, "[0.3333333333333333,0.30000000000000004,123456789012,3.0]\n"},
+        {{"-n", "-c", "[3,1,2]|sort"}, "[1,2,3]\n"},
+        {{"-n", "-c", "[{\"a\":2},{\"a\":1}]|sort_by(.a)"}, "[{\"a\":1},{\"a\":2}]\n"},
+        {{"-n", "-c", "\"a1b22c\"|[gsub(\"[0-9]+\";\"#\"), ([scan(\"[0-9]+\")])]"}, "[\"a#b#c\",[\"1\",\"22\"]]\n"},
+        {{"-n", "-c", "[1,\"a\"]|@csv"}, "\"1,\\\"a\\\"\"\n"},
+        {{"-n", "-r", "@sh \"echo \\(\"a b\")\""}, "echo 'a b'\n"},
+        {{"-n", "-c", "\"\xc3\xbcn\xc3\xaf\"|[length, utf8bytelength, @base64]"}, "[3,5,\"w7xuw68=\"]\n"},
+        {{"-n", "-c", "[limit(3;range(10))], (reduce range(5) as $i (0;.+$i))"}, "[0,1,2]\n10\n"},
+        {{"--arg", "v", "5", "-n", "$v|tonumber+1"}, "6\n"},
     };
     for (const auto& c : cases) {
         JqRun r = run_jq(j, c.args);
