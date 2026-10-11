@@ -14,6 +14,7 @@
 #include "cider/libsystem.hpp"
 #include "cider/objc.hpp"
 #include "../foundation/foundation_internal.hpp"
+#include "cg_api.hpp"
 #include "cg_bridge.hpp"
 #include "sysv_args.hpp"
 #include "../libsystem/internal.hpp"
@@ -155,9 +156,11 @@ void add_cg_symbols(std::vector<libsystem::HostSymbol>& t) {
     fn("_NSStringFromRect", w_NSStringFromRect, fnd);
     fn("_NSStringFromPoint", w_NSStringFromPoint, fnd);
     fn("_NSStringFromSize", w_NSStringFromSize, fnd);
+    add_cg_api_symbols(t);
 }
 
 void install_cg(objc::Runtime& rt) {
+    install_cg_api(rt);
     // Constant structures (CGRectZero...) live in the runtime arena; the symbols resolve to their addresses.
     auto table = std::make_shared<std::unordered_map<std::string, uint64_t>>();
     auto make = [&](const char* sym, std::initializer_list<double> v) {

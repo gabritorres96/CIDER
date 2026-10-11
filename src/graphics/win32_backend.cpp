@@ -5,11 +5,14 @@
 #include <unordered_set>
 
 #define WIN32_LEAN_AND_MEAN
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <windows.h>
 #include <windowsx.h>
 
 #include "cider/log.hpp"
+#include "d2d_device.hpp"
 #include "gui_backend.hpp"
 
 namespace cider::gui {
@@ -48,6 +51,9 @@ struct Node {
     unsigned style_mask = 0;
     Size min_content{0, 0};
     bool destroying = false;
+    bool custom_paint = false;                                 // painted by Events::paint on a Direct2D surface
+    bool painting = false;
+    std::unique_ptr<cg::D2DDevice> surface;
 };
 
 class Win32Backend final : public Backend {
@@ -86,6 +92,11 @@ public:
     Rect screen_frame() override;
     Rect visible_frame() override;
     double scale_factor() override { return geometry::scale_for_dpi(GetDpiForSystem()); }
+    void set_custom_paint(NativeId n, bool on) override;
+    void invalidate(NativeId n) override { if (auto* nd = node(n)) if (nd->custom_paint) InvalidateRect(hwnd(n), nullptr, FALSE); }
+    void display_now(NativeId n) override { if (auto* nd = node(n)) if (nd->custom_paint) { InvalidateRect(hwnd(n), nullptr, FALSE); UpdateWindow(hwnd(n)); } }
+    cg::Device* paint_device() override { return paint_device_; }
+    double paint_scale() override { return paint_scale_; }
     int pump() override;
     void wait(void* wake_event, int64_t ms) override;
     size_t native_count() const override { return nodes_.size(); }
@@ -116,6 +127,9 @@ private:
     uint64_t next_control_id_ = 1000;
     HINSTANCE instance_ = nullptr;
     std::u16string pending_surrogate_;
+    cg::Device* paint_device_ = nullptr;
+    double paint_scale_ = 1.0;
+    void paint_view(HWND h);
     bool classes_registered_ = false;
 };
 
@@ -200,7 +214,7 @@ NativeId Win32Backend::create_window(const WindowSpec& spec) {
     Node n;
     n.is_window = true;
     n.style_mask = spec.style_mask;
-    nodes_[id_of(h)] = n;
+    nodes_[id_of(h)] = std::move(n);
     return id_of(h);
 }
 
@@ -268,7 +282,7 @@ NativeId Win32Backend::create_child(NativeId parent, ChildKind kind, const Rect&
     SendMessageW(h, WM_SETFONT, reinterpret_cast<WPARAM>(font_for(GetDpiForWindow(h))), TRUE);
     Node n;
     n.kind = kind;
-    nodes_[id_of(h)] = n;
+    nodes_[id_of(h)] = std::move(n);
     return id_of(h);
 }
 void Win32Backend::set_rect(NativeId c, const Rect& rect) {
@@ -330,6 +344,48 @@ int Win32Backend::pump() {
 void Win32Backend::wait(void* wake_event, int64_t ms) {
     HANDLE ev = static_cast<HANDLE>(wake_event);
     MsgWaitForMultipleObjectsEx(ev ? 1 : 0, ev ? &ev : nullptr, ms < 0 ? INFINITE : static_cast<DWORD>(ms), QS_ALLINPUT, MWMO_INPUTAVAILABLE);
+}
+
+// ---- drawing --------------------------------------------------------------------------------------------------------------------------------
+void Win32Backend::set_custom_paint(NativeId n, bool on) {
+    Node* nd = node(n);
+    if (!nd || nd->kind != ChildKind::Container) return;
+    nd->custom_paint = on;
+    if (!on) nd->surface.reset();
+    InvalidateRect(hwnd(n), nullptr, FALSE);
+}
+
+// WM_PAINT of a custom-painted container: Direct2D HWND render target -> Events::paint (AppKit calls -drawRect: in the guest) -> present.
+void Win32Backend::paint_view(HWND h) {
+    const NativeId id = id_of(h);
+    PAINTSTRUCT ps;
+    BeginPaint(h, &ps);
+    Node* nd = node(id);
+    RECT rc{};
+    GetClientRect(h, &rc);
+    const uint32_t w = static_cast<uint32_t>(std::max<LONG>(rc.right - rc.left, 0)), hgt = static_cast<uint32_t>(std::max<LONG>(rc.bottom - rc.top, 0));
+    if (nd && !nd->painting && events.paint && w > 0 && hgt > 0) {
+        // The surface is moved out of the node while the guest draws: if the guest closes the window inside -drawRect: the node (and its map entry) disappear,
+        // and the surface must stay valid until EndDraw.
+        std::unique_ptr<cg::D2DDevice> surface = std::move(nd->surface);
+        if (!surface) surface = cg::D2DDevice::create_for_window(h, w, hgt);
+        else if (surface->width() != w || surface->height() != hgt) surface->resize(w, hgt);
+        nd->painting = true;
+        const double scale = scale_of(h);
+        if (surface && surface->begin()) {
+            surface->clear(cg::Color{240.0 / 255, 240.0 / 255, 240.0 / 255, 1});          // the face colour; a view normally paints its whole bounds
+            paint_device_ = surface.get();
+            paint_scale_ = scale;
+            events.paint(id, geometry::make_rect(0, 0, geometry::to_points(static_cast<long>(w), scale), geometry::to_points(static_cast<long>(hgt), scale)));
+            paint_device_ = nullptr;
+            const bool good = surface->end();
+            if (!good) { surface.reset(); if (IsWindow(h)) InvalidateRect(h, nullptr, FALSE); }    // target lost: recreate on the next WM_PAINT
+        } else if (!surface) {
+            log::error("Direct2D is unavailable: the custom-painted view stays blank");
+        }
+        if (Node* again = node(id)) { again->painting = false; again->surface = std::move(surface); }
+    }
+    EndPaint(h, &ps);
 }
 
 // ---- window procedures --------------------------------------------------------------------------------------------------------------------
@@ -410,6 +466,11 @@ LRESULT Win32Backend::common(HWND h, UINT m, WPARAM w, LPARAM l, bool& handled) 
 }
 
 LRESULT Win32Backend::view_proc(HWND h, UINT m, WPARAM w, LPARAM l) {
+    if (Node* nd = node(id_of(h)); nd && nd->custom_paint) {
+        if (m == WM_ERASEBKGND) return 1;                                  // the surface is cleared and drawn as a whole: no flicker from the class brush
+        if (m == WM_PAINT) { paint_view(h); return 0; }
+        if (m == WM_SIZE && nd->surface && !nd->painting) { nd->surface->resize(LOWORD(l), HIWORD(l)); InvalidateRect(h, nullptr, FALSE); return 0; }
+    }
     bool handled = false;
     const LRESULT r = common(h, m, w, l, handled);
     if (handled) return r;

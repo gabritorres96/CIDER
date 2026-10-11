@@ -30,7 +30,7 @@ struct ViewPayload : fnd::Payload {
     Addr superview = 0;                    // not retained
     Addr window = 0;                       // not retained: the NSWindow whose content tree contains this view
     std::vector<Addr> subviews;            // retained, back to front
-    bool hidden = false, flipped = false, needs_display = false;
+    bool hidden = false, flipped = false, needs_display = false, painting = false;
     unsigned autoresize = 0;
     int64_t tag = 0;
     gui::NativeId native = 0;
@@ -89,7 +89,8 @@ struct State {
     std::unordered_map<gui::NativeId, Addr> view_of_native;     // not retained
     std::unordered_map<gui::NativeId, Addr> window_of_native;   // not retained
     Class *responder = nullptr, *application = nullptr, *window = nullptr, *view = nullptr, *control = nullptr, *button = nullptr,
-          *text_field = nullptr, *event = nullptr, *screen = nullptr;
+          *text_field = nullptr, *event = nullptr, *screen = nullptr, *graphics_context = nullptr;
+    std::vector<Addr> gc_stack;            // NSGraphicsContext objects, innermost last (not retained: the paint pass owns them)
     int callback_depth = 0;
 };
 State& st();
@@ -128,6 +129,11 @@ void view_set_window(Addr view, Addr window);           // recursive
 std::string view_text(Addr view);
 void view_apply_text(Addr view);
 Addr next_responder(Addr responder);
+bool has_custom_draw(Addr view);                        // the class overrides -drawRect:
+bool view_is_flipped(Addr view);                        // sends -isFlipped
+void view_paint(Addr view);                             // Events::paint: -drawRect: on a fresh graphics context (appkit_draw.cpp)
+void view_invalidate(Addr view);                        // -setNeedsDisplay:YES
+void view_display(Addr view);                           // -display
 Point to_window_point(Addr view, double x_down, double y_down);   // native top-left coordinates of a view -> window space, y up
 
 // ---- misc ---------------------------------------------------------------------------------------------------------------------------------------------------

@@ -262,9 +262,7 @@ void D2DDevice::stroke_path(const Path& p, const Affine& t, const Color& c, cons
     if (!create(style, [&](ID2D1StrokeStyle** o) { return g_f.d2d->CreateStrokeStyle(sp, dashes.empty() ? nullptr : dashes.data(), static_cast<UINT32>(dashes.size()), o); })) { ok_ = false; return; }
     impl_->rt->SetAntialiasMode(aa ? D2D1_ANTIALIAS_MODE_PER_PRIMITIVE : D2D1_ANTIALIAS_MODE_ALIASED);
     impl_->rt->SetTransform(to_d2d(t));
-    // the line width was already scaled to device units by the context; the geometry is in the pre-base space, so counter-scale the width by the base transform
-    const double k = std::sqrt(std::fabs(t.determinant()));
-    impl_->rt->DrawGeometry(g.get(), brush.get(), k > 0 ? static_cast<float>(width / k) : width, style.get());
+    impl_->rt->DrawGeometry(g.get(), brush.get(), width, style.get());
     impl_->rt->SetTransform(D2D1::Matrix3x2F::Identity());
 }
 

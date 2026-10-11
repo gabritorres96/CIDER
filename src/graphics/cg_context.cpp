@@ -156,10 +156,15 @@ void Path::arc_to(Point p1, Point p2, double radius) {
     line_to(t0);
     arc(center, radius, a0, a1, cross > 0);
 }
-void Path::add_path(const Path& other, const Affine& t) {
+void Path::add_path(const Path& other, const Affine& t, bool connect_first) {
+    bool first = true;
     for (const auto& e : other.elements_) {
+        const bool lead = first;
+        first = false;
         switch (e.type) {
-            case PathElement::Move: move_to(t.apply(e.p[0])); break;
+            case PathElement::Move:
+                if (lead && connect_first && has_current_) line_to(t.apply(e.p[0])); else move_to(t.apply(e.p[0]));
+                break;
             case PathElement::Line: line_to(t.apply(e.p[0])); break;
             case PathElement::Cubic: curve_to(t.apply(e.p[0]), t.apply(e.p[1]), t.apply(e.p[2])); break;
             case PathElement::Close: close(); break;

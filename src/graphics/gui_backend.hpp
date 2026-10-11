@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "cider/cg.hpp"
 #include "cider/geometry.hpp"
 
 namespace cider::gui {
@@ -55,6 +56,9 @@ struct Events {
     std::function<void(NativeId control)> control_clicked;                   // push button / check box activated
     std::function<void(NativeId native, const MouseEvent&)> mouse;           // on container views
     std::function<void(NativeId window, const KeyEvent&)> key;               // keyboard input that reached a container view or the window
+    // A custom-painted container (see set_custom_paint) must be drawn. `dirty` is in points, origin top-left of the view (always the whole view: the surface
+    // is presented as a whole, partial invalidation is widened). The callback draws on paint_device() and returns; it must not call display_now().
+    std::function<void(NativeId view, const geometry::Rect& dirty)> paint;
 };
 
 class Backend {
@@ -91,6 +95,16 @@ public:
     virtual void set_placeholder(NativeId native, const std::string& utf8) = 0;
     virtual void focus(NativeId native) = 0;
     virtual void destroy(NativeId native) = 0;                                  // a window (and everything inside) or a single child
+
+    // ---- drawing (CIDER 0.6) -----------------------------------------------------------------------------------------------------------------
+    // A container marked custom-painted gets a Direct2D surface owned by the backend and a `paint` event whenever it must be redrawn.
+    virtual void set_custom_paint(NativeId view, bool on) = 0;
+    virtual void invalidate(NativeId view) = 0;                                 // request a repaint; never paints synchronously
+    virtual void display_now(NativeId view) = 0;                                // repaint synchronously (NSView -display)
+    virtual cg::Device* paint_device() = 0;                                     // the surface to draw on; non-null only while Events::paint runs
+    virtual double paint_scale() = 0;                                           // pixels per point of that surface
+    // Offscreen backend only: writes the composite of the custom-painted views of `window` as a PNG (native controls are not rasterized). false elsewhere.
+    virtual bool save_snapshot(NativeId window, const std::string& path) { (void)window; (void)path; return false; }
 
     // ---- screen and loop -----------------------------------------------------------------------------------------------------------------------
     virtual geometry::Rect screen_frame() = 0;                                  // primary display, screen space, y up, points

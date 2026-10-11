@@ -272,6 +272,7 @@ void wire_backend_events() {
     };
     e.control_clicked = [](gui::NativeId n) { PoolScope pool; on_click(n); };
     e.mouse = [](gui::NativeId n, const gui::MouseEvent& m) { PoolScope pool; on_mouse(n, m); };
+    e.paint = [](gui::NativeId n, const geometry::Rect&) { PoolScope pool; const Addr v = view_for(n); if (v) view_paint(v); };
     e.key = [](gui::NativeId n, const gui::KeyEvent& k) { PoolScope pool; on_key(n, k); };
 }
 
@@ -366,6 +367,7 @@ void install(objc::Runtime& r) {
     install_window_class(r);            // appkit_window.cpp
     install_application_class(r);       // appkit_app.cpp
     install_event_classes(r);           // appkit_event.cpp: NSEvent, NSScreen
+    install_drawing_classes(r);         // appkit_draw.cpp: NSGraphicsContext
     st().nsapp_var = r.arena_alloc(8, 8);
     *reinterpret_cast<Addr*>(st().nsapp_var) = 0;
     g_symbols["_NSApp"] = st().nsapp_var;

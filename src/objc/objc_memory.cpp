@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cstring>
 #include <format>
+#include <map>
 
 #include "cider/guest_threads.hpp"
 #include "cider/libsystem.hpp"
@@ -291,6 +292,17 @@ void add_objc_memory_symbols(std::vector<libsystem::HostSymbol>& t) {
     fn("_objc_setProperty_atomic_copy", addr(w_objc_setProperty_atomic_copy));
     fn("_objc_setProperty_nonatomic_copy", addr(w_objc_setProperty_nonatomic_copy));
     fn("_objc_destructInstance", addr(w_objc_destructInstance));
+}
+
+std::string Runtime::live_object_summary() const {
+    std::map<std::string, size_t> counts;
+    for (const auto& kv : live_) {
+        Class* c = class_of_object(kv.first);
+        ++counts[c ? c->name : std::string("?")];
+    }
+    std::string out;
+    for (const auto& [name, n] : counts) out += (out.empty() ? "" : ", ") + name + " x" + std::to_string(n);
+    return out;
 }
 
 }  // namespace cider::objc

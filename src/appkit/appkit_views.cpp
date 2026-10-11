@@ -94,6 +94,7 @@ void view_build_native(Addr view) {
         if (!v->selectable) st().gui->set_read_only(v->native, true);
         if (v->placeholder) st().gui->set_placeholder(v->native, str_of(v->placeholder));
     }
+    if (kind == gui::ChildKind::Container && has_custom_draw(view)) { st().gui->set_custom_paint(v->native, true); v->needs_display = true; }
     for (Addr s : std::vector<Addr>(v->subviews)) view_build_native(s);
 }
 
@@ -274,9 +275,16 @@ Addr v_subviews(Addr self, Addr) {
     ViewPayload* v = V(self);
     return v ? fnd::new_array(std::vector<Addr>(v->subviews), false, true) : 0;
 }
-Addr v_setNeedsDisplay(Addr self, Addr, uint64_t flag) { if (ViewPayload* v = V(self)) v->needs_display = (flag & 0xff) != 0; return 0; }
+Addr v_setNeedsDisplay(Addr self, Addr, uint64_t flag) {
+    ViewPayload* v = V(self);
+    if (!v) return 0;
+    if ((flag & 0xff) != 0) view_invalidate(self); else v->needs_display = false;
+    return 0;
+}
+void v_setNeedsDisplayInRect(GuestRegs* r) { Args a(r); const Addr self = a.next_int(); a.next_int(); a.next_rect(); view_invalidate(self); }     // partial invalidation is widened to the whole view (documented)
 uint64_t v_needsDisplay(Addr self, Addr) { ViewPayload* v = V(self); return v && v->needs_display ? 1 : 0; }
-Addr v_display(Addr self, Addr) { if (ViewPayload* v = V(self)) v->needs_display = false; return 0; }
+Addr v_display(Addr self, Addr) { view_display(self); return 0; }
+Addr v_displayIfNeeded(Addr self, Addr) { ViewPayload* v = V(self); if (v && v->needs_display) view_display(self); return 0; }
 uint64_t v_isHidden(Addr self, Addr) { ViewPayload* v = V(self); return v && v->hidden ? 1 : 0; }
 Addr v_setHidden(Addr self, Addr, uint64_t flag) {
     ViewPayload* v = V(self);
@@ -492,6 +500,8 @@ void install_responder_classes(objc::Runtime& r) {
         {"setNeedsDisplay:", "v20@0:8B16", addr(v_setNeedsDisplay), false},
         {"needsDisplay", "B16@0:8", addr(v_needsDisplay), false},
         {"display", "v16@0:8", addr(v_display), false},
+        {"displayIfNeeded", "v16@0:8", addr(v_displayIfNeeded), false},
+        {"setNeedsDisplayInRect:", "v48@0:8{CGRect={CGPoint=dd}{CGSize=dd}}16", addr(v_setNeedsDisplayInRect), true},
         {"isHidden", "B16@0:8", addr(v_isHidden), false},
         {"setHidden:", "v20@0:8B16", addr(v_setHidden), false},
         {"tag", "q16@0:8", addr(v_tag), false},

@@ -63,7 +63,7 @@ public:
     void add_rect(const Rect& r);
     void add_ellipse(const Rect& r);
     void close();
-    void add_path(const Path& other, const Affine& t);
+    void add_path(const Path& other, const Affine& t, bool connect_first = false);   // connect_first: a leading move_to becomes a line_to when there is a current point
     bool empty() const { return elements_.empty(); }
     bool has_current_point() const { return has_current_; }
     Point current_point() const { return current_; }

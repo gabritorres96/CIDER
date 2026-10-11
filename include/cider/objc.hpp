@@ -180,6 +180,7 @@ public:
     std::optional<uint64_t> dynamic_symbol(std::string_view name);   // _OBJC_CLASS_$_X, __objc_empty_cache, ___CFConstantStringClassReference
     size_t class_count() const { return classes_.size(); }
     size_t live_object_count() const { return live_.size(); }
+    std::string live_object_summary() const;         // "Class x3, Other x1" for leak diagnostics
     uint64_t messages_sent = 0;
     uint64_t lookups = 0;
     libsystem::RuntimeContext& ctx() { return ctx_; }

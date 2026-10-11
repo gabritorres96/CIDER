@@ -59,6 +59,7 @@ struct Outcome {
     std::string missing_library;           // LoadFailed / MissingDependency: the install name that was not found
     uint64_t initializers_run = 0;
     uint64_t objc_live_objects = 0;        // Objective-C objects still alive when the guest ended (leak check; in-process only)
+    std::string objc_live_summary;         // their classes, when there are any
     uint64_t gui_open_windows_at_exit = 0; // windows the guest never closed (the runtime destroys them)
     uint64_t gui_native_objects_after = 0; // native windows/controls still alive after the runtime shut the GUI down (must be 0)
 };

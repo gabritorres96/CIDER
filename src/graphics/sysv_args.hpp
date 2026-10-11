@@ -8,6 +8,7 @@
 #include <cstring>
 
 #include "cider/abi.hpp"
+#include "cider/cg.hpp"
 #include "cider/geometry.hpp"
 
 namespace cider::graphics::sysv {
@@ -31,6 +32,14 @@ public:
         return r;
     }
 
+    // CGAffineTransform (six doubles, 48 bytes, class MEMORY): six consecutive stack slots
+    cg::Affine next_affine() {
+        cg::Affine t;
+        t.a = as_double(stack_slot()); t.b = as_double(stack_slot()); t.c = as_double(stack_slot());
+        t.d = as_double(stack_slot()); t.tx = as_double(stack_slot()); t.ty = as_double(stack_slot());
+        return t;
+    }
+
 private:
     uint64_t stack_slot() {
         const auto* base = reinterpret_cast<const uint64_t*>(r_->stack_args);
@@ -44,6 +53,11 @@ private:
 inline void ret_rect(abi::GuestRegs* r, uint64_t out_ptr, const geometry::Rect& v) {
     double* d = reinterpret_cast<double*>(out_ptr);
     d[0] = v.origin.x; d[1] = v.origin.y; d[2] = v.size.width; d[3] = v.size.height;
+    r->ret_rax = out_ptr;
+}
+inline void ret_affine(abi::GuestRegs* r, uint64_t out_ptr, const cg::Affine& t) {
+    double* d = reinterpret_cast<double*>(out_ptr);
+    d[0] = t.a; d[1] = t.b; d[2] = t.c; d[3] = t.d; d[4] = t.tx; d[5] = t.ty;
     r->ret_rax = out_ptr;
 }
 inline void ret_point(abi::GuestRegs* r, const geometry::Point& p) { r->ret_xmm0 = as_bits(p.x); r->ret_xmm1 = as_bits(p.y); }

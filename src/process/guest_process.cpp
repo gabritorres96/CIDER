@@ -193,6 +193,7 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     dispatch::shutdown();
     runloop::shutdown();                            // drops queued work and the references dispatch workers held
     out.objc_live_objects = objc_rt->live_object_count();
+    if (out.objc_live_objects) out.objc_live_summary = objc_rt->live_object_summary();
     libsystem::set_context(nullptr);
 
     if (!ctx.fault.empty()) {
