@@ -115,6 +115,7 @@ struct RuntimeContext {
     std::map<void*, void*> aligned_blocks;  // posix_memalign blocks aligned beyond the heap's 16 bytes: returned pointer -> start of the heap block
     bool exception_handlers_linked = false; // some image imports the exception-unwinding entry points (it contains @try/@catch/@finally); ORVYN cannot run them
     LibcVars* libc_vars = nullptr;          // getopt globals (see LibcVars), set by LibSystemProvider::install_stdio
+    uint32_t rand_state = 1;                // rand(): Park-Miller state, seed 1 at the start of every guest process
     uint64_t getopt_place = 0;              // getopt: scanning position inside the current argv element (0 = start a new one)
     bool skip_atexit = false;               // _exit(): handlers do not run
     // ---- GUI (0.5) --------------------------------------------------------------------------------------------

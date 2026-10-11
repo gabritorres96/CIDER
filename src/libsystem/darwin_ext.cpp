@@ -329,13 +329,16 @@ char* w_realpath(const char* path, char* resolved) {
     return out;
 }
 
-uint32_t g_rand_state = 1;                       // FreeBSD/Darwin rand(): Park-Miller "minimal standard" (x = 16807 x mod 2^31-1), seeded with 1
+// FreeBSD/Darwin rand(): Park-Miller "minimal standard" (x = 16807 x mod 2^31-1); the state lives in the RuntimeContext, so every guest process starts at seed 1
 int w_rand() {
-    int64_t hi = g_rand_state / 127773, lo = g_rand_state % 127773;
+    RuntimeContext* c = context();
+    static uint32_t detached = 1;
+    uint32_t& state = c ? c->rand_state : detached;
+    int64_t hi = state / 127773, lo = state % 127773;
     int64_t x = 16807 * lo - 2836 * hi;
     if (x < 0) x += 0x7fffffff;
-    g_rand_state = static_cast<uint32_t>(x);
-    return static_cast<int>(g_rand_state % 0x80000000ull);
+    state = static_cast<uint32_t>(x);
+    return static_cast<int>(state % 0x80000000ull);
 }
 
 // ---- time: UTC only ------------------------------------------------------------------------------------------------------------------------------------

@@ -146,6 +146,7 @@ bool LibSystemProvider::provides_library(std::string_view install_name) const { 
 void LibSystemProvider::install_stdio(RuntimeContext& ctx) const {
     ctx.libc_vars = new (const_cast<uint8_t*>(rw_.base())) LibcVars();     // a fresh process: optind = 1, opterr = 1
     ctx.getopt_place = 0;
+    ctx.rand_state = 1;
     ctx.file_stdin = files_[0];
     ctx.file_stdout = files_[1];
     ctx.file_stderr = files_[2];

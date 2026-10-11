@@ -465,3 +465,10 @@ ORVYN_TEST(a_stack_probe_emitted_by_llvm_calls_the_real_mach_o_name_and_keeps_ra
     CHECK(p->lookup(libsystem::kInstallName, "____chkstk_darwin").has_value());
     CHECK(!p->lookup(libsystem::kInstallName, "___chkstk_darwin").has_value());              // the 3-underscore spelling was wrong and must not resolve
 }
+
+ORVYN_TEST(rand_restarts_from_seed_one_in_every_guest_process) {
+    // the generator state belongs to the guest process, not to the host process: running the fixture twice must give the same sequence (both exit 42)
+    TempDir t;
+    expect_exited(run_fixture("libc_ext", {}, t.path()), 42, "first process");
+    expect_exited(run_fixture("libc_ext", {}, t.path()), 42, "second process");
+}
