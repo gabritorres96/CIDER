@@ -72,7 +72,7 @@ void refuse(const char* fn, const char* why, Addr handle) {
 
 template <class T>
 T* typed(Addr obj, Class* cls) {
-    if (!obj || !cls || !fnd::is_kind(obj, cls)) return nullptr;
+    if (!obj || !cls || !rt().is_live_object(obj) || !fnd::is_kind(obj, cls)) return nullptr;     // dead (already released) and forged handles are refused
     return dynamic_cast<T*>(fnd::payload_of(obj));
 }
 
