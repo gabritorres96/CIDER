@@ -84,14 +84,14 @@ static int checks(void) {
     /* the stack-protector guard is a stable, non-zero value whose lowest byte is zero */
     unsigned long g1 = __stack_chk_guard;
     if (g1 == 0 || (g1 & 0xff) != 0 || __stack_chk_guard != g1) return 26;
-    /* ___chkstk_darwin: RAX in, RAX out, every other register preserved */
+    /* ____chkstk_darwin: RAX in, RAX out, every other register preserved */
     unsigned long out[9];
     __asm__ volatile(
         "movl $8192, %%eax\n\t"
         "movq $0x1111, %%rcx\n\t movq $0x2222, %%rdx\n\t movq $0x3333, %%rsi\n\t movq $0x4444, %%rdi\n\t"
         "movq $0x5555, %%r8\n\t movq $0x6666, %%r9\n\t movq $0x7777, %%r10\n\t movq $0x8888, %%r11\n\t"
         "movq %0, %%rbx\n\t"
-        "call ___chkstk_darwin\n\t"
+        "call ____chkstk_darwin\n\t"
         "movq %%rax, 0(%%rbx)\n\t movq %%rcx, 8(%%rbx)\n\t movq %%rdx, 16(%%rbx)\n\t movq %%rsi, 24(%%rbx)\n\t movq %%rdi, 32(%%rbx)\n\t"
         "movq %%r8, 40(%%rbx)\n\t movq %%r9, 48(%%rbx)\n\t movq %%r10, 56(%%rbx)\n\t movq %%r11, 64(%%rbx)\n\t"
         : : "r"(out) : "rax", "rbx", "rcx", "rdx", "rsi", "rdi", "r8", "r9", "r10", "r11", "memory", "cc");

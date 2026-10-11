@@ -185,7 +185,7 @@ void add_stdio_symbols(std::vector<HostSymbol>& t) {
 }  // namespace detail
 
 const std::vector<DataSymbol>& implemented_data_symbols() {
-    static const std::vector<DataSymbol> table = {{"___stdinp"}, {"___stdoutp"}, {"___stderrp"}, {"___stack_chk_guard"}, {"_optarg"}, {"_optind"}, {"_optopt"}, {"_opterr"}, {"_optreset"}};
+    static const std::vector<DataSymbol> table = {{"___stdinp"}, {"___stdoutp"}, {"___stderrp"}, {"___stack_chk_guard"}, {"__DefaultRuneLocale"}, {"_environ"}, {"_optarg"}, {"_optind"}, {"_optopt"}, {"_opterr"}, {"_optreset"}};
     return table;
 }
 

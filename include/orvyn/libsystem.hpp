@@ -79,6 +79,7 @@ inline constexpr size_t kMaxStreams = 64;         // slots 0-2 are stdin/stdout/
 // The Darwin globals a program binds to as data and that libc writes: getopt's optarg/optind/optopt/opterr/optreset. They live in
 // guest-writable memory owned by the LibSystemProvider; RuntimeContext::libc_vars points at them.
 struct LibcVars {
+    uint64_t environ_ptr = 0;  // `environ`: char ** (guest address of the envp array), set when the process starts
     uint64_t optarg = 0;       // char * (guest address)
     int32_t optind = 1, optopt = 0, opterr = 1, optreset = 0;
 };
@@ -167,6 +168,7 @@ public:
 private:
     abi::ThunkTable table_;
     memory::Region data_;              // stdio variables, FILE objects and the stack-protector guard (read-only after initialisation)
+    memory::Region rune_;              // __DefaultRuneLocale (read-only)
     memory::Region rw_;                // LibcVars: guest-writable globals (getopt)
     std::map<std::string, size_t, std::less<>> index_;
     std::map<std::string, uint64_t, std::less<>> data_index_;

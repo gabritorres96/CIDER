@@ -105,6 +105,7 @@ Outcome run_in_process(ByteView file, const GuestConfig& cfg, const loader::Vali
     std::vector<std::string> apple = {"executable_path=" + argv[0]};
     auto ga = abi::build_guest_args(stack.value(), argv, cfg.env, apple);
     if (!ga.ok()) return internal_failure("cannot build the guest arguments: " + ga.error().message);
+    if (ctx.libc_vars) ctx.libc_vars->environ_ptr = ga.value().envp;     // the `environ` variable programs bind to
 
     {
         std::string why;

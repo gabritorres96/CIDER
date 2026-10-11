@@ -9,8 +9,8 @@ SYMBOL TABLE:
 00000001000030a0 l     O __DATA,__data __dyld_private
 00000001000005e0 g     F __TEXT,__text _main
 0000000100000000 g     F __TEXT,__text __mh_execute_header
+0000000000000000         *UND* ____chkstk_darwin
 0000000000000000         *UND* ___assert_rtn
-0000000000000000         *UND* ___chkstk_darwin
 0000000000000000         *UND* ___cxa_atexit
 0000000000000000         *UND* ___error
 0000000000000000         *UND* ___stack_chk_guard

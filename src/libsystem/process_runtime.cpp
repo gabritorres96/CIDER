@@ -10,6 +10,7 @@
 #include "orvyn/log.hpp"
 
 namespace orvyn::libsystem {
+void fill_default_rune_locale(uint8_t* page);     // darwin_ext.cpp
 namespace {
 RuntimeContext* g_ctx = nullptr;
 
@@ -75,6 +76,15 @@ Result<std::unique_ptr<LibSystemProvider>> LibSystemProvider::create() {
     p->data_index_["___stderrp"] = reinterpret_cast<uint64_t>(base + 16);
     if (auto pr = p->data_.protect(0, p->data_.size(), memory::Prot::Read); !pr.ok()) return pr.error();
 
+    // __DefaultRuneLocale: the ctype table inlined isalpha()/isspace() read (read-only page)
+    auto rune = memory::Region::reserve(0, static_cast<size_t>(*memory::align_up(4096, memory::page_size())), false);
+    if (!rune.ok()) return rune.error();
+    p->rune_ = std::move(rune.value());
+    if (auto c = p->rune_.commit(0, p->rune_.size()); !c.ok()) return c.error();
+    fill_default_rune_locale(p->rune_.base());
+    if (auto pr = p->rune_.protect(0, p->rune_.size(), memory::Prot::Read); !pr.ok()) return pr.error();
+    p->data_index_["__DefaultRuneLocale"] = reinterpret_cast<uint64_t>(p->rune_.base());
+
     // getopt's globals are written by libc and by the program: a separate writable page.
     auto rw = memory::Region::reserve(0, static_cast<size_t>(*memory::align_up(sizeof(LibcVars), memory::page_size())), false);
     if (!rw.ok()) return rw.error();
@@ -82,6 +92,7 @@ Result<std::unique_ptr<LibSystemProvider>> LibSystemProvider::create() {
     if (auto c = p->rw_.commit(0, p->rw_.size()); !c.ok()) return c.error();
     new (p->rw_.base()) LibcVars();
     uint8_t* v = p->rw_.base();
+    p->data_index_["_environ"] = reinterpret_cast<uint64_t>(v + offsetof(LibcVars, environ_ptr));
     p->data_index_["_optarg"] = reinterpret_cast<uint64_t>(v + offsetof(LibcVars, optarg));
     p->data_index_["_optind"] = reinterpret_cast<uint64_t>(v + offsetof(LibcVars, optind));
     p->data_index_["_optopt"] = reinterpret_cast<uint64_t>(v + offsetof(LibcVars, optopt));

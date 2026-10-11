@@ -154,8 +154,8 @@ void add_darwin_libc_symbols(std::vector<HostSymbol>& t) {
     t.push_back({"_pthread_main_np", addr(w_pthread_main_np)});
     t.push_back({"___cxa_atexit", addr(w_cxa_atexit)});
     t.push_back({"_getopt", addr(w_getopt)});
-    // ___chkstk_darwin is machine code the guest calls directly: it must keep RAX (see chkstk_darwin.asm)
-    t.push_back({"___chkstk_darwin", reinterpret_cast<void*>(&orvyn_chkstk_darwin), false, false, true});
+    // ____chkstk_darwin (C name ___chkstk_darwin; the 4-underscore Mach-O name was confirmed in jq 1.7.1's import table) is machine code the guest calls directly: it must keep RAX (see chkstk_darwin.asm)
+    t.push_back({"____chkstk_darwin", reinterpret_cast<void*>(&orvyn_chkstk_darwin), false, false, true});
 }
 }  // namespace detail
 

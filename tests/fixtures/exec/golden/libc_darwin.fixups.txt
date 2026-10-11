@@ -38,7 +38,7 @@ __DATA   __la_symbol_ptr    0x100003008 libSystem        _puts
 __DATA   __la_symbol_ptr    0x100003010 libSystem        ___assert_rtn
 __DATA   __la_symbol_ptr    0x100003018 libSystem        ___cxa_atexit
 __DATA   __la_symbol_ptr    0x100003020 libSystem        _atexit
-__DATA   __la_symbol_ptr    0x100003028 libSystem        ___chkstk_darwin
+__DATA   __la_symbol_ptr    0x100003028 libSystem        ____chkstk_darwin
 __DATA   __la_symbol_ptr    0x100003030 libSystem        _pthread_join
 __DATA   __la_symbol_ptr    0x100003038 libSystem        _pthread_create
 __DATA   __la_symbol_ptr    0x100003040 libSystem        _pthread_main_np

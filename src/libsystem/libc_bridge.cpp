@@ -252,6 +252,7 @@ const std::vector<HostSymbol>& implemented_symbols() {
     detail::add_dispatch_symbols(t);
     detail::add_stream_symbols(t);
     detail::add_darwin_libc_symbols(t);
+    detail::add_darwin_ext_symbols(t);
     detail::add_pthread_symbols(t);
     objc::add_objc_symbols(t);
     objc::add_foundation_symbols(t);

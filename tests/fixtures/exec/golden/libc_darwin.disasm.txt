@@ -357,7 +357,7 @@ _main:
 100000bec:	49 c7 c2 77 77 00 00	movq	$0x7777, %r10
 100000bf3:	49 c7 c3 88 88 00 00	movq	$0x8888, %r11
 100000bfa:	4c 89 f3	movq	%r14, %rbx
-100000bfd:	e8 90 03 00 00	callq	0x100000f92 ## symbol stub for: ___chkstk_darwin
+100000bfd:	e8 90 03 00 00	callq	0x100000f92 ## symbol stub for: ____chkstk_darwin
 100000c02:	48 89 03	movq	%rax, (%rbx)
 100000c05:	48 89 4b 08	movq	%rcx, 0x8(%rbx)
 100000c09:	48 89 53 10	movq	%rdx, 0x10(%rbx)

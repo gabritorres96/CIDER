@@ -76,7 +76,7 @@ uint64_t w_fopen(const char* path, const char* mode) {
     }
     for (const char* m = mode + 1; *m; ++m) {
         if (*m == '+') plus = true;
-        else if (*m == 'b') continue;
+        else if (*m == 'b' || *m == 'e') continue;                  // 'e' (close-on-exec, DARWIN_EXTSN) has no meaning without exec
         else if (*m == 'x' && mode[0] == 'w') excl = true;
         else { fail_errno(detail::kEINVAL); return 0; }
     }
@@ -96,6 +96,38 @@ uint64_t w_fopen(const char* path, const char* mode) {
     s.readable = (flags & 3) != kO_WRONLY;
     s.writable = (flags & 3) != kO_RDONLY;
     s.append = (flags & kO_APPEND) != 0;
+    return c->stream_base + slot * kFileObjectSize;
+}
+
+// FILE *fdopen(int fd, const char *mode): wraps an open guest descriptor; fclose() will close the descriptor. The mode must not ask for more than the descriptor allows.
+uint64_t w_fdopen(int fd, const char* mode) {
+    RuntimeContext* c = context();
+    if (!c || !mode) { fail_errno(detail::kEFAULT); return 0; }
+    if (fd < 0 || static_cast<size_t>(fd) >= c->fds.size() || c->fds[static_cast<size_t>(fd)].kind == GuestFd::Kind::Closed) { fail_errno(detail::kEBADF); return 0; }
+    bool want_read = false, want_write = false, append = false;
+    switch (mode[0]) {
+        case 'r': want_read = true; break;
+        case 'w': want_write = true; break;
+        case 'a': want_write = true; append = true; break;
+        default: fail_errno(detail::kEINVAL); return 0;
+    }
+    for (const char* m = mode + 1; *m; ++m) {
+        if (*m == '+') want_read = want_write = true;
+        else if (*m != 'b' && *m != 'e' && *m != 'x') { fail_errno(detail::kEINVAL); return 0; }       // 'e' (close-on-exec) is the DARWIN_EXTSN extension; irrelevant without exec
+    }
+    const GuestFd& g = c->fds[static_cast<size_t>(fd)];
+    if ((want_read && !g.readable) || (want_write && !g.writable)) { fail_errno(detail::kEINVAL); return 0; }
+    size_t slot = c->streams.size();
+    for (size_t i = 3; i < c->streams.size(); ++i)
+        if (!c->streams[i].in_use) { slot = i; break; }
+    if (slot == c->streams.size()) { fail_errno(detail::kEMFILE); return 0; }
+    Stream& s = c->streams[slot];
+    s = Stream{};
+    s.in_use = true;
+    s.fd = fd;
+    s.readable = want_read;
+    s.writable = want_write;
+    s.append = append;
     return c->stream_base + slot * kFileObjectSize;
 }
 
@@ -253,6 +285,9 @@ int64_t stream_write(int idx, const void* data, size_t n) {
 void add_stream_symbols(std::vector<HostSymbol>& t) {
     t.push_back({"_fopen", addr(w_fopen)});
     t.push_back({"_fclose", addr(w_fclose)});
+    t.push_back({"_fdopen", addr(w_fdopen)});
+    t.push_back({"_fdopen$DARWIN_EXTSN", addr(w_fdopen)});          // same function: the extension only adds mode letters (e, x)
+    t.push_back({"_fopen$DARWIN_EXTSN", addr(w_fopen)});            // fopen accepts the extension letters (x, e)
     t.push_back({"_fread", addr(w_fread)});
     t.push_back({"_fgetc", addr(w_fgetc)});
     t.push_back({"_getc", addr(w_fgetc)});

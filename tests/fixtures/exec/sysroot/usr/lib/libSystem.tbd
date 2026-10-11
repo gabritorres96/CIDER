@@ -21,6 +21,6 @@ exports:
                        __tlv_bootstrap, _tlv_get_addr, _bsearch, _atexit, _fclose, _fread, _fgetc, _getc, _ungetc, _fgets, _feof, _ferror, _clearerr,
                        _ftell, _ftello, _fseek, _fseeko, _rewind, _fileno, _setvbuf,
                        _pthread_create, _pthread_join, _pthread_detach, _pthread_self, _pthread_equal, _pthread_exit, _sched_yield, _pthread_attr_init, _pthread_attr_destroy, _pthread_attr_setstacksize, _pthread_attr_getstacksize, _pthread_attr_setdetachstate, _pthread_mutexattr_init, _pthread_mutexattr_destroy, _pthread_mutexattr_settype, _pthread_mutexattr_gettype, _pthread_mutex_init, _pthread_mutex_destroy, _pthread_mutex_lock, _pthread_mutex_trylock, _pthread_mutex_unlock, _pthread_cond_init, _pthread_cond_destroy, _pthread_cond_wait, _pthread_cond_timedwait, _pthread_cond_signal, _pthread_cond_broadcast, _pthread_once, _pthread_key_create, _pthread_key_delete, _pthread_getspecific, _pthread_setspecific,
-                       ___stack_chk_fail, ___stack_chk_guard, ___assert_rtn, _abort, _memchr, _fma, _modf, _pthread_main_np, ___cxa_atexit, _getopt, ___chkstk_darwin,
+                       ___stack_chk_fail, ___stack_chk_guard, ___assert_rtn, _abort, _memchr, _fma, _modf, _pthread_main_np, ___cxa_atexit, _getopt, ____chkstk_darwin,
                        _posix_memalign, _malloc_size, _optarg, _optind, _optopt, _opterr, _optreset ]
 ...
